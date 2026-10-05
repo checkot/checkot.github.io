@@ -15,9 +15,17 @@
         input, select, button { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         button { background-color: #0056b3; color: white; border: none; font-weight: bold; margin-top: 15px; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #003d80; }
+        
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-action { background-color: #28a745; color: white; text-align: center; text-decoration: none; display: none; padding: 10px; border-radius: 6px; font-weight: bold; flex: 1; font-size: 14px; }
+        .btn-action:hover { background-color: #218838; }
+        .btn-open { background-color: #17a2b8; }
+        .btn-open:hover { background-color: #138496; }
+
         #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px; }
-        #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; }
-        canvas { border: 1px solid #ccc; max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        canvas { border: 1px solid #ccc; max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -37,8 +45,15 @@
 
         <button onclick="searchPDF()">রিপোর্ট দেখুন</button>
         <div id="status"></div>
+
+        <!-- অ্যাকশন বাটনসমূহ -->
+        <div class="btn-group">
+            <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোডেবল PDF</a>
+            <a id="openBtn" class="btn-action btn-open" target="_blank">🔍 ফুল স্ক্রিনে দেখুন</a>
+        </div>
     </div>
 
+    <!-- হাই-রেজুলেশন পিডিএফ ক্যানভাস -->
     <div id="pdf-viewer">
         <canvas id="pdf-canvas"></canvas>
     </div>
@@ -46,7 +61,6 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        // আপনার সঠিক GitHub Username এবং Repository Name
         const GITHUB_USERNAME = "checkot"; 
         const REPO_NAME = "checkot.github.io";      
 
@@ -54,8 +68,14 @@
             const month = document.getElementById('month').value;
             let rawEmpId = document.getElementById('employeeId').value.trim();
             const statusDiv = document.getElementById('status');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const openBtn = document.getElementById('openBtn');
             const canvas = document.getElementById('pdf-canvas');
             const ctx = canvas.getContext('2d');
+
+            // রিসেট বাটন্স
+            downloadBtn.style.display = "none";
+            openBtn.style.display = "none";
 
             if (!rawEmpId) {
                 alert("অনুগ্রহ করে আপনার Employee ID লিখুন!");
@@ -68,7 +88,6 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             try {
-                // গিটহাব API ব্যবহার করে 'pdfs/YYYY-MM' ফোল্ডারের ফাইল পাওয়া
                 const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
                 const response = await fetch(apiUrl);
 
@@ -79,8 +98,6 @@
                 }
 
                 const filesData = await response.json();
-
-                // ফোল্ডারের মধ্যকার সকল .pdf ফাইলগুলোর ডাউনলোডেবল লিংক আলাদা করা
                 const pdfFiles = filesData
                     .filter(file => file.name.toLowerCase().endsWith('.pdf'))
                     .map(file => file.download_url);
@@ -91,7 +108,7 @@
                     return;
                 }
 
-                statusDiv.innerText = `মোট ${pdfFiles.length}টি পিডিএফ ফাইলে আইডি সার্চ করা হচ্ছে...`;
+                statusDiv.innerText = `খুঁজে দেখা হচ্ছে... (মোট ${pdfFiles.length}টি ফাইল)`;
 
                 let found = false;
 
@@ -103,13 +120,23 @@
                         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                             const page = await pdf.getPage(pageNum);
                             const textContent = await page.getTextContent();
-                            
                             const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
 
                             if (pageText.includes(searchId)) {
                                 statusDiv.style.color = "green";
                                 statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! (পৃষ্ঠা: ${pageNum})`;
-                                renderPage(page);
+                                
+                                // হাই কোয়ালিটিতে পেজটি রেন্ডার করা
+                                renderPageHD(page);
+
+                                // ডাউনলোড ও ফুল স্ক্রিন ওপেনের লিংক সেট করা
+                                downloadBtn.href = fileUrl;
+                                downloadBtn.setAttribute('download', `Overtime_Report_${searchId}.pdf`);
+                                downloadBtn.style.display = "inline-block";
+
+                                openBtn.href = fileUrl;
+                                openBtn.style.display = "inline-block";
+
                                 found = true;
                                 break;
                             }
@@ -133,19 +160,32 @@
             }
         }
 
-        function renderPage(page) {
-            const scale = window.innerWidth < 600 ? 1.2 : 1.8;
-            const viewport = page.getViewport({ scale: scale });
+        // হাই-রেজুলেশনে (HD Quality) রেন্ডারিং করার ফাংশন যাতে লেখা ঝাপসা না হয়
+        function renderPageHD(page) {
             const canvas = document.getElementById('pdf-canvas');
             const context = canvas.getContext('2d');
 
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            // মোবাইলের উচ্চ পিক্সেল ডেনসিটি সাপোর্ট করার জন্য
+            const outputScale = window.devicePixelRatio || 2; 
+            const scale = 2.5; // উচ্চ রেজুলেশন স্কেল
+
+            const viewport = page.getViewport({ scale: scale });
+
+            canvas.width = Math.floor(viewport.width * outputScale);
+            canvas.height = Math.floor(viewport.height * outputScale);
+            canvas.style.width = Math.floor(viewport.width / 1.5) + "px";
+            canvas.style.height = "auto";
+
+            const transform = outputScale !== 1 
+                ? [outputScale, 0, 0, outputScale, 0, 0] 
+                : null;
 
             const renderContext = {
                 canvasContext: context,
+                transform: transform,
                 viewport: viewport
             };
+
             page.render(renderContext);
         }
     </script>
