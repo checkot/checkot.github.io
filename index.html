@@ -323,7 +323,7 @@ const RATE_TABLE = {
 };
 
 /* ====== Cache ====== */
-const CACHE_PREFIX = "renata_cache_v7_";
+const CACHE_PREFIX = "renata_cache_v8_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 
 function getCached(month, id) {
@@ -594,7 +594,7 @@ async function showResult(fileUrl, pageNum, fileName) {
 }
 
 /* ============================================================
-   🔥 DUAL EXTRACTION — Text-Layer First, OCR Fallback
+   DUAL EXTRACTION — Text-Layer First, OCR Fallback
    ============================================================ */
 async function runOCRForCurrentPage() {
   if (!matchedPdfPage) return;
@@ -610,12 +610,12 @@ async function runOCRForCurrentPage() {
     let source = "";
     let parsed = null;
 
-    // ===== STEP 1: Text-layer =====
+    // STEP 1: Text-layer
     try {
       const tc = await matchedPdfPage.getTextContent();
       rawText = tc.items.map(i => i.str).join(" ");
       const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-      const hasTotalHour = /TOTAL\s+H(?:OU)?R?S?/i.test(cleanText);
+      const hasTotalHour = /TOTAL\s*HOUR/i.test(cleanText);
       const notGarbage = !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100));
 
       if (hasTotalHour && notGarbage) {
@@ -629,7 +629,7 @@ async function runOCRForCurrentPage() {
       console.log("Text layer failed:", e.message);
     }
 
-    // ===== STEP 2: OCR fallback =====
+    // STEP 2: OCR fallback
     if (!parsed || !parsed.totalHourLine) {
       ocrStatus.innerText = "🔍 Text-Layer অকার্যকর — OCR শুরু হচ্ছে...";
 
@@ -665,7 +665,7 @@ async function runOCRForCurrentPage() {
       parsed = parseOCRText(ocrText);
     }
 
-    // ===== STEP 3: Apply result =====
+    // STEP 3: Apply
     ocrStatus.innerText = "✅ " + source + " থেকে পড়া হয়েছে!";
 
     document.getElementById('inpOtHours').value = parsed.otHours;
@@ -738,66 +738,102 @@ function escapeHtml(s) {
 }
 
 /* ============================================================
-   SMART PARSER — Multiple strategies
+   SMART PARSER — Tuned for your PDF format
    ============================================================ */
 function parseOCRText(rawText) {
+  // Normalize whitespace (but preserve line structure for line-based scan)
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
   const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
   let otHours = 0, nightCount = 0, holidayDays = [], rawLine = null, totalHourLine = false;
 
-  // Strategy 1: Standard 7-number with | optional
-  let m = cleanText.match(/TOTAL\s+H(?:OU)?R?S?\s*:?\s*\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*(\d+)/i);
+  /* ============================================================
+     STRATEGY 1: Find "Total Hour" (even glued: "ToTotal Hour")
+     Then extract NEXT 7 numbers.
+     ============================================================ */
+  const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
 
-  // Strategy 2: Loose — find 7 numbers after "Total Hour"
-  if (!m) {
-    const idx = cleanText.search(/TOTAL\s+H(?:OU)?R?S?/i);
-    if (idx !== -1) {
-      const after = cleanText.substring(idx, idx + 250);
-      const nums = after.match(/\d+\.?\d*/g);
-      if (nums && nums.length >= 7) m = nums.slice(0, 7);
+  if (thIndex !== -1) {
+    const after = cleanText.substring(thIndex, thIndex + 300);
+    const numbers = after.match(/\d+\.\d+|\d+/g) || [];
+
+    if (numbers.length >= 7) {
+      // First 7 numbers after keyword
+      const n = numbers.slice(0, 7).map(x => parseFloat(x));
+
+      // Sanity check: প্রথম ৬টি decimal-like (>0), শেষটি small integer
+      const validFormat = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 &&
+                          n[3] >= 0 && n[4] >= 0 && n[5] >= 0 &&
+                          Number.isInteger(n[6]) && n[6] >= 0 && n[6] < 200;
+
+      if (validFormat) {
+        const regDuty  = n[0];
+        const regExtra = n[1];
+        const doDuty   = n[2];
+        const doExtra  = n[3];
+        const holDuty  = n[4];
+        const holExtra = n[5];
+        nightCount     = n[6];
+
+        otHours = regExtra + doExtra + holExtra;
+        rawLine = `Reg D=${regDuty} E=${regExtra} | DO D=${doDuty} E=${doExtra} | Hol D=${holDuty} E=${holExtra} | Night=${nightCount}`;
+        totalHourLine = true;
+      }
     }
   }
 
-  // Strategy 3: Line-by-line
-  if (!m) {
+  /* ============================================================
+     STRATEGY 2: Line-by-line scan
+     ============================================================ */
+  if (!totalHourLine) {
     for (let i = 0; i < lines.length; i++) {
-      if (/TOTAL\s+H(?:OU)?R?S?/i.test(lines[i])) {
+      if (/TOTAL\s*HOUR/i.test(lines[i])) {
         const combined = [lines[i], lines[i+1] || "", lines[i+2] || ""].join(" ");
-        const nums = combined.match(/\d+\.?\d*/g);
-        if (nums && nums.length >= 7) { m = nums.slice(0, 7); }
+        const nums = combined.match(/\d+\.\d+|\d+/g) || [];
+        if (nums.length >= 7) {
+          const n = nums.slice(0, 7).map(parseFloat);
+          otHours = n[1] + n[3] + n[5];
+          nightCount = n[6];
+          rawLine = `Reg D=${n[0]} E=${n[1]} | DO D=${n[2]} E=${n[3]} | Hol D=${n[4]} E=${n[5]} | Night=${n[6]}`;
+          totalHourLine = true;
+        }
         break;
       }
     }
   }
 
-  if (m) {
-    const n = Array.isArray(m) ? m : m.slice(1);
-    if (n.length >= 7) {
-      const regDuty  = parseFloat(n[0]) || 0;
-      const regExtra = parseFloat(n[1]) || 0;
-      const doDuty   = parseFloat(n[2]) || 0;
-      const doExtra  = parseFloat(n[3]) || 0;
-      const holDuty  = parseFloat(n[4]) || 0;
-      const holExtra = parseFloat(n[5]) || 0;
-      nightCount     = parseInt(n[6]) || 0;
-
-      otHours = regExtra + doExtra + holExtra;
-      rawLine = `Reg D=${regDuty} E=${regExtra} | DO D=${doDuty} E=${doExtra} | Hol D=${holDuty} E=${holExtra} | Night=${nightCount}`;
-      totalHourLine = true;
+  /* ============================================================
+     STRATEGY 3: Last 7 numbers of entire text (fallback)
+     ============================================================ */
+  if (!totalHourLine) {
+    const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
+    if (allNums.length >= 7) {
+      const n = allNums.slice(-7).map(parseFloat);
+      if (Number.isInteger(n[6]) && n[6] >= 0 && n[6] < 200) {
+        otHours = n[1] + n[3] + n[5];
+        nightCount = n[6];
+        rawLine = `[END] Reg D=${n[0]} E=${n[1]} | DO D=${n[2]} E=${n[3]} | Hol D=${n[4]} E=${n[5]} | Night=${n[6]}`;
+        totalHourLine = true;
+      }
     }
   }
 
-  // Row-wise holiday scan
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]{3,10}\s*[-–]\s*[\d:]{3,10}\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
+  /* ============================================================
+     ROW-WISE HOLIDAY SCAN
+     Format: "02/09/2026 08:04 - 19:32 8.47 3.00 0.00 0.00 0.00 0.00 No"
+     ============================================================ */
+  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
+
   let rm;
   while ((rm = rowRegex.exec(cleanText)) !== null) {
+    const date    = rm[1];
     const doDuty  = parseFloat(rm[4]) || 0;
     const doExtra = parseFloat(rm[5]) || 0;
     const holDuty = parseFloat(rm[6]) || 0;
     const holExtra= parseFloat(rm[7]) || 0;
+
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
-      holidayDays.push({ date: rm[1], doDuty, doExtra, holDuty, holExtra });
+      holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     }
   }
 
