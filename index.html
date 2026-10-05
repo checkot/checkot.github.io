@@ -69,6 +69,7 @@
   .btn-open { background-color: #17a2b8; box-shadow: 0 3px 8px rgba(23, 162, 184, 0.2); }
   .btn-open:hover { background-color: #138496; }
   #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
+  #progress { margin-top: 8px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
   #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
 
@@ -139,6 +140,7 @@
 
   <div id="spinner" class="spinner"></div>
   <div id="status"></div>
+  <div id="progress"></div>
 
   <div class="btn-group">
     <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড করুন</a>
@@ -164,8 +166,36 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
 
+// ====== Result Cache (localStorage) ======
+const CACHE_PREFIX = "renata_cache_v1_";
+const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30; // ৩০ দিন
+
+function getCachedResult(month, searchId) {
+  try {
+    const key = `${CACHE_PREFIX}${month}_${searchId}`;
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (Date.now() - data.ts > CACHE_TTL_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  } catch (e) { return null; }
+}
+
+function setCachedResult(month, searchId, payload) {
+  try {
+    const key = `${CACHE_PREFIX}${month}_${searchId}`;
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), ...payload }));
+  } catch (e) { /* quota exceeded হলে চুপ থাকবে */ }
+}
+
+// ====== Global State ======
 let singlePageBlobUrl = null;
-let matchedPdfPage = null;   // সার্চে পাওয়া PDF.js পেজ অবজেক্ট
+let matchedPdfPage = null;
+let currentSearchToken = 0;  // প্রতিটি নতুন সার্চে increment — পুরোনো সার্চ abort করতে
+const activeLoadingTasks = new Set();
 
 /* ---- Enter চাপলে সার্চ ---- */
 document.getElementById('employeeId').addEventListener('keydown', (e) => {
@@ -184,6 +214,7 @@ async function searchPDF() {
 
   const rawEmpId = document.getElementById('employeeId').value.trim();
   const statusDiv = document.getElementById('status');
+  const progressDiv = document.getElementById('progress');
   const spinner = document.getElementById('spinner');
   const downloadBtn = document.getElementById('downloadBtn');
   const openBtn = document.getElementById('openBtn');
@@ -207,22 +238,45 @@ async function searchPDF() {
 
   const searchId = rawEmpId.toUpperCase();
 
+  // ===== পুরোনো চলমান সার্চ abort =====
+  currentSearchToken++;
+  const myToken = currentSearchToken;
+  for (const task of activeLoadingTasks) {
+    try { task.destroy(); } catch (e) {}
+  }
+  activeLoadingTasks.clear();
+
   statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "সার্চ করা হচ্ছে...";
+  statusDiv.innerText = "দ্রুত সার্চ করা হচ্ছে...";
   spinner.style.display = "block";
+  progressDiv.style.display = "block";
+  progressDiv.innerText = "";
   searchBtn.disabled = true;
 
-  // ক্যানভাস রিসেট
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   canvas.width = 0; canvas.height = 0;
 
   try {
+    // ===== ১. Cache চেক =====
+    const cached = getCachedResult(month, searchId);
+    if (cached) {
+      progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
+      await displayResultFromUrl(cached.fileUrl, cached.pageNum, searchId, month);
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! <br><small>(${month} — ক্যাশ)</small>`;
+      return;
+    }
+
+    // ===== ২. GitHub API থেকে ফাইল লিস্ট =====
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
+      progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
       statusDiv.innerText = `❌ "${month}" মাসের ফোল্ডার বা ফাইল পাওয়া যায়নি!`;
       return;
@@ -236,56 +290,43 @@ async function searchPDF() {
     if (pdfFiles.length === 0) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
+      progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
       statusDiv.innerText = `❌ এই ফোল্ডারে কোনো পিডিএফ ফাইল পাওয়া যায়নি!`;
       return;
     }
 
-    let found = false;
+    progressDiv.innerText = `${pdfFiles.length}টি ফাইল প্যারালালে স্ক্যান করা হচ্ছে...`;
 
-    for (let fileUrl of pdfFiles) {
-      try {
-        const loadingTask = pdfjsLib.getDocument(fileUrl);
-        const pdf = await loadingTask.promise;
+    // ===== ৩. Parallel Search with Early Exit =====
+    const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
 
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
+    if (myToken !== currentSearchToken) return; // নতুন সার্চ শুরু হয়েছে — বাদ দাও
 
-          if (pageText.includes(searchId)) {
-            matchedPdfPage = page;
+    if (match) {
+      setCachedResult(month, searchId, {
+        fileUrl: match.fileUrl,
+        pageNum: match.pageNum
+      });
 
-            // মূল পেজে ছোট প্রিভিউ
-            renderPageHD(page, canvas, 1.5);
+      matchedPdfPage = match.page;
+      renderPageHD(match.page, canvas, 1.5);
 
-            // শুধু ম্যাচ করা পেজ আলাদা PDF বানানো
-            singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+      singlePageBlobUrl = await extractSinglePagePdf(match.fileUrl, match.pageNum);
+      downloadBtn.href = singlePageBlobUrl;
+      downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
+      downloadBtn.style.display = "inline-block";
+      openBtn.style.display = "inline-block";
 
-            downloadBtn.href = singlePageBlobUrl;
-            downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
-            downloadBtn.style.display = "inline-block";
-
-            openBtn.style.display = "inline-block";
-
-            spinner.style.display = "none";
-            searchBtn.disabled = false;
-            statusDiv.style.color = "#28a745";
-            statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! <br><small>(${month})</small>`;
-
-            found = true;
-            break;
-          }
-        }
-      } catch (err) {
-        console.log(`ফাইল পড়তে সমস্যা হয়েছে: ${fileUrl}`);
-      }
-      if (found) break;
-    }
-
-    if (!found) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! <br><small>(${month})</small>`;
+    } else {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
       statusDiv.innerHTML = `❌ আইডি "${rawEmpId}"-এর কোন রেকর্ড ${month} মাসে পাওয়া যায়নি।`;
     }
@@ -294,11 +335,117 @@ async function searchPDF() {
     console.error(error);
     spinner.style.display = "none";
     searchBtn.disabled = false;
+    progressDiv.style.display = "none";
     statusDiv.style.color = "#dc3545";
     statusDiv.innerText = "❌ ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট কানেকশন চেক করুন।";
   }
 }
 
+/* ============================================================
+   Parallel Search — সব ফাইল একসাথে, প্রথম ম্যাচ পেলেই exit
+   ============================================================ */
+async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
+  const total = pdfFiles.length;
+  let scanned = 0;
+
+  return new Promise((resolve) => {
+    let settled = false;
+
+    const finishOnce = (result) => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+
+    pdfFiles.forEach((fileUrl, idx) => {
+      (async () => {
+        // নতুন সার্চ হলে বন্ধ করো
+        if (myToken !== currentSearchToken) return;
+
+        let loadingTask = null;
+        let pdf = null;
+        try {
+          // PDF.js range request: শুধু দরকারি অংশ নামবে
+          loadingTask = pdfjsLib.getDocument({
+            url: fileUrl,
+            disableAutoFetch: true,      // সব পেজ আগেভাগে নামাবে না
+            disableStream: false,        // stream চালু রাখলে range request কাজ করে
+            rangeChunkSize: 65536,       // 64KB chunk
+            disableRange: false
+          });
+          activeLoadingTasks.add(loadingTask);
+
+          pdf = await loadingTask.promise;
+
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            if (myToken !== currentSearchToken) break;
+            if (settled) break; // অন্য কেউ ম্যাচ পেয়ে ফেলেছে
+
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
+
+            if (pageText.includes(searchId)) {
+              finishOnce({ page, pageNum, fileUrl, pdf });
+              return;
+            }
+          }
+
+          scanned++;
+          if (progressDiv) {
+            progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
+          }
+        } catch (err) {
+          console.log(`ফাইল পড়তে সমস্যা: ${fileUrl}`, err);
+        } finally {
+          if (loadingTask) activeLoadingTasks.delete(loadingTask);
+          // ম্যাচ না পেলে এই PDF মেমরি থেকে মুক্ত করো
+          if (!settled && pdf) {
+            try { await pdf.destroy(); } catch (e) {}
+          }
+        }
+      })();
+    });
+
+    // সব শেষ হলে (কোনো ম্যাচ না পেলে) result null
+    setTimeout(() => {
+      if (!settled) {
+        const checkAllDone = setInterval(() => {
+          if (scanned >= total || myToken !== currentSearchToken) {
+            clearInterval(checkAllDone);
+            finishOnce(null);
+          }
+        }, 200);
+      }
+    }, 100);
+  });
+}
+
+/* ============================================================
+   Cache hit হলে সরাসরি PDF URL থেকে পেজ লোড
+   ============================================================ */
+async function displayResultFromUrl(fileUrl, pageNum, searchId, month) {
+  const canvas = document.getElementById('pdf-canvas');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openBtn = document.getElementById('openBtn');
+
+  const loadingTask = pdfjsLib.getDocument(fileUrl);
+  const pdf = await loadingTask.promise;
+  const page = await pdf.getPage(pageNum);
+
+  matchedPdfPage = page;
+  renderPageHD(page, canvas, 1.5);
+
+  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+  downloadBtn.href = singlePageBlobUrl;
+  downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
+  downloadBtn.style.display = "inline-block";
+  openBtn.style.display = "inline-block";
+}
+
+/* ============================================================
+   নির্দিষ্ট পেজ আলাদা PDF হিসেবে বের করা
+   ============================================================ */
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
   const srcDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
@@ -310,21 +457,21 @@ async function extractSinglePagePdf(pdfUrl, pageNumber) {
   return URL.createObjectURL(blob);
 }
 
-/* ---- রেন্ডার ফাংশন: যেকোনো ক্যানভাসে যেকোনো পেজ রেন্ডার করে ---- */
+/* ============================================================
+   রেন্ডার ফাংশন
+   ============================================================ */
 function renderPageHD(page, targetCanvas, widthDivider) {
   const context = targetCanvas.getContext('2d');
   const outputScale = window.devicePixelRatio || 2;
-  const scale = 3.0;   // HD rendering scale
+  const scale = 3.0;
   const viewport = page.getViewport({ scale: scale });
 
   targetCanvas.width  = Math.floor(viewport.width  * outputScale);
   targetCanvas.height = Math.floor(viewport.height * outputScale);
 
-  // স্ক্রিনের চেয়ে বড় না হওয়ার জন্য divider দিয়ে ভাগ
   targetCanvas.style.width  = Math.floor(viewport.width / widthDivider) + "px";
   targetCanvas.style.height = "auto";
 
-  // আগের কনটেন্ট মুছে ফেলা
   context.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
 
   const transform = outputScale !== 1
@@ -346,14 +493,11 @@ function openModal() {
   const modal = document.getElementById('pdfModal');
   const modalCanvas = document.getElementById('modal-canvas');
 
-  // ক্যানভাস রিসেট (ghosting এড়াতে)
   modalCanvas.width = 0; modalCanvas.height = 0;
 
   modal.style.display = "block";
   document.body.style.overflow = "hidden";
 
-  // মোবাইলে widthDivider=1.0 দিলে ক্যানভাস স্ক্রিনের চেয়ে বড় হয়ে scroll বানায়
-  // তাই স্ক্রিনের প্রস্থ অনুযায়ী dynamic divider
   const divider = window.innerWidth < 768 ? 1.15 : 1.0;
   renderPageHD(matchedPdfPage, modalCanvas, divider);
 }
@@ -363,14 +507,11 @@ function closeModal() {
   if (modal.style.display === "block") {
     modal.style.display = "none";
     document.body.style.overflow = "auto";
-
-    // মেমরি ক্লিয়ার
     const modalCanvas = document.getElementById('modal-canvas');
     modalCanvas.width = 0; modalCanvas.height = 0;
   }
 }
 
-/* Modal-এর বাইরে (কালো জায়গায়) ক্লিক করলে বন্ধ */
 function modalBackdropClick(event) {
   if (event.target.id === "pdfModal") closeModal();
 }
