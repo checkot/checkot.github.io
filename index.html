@@ -63,17 +63,40 @@
     text-decoration: none; display: none; padding: 11px;
     border-radius: 8px; font-weight: 600; flex: 1;
     font-size: 14px; cursor: pointer;
-    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2);
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2); border: none;
   }
   .btn-action:hover { background-color: #218838; }
   .btn-open { background-color: #17a2b8; box-shadow: 0 3px 8px rgba(23, 162, 184, 0.2); }
   .btn-open:hover { background-color: #138496; }
   #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
   #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  canvas {
-    border: 1px solid #dee2e6; max-width: 100%; height: auto;
-    border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
+
+  /* ===== Fullscreen Modal ===== */
+  .modal {
+    display: none; position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    overflow: auto; padding: 60px 10px 20px 10px;
+  }
+  .modal-content-wrapper {
+    position: relative; max-width: 1000px;
+    margin: 0 auto; text-align: center;
+  }
+  .close-btn {
+    position: fixed; top: 15px; right: 15px;
+    background-color: #dc3545; color: white; border: none;
+    padding: 10px 18px; font-size: 15px; font-weight: bold;
+    border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 10000;
+    transition: background-color 0.2s ease;
+  }
+  .close-btn:hover { background-color: #bd2130; }
+  #modal-canvas {
+    max-width: 100%; height: auto; border-radius: 8px;
     display: block; margin: 0 auto;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
   }
 </style>
 </head>
@@ -101,7 +124,7 @@
       <option value="06">জুন (Jun)</option>
       <option value="07">জুলাই (Jul)</option>
       <option value="08">আগস্ট (Aug)</option>
-      <option value="09">সেপ্টেম্বর (Sep)</option>
+      <option value="09" selected>সেপ্টেম্বর (Sep)</option>
       <option value="10">অক্টোবর (Oct)</option>
       <option value="11">নভেম্বর (Nov)</option>
       <option value="12">ডিসেম্বর (Dec)</option>
@@ -119,12 +142,20 @@
 
   <div class="btn-group">
     <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড করুন</a>
-    <a id="openBtn" class="btn-action btn-open" target="_blank">🔍 ফুল ভিউ</a>
+    <button id="openBtn" class="btn-action btn-open" onclick="openModal()">🔍 ফুল ভিউ</button>
   </div>
 </div>
 
 <div id="pdf-viewer">
   <canvas id="pdf-canvas"></canvas>
+</div>
+
+<!-- Fullscreen Modal Overlay -->
+<div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
+  <button class="close-btn" onclick="closeModal()">✕ বন্ধ করুন</button>
+  <div class="modal-content-wrapper">
+    <canvas id="modal-canvas"></canvas>
+  </div>
 </div>
 
 <script>
@@ -134,14 +165,19 @@ const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
 
 let singlePageBlobUrl = null;
+let matchedPdfPage = null;   // সার্চে পাওয়া PDF.js পেজ অবজেক্ট
 
-/* ---- Enter চাপলে সার্চ ট্রিগার ---- */
+/* ---- Enter চাপলে সার্চ ---- */
 document.getElementById('employeeId').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') searchPDF();
 });
 
+/* ---- ESC চাপলে Modal বন্ধ ---- */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
 async function searchPDF() {
-  // বছর + মাস একসাথে যুক্ত করে ফোল্ডার নেম (যেমন: 2026-08) তৈরি
   const selectedYear  = document.getElementById('yearSelect').value;
   const selectedMonth = document.getElementById('monthSelect').value;
   const month = `${selectedYear}-${selectedMonth}`;
@@ -157,6 +193,7 @@ async function searchPDF() {
 
   downloadBtn.style.display = "none";
   openBtn.style.display = "none";
+  matchedPdfPage = null;
 
   if (singlePageBlobUrl) {
     URL.revokeObjectURL(singlePageBlobUrl);
@@ -170,11 +207,12 @@ async function searchPDF() {
 
   const searchId = rawEmpId.toUpperCase();
 
-  // UI: লোডিং শুরু
   statusDiv.style.color = "#0056b3";
   statusDiv.innerText = "সার্চ করা হচ্ছে...";
   spinner.style.display = "block";
   searchBtn.disabled = true;
+
+  // ক্যানভাস রিসেট
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   canvas.width = 0; canvas.height = 0;
 
@@ -216,14 +254,18 @@ async function searchPDF() {
           const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
 
           if (pageText.includes(searchId)) {
-            renderPageHD(page);
+            matchedPdfPage = page;
+
+            // মূল পেজে ছোট প্রিভিউ
+            renderPageHD(page, canvas, 1.5);
+
+            // শুধু ম্যাচ করা পেজ আলাদা PDF বানানো
             singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
 
             downloadBtn.href = singlePageBlobUrl;
             downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
             downloadBtn.style.display = "inline-block";
 
-            openBtn.href = singlePageBlobUrl;
             openBtn.style.display = "inline-block";
 
             spinner.style.display = "none";
@@ -268,17 +310,22 @@ async function extractSinglePagePdf(pdfUrl, pageNumber) {
   return URL.createObjectURL(blob);
 }
 
-function renderPageHD(page) {
-  const canvas = document.getElementById('pdf-canvas');
-  const context = canvas.getContext('2d');
+/* ---- রেন্ডার ফাংশন: যেকোনো ক্যানভাসে যেকোনো পেজ রেন্ডার করে ---- */
+function renderPageHD(page, targetCanvas, widthDivider) {
+  const context = targetCanvas.getContext('2d');
   const outputScale = window.devicePixelRatio || 2;
-  const scale = 2.5;
+  const scale = 3.0;   // HD rendering scale
   const viewport = page.getViewport({ scale: scale });
 
-  canvas.width  = Math.floor(viewport.width  * outputScale);
-  canvas.height = Math.floor(viewport.height * outputScale);
-  canvas.style.width  = Math.floor(viewport.width / 1.5) + "px";
-  canvas.style.height = "auto";
+  targetCanvas.width  = Math.floor(viewport.width  * outputScale);
+  targetCanvas.height = Math.floor(viewport.height * outputScale);
+
+  // স্ক্রিনের চেয়ে বড় না হওয়ার জন্য divider দিয়ে ভাগ
+  targetCanvas.style.width  = Math.floor(viewport.width / widthDivider) + "px";
+  targetCanvas.style.height = "auto";
+
+  // আগের কনটেন্ট মুছে ফেলা
+  context.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
 
   const transform = outputScale !== 1
     ? [outputScale, 0, 0, outputScale, 0, 0]
@@ -290,6 +337,42 @@ function renderPageHD(page) {
     viewport: viewport
   };
   page.render(renderContext);
+}
+
+/* ===== Modal Functions ===== */
+function openModal() {
+  if (!matchedPdfPage) return;
+
+  const modal = document.getElementById('pdfModal');
+  const modalCanvas = document.getElementById('modal-canvas');
+
+  // ক্যানভাস রিসেট (ghosting এড়াতে)
+  modalCanvas.width = 0; modalCanvas.height = 0;
+
+  modal.style.display = "block";
+  document.body.style.overflow = "hidden";
+
+  // মোবাইলে widthDivider=1.0 দিলে ক্যানভাস স্ক্রিনের চেয়ে বড় হয়ে scroll বানায়
+  // তাই স্ক্রিনের প্রস্থ অনুযায়ী dynamic divider
+  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
+  renderPageHD(matchedPdfPage, modalCanvas, divider);
+}
+
+function closeModal() {
+  const modal = document.getElementById('pdfModal');
+  if (modal.style.display === "block") {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+
+    // মেমরি ক্লিয়ার
+    const modalCanvas = document.getElementById('modal-canvas');
+    modalCanvas.width = 0; modalCanvas.height = 0;
+  }
+}
+
+/* Modal-এর বাইরে (কালো জায়গায়) ক্লিক করলে বন্ধ */
+function modalBackdropClick(event) {
+  if (event.target.id === "pdfModal") closeModal();
 }
 </script>
 
