@@ -1,302 +1,302 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RENATA PLC - Overtime Report Search</title>
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#004085">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="icon.png">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            padding: 20px 15px; 
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); 
-            margin: 0; 
-            min-height: 100vh;
-        }
-        .card { 
-            background: #ffffff; 
-            padding: 25px 20px; 
-            border-radius: 16px; 
-            max-width: 450px; 
-            margin: 0 auto; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { margin: 0; color: #004085; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
-        .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 13px; }
-        
-        label { font-weight: 600; display: block; margin-top: 14px; color: #495057; font-size: 14px; }
-        input, select { 
-            width: 100%; 
-            padding: 12px 14px; 
-            margin-top: 6px; 
-            border: 1px solid #ced4da; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            outline: none;
-            transition: all 0.2s ease-in-out;
-            background-color: #f8f9fa;
-        }
-        input:focus, select:focus {
-            border-color: #0056b3;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
-        }
-        
-        button { 
-            width: 100%;
-            background-color: #0056b3; 
-            color: white; 
-            border: none; 
-            padding: 13px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600; 
-            margin-top: 20px; 
-            cursor: pointer; 
-            transition: background-color 0.2s ease-in-out; 
-            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
-        }
-        button:hover { background-color: #004085; }
-        
-        /* Loading Spinner */
-        .spinner {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0056b3;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 15px auto 0 auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-action { 
-            background-color: #28a745; 
-            color: white; 
-            text-align: center; 
-            text-decoration: none; 
-            display: none; 
-            padding: 11px; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            flex: 1; 
-            font-size: 14px; 
-            cursor: pointer; 
-            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2);
-        }
-        .btn-action:hover { background-color: #218838; }
-        .btn-open { background-color: #17a2b8; box-shadow: 0 3px 8px rgba(23, 162, 184, 0.2); }
-        .btn-open:hover { background-color: #138496; }
-
-        #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
-        #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RENATA PLC - Overtime Report Search</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#004085">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px 15px;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    margin: 0; min-height: 100vh;
+  }
+  .card {
+    background: #ffffff; padding: 25px 20px; border-radius: 16px;
+    max-width: 450px; margin: 0 auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h2 { margin: 0; color: #004085; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+  .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 13px; }
+  label { font-weight: 600; display: block; margin-top: 14px; color: #495057; font-size: 14px; }
+  input, select {
+    width: 100%; padding: 12px 14px; margin-top: 6px;
+    border: 1px solid #ced4da; border-radius: 8px;
+    font-size: 15px; outline: none; transition: all 0.2s ease-in-out;
+    background-color: #f8f9fa;
+  }
+  input:focus, select:focus {
+    border-color: #0056b3; background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+  }
+  .row { display: flex; gap: 10px; margin-top: 6px; }
+  .row select { margin-top: 0; flex: 1; }
+  button {
+    width: 100%; background-color: #0056b3; color: white;
+    border: none; padding: 13px; border-radius: 8px;
+    font-size: 16px; font-weight: 600; margin-top: 20px;
+    cursor: pointer; transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
+  }
+  button:hover { background-color: #004085; }
+  button:disabled { background-color: #6c757d; cursor: not-allowed; }
+  .spinner {
+    display: none; width: 24px; height: 24px;
+    border: 3px solid #f3f3f3; border-top: 3px solid #0056b3;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin: 15px auto 0 auto;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+  .btn-action {
+    background-color: #28a745; color: white; text-align: center;
+    text-decoration: none; display: none; padding: 11px;
+    border-radius: 8px; font-weight: 600; flex: 1;
+    font-size: 14px; cursor: pointer;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2);
+  }
+  .btn-action:hover { background-color: #218838; }
+  .btn-open { background-color: #17a2b8; box-shadow: 0 3px 8px rgba(23, 162, 184, 0.2); }
+  .btn-open:hover { background-color: #138496; }
+  #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
+  #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  canvas {
+    border: 1px solid #dee2e6; max-width: 100%; height: auto;
+    border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    display: block; margin: 0 auto;
+  }
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="header">
-            <h2>RENATA PLC</h2>
-            <p>Overtime Calculation Details Report</p>
-        </div>
-        
-        <label for="month">মাস নির্বাচন করুন:</label>
-        <select id="month">
-            <option value="2026-09">সেপ্টেম্বর ২০২৬ (Sep-2026)</option>
-            <option value="2026-10">অক্টোবর ২০২৬ (Oct-2026)</option>
-        </select>
+<div class="card">
+  <div class="header">
+    <h2>RENATA PLC</h2>
+    <p>Overtime Calculation Details Report</p>
+  </div>
 
-        <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
-        <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850 অথবা 20850">
+  <label>বছর ও মাস নির্বাচন করুন:</label>
+  <div class="row">
+    <select id="yearSelect">
+      <option value="2025">২০২৫</option>
+      <option value="2026" selected>২০২৬</option>
+      <option value="2027">২০২৭</option>
+    </select>
+    <select id="monthSelect">
+      <option value="01">জানুয়ারি (Jan)</option>
+      <option value="02">ফেব্রুয়ারি (Feb)</option>
+      <option value="03">মার্চ (Mar)</option>
+      <option value="04">এপ্রিল (Apr)</option>
+      <option value="05">মে (May)</option>
+      <option value="06">জুন (Jun)</option>
+      <option value="07">জুলাই (Jul)</option>
+      <option value="08">আগস্ট (Aug)</option>
+      <option value="09">সেপ্টেম্বর (Sep)</option>
+      <option value="10">অক্টোবর (Oct)</option>
+      <option value="11">নভেম্বর (Nov)</option>
+      <option value="12">ডিসেম্বর (Dec)</option>
+    </select>
+  </div>
 
-        <button onclick="searchPDF()">রিপোর্ট দেখুন</button>
-        
-        <div id="spinner" class="spinner"></div>
-        <div id="status"></div>
+  <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
+  <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850 অথবা 20850"
+         autocomplete="off" inputmode="text">
 
-        <div class="btn-group">
-            <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড করুন</a>
-            <a id="openBtn" class="btn-action btn-open" target="_blank">🔍 ফুল ভিউ</a>
-        </div>
-    </div>
+  <button id="searchBtn" onclick="searchPDF()">রিপোর্ট দেখুন</button>
 
-    <div id="pdf-viewer">
-        <canvas id="pdf-canvas"></canvas>
-    </div>
+  <div id="spinner" class="spinner"></div>
+  <div id="status"></div>
 
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+  <div class="btn-group">
+    <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড করুন</a>
+    <a id="openBtn" class="btn-action btn-open" target="_blank">🔍 ফুল ভিউ</a>
+  </div>
+</div>
 
-        const GITHUB_USERNAME = "checkot"; 
-        const REPO_NAME = "checkot.github.io";      
+<div id="pdf-viewer">
+  <canvas id="pdf-canvas"></canvas>
+</div>
 
-        let singlePageBlobUrl = null;
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        async function searchPDF() {
-            const month = document.getElementById('month').value;
-            let rawEmpId = document.getElementById('employeeId').value.trim();
-            const statusDiv = document.getElementById('status');
-            const spinner = document.getElementById('spinner');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const openBtn = document.getElementById('openBtn');
-            const canvas = document.getElementById('pdf-canvas');
-            const ctx = canvas.getContext('2d');
+const GITHUB_USERNAME = "checkot";
+const REPO_NAME = "checkot.github.io";
 
-            downloadBtn.style.display = "none";
-            openBtn.style.display = "none";
+let singlePageBlobUrl = null;
 
-            if (singlePageBlobUrl) {
-                URL.revokeObjectURL(singlePageBlobUrl);
-                singlePageBlobUrl = null;
-            }
+/* ---- Enter চাপলে সার্চ ট্রিগার ---- */
+document.getElementById('employeeId').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') searchPDF();
+});
 
-            if (!rawEmpId) {
-                alert("অনুগ্রহ করে আপনার Employee ID লিখুন!");
-                return;
-            }
+async function searchPDF() {
+  // বছর + মাস একসাথে যুক্ত করে ফোল্ডার নেম (যেমন: 2026-08) তৈরি
+  const selectedYear  = document.getElementById('yearSelect').value;
+  const selectedMonth = document.getElementById('monthSelect').value;
+  const month = `${selectedYear}-${selectedMonth}`;
 
-            const searchId = rawEmpId.toUpperCase();
-            statusDiv.style.color = "#0056b3";
-            statusDiv.innerText = "সার্চ করা হচ্ছে...";
-            spinner.style.display = "block";
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const rawEmpId = document.getElementById('employeeId').value.trim();
+  const statusDiv = document.getElementById('status');
+  const spinner = document.getElementById('spinner');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openBtn = document.getElementById('openBtn');
+  const searchBtn = document.getElementById('searchBtn');
+  const canvas = document.getElementById('pdf-canvas');
+  const ctx = canvas.getContext('2d');
 
-            try {
-                const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-                const response = await fetch(apiUrl);
+  downloadBtn.style.display = "none";
+  openBtn.style.display = "none";
 
-                if (!response.ok) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerText = `❌ "${month}" মাসের ফোল্ডার বা ফাইল পাওয়া যায়নি!`;
-                    return;
-                }
+  if (singlePageBlobUrl) {
+    URL.revokeObjectURL(singlePageBlobUrl);
+    singlePageBlobUrl = null;
+  }
 
-                const filesData = await response.json();
-                const pdfFiles = filesData
-                    .filter(file => file.name.toLowerCase().endsWith('.pdf'))
-                    .map(file => file.download_url);
+  if (!rawEmpId) {
+    alert("অনুগ্রহ করে আপনার Employee ID লিখুন!");
+    return;
+  }
 
-                if (pdfFiles.length === 0) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerText = `❌ এই ফোল্ডারে কোনো পিডিএফ ফাইল পাওয়া যায়নি!`;
-                    return;
-                }
+  const searchId = rawEmpId.toUpperCase();
 
-                let found = false;
+  // UI: লোডিং শুরু
+  statusDiv.style.color = "#0056b3";
+  statusDiv.innerText = "সার্চ করা হচ্ছে...";
+  spinner.style.display = "block";
+  searchBtn.disabled = true;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0; canvas.height = 0;
 
-                for (let fileUrl of pdfFiles) {
-                    try {
-                        const loadingTask = pdfjsLib.getDocument(fileUrl);
-                        const pdf = await loadingTask.promise;
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
+    const response = await fetch(apiUrl);
 
-                        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                            const page = await pdf.getPage(pageNum);
-                            const textContent = await page.getTextContent();
-                            const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
+    if (!response.ok) {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerText = `❌ "${month}" মাসের ফোল্ডার বা ফাইল পাওয়া যায়নি!`;
+      return;
+    }
 
-                            if (pageText.includes(searchId)) {
-                                renderPageHD(page);
+    const filesData = await response.json();
+    const pdfFiles = filesData
+      .filter(file => file.name.toLowerCase().endsWith('.pdf'))
+      .map(file => file.download_url);
 
-                                singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+    if (pdfFiles.length === 0) {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerText = `❌ এই ফোল্ডারে কোনো পিডিএফ ফাইল পাওয়া যায়নি!`;
+      return;
+    }
 
-                                downloadBtn.href = singlePageBlobUrl;
-                                downloadBtn.setAttribute('download', `Overtime_${searchId}.pdf`);
-                                downloadBtn.style.display = "inline-block";
+    let found = false;
 
-                                openBtn.href = singlePageBlobUrl;
-                                openBtn.style.display = "inline-block";
+    for (let fileUrl of pdfFiles) {
+      try {
+        const loadingTask = pdfjsLib.getDocument(fileUrl);
+        const pdf = await loadingTask.promise;
 
-                                spinner.style.display = "none";
-                                statusDiv.style.color = "#28a745";
-                                statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে!`;
-                                found = true;
-                                break;
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`ফাইল পড়তে সমস্যা হয়েছে: ${fileUrl}`);
-                    }
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
 
-                    if (found) break;
-                }
+          if (pageText.includes(searchId)) {
+            renderPageHD(page);
+            singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
 
-                if (!found) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerHTML = `❌ আইডি "${rawEmpId}"-এর কোন রেকর্ড পাওয়া যায়নি।`;
-                }
+            downloadBtn.href = singlePageBlobUrl;
+            downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
+            downloadBtn.style.display = "inline-block";
 
-            } catch (error) {
-                console.error(error);
-                spinner.style.display = "none";
-                statusDiv.style.color = "#dc3545";
-                statusDiv.innerText = "❌ ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট কানেকশন চেক করুন।";
-            }
+            openBtn.href = singlePageBlobUrl;
+            openBtn.style.display = "inline-block";
+
+            spinner.style.display = "none";
+            searchBtn.disabled = false;
+            statusDiv.style.color = "#28a745";
+            statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! <br><small>(${month})</small>`;
+
+            found = true;
+            break;
+          }
         }
-
-        async function extractSinglePagePdf(pdfUrl, pageNumber) {
-            const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
-            const srcDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-            const newDoc = await PDFLib.PDFDocument.create();
-
-            const [copiedPage] = await newDoc.copyPages(srcDoc, [pageNumber - 1]);
-            newDoc.addPage(copiedPage);
-
-            const pdfBytes = await newDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            return URL.createObjectURL(blob);
-        }
-
-        function renderPageHD(page) {
-            const canvas = document.getElementById('pdf-canvas');
-            const context = canvas.getContext('2d');
-
-            const outputScale = window.devicePixelRatio || 2; 
-            const scale = 2.5;
-
-            const viewport = page.getViewport({ scale: scale });
-
-            canvas.width = Math.floor(viewport.width * outputScale);
-            canvas.height = Math.floor(viewport.height * outputScale);
-            canvas.style.width = Math.floor(viewport.width / 1.5) + "px";
-            canvas.style.height = "auto";
-
-            const transform = outputScale !== 1 
-                ? [outputScale, 0, 0, outputScale, 0, 0] 
-                : null;
-
-            const renderContext = {
-                canvasContext: context,
-                transform: transform,
-                viewport: viewport
-            };
-
-            page.render(renderContext);
-        }
-    </script>
-
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+      } catch (err) {
+        console.log(`ফাইল পড়তে সমস্যা হয়েছে: ${fileUrl}`);
       }
-    </script>
+      if (found) break;
+    }
 
+    if (!found) {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerHTML = `❌ আইডি "${rawEmpId}"-এর কোন রেকর্ড ${month} মাসে পাওয়া যায়নি।`;
+    }
+
+  } catch (error) {
+    console.error(error);
+    spinner.style.display = "none";
+    searchBtn.disabled = false;
+    statusDiv.style.color = "#dc3545";
+    statusDiv.innerText = "❌ ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট কানেকশন চেক করুন।";
+  }
+}
+
+async function extractSinglePagePdf(pdfUrl, pageNumber) {
+  const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
+  const srcDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+  const newDoc = await PDFLib.PDFDocument.create();
+  const [copiedPage] = await newDoc.copyPages(srcDoc, [pageNumber - 1]);
+  newDoc.addPage(copiedPage);
+  const pdfBytes = await newDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  return URL.createObjectURL(blob);
+}
+
+function renderPageHD(page) {
+  const canvas = document.getElementById('pdf-canvas');
+  const context = canvas.getContext('2d');
+  const outputScale = window.devicePixelRatio || 2;
+  const scale = 2.5;
+  const viewport = page.getViewport({ scale: scale });
+
+  canvas.width  = Math.floor(viewport.width  * outputScale);
+  canvas.height = Math.floor(viewport.height * outputScale);
+  canvas.style.width  = Math.floor(viewport.width / 1.5) + "px";
+  canvas.style.height = "auto";
+
+  const transform = outputScale !== 1
+    ? [outputScale, 0, 0, outputScale, 0, 0]
+    : null;
+
+  const renderContext = {
+    canvasContext: context,
+    transform: transform,
+    viewport: viewport
+  };
+  page.render(renderContext);
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
