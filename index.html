@@ -46,6 +46,10 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+        // আপনার সঠিক GitHub Username এবং Repository Name
+        const GITHUB_USERNAME = "checkot"; 
+        const REPO_NAME = "checkot.github.io";      
+
         async function searchPDF() {
             const month = document.getElementById('month').value;
             let rawEmpId = document.getElementById('employeeId').value.trim();
@@ -58,57 +62,78 @@
                 return;
             }
 
-            // কেস সেন্সিটিভিটি এড়াতেUppercase করা (যেমন: rf20850 -> RF20850)
             const searchId = rawEmpId.toUpperCase();
-
             statusDiv.style.color = "#0056b3";
-            statusDiv.innerText = "রিপোর্ট সার্চ করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
+            statusDiv.innerText = "ফোল্ডার থেকে পিডিএফ চেক করা হচ্ছে...";
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // গিটহাব ফোল্ডারের ফাইল তালিকা (এখানে প্রয়োজনীয় ফাইলের পথ দিন)
-            const pdfFiles = [
-                `pdfs/${month}/Report_OverTimeCalculationDetailsReport.pdf`,
-                `pdfs/${month}/overtime_part2.pdf`
-            ];
+            try {
+                // গিটহাব API ব্যবহার করে 'pdfs/YYYY-MM' ফোল্ডারের ফাইল পাওয়া
+                const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
+                const response = await fetch(apiUrl);
 
-            let found = false;
-
-            for (let fileUrl of pdfFiles) {
-                try {
-                    const loadingTask = pdfjsLib.getDocument(fileUrl);
-                    const pdf = await loadingTask.promise;
-
-                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                        const page = await pdf.getPage(pageNum);
-                        const textContent = await page.getTextContent();
-                        
-                        // পেজের পুরো লেখা একসাথে জুড়ে দেওয়া
-                        const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
-
-                        // আইডি ম্যাচ চেক করা (RF20850 বা শুধু 20850)
-                        if (pageText.includes(searchId)) {
-                            statusDiv.style.color = "green";
-                            statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! (পৃষ্ঠা: ${pageNum})`;
-                            renderPage(page);
-                            found = true;
-                            break;
-                        }
-                    }
-                } catch (error) {
-                    console.log(`ফাইল লোড করা যায়নি: ${fileUrl}`);
+                if (!response.ok) {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = `❌ "${month}" মাসের কোন ফোল্ডার বা ফাইল পাওয়া যায়নি!`;
+                    return;
                 }
 
-                if (found) break;
-            }
+                const filesData = await response.json();
 
-            if (!found) {
+                // ফোল্ডারের মধ্যকার সকল .pdf ফাইলগুলোর ডাউনলোডেবল লিংক আলাদা করা
+                const pdfFiles = filesData
+                    .filter(file => file.name.toLowerCase().endsWith('.pdf'))
+                    .map(file => file.download_url);
+
+                if (pdfFiles.length === 0) {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = `❌ এই ফোল্ডারে কোনো পিডিএফ ফাইল পাওয়া যায়নি!`;
+                    return;
+                }
+
+                statusDiv.innerText = `মোট ${pdfFiles.length}টি পিডিএফ ফাইলে আইডি সার্চ করা হচ্ছে...`;
+
+                let found = false;
+
+                for (let fileUrl of pdfFiles) {
+                    try {
+                        const loadingTask = pdfjsLib.getDocument(fileUrl);
+                        const pdf = await loadingTask.promise;
+
+                        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                            const page = await pdf.getPage(pageNum);
+                            const textContent = await page.getTextContent();
+                            
+                            const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
+
+                            if (pageText.includes(searchId)) {
+                                statusDiv.style.color = "green";
+                                statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! (পৃষ্ঠা: ${pageNum})`;
+                                renderPage(page);
+                                found = true;
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        console.log(`ফাইল পড়তে সমস্যা হয়েছে: ${fileUrl}`);
+                    }
+
+                    if (found) break;
+                }
+
+                if (!found) {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerHTML = `❌ দুঃখিত! আইডি "${rawEmpId}"-এর কোন রেকর্ড পাওয়া যায়নি।`;
+                }
+
+            } catch (error) {
+                console.error(error);
                 statusDiv.style.color = "red";
-                statusDiv.innerHTML = `❌ দুঃখিত! আইডি "${rawEmpId}"-এর কোন ওভারটাইম রেকর্ড পাওয়া যায়নি।`;
+                statusDiv.innerText = "❌ ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট কানেকশন বা ফোল্ডার লোকেশন পরীক্ষা করুন।";
             }
         }
 
         function renderPage(page) {
-            // উইন্ডোর সাইজ অনুযায়ী রেসপন্সিভ স্কেলিং
             const scale = window.innerWidth < 600 ? 1.2 : 1.8;
             const viewport = page.getViewport({ scale: scale });
             const canvas = document.getElementById('pdf-canvas');
