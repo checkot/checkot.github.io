@@ -1,462 +1,658 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RENATA PLC - Overtime Report Search & Calculator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RENATA PLC - Overtime Report Search & Calculator</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#004085">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px 15px;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    margin: 0; min-height: 100vh;
+  }
+  .card {
+    background: #ffffff; padding: 25px 20px; border-radius: 16px;
+    max-width: 480px; margin: 0 auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h2 { margin: 0; color: #004085; font-size: 22px; font-weight: 700; }
+  .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 13px; }
+  label { font-weight: 600; display: block; margin-top: 14px; color: #495057; font-size: 14px; }
+  input, select {
+    width: 100%; padding: 12px 14px; margin-top: 6px;
+    border: 1px solid #ced4da; border-radius: 8px;
+    font-size: 15px; outline: none; transition: all 0.2s ease-in-out;
+    background-color: #f8f9fa;
+  }
+  input:focus, select:focus {
+    border-color: #0056b3; background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+  }
+  .row { display: flex; gap: 10px; margin-top: 6px; }
+  .row select { margin-top: 0; flex: 1; }
+  button {
+    width: 100%; background-color: #0056b3; color: white;
+    border: none; padding: 13px; border-radius: 8px;
+    font-size: 16px; font-weight: 600; margin-top: 20px;
+    cursor: pointer; transition: background-color 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
+  }
+  button:hover { background-color: #004085; }
+  button:disabled { background-color: #6c757d; cursor: not-allowed; }
+  .spinner {
+    display: none; width: 24px; height: 24px;
+    border: 3px solid #f3f3f3; border-top: 3px solid #0056b3;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin: 15px auto 0 auto;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+  .btn-action {
+    background-color: #28a745; color: white; text-align: center;
+    text-decoration: none; display: none; padding: 11px;
+    border-radius: 8px; font-weight: 600; flex: 1;
+    font-size: 14px; cursor: pointer;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2); border: none;
+  }
+  .btn-action:hover { background-color: #218838; }
+  .btn-open { background-color: #17a2b8; }
+  .btn-open:hover { background-color: #138496; }
+  #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
+  #progress { margin-top: 8px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
+  #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
 
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#004085">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="icon.png">
+  /* ===== Dashboard ===== */
+  .dashboard-card {
+    display: none; margin-top: 20px; background: #f8f9fa;
+    border-radius: 12px; padding: 18px;
+    border: 1px solid #e0e0e0;
+  }
+  .dashboard-card h3 {
+    margin-top: 0; color: #004085; font-size: 16px;
+    border-bottom: 2px solid #0056b3; padding-bottom: 6px;
+  }
+  .badge {
+    background: #0056b3; color: white; padding: 3px 8px;
+    border-radius: 4px; font-size: 12px; font-weight: normal;
+  }
+  .report-row {
+    display: flex; justify-content: space-between;
+    margin: 8px 0; font-size: 14px; color: #333;
+  }
+  .report-row.total {
+    font-weight: bold; font-size: 16px; color: #28a745;
+    border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 10px;
+  }
+  .input-row {
+    display: flex; align-items: center; gap: 8px;
+    margin: 6px 0; font-size: 13px; color: #555;
+  }
+  .input-row label { flex: 1; margin: 0; font-weight: 500; }
+  .input-row input {
+    width: 90px; margin: 0; padding: 6px 8px; font-size: 14px; text-align: right;
+  }
+  .warn-box {
+    background: #fff3cd; border: 1px solid #ffc107;
+    border-radius: 8px; padding: 10px; font-size: 12px;
+    color: #856404; margin-bottom: 10px; line-height: 1.5;
+  }
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-    <style>
-        * { box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            padding: 20px 15px; 
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); 
-            margin: 0; 
-            min-height: 100vh;
-        }
-        .card { 
-            background: #ffffff; 
-            padding: 25px 20px; 
-            border-radius: 16px; 
-            max-width: 480px; 
-            margin: 0 auto; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { margin: 0; color: #004085; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
-        .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 13px; }
-        
-        label { font-weight: 600; display: block; margin-top: 14px; color: #495057; font-size: 14px; }
-        input, select { 
-            width: 100%; 
-            padding: 12px 14px; 
-            margin-top: 6px; 
-            border: 1px solid #ced4da; 
-            border-radius: 8px; 
-            font-size: 15px; 
-            outline: none;
-            transition: all 0.2s ease-in-out;
-            background-color: #f8f9fa;
-        }
-        input:focus, select:focus {
-            border-color: #0056b3;
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
-        }
-        
-        button { 
-            width: 100%;
-            background-color: #0056b3; 
-            color: white; 
-            border: none; 
-            padding: 13px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600; 
-            margin-top: 20px; 
-            cursor: pointer; 
-            transition: background-color 0.2s ease-in-out; 
-            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
-        }
-        button:hover { background-color: #004085; }
-        
-        .spinner {
-            display: none;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #0056b3;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 15px auto 0 auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-action { 
-            background-color: #28a745; 
-            color: white; 
-            text-align: center; 
-            text-decoration: none; 
-            display: none; 
-            padding: 11px; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            flex: 1; 
-            font-size: 14px; 
-            cursor: pointer; 
-            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2);
-            border: none;
-        }
-        .btn-action:hover { background-color: #218838; }
-        .btn-open { background-color: #17a2b8; box-shadow: 0 3px 8px rgba(23, 162, 184, 0.2); }
-        .btn-open:hover { background-color: #138496; }
-
-        #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
-        #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
-
-        /* Dashboard Styles */
-        .dashboard-card {
-            display: none;
-            margin-top: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 18px;
-            border: 1px solid #e0e0e0;
-        }
-        .dashboard-card h3 { margin-top: 0; color: #004085; font-size: 16px; border-bottom: 2px solid #0056b3; padding-bottom: 6px; }
-        .badge { background: #0056b3; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: normal; }
-        .report-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #333; }
-        .report-row.total { font-weight: bold; font-size: 16px; color: #28a745; border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 10px; }
-
-        /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); overflow: auto; padding: 10px; }
-        .modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; padding-top: 50px; }
-        .close-btn { position: fixed; top: 15px; right: 20px; background-color: #dc3545; color: white; border: none; padding: 10px 18px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10000; }
-    </style>
+  /* ===== Modal ===== */
+  .modal {
+    display: none; position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.92);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    overflow: auto; padding: 60px 10px 20px 10px;
+  }
+  .modal-content-wrapper {
+    position: relative; max-width: 1000px;
+    margin: 0 auto; text-align: center;
+  }
+  .close-btn {
+    position: fixed; top: 15px; right: 15px;
+    background-color: #dc3545; color: white; border: none;
+    padding: 10px 18px; font-size: 15px; font-weight: bold;
+    border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 10000;
+  }
+  .close-btn:hover { background-color: #bd2130; }
+  #modal-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="header">
-            <h2>RENATA PLC</h2>
-            <p>Overtime Calculation Details Report</p>
-        </div>
-        
-        <label>বছর ও মাস নির্বাচন করুন:</label>
-        <div style="display: flex; gap: 10px; margin-top: 6px;">
-            <select id="yearSelect" style="margin-top: 0; flex: 1;">
-                <option value="2025">২০২৫</option>
-                <option value="2026" selected>২০২৬</option>
-                <option value="2027">২০২৭</option>
-            </select>
-            
-            <select id="monthSelect" style="margin-top: 0; flex: 1;">
-                <option value="01">জানুয়ারি (Jan)</option>
-                <option value="02">ফেব্রুয়ারি (Feb)</option>
-                <option value="03">মার্চ (Mar)</option>
-                <option value="04">এপ্রিল (Apr)</option>
-                <option value="05">মে (May)</option>
-                <option value="06">জুন (Jun)</option>
-                <option value="07">জুলাই (Jul)</option>
-                <option value="08">আগস্ট (Aug)</option>
-                <option value="09" selected>সেপ্টেম্বর (Sep)</option>
-                <option value="10">অক্টোবর (Oct)</option>
-                <option value="11">নভেম্বর (Nov)</option>
-                <option value="12">ডিসেম্বর (Dec)</option>
-            </select>
-        </div>
+<div class="card">
+  <div class="header">
+    <h2>RENATA PLC</h2>
+    <p>Overtime Calculation Details Report</p>
+  </div>
 
-        <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
-        <input type="text" id="employeeId" placeholder="উদাহরণ: CF8355 অথবা RF20850">
+  <label>বছর ও মাস নির্বাচন করুন:</label>
+  <div class="row">
+    <select id="yearSelect">
+      <option value="2025">২০২৫</option>
+      <option value="2026" selected>২০২৬</option>
+      <option value="2027">২০২৭</option>
+    </select>
+    <select id="monthSelect">
+      <option value="01">জানুয়ারি (Jan)</option>
+      <option value="02">ফেব্রুয়ারি (Feb)</option>
+      <option value="03">মার্চ (Mar)</option>
+      <option value="04">এপ্রিল (Apr)</option>
+      <option value="05">মে (May)</option>
+      <option value="06">জুন (Jun)</option>
+      <option value="07">জুলাই (Jul)</option>
+      <option value="08">আগস্ট (Aug)</option>
+      <option value="09" selected>সেপ্টেম্বর (Sep)</option>
+      <option value="10">অক্টোবর (Oct)</option>
+      <option value="11">নভেম্বর (Nov)</option>
+      <option value="12">ডিসেম্বর (Dec)</option>
+    </select>
+  </div>
 
-        <button onclick="searchPDF()">রিপোর্ট দেখুন</button>
-        
-        <div id="spinner" class="spinner"></div>
-        <div id="status"></div>
+  <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
+  <input type="text" id="employeeId" placeholder="উদাহরণ: CF8355 অথবা RF20850"
+         autocomplete="off" inputmode="text">
 
-        <div class="btn-group">
-            <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড</a>
-            <button id="openBtn" class="btn-action btn-open" onclick="openModal()">🔍 ফুল ভিউ</button>
-        </div>
+  <button id="searchBtn" onclick="searchPDF()">রিপোর্ট দেখুন</button>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard" class="dashboard-card">
-            <h3>ওভারটাইম হিসাব রিপোর্ট <span id="categoryBadge" class="badge"></span></h3>
-            <div class="report-row"><span>মোট ওভারটাইম ঘণ্টা:</span> <strong id="lblOtHours">0 hr</strong></div>
-            <div class="report-row"><span>ওভারটাইম অ্যামাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
-            <div class="report-row"><span>হলিডে সংখ্যা:</span> <strong id="lblHolidayCount">0 Days</strong></div>
-            <div class="report-row"><span>হলিডে বিল অ্যামাউন্ট:</span> <span id="lblHolidayAmount">৳ 0</span></div>
-            <div class="report-row"><span>মোট নাইট ডিউটি:</span> <strong id="lblNightCount">0 Night</strong></div>
-            <div class="report-row"><span>নাইট বিল অ্যামাউন্ট:</span> <span id="lblNightAmount">৳ 0</span></div>
-            <div class="report-row total"><span>সর্বমোট প্রাপ্য টাকা:</span> <span id="lblGrandTotal">৳ 0</span></div>
-        </div>
+  <div id="spinner" class="spinner"></div>
+  <div id="status"></div>
+  <div id="progress"></div>
+
+  <div class="btn-group">
+    <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড</a>
+    <button id="openBtn" class="btn-action btn-open" onclick="openModal()">🔍 ফুল ভিউ</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard-card">
+    <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
+
+    <div class="warn-box">
+      ⚠️ <strong>PDF থেকে যা পাওয়া গেছে</strong> — সংখ্যাগুলো PDF-এর সাথে মিলিয়ে নিন।
+      ভুল থাকলে নিচে ম্যানুয়ালি সংশোধন করুন।
     </div>
 
-    <div id="pdf-viewer">
-        <canvas id="pdf-canvas"></canvas>
+    <!-- Category selector -->
+    <div class="input-row">
+      <label>ক্যাটাগরি:</label>
+      <select id="inpCategory" onchange="recalculate()" style="width: 170px; margin: 0; padding: 6px 8px; font-size: 13px;">
+        <option value="CF">Contractual (CF)</option>
+        <option value="JO">Junior Officer (Below B)</option>
+        <option value="JO_B">Junior Officer B &amp; Above</option>
+      </select>
     </div>
 
-    <!-- Fullscreen Modal -->
-    <div id="pdfModal" class="modal">
-        <button class="close-btn" onclick="closeModal()">✕ বন্ধ করুন</button>
-        <div class="modal-content-wrapper">
-            <canvas id="modal-canvas"></canvas>
-        </div>
+    <div class="input-row">
+      <label>ওটি ঘণ্টা (PDF):</label>
+      <input type="number" id="inpOtHours" value="0" step="0.5" onchange="recalculate()">
     </div>
 
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    <div class="input-row">
+      <label>হলিডে সংখ্যা:</label>
+      <input type="number" id="inpHoliday" value="0" step="1" onchange="recalculate()">
+    </div>
 
-        const GITHUB_USERNAME = "checkot"; 
-        const REPO_NAME = "checkot.github.io";      
+    <div class="input-row">
+      <label>নাইট সংখ্যা:</label>
+      <input type="number" id="inpNight" value="0" step="1" onchange="recalculate()">
+    </div>
 
-        let singlePageBlobUrl = null;
-        let matchedPdfPage = null;
+    <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
 
-        async function searchPDF() {
-            const selectedYear = document.getElementById('yearSelect').value;
-            const selectedMonth = document.getElementById('monthSelect').value;
-            const month = `${selectedYear}-${selectedMonth}`;
+    <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
+    <div class="report-row"><span>ওটি অ্যামাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
+    <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
+    <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
+    <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
+  </div>
+</div>
 
-            let rawEmpId = document.getElementById('employeeId').value.trim();
-            const statusDiv = document.getElementById('status');
-            const spinner = document.getElementById('spinner');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const openBtn = document.getElementById('openBtn');
-            const dashboard = document.getElementById('dashboard');
-            const canvas = document.getElementById('pdf-canvas');
-            const ctx = canvas.getContext('2d');
+<div id="pdf-viewer">
+  <canvas id="pdf-canvas"></canvas>
+</div>
 
-            downloadBtn.style.display = "none";
-            openBtn.style.display = "none";
-            dashboard.style.display = "none";
-            matchedPdfPage = null;
+<div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
+  <button class="close-btn" onclick="closeModal()">✕ বন্ধ করুন</button>
+  <div class="modal-content-wrapper">
+    <canvas id="modal-canvas"></canvas>
+  </div>
+</div>
 
-            if (singlePageBlobUrl) {
-                URL.revokeObjectURL(singlePageBlobUrl);
-                singlePageBlobUrl = null;
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+const GITHUB_USERNAME = "checkot";
+const REPO_NAME = "checkot.github.io";
+
+/* ====== Rate Table ====== */
+const RATE_TABLE = {
+  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8,  name: "Contractual (CF)" },
+  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
+};
+
+/* ====== Cache ====== */
+const CACHE_PREFIX = "renata_cache_v2_";
+const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
+
+function getCached(month, id) {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; }
+    return d;
+  } catch (e) { return null; }
+}
+function setCache(month, id, payload) {
+  try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); }
+  catch (e) {}
+}
+
+/* ====== State ====== */
+let singlePageBlobUrl = null;
+let matchedPdfPage = null;
+let currentToken = 0;
+const activeTasks = new Set();
+let lastExtracted = { otHours: 0, holiday: 0, night: 0, category: "CF" };
+
+/* ====== Input listeners ====== */
+document.getElementById('employeeId').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchPDF();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ============================================================
+   MAIN SEARCH
+   ============================================================ */
+async function searchPDF() {
+  const year  = document.getElementById('yearSelect').value;
+  const mon   = document.getElementById('monthSelect').value;
+  const month = `${year}-${mon}`;
+
+  const rawId = document.getElementById('employeeId').value.trim();
+  const statusDiv = document.getElementById('status');
+  const progressDiv = document.getElementById('progress');
+  const spinner = document.getElementById('spinner');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openBtn = document.getElementById('openBtn');
+  const searchBtn = document.getElementById('searchBtn');
+  const dashboard = document.getElementById('dashboard');
+  const canvas = document.getElementById('pdf-canvas');
+  const ctx = canvas.getContext('2d');
+
+  downloadBtn.style.display = "none";
+  openBtn.style.display = "none";
+  dashboard.style.display = "none";
+  matchedPdfPage = null;
+
+  if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
+
+  if (!rawId) { alert("অনুগ্রহ করে আপনার Employee ID লিখুন!"); return; }
+
+  const searchId = rawId.toUpperCase();
+
+  // abort previous
+  currentToken++;
+  const myToken = currentToken;
+  for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
+  activeTasks.clear();
+
+  statusDiv.style.color = "#0056b3";
+  statusDiv.innerText = "দ্রুত সার্চ করা হচ্ছে...";
+  spinner.style.display = "block";
+  progressDiv.style.display = "block";
+  progressDiv.innerText = "";
+  searchBtn.disabled = true;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = 0; canvas.height = 0;
+
+  try {
+    // 1) Cache
+    const cached = getCached(month, searchId);
+    if (cached) {
+      progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
+      await showResultFromUrl(cached.fileUrl, cached.pageNum, searchId, month);
+      applyCalculation(cached.calc, "ক্যাশ");
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month} — ক্যাশ)</small>`;
+      return;
+    }
+
+    // 2) GitHub API
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerText = `❌ "${month}" মাসের ফোল্ডার পাওয়া যায়নি!`;
+      return;
+    }
+
+    const filesData = await response.json();
+    const pdfFiles = filesData
+      .filter(f => f.name.toLowerCase().endsWith('.pdf'))
+      .map(f => f.download_url);
+
+    if (pdfFiles.length === 0) {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerText = `❌ ফোল্ডারে কোনো PDF নেই!`;
+      return;
+    }
+
+    progressDiv.innerText = `${pdfFiles.length}টি ফাইল প্যারালালে স্ক্যান হচ্ছে...`;
+
+    // 3) Parallel search
+    const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
+    if (myToken !== currentToken) return;
+
+    if (match) {
+      matchedPdfPage = match.page;
+      renderPageHD(match.page, canvas, 1.5);
+
+      singlePageBlobUrl = await extractSinglePagePdf(match.fileUrl, match.pageNum);
+      downloadBtn.href = singlePageBlobUrl;
+      downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
+      downloadBtn.style.display = "inline-block";
+      openBtn.style.display = "inline-block";
+
+      // Extract calc data
+      const calc = extractCalcData(match.textItems, searchId);
+
+      setCache(month, searchId, {
+        fileUrl: match.fileUrl, pageNum: match.pageNum, calc
+      });
+
+      applyCalculation(calc, "PDF");
+
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month})</small>`;
+    } else {
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545";
+      statusDiv.innerHTML = `❌ আইডি "${rawId}"-এর রেকর্ড ${month}-এ পাওয়া যায়নি।`;
+    }
+
+  } catch (err) {
+    console.error(err);
+    spinner.style.display = "none";
+    searchBtn.disabled = false;
+    progressDiv.style.display = "none";
+    statusDiv.style.color = "#dc3545";
+    statusDiv.innerText = "❌ ডাটা লোডে সমস্যা! ইন্টারনেট চেক করুন।";
+  }
+}
+
+/* ============================================================
+   PARALLEL SEARCH (early exit)
+   ============================================================ */
+async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
+  const total = pdfFiles.length;
+  let scanned = 0;
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
+
+    pdfFiles.forEach((fileUrl) => {
+      (async () => {
+        if (myToken !== currentToken) return;
+        let task = null, pdf = null;
+        try {
+          task = pdfjsLib.getDocument({
+            url: fileUrl,
+            disableAutoFetch: true,
+            disableStream: false,
+            rangeChunkSize: 65536,
+            disableRange: false
+          });
+          activeTasks.add(task);
+          pdf = await task.promise;
+
+          for (let p = 1; p <= pdf.numPages; p++) {
+            if (myToken !== currentToken || settled) break;
+            const page = await pdf.getPage(p);
+            const tc = await page.getTextContent();
+            const pageText = tc.items.map(i => i.str).join(" ").toUpperCase();
+            if (pageText.includes(searchId)) {
+              finish({
+                page, pageNum: p, fileUrl,
+                textItems: tc.items.map(i => i.str)
+              });
+              return;
             }
-
-            if (!rawEmpId) {
-                alert("অনুগ্রহ করে আপনার Employee ID লিখুন!");
-                return;
-            }
-
-            const searchId = rawEmpId.toUpperCase();
-            statusDiv.style.color = "#0056b3";
-            statusDiv.innerText = "দ্রুত সার্চ ও ক্যালকুলেট করা হচ্ছে...";
-            spinner.style.display = "block";
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            try {
-                const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-                const response = await fetch(apiUrl);
-
-                if (!response.ok) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerText = `❌ "${month}" মাসের ফোল্ডার বা ফাইল পাওয়া যায়নি!`;
-                    return;
-                }
-
-                const filesData = await response.json();
-                const pdfFiles = filesData
-                    .filter(file => file.name.toLowerCase().endsWith('.pdf'))
-                    .map(file => file.download_url);
-
-                if (pdfFiles.length === 0) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerText = `❌ এই ফোল্ডারে কোনো পিডিএফ ফাইল পাওয়া যায়নি!`;
-                    return;
-                }
-
-                let found = false;
-
-                const searchPromises = pdfFiles.map(async (fileUrl) => {
-                    if (found) return null;
-                    try {
-                        const loadingTask = pdfjsLib.getDocument({ url: fileUrl, disableAutoFetch: true });
-                        const pdf = await loadingTask.promise;
-
-                        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                            if (found) return null;
-                            const page = await pdf.getPage(pageNum);
-                            const textContent = await page.getTextContent();
-                            const pageText = textContent.items.map(item => item.str).join(" ").toUpperCase();
-
-                            if (pageText.includes(searchId)) {
-                                return { page, pageNum, fileUrl, textItems: textContent.items.map(i => i.str) };
-                            }
-                        }
-                    } catch (err) {
-                        console.log(`Error reading file: ${fileUrl}`);
-                    }
-                    return null;
-                });
-
-                const results = await Promise.all(searchPromises);
-                const match = results.find(res => res !== null);
-
-                if (match && !found) {
-                    found = true;
-                    matchedPdfPage = match.page;
-                    renderPageHD(match.page, canvas, 1.5);
-
-                    singlePageBlobUrl = await extractSinglePagePdf(match.fileUrl, match.pageNum);
-
-                    downloadBtn.href = singlePageBlobUrl;
-                    downloadBtn.setAttribute('download', `Overtime_${searchId}.pdf`);
-                    downloadBtn.style.display = "inline-block";
-                    openBtn.style.display = "inline-block";
-
-                    // ক্যালকুলেটর ডাটা এক্সট্র্যাক্ট ও ডিসপ্লে
-                    calculateOvertimeData(match.textItems, searchId);
-
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#28a745";
-                    statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে!`;
-                } else if (!found) {
-                    spinner.style.display = "none";
-                    statusDiv.style.color = "#dc3545";
-                    statusDiv.innerHTML = `❌ আইডি "${rawEmpId}"-এর কোন রেকর্ড পাওয়া যায়নি।`;
-                }
-
-            } catch (error) {
-                console.error(error);
-                spinner.style.display = "none";
-                statusDiv.style.color = "#dc3545";
-                statusDiv.innerText = "❌ ডাটা লোড করতে সমস্যা হয়েছে! ইন্টারনেট কানেকশন চেক করুন।";
-            }
+          }
+          scanned++;
+          if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
+        } catch (e) {
+          console.log("PDF read error:", fileUrl, e.message);
+        } finally {
+          if (task) activeTasks.delete(task);
+          if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} }
         }
+      })();
+    });
 
-        function calculateOvertimeData(textArr, empId) {
-            const fullText = textArr.join(" ");
-
-            // ১. ক্যাটাগরি ডিটেকশন
-            let category = "CF"; // ডিফল্ট
-            if (empId.startsWith("CF") || fullText.includes("CONTRACTUAL")) {
-                category = "CF";
-            } else if (fullText.includes("JUNIOR OFFICER B") || fullText.includes("GRADE: B") || fullText.includes("JR. OFFICER B")) {
-                category = "JO_B";
-            } else if (empId.startsWith("RF") || fullText.includes("JUNIOR OFFICER")) {
-                category = "JO";
-            }
-
-            // ২. মোট টেক্সট থেকে ভ্যালু খোঁজা (Total Hour রোর ভ্যালু)
-            let totalOT = 0;
-            let holidayCount = 0;
-            let nightCount = 0;
-
-            // 'Total Hour :' এর পরের সংখ্যাগুলো এক্সট্র্যাক্ট করা
-            const totalIndex = textArr.findIndex(t => t.includes("Total Hour"));
-            if (totalIndex !== -1) {
-                const numbers = textArr.slice(totalIndex).filter(t => !isNaN(parseFloat(t)));
-                if (numbers.length >= 6) {
-                    const otRegExtra = parseFloat(numbers[1]) || 0;
-                    const otDoExtra = parseFloat(numbers[3]) || 0;
-                    const otHolExtra = parseFloat(numbers[5]) || 0;
-                    totalOT = otRegExtra + otDoExtra + otHolExtra;
-                }
-                // নাইট সংখ্যা (সর্বশেষ মান)
-                const lastNum = numbers[numbers.length - 1];
-                if (lastNum && !isNaN(parseInt(lastNum))) {
-                    nightCount = parseInt(lastNum);
-                }
-            }
-
-            // ৩. হলিডে এন্ট্রি সংখ্যা গণনা (OT ON DO এবং OT ON HOLIDAY কলামে উপস্থিত ডিউটি)
-            textArr.forEach((item, idx) => {
-                if ((item.includes("OT ON DO") || item.includes("OT ON HOLIDAY")) && textArr[idx+1] && parseFloat(textArr[idx+1]) > 0) {
-                    holidayCount++;
-                }
-            });
-
-            // ৪. রেট ও টাকা ক্যালকুলেশন
-            let otRate = 38;
-            let nightRate = 300;
-            let holidayAmount = 0;
-            let categoryName = "Contractual (CF)";
-
-            if (category === "CF") {
-                otRate = 38;
-                nightRate = 300;
-                holidayAmount = holidayCount * 8 * otRate; // হলিডে = ৮ ঘণ্টা x ৩৮ টাকা
-                categoryName = "Contractual (CF)";
-            } else if (category === "JO") {
-                otRate = 40; // জুনিয়র অফিসারদের ওটি রেট ৪০ টাকা প্রতি ঘণ্টা
-                nightRate = 400;
-                holidayAmount = holidayCount * 300; // হলিডে = ৩০০ টাকা ফ্ল্যাট
-                categoryName = "Junior Officer";
-            } else if (category === "JO_B") {
-                otRate = 45;
-                nightRate = 500;
-                holidayAmount = holidayCount * 400; // হলিডে = ৪০০ টাকা ফ্ল্যাট
-                categoryName = "Junior Officer B & Above";
-            }
-
-            const otAmount = totalOT * otRate;
-            const nightAmount = nightCount * nightRate;
-            const grandTotal = otAmount + holidayAmount + nightAmount;
-
-            // ৫. ড্যাশবোর্ডে মান বসানো
-            document.getElementById('categoryBadge').innerText = categoryName;
-            document.getElementById('lblOtHours').innerText = `${totalOT.toFixed(2)} hr (${otRate}৳/hr)`;
-            document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
-            document.getElementById('lblHolidayCount').innerText = `${holidayCount} Days`;
-            document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
-            document.getElementById('lblNightCount').innerText = `${nightCount} Night (${nightRate}৳/night)`;
-            document.getElementById('lblNightAmount').innerText = `৳ ${nightAmount.toFixed(2)}`;
-            document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
-
-            document.getElementById('dashboard').style.display = "block";
-        }
-
-        async function extractSinglePagePdf(pdfUrl, pageNumber) {
-            const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
-            const srcDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-            const newDoc = await PDFLib.PDFDocument.create();
-
-            const [copiedPage] = await newDoc.copyPages(srcDoc, [pageNumber - 1]);
-            newDoc.addPage(copiedPage);
-
-            const pdfBytes = await newDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            return URL.createObjectURL(blob);
-        }
-
-        function renderPageHD(page, targetCanvas, widthDivider) {
-            const context = targetCanvas.getContext('2d');
-            const outputScale = window.devicePixelRatio || 2; 
-            const scale = 2.5;
-
-            const viewport = page.getViewport({ scale: scale });
-
-            targetCanvas.width = Math.floor(viewport.width * outputScale);
-            targetCanvas.height = Math.floor(viewport.height * outputScale);
-            targetCanvas.style.width = Math.floor(viewport.width / widthDivider) + "px";
-            targetCanvas.style.height = "auto";
-
-            const transform = outputScale !== 1 
-                ? [outputScale, 0, 0, outputScale, 0, 0] 
-                : null;
-
-            page.render({ canvasContext: context, transform: transform, viewport: viewport });
-        }
-
-        function openModal() {
-            if (matchedPdfPage) {
-                const modal = document.getElementById('pdfModal');
-                const modalCanvas = document.getElementById('modal-canvas');
-                modal.style.display = "block";
-                document.body.style.overflow = "hidden";
-                renderPageHD(matchedPdfPage, modalCanvas, 1.0);
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('pdfModal').style.display = "none";
-            document.body.style.overflow = "auto";
-        }
-    </script>
-
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+    setTimeout(() => {
+      if (!settled) {
+        const check = setInterval(() => {
+          if (scanned >= total || myToken !== currentToken) {
+            clearInterval(check);
+            finish(null);
+          }
+        }, 200);
       }
-    </script>
+    }, 100);
+  });
+}
 
+/* ============================================================
+   EXTRACT CALC DATA — SAFE (no magic indexes)
+   ============================================================ */
+function extractCalcData(textItems, empId) {
+  // Join with spaces to normalize
+  const fullText = textItems.join(" ").toUpperCase();
+  const cleanText = fullText.replace(/\s+/g, " ");
+
+  // ---- Category detection ----
+  let category = "CF";
+  if (/CONTRACTUAL|\bCF\b/.test(cleanText) || empId.startsWith("CF")) {
+    category = "CF";
+  } else if (/JUNIOR\s+OFFICER\s+B|JR\.?\s*OFFICER\s+B|GRADE\s*:?\s*B\b/.test(cleanText)) {
+    category = "JO_B";
+  } else if (/JUNIOR\s+OFFICER|JR\.?\s*OFFICER/.test(cleanText) || empId.startsWith("RF")) {
+    category = "JO";
+  }
+
+  // ---- Try to extract OT hours ----
+  let otHours = 0;
+  // Pattern: "TOTAL HOUR" followed by numbers; take the FIRST meaningful decimal >= 0
+  const totalHourMatch = cleanText.match(/TOTAL\s+HOUR[^0-9]*([0-9]+(?:\.[0-9]+)?)/i);
+  if (totalHourMatch) otHours = parseFloat(totalHourMatch[1]) || 0;
+
+  // ---- Night count ----
+  // Pattern: "NIGHT" followed by integer
+  let nightCount = 0;
+  const nightMatch = cleanText.match(/NIGHT[^0-9]*([0-9]+)/i);
+  if (nightMatch) nightCount = parseInt(nightMatch[1]) || 0;
+
+  // ---- Holiday count ----
+  // Count occurrences of "OT ON DO" or "OT ON HOLIDAY" with positive number nearby
+  let holidayCount = 0;
+  const holidayRegex = /OT\s+ON\s+(?:DO|HOLIDAY)\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)/gi;
+  let m;
+  while ((m = holidayRegex.exec(cleanText)) !== null) {
+    if (parseFloat(m[1]) > 0) holidayCount++;
+  }
+
+  return {
+    category,
+    otHours: Math.max(0, otHours),
+    holiday: Math.max(0, holidayCount),
+    night: Math.max(0, nightCount)
+  };
+}
+
+/* ============================================================
+   APPLY CALCULATION
+   ============================================================ */
+function applyCalculation(calc, source) {
+  lastExtracted = { ...calc };
+  document.getElementById('inpCategory').value = calc.category;
+  document.getElementById('inpOtHours').value = calc.otHours;
+  document.getElementById('inpHoliday').value = calc.holiday;
+  document.getElementById('inpNight').value = calc.night;
+
+  document.getElementById('categoryBadge').innerText = RATE_TABLE[calc.category].name;
+  recalculate();
+
+  document.getElementById('dashboard').style.display = "block";
+  const warn = document.querySelector('.warn-box');
+  if (warn && source) warn.innerHTML = `⚠️ <strong>PDF থেকে যা পাওয়া গেছে</strong> — PDF-এর সাথে মিলিয়ে নিন। ভুল হলে ম্যানুয়ালি সংশোধন করুন। <br><small>(সোর্স: ${source})</small>`;
+}
+
+/* ============================================================
+   RECALCULATE (from UI inputs)
+   ============================================================ */
+function recalculate() {
+  const cat = document.getElementById('inpCategory').value;
+  const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
+  const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
+  const night = parseInt(document.getElementById('inpNight').value) || 0;
+
+  const r = RATE_TABLE[cat];
+
+  const otAmount = otHours * r.otRate;
+  let holidayAmount = 0;
+  if (r.holidayType === "hourly") {
+    holidayAmount = holiday * r.holidayHours * r.otRate;
+  } else {
+    holidayAmount = holiday * r.holidayFlat;
+  }
+  const nightAmount = night * r.nightRate;
+  const grandTotal = otAmount + holidayAmount + nightAmount;
+
+  document.getElementById('categoryBadge').innerText = r.name;
+  document.getElementById('lblRate').innerText = `৳ ${r.otRate} / hr`;
+  document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
+  document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
+  document.getElementById('lblNightAmount').innerText = `৳ ${nightAmount.toFixed(2)}`;
+  document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
+}
+
+/* ============================================================
+   CACHE HIT — Load from URL
+   ============================================================ */
+async function showResultFromUrl(fileUrl, pageNum, searchId, month) {
+  const canvas = document.getElementById('pdf-canvas');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openBtn = document.getElementById('openBtn');
+
+  const task = pdfjsLib.getDocument(fileUrl);
+  const pdf = await task.promise;
+  const page = await pdf.getPage(pageNum);
+  matchedPdfPage = page;
+  renderPageHD(page, canvas, 1.5);
+
+  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+  downloadBtn.href = singlePageBlobUrl;
+  downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
+  downloadBtn.style.display = "inline-block";
+  openBtn.style.display = "inline-block";
+}
+
+/* ============================================================
+   PDF PAGE EXTRACT
+   ============================================================ */
+async function extractSinglePagePdf(pdfUrl, pageNumber) {
+  const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
+  const src = await PDFLib.PDFDocument.load(bytes);
+  const out = await PDFLib.PDFDocument.create();
+  const [pg] = await out.copyPages(src, [pageNumber - 1]);
+  out.addPage(pg);
+  const outBytes = await out.save();
+  return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function renderPageHD(page, targetCanvas, divider) {
+  const ctx = targetCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 2;
+  const viewport = page.getViewport({ scale: 2.5 });
+
+  targetCanvas.width = Math.floor(viewport.width * dpr);
+  targetCanvas.height = Math.floor(viewport.height * dpr);
+  targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
+  targetCanvas.style.height = "auto";
+
+  ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
+  page.render({ canvasContext: ctx, transform, viewport });
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal() {
+  if (!matchedPdfPage) return;
+  const modal = document.getElementById('pdfModal');
+  const mc = document.getElementById('modal-canvas');
+  mc.width = 0; mc.height = 0;
+  modal.style.display = "block";
+  document.body.style.overflow = "hidden";
+  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
+  renderPageHD(matchedPdfPage, mc, divider);
+}
+function closeModal() {
+  const modal = document.getElementById('pdfModal');
+  if (modal.style.display === "block") {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+    const mc = document.getElementById('modal-canvas');
+    mc.width = 0; mc.height = 0;
+  }
+}
+function modalBackdropClick(e) {
+  if (e.target.id === "pdfModal") closeModal();
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
