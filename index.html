@@ -10,11 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="icon.png">
 
-<!-- PDF.js for rendering + text extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<!-- pdf-lib for single-page download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<!-- Tesseract.js for single-page OCR -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <style>
@@ -74,7 +71,6 @@
   #status { margin-top: 12px; text-align: center; font-weight: 600; font-size: 14px; }
   #progress { margin-top: 6px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
 
-  /* PDF viewer */
   #pdf-viewer {
     margin: 12px auto 0 auto; max-width: 100%; text-align: center;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -97,7 +93,6 @@
   .btn-open { background-color: #17a2b8; }
   .btn-open:hover { background-color: #138496; }
 
-  /* Calculator */
   .calc-card { display: none; }
   .calc-card.show { display: block; }
   .calc-card h3 {
@@ -146,6 +141,7 @@
     border-radius: 6px; padding: 8px; font-size: 11px;
     color: #495057; margin: 10px 0;
     font-family: 'Courier New', monospace; line-height: 1.6;
+    word-break: break-all;
   }
 
   .holiday-list {
@@ -161,7 +157,6 @@
   }
   .reset-btn:hover { background-color: #5a6268; }
 
-  /* Modal */
   .modal {
     display: none; position: fixed; z-index: 9999;
     left: 0; top: 0; width: 100%; height: 100%;
@@ -186,7 +181,7 @@
 </head>
 <body>
 
-<!-- ============ STEP 1: Search ============ -->
+<!-- STEP 1: Search -->
 <div class="card" id="step1">
   <div class="header">
     <h2>RENATA PLC</h2>
@@ -227,7 +222,7 @@
   <div id="progress"></div>
 </div>
 
-<!-- ============ STEP 2: PDF Viewer + OCR button ============ -->
+<!-- STEP 2: PDF Viewer -->
 <div class="card" id="step2" style="display:none;">
   <div class="header">
     <h2 style="font-size:16px;">📄 রিপোর্ট</h2>
@@ -244,11 +239,11 @@
   </div>
 
   <div class="info-hint" style="margin-top:12px;">
-    👆 PDF চোখে দেখুন। এখন <strong>"📊 হিসাব করুন"</strong> চাপলে এই পেজটি OCR হবে এবং ক্যালকুলেটরে মান বসে যাবে।
+    👆 PDF চোখে দেখুন। <strong>"📊 হিসাব করুন"</strong> চাপলে এই পেজ থেকে ডাটা পড়া হবে।
   </div>
 
   <button id="calcBtn" class="btn-calc" onclick="runOCRForCurrentPage()">
-    📊 হিসাব করুন (এই পেজ OCR)
+    📊 হিসাব করুন
   </button>
 
   <div id="ocrStatus" style="text-align:center; font-size:13px; color:#6c757d; margin-top:6px;"></div>
@@ -256,7 +251,7 @@
   <button onclick="resetAll()" class="reset-btn">🔄 নতুন সার্চ</button>
 </div>
 
-<!-- ============ STEP 3: Calculator ============ -->
+<!-- STEP 3: Calculator -->
 <div class="card calc-card" id="step3">
   <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
 
@@ -328,7 +323,7 @@ const RATE_TABLE = {
 };
 
 /* ====== Cache ====== */
-const CACHE_PREFIX = "renata_cache_v5_";
+const CACHE_PREFIX = "renata_cache_v7_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 
 function getCached(month, id) {
@@ -371,7 +366,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   🔍 MAIN SEARCH — Text-layer based, FAST
+   MAIN SEARCH — Text-layer based
    ============================================================ */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
@@ -412,7 +407,7 @@ async function findReport() {
   searchBtn.disabled = true;
 
   try {
-    // 1) Cache check
+    // 1) Cache
     const cached = getCached(month, searchId);
     if (cached) {
       progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
@@ -461,12 +456,11 @@ async function findReport() {
 
     progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
 
-    // 3) Parallel text-layer search
+    // 3) Parallel search
     const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
     if (myToken !== currentToken) return;
 
     if (match) {
-      // Save to cache (without calc initially)
       setCache(month, searchId, {
         fileUrl: match.fileUrl,
         pageNum: match.pageNum,
@@ -499,7 +493,7 @@ async function findReport() {
 }
 
 /* ============================================================
-   ⚡ Parallel text-layer search
+   Parallel text-layer search
    ============================================================ */
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   const total = pdfFiles.length;
@@ -565,10 +559,9 @@ async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
 }
 
 /* ============================================================
-   📄 Show result: render page, extract single-page PDF
+   Show result
    ============================================================ */
 async function showResult(fileUrl, pageNum, fileName) {
-  // Load PDF if not already loaded
   if (!currentPdf || currentFileUrl !== fileUrl) {
     const task = pdfjsLib.getDocument(fileUrl);
     currentPdf = await task.promise;
@@ -581,15 +574,12 @@ async function showResult(fileUrl, pageNum, fileName) {
   const page = await currentPdf.getPage(pageNum);
   matchedPdfPage = page;
 
-  // Render on main canvas
   renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
 
-  // Show step 2
   document.getElementById('step2').style.display = "block";
   document.getElementById('viewerTitle').innerText =
     `${currentSearchId} — ${currentMonth} (${fileName}, page ${pageNum})`;
 
-  // Extract single page PDF for download
   singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
   const downloadBtn = document.getElementById('downloadBtn');
   downloadBtn.href = singlePageBlobUrl;
@@ -597,17 +587,14 @@ async function showResult(fileUrl, pageNum, fileName) {
   downloadBtn.style.display = "inline-block";
   document.getElementById('openBtn').style.display = "inline-block";
 
-  // Auto-detect category from ID
   autoDetectCategory(currentSearchId);
 
-  // Clear OCR status
   document.getElementById('ocrStatus').innerText = "";
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ============================================================
-   🔥 SINGLE-PAGE OCR (only the matched page)
+   🔥 DUAL EXTRACTION — Text-Layer First, OCR Fallback
    ============================================================ */
 async function runOCRForCurrentPage() {
   if (!matchedPdfPage) return;
@@ -616,64 +603,96 @@ async function runOCRForCurrentPage() {
   const ocrStatus = document.getElementById('ocrStatus');
 
   calcBtn.disabled = true;
-  ocrStatus.innerText = "OCR শুরু হচ্ছে...";
+  ocrStatus.innerText = "📖 PDF থেকে টেক্সট পড়া হচ্ছে...";
 
   try {
-    // Ensure OCR worker
-    if (!ocrWorker) {
-      ocrStatus.innerText = "OCR engine লোড হচ্ছে (প্রথমবার ~৫ সেকেন্ড)...";
-      ocrWorker = await Tesseract.createWorker('eng');
-      await ocrWorker.setParameters({
-        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:. -/',
-        preserve_interword_spaces: '1'
-      });
+    let rawText = "";
+    let source = "";
+    let parsed = null;
+
+    // ===== STEP 1: Text-layer =====
+    try {
+      const tc = await matchedPdfPage.getTextContent();
+      rawText = tc.items.map(i => i.str).join(" ");
+      const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
+      const hasTotalHour = /TOTAL\s+H(?:OU)?R?S?/i.test(cleanText);
+      const notGarbage = !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100));
+
+      if (hasTotalHour && notGarbage) {
+        parsed = parseOCRText(rawText);
+        if (parsed.totalHourLine) {
+          source = "📖 Text-Layer (instant)";
+          ocrStatus.innerText = "✅ Text-Layer থেকে পড়া হয়েছে!";
+        }
+      }
+    } catch (e) {
+      console.log("Text layer failed:", e.message);
     }
 
-    // Render page at higher scale for OCR accuracy
-    ocrStatus.innerText = "Page render হচ্ছে...";
-    const viewport = matchedPdfPage.getViewport({ scale: 2.2 });
-    const canvas = document.createElement('canvas');
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // ===== STEP 2: OCR fallback =====
+    if (!parsed || !parsed.totalHourLine) {
+      ocrStatus.innerText = "🔍 Text-Layer অকার্যকর — OCR শুরু হচ্ছে...";
 
-    await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
+      if (!ocrWorker) {
+        ocrStatus.innerText = "⚙️ OCR engine লোড হচ্ছে (প্রথমবার ~৫ সেকেন্ড)...";
+        ocrWorker = await Tesseract.createWorker('eng');
+        await ocrWorker.setParameters({
+          preserve_interword_spaces: '1',
+          tessedit_pageseg_mode: '6'
+        });
+      }
 
-    ocrStatus.innerText = "OCR চলছে (~৫ সেকেন্ড)...";
-    const { data: { text } } = await ocrWorker.recognize(canvas);
+      ocrStatus.innerText = "🖼️ High-res render হচ্ছে...";
+      const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
 
-    ocrStatus.innerText = "✅ OCR সম্পূর্ণ!";
+      ocrStatus.innerText = "🔍 OCR চলছে (~৫ সেকেন্ড)...";
+      const ocrResult = await ocrWorker.recognize(canvas);
+      const ocrText = ocrResult?.data?.text || "";
 
-    // Parse text
-    const parsed = parseOCRText(text);
+      console.log("=== OCR RAW TEXT ===");
+      console.log(ocrText);
+      console.log("=== END ===");
 
-    // Auto-fill calculator
+      rawText = ocrText;
+      source = "🔍 OCR";
+      parsed = parseOCRText(ocrText);
+    }
+
+    // ===== STEP 3: Apply result =====
+    ocrStatus.innerText = "✅ " + source + " থেকে পড়া হয়েছে!";
+
     document.getElementById('inpOtHours').value = parsed.otHours;
     document.getElementById('inpHoliday').value = parsed.holidayCount;
     document.getElementById('inpNight').value = parsed.nightCount;
     recalculate();
 
-    // Show step 3
     document.getElementById('step3').classList.add('show');
 
-    // Info message
     const info = document.getElementById('ocrResultInfo');
     info.style.display = "block";
+
     if (parsed.totalHourLine) {
       info.className = "info-hint success";
-      info.innerHTML = `✅ <strong>OCR সফল!</strong> PDF-এর সাথে মিলিয়ে দেখুন। ভুল থাকলে টাইপ করে ঠিক করুন।`;
+      info.innerHTML = `✅ <strong>${source}</strong> থেকে ডাটা পাওয়া গেছে!<br>PDF-এর সাথে মিলিয়ে দেখুন, ভুল হলে টাইপ করে ঠিক করুন।`;
     } else {
       info.className = "info-hint warn";
-      info.innerHTML = `⚠️ Total Hour লাইন পড়া যায়নি। PDF দেখে <strong>ম্যানুয়ালি</strong> টাইপ করুন।`;
+      info.innerHTML = `⚠️ Auto-detect ব্যর্থ। নিচের <strong>Raw Text</strong> দেখে ম্যানুয়ালি টাইপ করুন।`;
     }
 
-    // Show raw + holiday list
-    if (parsed.rawLine) showRawValues(parsed.rawLine);
-    if (parsed.holidayDays && parsed.holidayDays.length > 0) showHolidayList(parsed.holidayDays);
+    showRawText(rawText);
 
-    // Update cache with calc result
+    if (parsed.rawLine) showRawValues(parsed.rawLine);
+    if (parsed.holidayDays && parsed.holidayDays.length > 0) {
+      showHolidayList(parsed.holidayDays);
+    }
+
     setCache(currentMonth, currentSearchId, {
       fileUrl: currentFileUrl,
       pageNum: currentPageNum,
@@ -688,40 +707,89 @@ async function runOCRForCurrentPage() {
       holidayDays: parsed.holidayDays
     });
 
-    ocrStatus.innerText = "";
     document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
 
   } catch (e) {
     console.error(e);
-    ocrStatus.innerText = "❌ OCR সমস্যা: " + e.message;
+    ocrStatus.innerText = "❌ সমস্যা: " + e.message;
   } finally {
     calcBtn.disabled = false;
   }
 }
 
 /* ============================================================
-   Parse OCR text
+   Show raw text UI
+   ============================================================ */
+function showRawText(text) {
+  let debugBox = document.getElementById('ocrDebugBox');
+  if (!debugBox) {
+    debugBox = document.createElement('div');
+    debugBox.id = 'ocrDebugBox';
+    debugBox.style.cssText = 'background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;padding:8px;font-size:11px;color:#495057;margin:10px 0;font-family:monospace;line-height:1.4;';
+    const rawBox = document.getElementById('rawBox');
+    rawBox.parentNode.insertBefore(debugBox, rawBox);
+  }
+  debugBox.style.display = "block";
+  debugBox.innerHTML = `<details><summary style="cursor:pointer;font-weight:bold;color:#004085;">🔍 Raw Text দেখুন (tap করে খুলুন)</summary><pre style="margin-top:6px;max-height:250px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;font-size:10px;">${escapeHtml(text.substring(0, 3000))}</pre></details>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ============================================================
+   SMART PARSER — Multiple strategies
    ============================================================ */
 function parseOCRText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
+  const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
-  let otHours = 0, nightCount = 0, holidayDays = [], rawLine = null;
+  let otHours = 0, nightCount = 0, holidayDays = [], rawLine = null, totalHourLine = false;
 
-  // Total Hour line (7 numbers)
-  const totalHourRegex = /TOTAL\s+HOUR\s*:?\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)/i;
-  const m = cleanText.match(totalHourRegex);
+  // Strategy 1: Standard 7-number with | optional
+  let m = cleanText.match(/TOTAL\s+H(?:OU)?R?S?\s*:?\s*\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*([\d.]+)\s+\|?\s*(\d+)/i);
+
+  // Strategy 2: Loose — find 7 numbers after "Total Hour"
+  if (!m) {
+    const idx = cleanText.search(/TOTAL\s+H(?:OU)?R?S?/i);
+    if (idx !== -1) {
+      const after = cleanText.substring(idx, idx + 250);
+      const nums = after.match(/\d+\.?\d*/g);
+      if (nums && nums.length >= 7) m = nums.slice(0, 7);
+    }
+  }
+
+  // Strategy 3: Line-by-line
+  if (!m) {
+    for (let i = 0; i < lines.length; i++) {
+      if (/TOTAL\s+H(?:OU)?R?S?/i.test(lines[i])) {
+        const combined = [lines[i], lines[i+1] || "", lines[i+2] || ""].join(" ");
+        const nums = combined.match(/\d+\.?\d*/g);
+        if (nums && nums.length >= 7) { m = nums.slice(0, 7); }
+        break;
+      }
+    }
+  }
 
   if (m) {
-    rawLine = `Reg D=${m[1]} E=${m[2]} | DO D=${m[3]} E=${m[4]} | Hol D=${m[5]} E=${m[6]} | Night=${m[7]}`;
-    const regExtra = parseFloat(m[2]) || 0;
-    const doExtra  = parseFloat(m[4]) || 0;
-    const holExtra = parseFloat(m[6]) || 0;
-    otHours = regExtra + doExtra + holExtra;
-    nightCount = parseInt(m[7]) || 0;
+    const n = Array.isArray(m) ? m : m.slice(1);
+    if (n.length >= 7) {
+      const regDuty  = parseFloat(n[0]) || 0;
+      const regExtra = parseFloat(n[1]) || 0;
+      const doDuty   = parseFloat(n[2]) || 0;
+      const doExtra  = parseFloat(n[3]) || 0;
+      const holDuty  = parseFloat(n[4]) || 0;
+      const holExtra = parseFloat(n[5]) || 0;
+      nightCount     = parseInt(n[6]) || 0;
+
+      otHours = regExtra + doExtra + holExtra;
+      rawLine = `Reg D=${regDuty} E=${regExtra} | DO D=${doDuty} E=${doExtra} | Hol D=${holDuty} E=${holExtra} | Night=${nightCount}`;
+      totalHourLine = true;
+    }
   }
 
   // Row-wise holiday scan
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]+\s*-\s*[\d:]+\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
+  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]{3,10}\s*[-–]\s*[\d:]{3,10}\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
   let rm;
   while ((rm = rowRegex.exec(cleanText)) !== null) {
     const doDuty  = parseFloat(rm[4]) || 0;
@@ -739,7 +807,7 @@ function parseOCRText(rawText) {
     holidayCount: holidayDays.length,
     holidayDays,
     rawLine,
-    totalHourLine: !!m
+    totalHourLine
   };
 }
 
@@ -768,9 +836,6 @@ function applyCalculation(calc) {
   recalculate();
 }
 
-/* ============================================================
-   Auto-detect category
-   ============================================================ */
 function autoDetectCategory(empId) {
   let cat = "CF";
   if (empId.startsWith("CF")) cat = "CF";
@@ -779,9 +844,6 @@ function autoDetectCategory(empId) {
   recalculate();
 }
 
-/* ============================================================
-   Recalculate
-   ============================================================ */
 function recalculate() {
   const cat = document.getElementById('inpCategory').value;
   const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
@@ -809,7 +871,7 @@ function recalculate() {
 }
 
 /* ============================================================
-   Single-page PDF extraction
+   PDF page extract
    ============================================================ */
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
@@ -821,9 +883,6 @@ async function extractSinglePagePdf(pdfUrl, pageNumber) {
   return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
 }
 
-/* ============================================================
-   Render page HD
-   ============================================================ */
 function renderPageHD(page, targetCanvas, divider) {
   const ctx = targetCanvas.getContext('2d');
   const dpr = window.devicePixelRatio || 2;
@@ -885,6 +944,9 @@ function resetAll() {
   document.getElementById('rawBox').style.display = "none";
   document.getElementById('holidayBox').style.display = "none";
   document.getElementById('ocrResultInfo').style.display = "none";
+
+  const debugBox = document.getElementById('ocrDebugBox');
+  if (debugBox) debugBox.style.display = "none";
 
   currentPdf = null;
   currentFileUrl = null;
