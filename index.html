@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RENATA PLC - Overtime Report Search</title>
+
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+
     <!-- PDF.js for searching & rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <!-- pdf-lib for extracting single page -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
     <style>
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background-color: #f0f2f5; margin: 0; }
@@ -129,12 +138,10 @@
 
                             if (pageText.includes(searchId)) {
                                 statusDiv.style.color = "green";
-                                statusDiv.innerHTML = `✅ Overtime Report পাওয়া গেছে! (পৃষ্ঠা: ${pageNum})`;
-                                
+                                statusDiv.innerText = "নির্দিষ্ট পেজটি আলাদা করা হচ্ছে...";
+
                                 renderPageHD(page);
 
-                                // শুধু এই একটি পেজ কেটে নিয়ে ১-পেজের PDF তৈরি করার কাজ
-                                statusDiv.innerText = "নির্দিষ্ট পেজটি আলাদা করা হচ্ছে...";
                                 singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
 
                                 downloadBtn.href = singlePageBlobUrl;
@@ -168,13 +175,11 @@
             }
         }
 
-        // pdf-lib ব্যবহার করে শুধু নির্দিষ্ট পেজটি আলাদা করা
         async function extractSinglePagePdf(pdfUrl, pageNumber) {
             const existingPdfBytes = await fetch(pdfUrl).then(res => res.arrayBuffer());
             const srcDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
             const newDoc = await PDFLib.PDFDocument.create();
 
-            // Index 0 ভিত্তিক তাই pageNumber - 1 করা হয়েছে
             const [copiedPage] = await newDoc.copyPages(srcDoc, [pageNumber - 1]);
             newDoc.addPage(copiedPage);
 
@@ -209,6 +214,13 @@
 
             page.render(renderContext);
         }
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
     </script>
 
 </body>
