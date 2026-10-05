@@ -74,7 +74,6 @@
     display: block; margin: 0 auto;
   }
 
-  /* Same color for both buttons */
   .btn-group { display: flex; gap: 10px; margin-top: 12px; }
   .btn-action {
     background-color: #0056b3; color: white; text-align: center;
@@ -95,6 +94,12 @@
   .badge {
     background: #0056b3; color: white; padding: 3px 8px;
     border-radius: 4px; font-size: 12px; font-weight: normal;
+  }
+  .badge.warn { background: #dc3545; }
+  .grade-info {
+    font-size: 12px; color: #6c757d; margin-bottom: 12px;
+    padding: 6px 10px; background: #f8f9fa; border-radius: 6px;
+    border-left: 3px solid #0056b3;
   }
   .input-grid {
     display: grid; grid-template-columns: 1fr 110px;
@@ -140,6 +145,13 @@
   .remarks-warn {
     background: #fff3cd; border: 1px solid #ffc107; color: #856404;
   }
+  .remarks-error {
+    background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24;
+  }
+  .remarks-box ul {
+    margin: 6px 0 0 20px; padding: 0;
+  }
+  .remarks-box li { margin: 4px 0; }
 
   .reset-btn {
     background-color: #6c757d; margin-top: 10px;
@@ -238,45 +250,46 @@
     <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
     <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
   </div>
-
-  <button onclick="resetAll()" class="reset-btn">নতুন সার্চ</button>
 </div>
 
 <!-- STEP 3: Calculator -->
 <div class="card calc-card" id="step3">
   <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
+  <div id="gradeInfo" class="grade-info" style="display:none;"></div>
 
-  <div class="input-grid">
-    <label>ক্যাটাগরি:</label>
-    <select id="inpCategory" onchange="recalculate()">
-      <option value="CF">CF - Contractual</option>
-      <option value="JO">JO - Jr. Officer (Below B)</option>
-      <option value="JO_B">JO_B - Jr. Officer B+</option>
-    </select>
+  <div id="calcInputs">
+    <div class="input-grid">
+      <label>ক্যাটাগরি:</label>
+      <select id="inpCategory" onchange="recalculate()">
+        <option value="CF">CF - Contractual</option>
+        <option value="JO">JO - Junior Officer (Below B)</option>
+        <option value="JO_B">JO_B - Junior Officer B & Above</option>
+      </select>
+    </div>
+
+    <div class="input-grid">
+      <label>ওটি ঘণ্টা (Extra):</label>
+      <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
+    </div>
+
+    <div class="input-grid">
+      <label>হলিডে/DO দিন:</label>
+      <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
+    </div>
+
+    <div class="input-grid">
+      <label>নাইট সংখ্যা:</label>
+      <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
+    </div>
+
+    <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
+
+    <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
+    <div class="report-row"><span>ওটি অমাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
+    <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
+    <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
+    <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
   </div>
-
-  <div class="input-grid">
-    <label>ওটি ঘণ্টা (Extra):</label>
-    <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
-  </div>
-
-  <div class="input-grid">
-    <label>হলিডে/DO দিন:</label>
-    <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
-  </div>
-
-  <div class="input-grid">
-    <label>নাইট সংখ্যা:</label>
-    <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
-  </div>
-
-  <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
-
-  <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
-  <div class="report-row"><span>ওটি অমাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
-  <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
-  <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
-  <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
 </div>
 
 <!-- STEP 4: Holiday Days List -->
@@ -321,7 +334,7 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
 };
 
-const CACHE_PREFIX = "renata_cache_v10_";
+const CACHE_PREFIX = "renata_cache_v11_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 
 function getCached(month, id) {
@@ -353,6 +366,7 @@ let currentMonth = "";
 let currentToken = 0;
 const activeTasks = new Set();
 let ocrWorker = null;
+let detectionResult = null;
 
 document.getElementById('employeeId').addEventListener('keydown', e => {
   if (e.key === 'Enter') findReport();
@@ -362,7 +376,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   MAIN SEARCH — auto-fill calculation
+   MAIN SEARCH — auto extraction
    ============================================================ */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
@@ -381,11 +395,11 @@ async function findReport() {
   currentSearchId = searchId;
   currentMonth = month;
 
-  document.getElementById('step2').style.display = "none";
-  document.getElementById('step3').classList.remove('show');
-  document.getElementById('step4').classList.remove('show');
-  document.getElementById('step5').classList.remove('show');
-  document.getElementById('step6').classList.remove('show');
+  // Reset UI
+  ['step2','step3','step4','step5','step6'].forEach(id => {
+    document.getElementById(id).style.display = (id === 'step2' ? 'none' : 'none');
+    document.getElementById(id).classList.remove('show');
+  });
   document.getElementById('downloadBtn').style.display = "none";
   document.getElementById('openBtn').style.display = "none";
   if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
@@ -443,7 +457,7 @@ async function findReport() {
       statusDiv.style.color = "#28a745";
       statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
 
-      // Auto-run extraction
+      // Auto extraction
       setTimeout(() => runExtraction(), 300);
     } else {
       spinner.style.display = "none";
@@ -545,12 +559,11 @@ async function showResult(fileUrl, pageNum, fileName) {
   downloadBtn.style.display = "block";
   document.getElementById('openBtn').style.display = "block";
 
-  autoDetectCategory(currentSearchId);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ============================================================
-   Auto Extraction (Text-Layer → OCR fallback)
+   Auto Extraction
    ============================================================ */
 async function runExtraction() {
   if (!matchedPdfPage) return;
@@ -561,7 +574,7 @@ async function runExtraction() {
     let rawText = "";
     let parsed = null;
 
-    // Text-Layer first
+    // Text-Layer
     try {
       const tc = await matchedPdfPage.getTextContent();
       rawText = tc.items.map(i => i.str).join(" ");
@@ -601,30 +614,32 @@ async function runExtraction() {
       parsed = parseOCRText(rawText);
     }
 
-    // Apply
-    document.getElementById('inpOtHours').value = parsed.otHours;
-    document.getElementById('inpHoliday').value = parsed.holidayCount;
-    document.getElementById('inpNight').value = parsed.nightCount;
-    recalculate();
+    // Extract Grade
+    const gradeMatch = rawText.toUpperCase().match(/GRADE\s*:?\s*([A-Z0-9][A-Z0-9\s]*?(?=\s*(?:FACILITY|DIVISION|DEPARTMENT|DESIGNATION|COMPANY|LOCATION|$)))/i) ||
+                       rawText.toUpperCase().match(/\bM(\d{2})\s+JUNIOR\s+OFFICER\s+([A-F])\b/i);
 
-    document.getElementById('step3').classList.add('show');
-    showHolidayList(parsed.holidayDays);
-    showNightList(parsed.nightDays);
-    showRemarks(parsed.punchProblems, parsed.nightDays, parsed.holidayDays);
+    let gradeText = "";
+    if (gradeMatch) gradeText = gradeMatch[0];
+
+    // Fallback: search for "M18 Junior Officer C" pattern
+    if (!gradeText) {
+      const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
+      if (gm) gradeText = gm[0];
+    }
+
+    // Detect category from grade
+    detectionResult = detectCategory(gradeText, currentSearchId);
+
+    // Apply
+    applyExtraction(parsed, detectionResult);
 
     setCache(currentMonth, currentSearchId, {
       fileUrl: currentFileUrl,
       pageNum: currentPageNum,
       fileName: currentFileName,
-      calc: {
-        category: document.getElementById('inpCategory').value,
-        otHours: parsed.otHours,
-        holiday: parsed.holidayCount,
-        night: parsed.nightCount
-      },
-      holidayDays: parsed.holidayDays,
-      nightDays: parsed.nightDays,
-      punchProblems: parsed.punchProblems
+      parsed,
+      detection: detectionResult,
+      gradeText
     });
 
     statusDiv.style.color = "#28a745";
@@ -640,11 +655,98 @@ async function runExtraction() {
 }
 
 /* ============================================================
-   Parse
+   Apply extraction result to UI
+   ============================================================ */
+function applyExtraction(parsed, detection) {
+  const gradeInfo = document.getElementById('gradeInfo');
+  const calcInputs = document.getElementById('calcInputs');
+  const categoryBadge = document.getElementById('categoryBadge');
+
+  // Show grade info
+  if (detection.gradeText || detection.reason) {
+    gradeInfo.style.display = "block";
+    gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | Detection: ${detection.reason}`;
+  }
+
+  if (detection.valid && detection.category) {
+    // Valid grade
+    document.getElementById('inpCategory').value = detection.category;
+    document.getElementById('inpOtHours').value = parsed.otHours;
+    document.getElementById('inpHoliday').value = parsed.holidayCount;
+    document.getElementById('inpNight').value = parsed.nightCount;
+    categoryBadge.className = "badge";
+    categoryBadge.innerText = RATE_TABLE[detection.category].name;
+    calcInputs.style.display = "block";
+    recalculate();
+  } else {
+    // Invalid grade
+    document.getElementById('inpCategory').value = "JO";
+    document.getElementById('inpOtHours').value = 0;
+    document.getElementById('inpHoliday').value = 0;
+    document.getElementById('inpNight').value = 0;
+    categoryBadge.className = "badge warn";
+    categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
+    calcInputs.style.display = "none";
+    recalculate();
+  }
+
+  document.getElementById('step3').classList.add('show');
+  showHolidayList(parsed.holidayDays);
+  showNightList(parsed.nightDays);
+  showRemarks(parsed.punchProblems, detection);
+}
+
+/* ============================================================
+   Detect category from grade
+   ============================================================ */
+function detectCategory(gradeText, empId) {
+  const g = (gradeText || "").toUpperCase().trim();
+
+  // 1. Contractual
+  if (empId.startsWith("CF")) {
+    return { category: "CF", valid: true, reason: "Contractual (CF)", gradeText: g || "CF" };
+  }
+
+  // 2. Management/Executive — Block
+  if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) &&
+      !/JUNIOR\s+OFFICER/i.test(g)) {
+    return { category: null, valid: false, reason: "Management/Executive — ক্যাটাগরির বাইরে", gradeText: g };
+  }
+
+  // 3. Grade letter extraction
+  const gradeMatch = g.match(/JUNIOR\s+OFFICER\s+([A-F])\b/i);
+  const levelMatch = g.match(/\bM(\d{2})\b/);
+  const gradeLetter = gradeMatch ? gradeMatch[1].toUpperCase() : null;
+  const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
+
+  if (gradeLetter) {
+    if (gradeLetter === "A" || gradeLetter === "B") {
+      return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter} (B & Above)`, gradeText: g };
+    }
+    if (["C", "D", "E", "F"].includes(gradeLetter)) {
+      return { category: "JO", valid: true, reason: `Grade ${gradeLetter} (Below B)`, gradeText: g };
+    }
+  }
+
+  if (levelNum !== null) {
+    if (levelNum === 16 || levelNum === 17) {
+      return { category: "JO_B", valid: true, reason: `Level M${levelNum}`, gradeText: g };
+    }
+    if (levelNum >= 18 && levelNum <= 20) {
+      return { category: "JO", valid: true, reason: `Level M${levelNum}`, gradeText: g };
+    }
+    return { category: null, valid: false, reason: `Level M${levelNum} — ক্যাটাগরির বাইরে`, gradeText: g };
+  }
+
+  // 4. Unknown
+  return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
+}
+
+/* ============================================================
+   Parse text
    ============================================================ */
 function parseOCRText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-  const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
   let otHours = 0, nightCount = 0;
   let holidayDays = [], nightDays = [], punchProblems = [];
@@ -680,7 +782,6 @@ function parseOCRText(rawText) {
   }
 
   // Row scan
-  // Format: DD/MM/YYYY N1 N2 N3 N4 N5 N6 Yes/No HH:MM:SS - HH:MM:SS
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
 
   let rm;
@@ -699,17 +800,12 @@ function parseOCRText(rawText) {
     const inTime  = rm[9];
     const outTime = rm[10];
 
-    // Holiday
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
       holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     }
-
-    // Night
     if (isNight) {
       nightDays.push(date);
     }
-
-    // Punch problem: In or Out = 00:00:00
     if (inTime === "00:00:00" || outTime === "00:00:00") {
       punchProblems.push({ date, inTime, outTime });
     }
@@ -727,7 +823,7 @@ function parseOCRText(rawText) {
 }
 
 /* ============================================================
-   Show Holiday List
+   Holiday List
    ============================================================ */
 function showHolidayList(list) {
   const box = document.getElementById('holidayList');
@@ -747,7 +843,7 @@ function showHolidayList(list) {
 }
 
 /* ============================================================
-   Show Night List
+   Night List
    ============================================================ */
 function showNightList(list) {
   const box = document.getElementById('nightList');
@@ -760,33 +856,40 @@ function showNightList(list) {
 }
 
 /* ============================================================
-   Show Remarks
+   Remarks
    ============================================================ */
-function showRemarks(punchProblems, nightDays, holidayDays) {
+function showRemarks(punchProblems, detection) {
   const box = document.getElementById('remarksBox');
+  const issues = [];
 
-  if (!punchProblems || punchProblems.length === 0) {
+  if (!detection.valid) {
+    issues.push(`Grade সনাক্তকরণ সমস্যা: ${detection.reason}`);
+  }
+  if (punchProblems && punchProblems.length > 0) {
+    const dates = punchProblems.map(p => p.date).join(", ");
+    issues.push(`In/Out Punch সমস্যা: ${dates}`);
+  }
+
+  if (issues.length === 0) {
     box.className = "remarks-box remarks-ok";
-    box.innerHTML = "আপনার In/Out Punch সঠিক আছে।";
+    box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।";
+  } else if (!detection.valid && punchProblems.length > 0) {
+    box.className = "remarks-box remarks-error";
+    box.innerHTML = `নিম্নলিখিত সমস্যা আছে:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`;
+  } else if (!detection.valid) {
+    box.className = "remarks-box remarks-error";
+    box.innerHTML = `আপনার Grade বা Designation আমাদের ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
   } else {
     box.className = "remarks-box remarks-warn";
-    const dates = punchProblems.map(p => p.date).join(", ");
-    box.innerHTML = `আপনার ${dates} তারিখে In/Out Punch-এ সমস্যা আছে। ERP Team-এর সাথে যোগাযোগ করুন।`;
+    box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
   }
+
   document.getElementById('step6').classList.add('show');
 }
 
 /* ============================================================
-   UI helpers
+   Recalculate
    ============================================================ */
-function autoDetectCategory(empId) {
-  let cat = "CF";
-  if (empId.startsWith("CF")) cat = "CF";
-  else if (empId.startsWith("RF")) cat = "JO";
-  document.getElementById('inpCategory').value = cat;
-  recalculate();
-}
-
 function recalculate() {
   const cat = document.getElementById('inpCategory').value;
   const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
@@ -805,7 +908,6 @@ function recalculate() {
   const nightAmount = night * r.nightRate;
   const grandTotal = otAmount + holidayAmount + nightAmount;
 
-  document.getElementById('categoryBadge').innerText = r.name;
   document.getElementById('lblRate').innerText = `৳ ${r.otRate} / hr`;
   document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
   document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
@@ -813,6 +915,9 @@ function recalculate() {
   document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
 }
 
+/* ============================================================
+   PDF page extract
+   ============================================================ */
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
   const src = await PDFLib.PDFDocument.load(bytes);
@@ -868,10 +973,7 @@ function modalBackdropClick(e) {
 function resetAll() {
   document.getElementById('step1').style.display = "block";
   document.getElementById('step2').style.display = "none";
-  document.getElementById('step3').classList.remove('show');
-  document.getElementById('step4').classList.remove('show');
-  document.getElementById('step5').classList.remove('show');
-  document.getElementById('step6').classList.remove('show');
+  ['step3','step4','step5','step6'].forEach(id => document.getElementById(id).classList.remove('show'));
   document.getElementById('status').innerText = "";
   document.getElementById('progress').style.display = "none";
   document.getElementById('employeeId').value = "";
