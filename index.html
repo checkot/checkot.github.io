@@ -3,89 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENATA PLC - Overtime Report Search & Calculator</title>
+<title>RENATA PLC - Overtime Report Viewer & Calculator</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#004085">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="icon.png">
 
-<!-- PDF.js for rendering pages to canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<!-- pdf-lib for extracting single page -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<!-- Tesseract.js for OCR (text layer নেই এমন PDF-এর জন্য) -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <style>
   * { box-sizing: border-box; }
   body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    padding: 20px 15px;
+    padding: 15px 12px;
     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
     margin: 0; min-height: 100vh;
   }
   .card {
-    background: #ffffff; padding: 25px 20px; border-radius: 16px;
-    max-width: 480px; margin: 0 auto;
+    background: #ffffff; padding: 20px 18px; border-radius: 16px;
+    max-width: 500px; margin: 0 auto 15px auto;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     border: 1px solid rgba(255,255,255,0.6);
   }
-  .header { text-align: center; margin-bottom: 20px; }
-  .header h2 { margin: 0; color: #004085; font-size: 22px; font-weight: 700; }
-  .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 13px; }
-  label { font-weight: 600; display: block; margin-top: 14px; color: #495057; font-size: 14px; }
+  .header { text-align: center; margin-bottom: 18px; }
+  .header h2 { margin: 0; color: #004085; font-size: 20px; font-weight: 700; }
+  .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 12px; }
+  label { font-weight: 600; display: block; margin-top: 12px; color: #495057; font-size: 14px; }
   input, select {
-    width: 100%; padding: 12px 14px; margin-top: 6px;
+    width: 100%; padding: 11px 13px; margin-top: 5px;
     border: 1px solid #ced4da; border-radius: 8px;
-    font-size: 15px; outline: none; transition: all 0.2s ease-in-out;
+    font-size: 15px; outline: none; transition: all 0.2s;
     background-color: #f8f9fa;
   }
   input:focus, select:focus {
     border-color: #0056b3; background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
   }
-  .row { display: flex; gap: 10px; margin-top: 6px; }
+  .row { display: flex; gap: 8px; margin-top: 5px; }
   .row select { margin-top: 0; flex: 1; }
   button {
     width: 100%; background-color: #0056b3; color: white;
-    border: none; padding: 13px; border-radius: 8px;
-    font-size: 16px; font-weight: 600; margin-top: 20px;
-    cursor: pointer; transition: background-color 0.2s ease-in-out;
+    border: none; padding: 12px; border-radius: 8px;
+    font-size: 15px; font-weight: 600; margin-top: 15px;
+    cursor: pointer; transition: 0.2s;
     box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
   }
   button:hover { background-color: #004085; }
   button:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+  .btn-calc {
+    background-color: #28a745;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    font-size: 16px; padding: 14px;
+  }
+  .btn-calc:hover { background-color: #218838; }
+
   .spinner {
-    display: none; width: 24px; height: 24px;
+    display: none; width: 22px; height: 22px;
     border: 3px solid #f3f3f3; border-top: 3px solid #0056b3;
     border-radius: 50%; animation: spin 0.8s linear infinite;
-    margin: 15px auto 0 auto;
+    margin: 12px auto 0 auto;
   }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-  .btn-action {
-    background-color: #28a745; color: white; text-align: center;
-    text-decoration: none; display: none; padding: 11px;
-    border-radius: 8px; font-weight: 600; flex: 1;
-    font-size: 14px; cursor: pointer;
-    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2); border: none;
-  }
-  .btn-action:hover { background-color: #218838; }
-  .btn-open { background-color: #17a2b8; }
-  .btn-open:hover { background-color: #138496; }
-  #status { margin-top: 15px; text-align: center; font-weight: 600; font-size: 14px; }
-  #progress { margin-top: 8px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
-  #pdf-viewer { margin-top: 20px; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
+  #status { margin-top: 12px; text-align: center; font-weight: 600; font-size: 14px; }
+  #progress { margin-top: 6px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
 
-  /* ===== Dashboard ===== */
-  .dashboard-card {
-    display: none; margin-top: 20px; background: #f8f9fa;
-    border-radius: 12px; padding: 18px;
-    border: 1px solid #e0e0e0;
+  /* PDF Viewer */
+  #pdf-viewer {
+    margin: 15px auto 0 auto; max-width: 100%; text-align: center;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
   }
-  .dashboard-card h3 {
+  canvas {
+    border: 1px solid #dee2e6; max-width: 100%; height: auto;
+    border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    display: block; margin: 0 auto;
+  }
+  .page-controls {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-top: 10px; font-size: 14px;
+  }
+  .page-controls button {
+    width: auto; margin: 0; padding: 8px 14px;
+    font-size: 14px; background-color: #17a2b8;
+  }
+  .page-controls button:hover { background-color: #138496; }
+  .page-controls button:disabled { background-color: #adb5bd; }
+  .page-controls span { font-weight: 600; min-width: 80px; text-align: center; }
+
+  .page-jump {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 8px; font-size: 13px;
+  }
+  .page-jump input {
+    width: 70px; margin: 0; padding: 6px 8px; font-size: 14px;
+    text-align: center;
+  }
+  .page-jump button {
+    width: auto; margin: 0; padding: 6px 12px; font-size: 13px;
+    background-color: #6c757d;
+  }
+
+  .confirm-banner {
+    background: #d4edda; border: 2px solid #28a745;
+    border-radius: 8px; padding: 10px; margin-top: 12px;
+    font-size: 13px; color: #155724; text-align: center;
+    font-weight: 600;
+  }
+
+  /* Calculator */
+  .calc-card { display: none; }
+  .calc-card.show { display: block; }
+  .calc-card h3 {
     margin-top: 0; color: #004085; font-size: 16px;
     border-bottom: 2px solid #0056b3; padding-bottom: 6px;
   }
@@ -93,47 +123,67 @@
     background: #0056b3; color: white; padding: 3px 8px;
     border-radius: 4px; font-size: 12px; font-weight: normal;
   }
+  .input-grid {
+    display: grid; grid-template-columns: 1fr 110px;
+    gap: 8px; align-items: center; margin: 6px 0;
+    font-size: 14px; color: #333;
+  }
+  .input-grid label { margin: 0; font-weight: 500; font-size: 14px; }
+  .input-grid input, .input-grid select {
+    margin: 0; padding: 7px 9px; font-size: 14px;
+    text-align: right;
+  }
+  .input-grid select { text-align: left; padding: 7px 6px; font-size: 13px; }
+
+  .info-hint {
+    background: #e7f3ff; border: 1px solid #b8daff;
+    border-radius: 6px; padding: 8px 10px; font-size: 12px;
+    color: #004085; margin-bottom: 12px; line-height: 1.5;
+  }
+  .info-hint.success {
+    background: #d4edda; border-color: #c3e6cb; color: #155724;
+  }
+  .info-hint.warn {
+    background: #fff3cd; border-color: #ffc107; color: #856404;
+  }
+
   .report-row {
     display: flex; justify-content: space-between;
     margin: 8px 0; font-size: 14px; color: #333;
   }
   .report-row.total {
-    font-weight: bold; font-size: 16px; color: #28a745;
-    border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 10px;
+    font-weight: bold; font-size: 17px; color: #28a745;
+    border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 12px;
   }
-  .input-row {
-    display: flex; align-items: center; gap: 8px;
-    margin: 6px 0; font-size: 13px; color: #555;
-  }
-  .input-row label { flex: 1; margin: 0; font-weight: 500; }
-  .input-row input {
-    width: 90px; margin: 0; padding: 6px 8px; font-size: 14px; text-align: right;
-  }
-  .warn-box {
-    background: #fff3cd; border: 1px solid #ffc107;
-    border-radius: 8px; padding: 10px; font-size: 12px;
-    color: #856404; margin-bottom: 10px; line-height: 1.5;
-  }
+
   .raw-box {
-    background: #e7f3ff; border: 1px solid #b8daff;
-    border-radius: 8px; padding: 8px; font-size: 11px;
-    color: #004085; margin-bottom: 10px;
-    font-family: monospace; line-height: 1.5;
+    background: #f8f9fa; border: 1px solid #dee2e6;
+    border-radius: 6px; padding: 8px; font-size: 11px;
+    color: #495057; margin: 10px 0;
+    font-family: 'Courier New', monospace; line-height: 1.6;
   }
-  .holiday-days-box {
+
+  .holiday-list {
     background: #d4edda; border: 1px solid #c3e6cb;
-    border-radius: 8px; padding: 8px; font-size: 12px;
-    color: #155724; margin-bottom: 10px;
-    font-family: monospace; line-height: 1.6;
+    border-radius: 6px; padding: 8px 10px; font-size: 12px;
+    color: #155724; margin: 10px 0; line-height: 1.6;
+    max-height: 150px; overflow-y: auto;
   }
+
+  .reset-btn {
+    background-color: #6c757d; margin-top: 10px;
+    font-size: 13px; padding: 9px;
+  }
+  .reset-btn:hover { background-color: #5a6268; }
 </style>
 </head>
 <body>
 
-<div class="card">
+<!-- ============ STEP 1: Search ============ -->
+<div class="card" id="step1">
   <div class="header">
     <h2>RENATA PLC</h2>
-    <p>Overtime Calculation Details Report</p>
+    <p>Overtime Report Viewer & Calculator</p>
   </div>
 
   <label>বছর ও মাস নির্বাচন করুন:</label>
@@ -160,81 +210,103 @@
   </div>
 
   <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
-  <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850 অথবা CF8355"
+  <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850"
          autocomplete="off" inputmode="text">
 
-  <button id="searchBtn" onclick="searchPDF()">রিপোর্ট দেখুন</button>
+  <button id="searchBtn" onclick="findReport()">🔍 রিপোর্ট খুঁজুন</button>
 
   <div id="spinner" class="spinner"></div>
   <div id="status"></div>
   <div id="progress"></div>
-
-  <div class="btn-group">
-    <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড</a>
-    <button id="openBtn" class="btn-action btn-open" onclick="openModal()">🔍 ফুল ভিউ</button>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" class="dashboard-card">
-    <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
-
-    <div class="warn-box">
-      ⚠️ PDF থেকে অটো-ডিটেক্ট করা মান। <strong>Holiday count</strong> = যেদিনে OT ON DO বা OT ON HOLIDAY-তে মান &gt; 0, সেই প্রতিটি দিন (row-wise count)। সন্দেহ হলে HR-এর সাথে মিলিয়ে নিন।
-    </div>
-
-    <div class="raw-box" id="rawBox">
-      <div>Total Hour Line:</div>
-      <div id="rawValues">—</div>
-    </div>
-
-    <div class="holiday-days-box" id="holidayDaysBox" style="display:none;">
-      <div><strong>যেসব দিনে DO/Holiday duty:</strong></div>
-      <div id="holidayDaysList">—</div>
-    </div>
-
-    <div class="input-row">
-      <label>ক্যাটাগরি:</label>
-      <select id="inpCategory" onchange="recalculate()" style="width: 170px; margin: 0; padding: 6px 8px; font-size: 13px;">
-        <option value="CF">Contractual (CF)</option>
-        <option value="JO">Junior Officer (Below B)</option>
-        <option value="JO_B">Junior Officer B &amp; Above</option>
-      </select>
-    </div>
-
-    <div class="input-row">
-      <label>ওটি ঘণ্টা (Extra Hour):</label>
-      <input type="number" id="inpOtHours" value="0" step="0.5" onchange="recalculate()">
-    </div>
-
-    <div class="input-row">
-      <label>হলিডে/DO দিন:</label>
-      <input type="number" id="inpHoliday" value="0" step="1" onchange="recalculate()">
-    </div>
-
-    <div class="input-row">
-      <label>নাইট সংখ্যা:</label>
-      <input type="number" id="inpNight" value="0" step="1" onchange="recalculate()">
-    </div>
-
-    <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
-
-    <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
-    <div class="report-row"><span>ওটি অ্যামাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
-    <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
-    <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
-    <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
-  </div>
 </div>
 
-<div id="pdf-viewer">
-  <canvas id="pdf-canvas"></canvas>
+<!-- ============ STEP 2: PDF Viewer + Confirm ============ -->
+<div class="card" id="step2" style="display:none;">
+  <div class="header">
+    <h2 style="font-size:16px;">📄 রিপোর্ট দেখুন</h2>
+    <p id="viewerTitle">—</p>
+  </div>
+
+  <div id="pdf-viewer">
+    <canvas id="pdf-canvas"></canvas>
+  </div>
+
+  <div class="page-controls">
+    <button id="prevBtn" onclick="changePage(-1)">◀ আগের</button>
+    <span id="pageIndicator">— / —</span>
+    <button id="nextBtn" onclick="changePage(1)">পরের ▶</button>
+  </div>
+
+  <div class="page-jump">
+    <span>যেকোনো পেজে যান:</span>
+    <input type="number" id="pageJumpInput" min="1" placeholder="#">
+    <button onclick="jumpToPage()">যান</button>
+  </div>
+
+  <div class="confirm-banner">
+    👆 উপরে আপনার রিপোর্ট চোখে দেখুন। সঠিক পেজ এলে "হিসাব করুন" চাপুন।
+  </div>
+
+  <button id="calcBtn" class="btn-calc" onclick="runOCRForCurrentPage()">
+    📊 এই পেজের হিসাব করুন
+  </button>
+
+  <div id="ocrStatus" style="text-align:center; font-size:13px; color:#6c757d; margin-top:6px;"></div>
+
+  <button onclick="resetAll()" class="reset-btn" style="margin-top:8px;">
+    🔄 নতুন সার্চ
+  </button>
 </div>
 
-<div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
-  <button class="close-btn" onclick="closeModal()">✕ বন্ধ করুন</button>
-  <div class="modal-content-wrapper">
-    <canvas id="modal-canvas"></canvas>
+<!-- ============ STEP 3: Calculator ============ -->
+<div class="card calc-card" id="step3">
+  <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
+
+  <div id="ocrResultInfo" class="info-hint" style="display:none;"></div>
+
+  <div id="rawBox" class="raw-box" style="display:none;">
+    <div><strong>Total Hour Line (auto-detected):</strong></div>
+    <div id="rawValues">—</div>
   </div>
+
+  <div id="holidayBox" class="holiday-list" style="display:none;">
+    <div><strong>যেসব দিনে DO/Holiday Duty:</strong></div>
+    <div id="holidayList">—</div>
+  </div>
+
+  <div class="input-grid">
+    <label>ক্যাটাগরি:</label>
+    <select id="inpCategory" onchange="recalculate()">
+      <option value="CF">CF - Contractual</option>
+      <option value="JO">JO - Jr. Officer (Below B)</option>
+      <option value="JO_B">JO_B - Jr. Officer B+</option>
+    </select>
+  </div>
+
+  <div class="input-grid">
+    <label>ওটি ঘণ্টা (Extra):</label>
+    <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
+  </div>
+
+  <div class="input-grid">
+    <label>হলিডে/DO দিন:</label>
+    <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
+  </div>
+
+  <div class="input-grid">
+    <label>নাইট সংখ্যা:</label>
+    <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
+  </div>
+
+  <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
+
+  <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
+  <div class="report-row"><span>ওটি অমাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
+  <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
+  <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
+  <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
+
+  <button onclick="resetAll()" class="reset-btn">🔄 নতুন সার্চ</button>
 </div>
 
 <script>
@@ -243,49 +315,30 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
 
-/* ====== Rate Table ====== */
 const RATE_TABLE = {
-  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8,  name: "Contractual (CF)" },
-  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300,  name: "Junior Officer (Below B)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400,  name: "Junior Officer B & Above" }
+  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
+  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
 };
 
-/* ====== Cache ====== */
-const CACHE_PREFIX = "renata_cache_v4_";
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-function getCached(m, id) {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + m + "_" + id);
-    if (!raw) return null;
-    const d = JSON.parse(raw);
-    if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + m + "_" + id); return null; }
-    return d;
-  } catch (e) { return null; }
-}
-function setCache(m, id, payload) {
-  try { localStorage.setItem(CACHE_PREFIX + m + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); }
-  catch (e) {}
-}
-
 /* ====== State ====== */
-let singlePageBlobUrl = null;
-let matchedPdfPage = null;
-let currentToken = 0;
-const activeTasks = new Set();
+let currentPdf = null;
+let currentFileUrl = null;
+let currentPageNum = 1;
+let totalPages = 0;
+let matchedPageForSearch = 1;
 let ocrWorker = null;
+let currentSearchId = "";
 
-/* ====== Listeners ====== */
+/* ====== Enter key listener ====== */
 document.getElementById('employeeId').addEventListener('keydown', e => {
-  if (e.key === 'Enter') searchPDF();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter') findReport();
 });
 
 /* ============================================================
-   MAIN SEARCH
+   STEP 1: Find Report
    ============================================================ */
-async function searchPDF() {
+async function findReport() {
   const year  = document.getElementById('yearSelect').value;
   const mon   = document.getElementById('monthSelect').value;
   const month = `${year}-${mon}`;
@@ -294,59 +347,24 @@ async function searchPDF() {
   const statusDiv = document.getElementById('status');
   const progressDiv = document.getElementById('progress');
   const spinner = document.getElementById('spinner');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const openBtn = document.getElementById('openBtn');
   const searchBtn = document.getElementById('searchBtn');
-  const dashboard = document.getElementById('dashboard');
-  const canvas = document.getElementById('pdf-canvas');
-  const ctx = canvas.getContext('2d');
 
-  downloadBtn.style.display = "none";
-  openBtn.style.display = "none";
-  dashboard.style.display = "none";
-  matchedPdfPage = null;
-
-  if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
-
-  if (!rawId) { alert("অনুগ্রহ করে আপনার Employee ID লিখুন!"); return; }
+  if (!rawId) { alert("অনুগ্রহ করে Employee ID লিখুন!"); return; }
 
   const searchId = rawId.toUpperCase();
-
-  currentToken++;
-  const myToken = currentToken;
-  for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
-  activeTasks.clear();
+  currentSearchId = searchId;
 
   statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "দ্রুত সার্চ করা হচ্ছে...";
-  spinner.style.display = "block";
+  statusDiv.innerText = "PDF খোঁজা হচ্ছে...";
   progressDiv.style.display = "block";
   progressDiv.innerText = "";
+  spinner.style.display = "block";
   searchBtn.disabled = true;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = 0; canvas.height = 0;
 
   try {
-    // 1) Cache
-    const cached = getCached(month, searchId);
-    if (cached) {
-      progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
-      await showResultFromUrl(cached.fileUrl, cached.pageNum, searchId, month);
-      applyCalculation(cached.calc);
-      showRawValues(cached.raw);
-      showHolidayDaysList(cached.holidayDaysList);
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#28a745";
-      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month} — ক্যাশ)</small>`;
-      return;
-    }
-
-    // 2) GitHub API
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
+    const resp = await fetch(apiUrl);
+    if (!resp.ok) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
@@ -355,63 +373,50 @@ async function searchPDF() {
       return;
     }
 
-    const filesData = await response.json();
-    const pdfFiles = filesData
-      .filter(f => f.name.toLowerCase().endsWith('.pdf'))
-      .map(f => f.download_url);
-
+    const filesData = await resp.json();
+    const pdfFiles = filesData.filter(f => f.name.toLowerCase().endsWith('.pdf'));
     if (pdfFiles.length === 0) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
-      statusDiv.innerText = `❌ ফোল্ডারে কোনো PDF নেই!`;
+      statusDiv.innerText = `❌ এই মাসে কোনো PDF নেই।`;
       return;
     }
 
-    progressDiv.innerText = `${pdfFiles.length}টি ফাইল স্ক্যান হচ্ছে (OCR সহ)...`;
+    progressDiv.innerText = `${pdfFiles.length}টি ফাইল স্ক্যান করা হচ্ছে...`;
+    const result = await scanFilesForId(pdfFiles, searchId, progressDiv);
 
-    // 3) Parallel search with OCR fallback
-    const match = await parallelSearchWithOCR(pdfFiles, searchId, myToken, progressDiv);
-    if (myToken !== currentToken) return;
-
-    if (match) {
-      matchedPdfPage = match.page;
-      renderPageHD(match.page, canvas, 1.5);
-
-      singlePageBlobUrl = await extractSinglePagePdf(match.fileUrl, match.pageNum);
-      downloadBtn.href = singlePageBlobUrl;
-      downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
-      downloadBtn.style.display = "inline-block";
-      openBtn.style.display = "inline-block";
-
-      // ✅ EXTRACT from OCR text
-      const calcResult = extractCalcDataFromOCR(match.ocrText, searchId);
-
-      setCache(month, searchId, {
-        fileUrl: match.fileUrl,
-        pageNum: match.pageNum,
-        calc: calcResult.calc,
-        raw: calcResult.raw,
-        holidayDaysList: calcResult.holidayDaysList
-      });
-
-      applyCalculation(calcResult.calc);
-      showRawValues(calcResult.raw);
-      showHolidayDaysList(calcResult.holidayDaysList);
-
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#28a745";
-      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month})</small>`;
-    } else {
+    if (!result) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
-      statusDiv.innerHTML = `❌ আইডি "${rawId}"-এর রেকর্ড ${month}-এ পাওয়া যায়নি।`;
+      statusDiv.innerHTML = `❌ আইডি "${searchId}"-এর রেকর্ড পাওয়া যায়নি।`;
+      return;
     }
+
+    currentFileUrl = result.fileUrl;
+    currentPdf = result.pdf;
+    totalPages = result.pdf.numPages;
+    matchedPageForSearch = result.pageNum;
+    currentPageNum = result.pageNum;
+
+    document.getElementById('step1').style.display = "none";
+    document.getElementById('step2').style.display = "block";
+    document.getElementById('viewerTitle').innerText = `${searchId} — ${month}`;
+
+    await renderCurrentPage();
+
+    // Auto-detect category
+    autoDetectCategory(searchId);
+
+    spinner.style.display = "none";
+    searchBtn.disabled = false;
+    progressDiv.style.display = "none";
+    statusDiv.innerText = "";
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (err) {
     console.error(err);
@@ -419,151 +424,195 @@ async function searchPDF() {
     searchBtn.disabled = false;
     progressDiv.style.display = "none";
     statusDiv.style.color = "#dc3545";
-    statusDiv.innerText = "❌ ডাটা লোডে সমস্যা! ইন্টারনেট চেক করুন।";
+    statusDiv.innerText = "❌ সমস্যা হয়েছে! ইন্টারনেট চেক করুন।";
   }
 }
 
 /* ============================================================
-   PARALLEL SEARCH with OCR
-   - প্রথমে pdf.js text layer চেষ্টা করি
-   - text layer অর্থহীন হলে OCR এ fallback
+   Scan files: Find which PDF/page has the ID
    ============================================================ */
-async function parallelSearchWithOCR(pdfFiles, searchId, myToken, progressDiv) {
-  const total = pdfFiles.length;
-  let scanned = 0;
+async function scanFilesForId(pdfFiles, searchId, progressDiv) {
+  for (let i = 0; i < pdfFiles.length; i++) {
+    const file = pdfFiles[i];
+    if (progressDiv) {
+      progressDiv.innerText = `ফাইল ${i + 1}/${pdfFiles.length}: ${file.name}`;
+    }
 
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
+    try {
+      const pdf = await pdfjsLib.getDocument(file.download_url).promise;
 
-    pdfFiles.forEach((fileUrl) => {
-      (async () => {
-        if (myToken !== currentToken) return;
-        let task = null, pdf = null;
-        try {
-          task = pdfjsLib.getDocument(fileUrl);
-          activeTasks.add(task);
-          pdf = await task.promise;
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        const text = tc.items.map(it => it.str).join(" ").toUpperCase();
 
-          for (let p = 1; p <= pdf.numPages; p++) {
-            if (myToken !== currentToken || settled) break;
-            const page = await pdf.getPage(p);
-
-            // Step 1: try plain text extraction
-            const tc = await page.getTextContent();
-            const plainText = tc.items.map(i => i.str).join(" ");
-            const upperText = plainText.toUpperCase();
-
-            // Heuristic: text layer meaningful কিনা?
-            const isMeaningful = upperText.includes(searchId) &&
-                                 /[A-Z]{2,}/.test(upperText) &&
-                                 upperText.length > 200;
-
-            if (isMeaningful && upperText.includes(searchId)) {
-              // ✅ Text layer কাজ করছে
-              finish({
-                page, pageNum: p, fileUrl,
-                ocrText: plainText,
-                source: "text-layer"
-              });
-              return;
-            }
-
-            // Step 2: OCR fallback (শুধু তখনই যখন text layer fail)
-            if (progressDiv) {
-              progressDiv.innerText = `${scanned+1}/${total}: Page ${p} OCR চলছে...`;
-            }
-
-            const ocrText = await runOCR(page);
-            const ocrUpper = ocrText.toUpperCase();
-
-            if (ocrUpper.includes(searchId)) {
-              finish({
-                page, pageNum: p, fileUrl,
-                ocrText: ocrText,
-                source: "ocr"
-              });
-              return;
-            }
-          }
-          scanned++;
-          if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
-        } catch (e) {
-          console.log("PDF/OCR error:", fileUrl, e.message);
-        } finally {
-          if (task) activeTasks.delete(task);
-          if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} }
+        // Text-layer check
+        if (text.includes(searchId) && /[A-Z]{3,}/.test(text)) {
+          return { pdf, pageNum: p, fileUrl: file.download_url };
         }
-      })();
-    });
 
-    setTimeout(() => {
-      if (!settled) {
-        const check = setInterval(() => {
-          if (scanned >= total || myToken !== currentToken) {
-            clearInterval(check);
-            finish(null);
+        // OCR fallback (top header only)
+        try {
+          const ocrText = await quickHeaderOCR(page);
+          if (ocrText && ocrText.includes(searchId)) {
+            return { pdf, pageNum: p, fileUrl: file.download_url };
           }
-        }, 300);
+        } catch (e) { /* skip */ }
       }
-    }, 150);
-  });
+    } catch (e) {
+      console.log("PDF load failed:", file.name, e.message);
+    }
+  }
+  return null;
 }
 
 /* ============================================================
-   OCR — Render page to canvas, then Tesseract
+   Quick header OCR (top 28%)
    ============================================================ */
-async function runOCR(pdfPage) {
-  const viewport = pdfPage.getViewport({ scale: 2.0 });
+async function quickHeaderOCR(pdfPage) {
+  const viewport = pdfPage.getViewport({ scale: 1.5 });
+  const headerHeight = Math.floor(viewport.height * 0.28);
+
   const canvas = document.createElement('canvas');
   canvas.width = viewport.width;
-  canvas.height = viewport.height;
+  canvas.height = headerHeight;
   const ctx = canvas.getContext('2d');
-  await pdfPage.render({ canvasContext: ctx, viewport }).promise;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  await pdfPage.render({
+    canvasContext: ctx,
+    viewport: viewport,
+    transform: [1, 0, 0, 1, 0, 0]
+  }).promise;
+
+  const cropped = document.createElement('canvas');
+  cropped.width = viewport.width;
+  cropped.height = headerHeight;
+  const cctx = cropped.getContext('2d');
+  cctx.drawImage(canvas, 0, 0, viewport.width, headerHeight, 0, 0, viewport.width, headerHeight);
 
   if (!ocrWorker) {
     ocrWorker = await Tesseract.createWorker('eng');
     await ocrWorker.setParameters({
-      tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz :.-/',
+      tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:. ',
       preserve_interword_spaces: '1'
     });
   }
 
-  const { data: { text } } = await ocrWorker.recognize(canvas);
-  return text;
+  const { data: { text } } = await ocrWorker.recognize(cropped);
+  return text.toUpperCase();
 }
 
 /* ============================================================
-   ✅ EXTRACT CALC DATA FROM OCR TEXT
-   ============================================================
-   Key logic:
-   1. Total Hour line → OT hours + Night count
-   2. Row-wise scan → holiday count (DO/Hol duty > 0 = 1 day)
+   🔥 MAIN: OCR only the CURRENT confirmed page
    ============================================================ */
-function extractCalcDataFromOCR(rawText, empId) {
-  // Normalize: collapse all whitespace, but preserve line breaks
-  const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+async function runOCRForCurrentPage() {
+  if (!currentPdf) return;
+
+  const calcBtn = document.getElementById('calcBtn');
+  const ocrStatus = document.getElementById('ocrStatus');
+
+  calcBtn.disabled = true;
+  ocrStatus.innerText = "OCR শুরু হচ্ছে...";
+
+  try {
+    // Ensure worker
+    if (!ocrWorker) {
+      ocrStatus.innerText = "OCR engine লোড হচ্ছে (প্রথমবার ~৫ সেকেন্ড)...";
+      ocrWorker = await Tesseract.createWorker('eng');
+      await ocrWorker.setParameters({
+        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:. -/',
+        preserve_interword_spaces: '1'
+      });
+    }
+
+    const page = await currentPdf.getPage(currentPageNum);
+
+    ocrStatus.innerText = `Page ${currentPageNum} — high-res render...`;
+    const viewport = page.getViewport({ scale: 2.2 });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+    ocrStatus.innerText = `Page ${currentPageNum} — OCR চলছে...`;
+    const { data: { text } } = await ocrWorker.recognize(canvas);
+
+    ocrStatus.innerText = `✅ OCR সম্পূর্ণ!`;
+
+    // Parse
+    const parsed = parseOCRText(text);
+
+    // Auto-fill calculator
+    document.getElementById('inpOtHours').value = parsed.otHours;
+    document.getElementById('inpHoliday').value = parsed.holidayCount;
+    document.getElementById('inpNight').value = parsed.nightCount;
+    recalculate();
+
+    // Show calculator
+    document.getElementById('step3').classList.add('show');
+
+    const info = document.getElementById('ocrResultInfo');
+    info.style.display = "block";
+
+    if (parsed.totalHourLine) {
+      info.className = "info-hint success";
+      info.innerHTML = `✅ <strong>OCR সফল!</strong> PDF-এর সাথে সংখ্যাগুলো মিলিয়ে দেখুন। ভুল থাকলে টাইপ করে ঠিক করুন।`;
+    } else {
+      info.className = "info-hint warn";
+      info.innerHTML = `⚠️ Total Hour লাইন পড়া যায়নি। নিচের মানগুলো <strong>PDF দেখে ম্যানুয়ালি</strong> টাইপ করুন।`;
+    }
+
+    if (parsed.rawLine) {
+      document.getElementById('rawBox').style.display = "block";
+      document.getElementById('rawValues').innerText = parsed.rawLine;
+    } else {
+      document.getElementById('rawBox').style.display = "none";
+    }
+
+    if (parsed.holidayDays.length > 0) {
+      document.getElementById('holidayBox').style.display = "block";
+      const lines = parsed.holidayDays.map((d, i) =>
+        `${i + 1}. ${d.date} → DO(${d.doDuty}+${d.doExtra}) Hol(${d.holDuty}+${d.holExtra})`
+      );
+      document.getElementById('holidayList').innerHTML = lines.join("<br>");
+    } else {
+      document.getElementById('holidayBox').style.display = "none";
+    }
+
+    // Scroll to calculator
+    document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+
+  } catch (e) {
+    console.error(e);
+    ocrStatus.innerText = "❌ OCR সমস্যা: " + e.message;
+  } finally {
+    calcBtn.disabled = false;
+  }
+}
+
+/* ============================================================
+   Parse OCR text
+   ============================================================ */
+function parseOCRText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
 
-  /* ---- 1. Category Detection ---- */
-  let category = "CF";
-  if (/CONTRACTUAL|\bCF\b/i.test(cleanText) || empId.startsWith("CF")) {
-    category = "CF";
-  } else if (/JUNIOR\s+OFFICERS?\s+B|JR\.?\s*OFFICERS?\s+B|GRADE\s*:?\s*B\b/i.test(cleanText)) {
-    category = "JO_B";
-  } else if (/JUNIOR\s+OFFICERS?|JR\.?\s*OFFICERS?/i.test(cleanText) || empId.startsWith("RF")) {
-    category = "JO";
-  }
+  let otHours = 0;
+  let nightCount = 0;
+  let holidayDays = [];
+  let rawLine = null;
 
-  /* ---- 2. Total Hour line extraction ---- */
-  // OCR-এ "Total Hour : 161.73 57.00 24.45 5.00 8.57 3.00 6"
-  // Space, pipe, tab সবই handle করতে হবে
+  // Total Hour line: 7 numbers
   const totalHourRegex = /TOTAL\s+HOUR\s*:?\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)/i;
   const m = cleanText.match(totalHourRegex);
 
-  let otHours = 0, nightCount = 0;
-
   if (m) {
+    rawLine = `Reg D=${m[1]} E=${m[2]} | DO D=${m[3]} E=${m[4]} | Hol D=${m[5]} E=${m[6]} | Night=${m[7]}`;
     const regExtra = parseFloat(m[2]) || 0;
     const doExtra  = parseFloat(m[4]) || 0;
     const holExtra = parseFloat(m[6]) || 0;
@@ -571,10 +620,8 @@ function extractCalcDataFromOCR(rawText, empId) {
     nightCount = parseInt(m[7]) || 0;
   }
 
-  /* ---- 3. Row-wise Holiday Count ---- */
-  // Row pattern: "DD/MM/YYYY HH:MM - HH:MM  RegD  RegE  DOD  DOE  HolD  HolE  Yes/No"
-  const holidayDaysList = [];
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]+\s*-\s*[\d:]+\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(Yes|No)/gi;
+  // Row-wise holiday scan
+  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]+\s*-\s*[\d:]+\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
 
   let rowMatch;
   while ((rowMatch = rowRegex.exec(cleanText)) !== null) {
@@ -584,74 +631,83 @@ function extractCalcDataFromOCR(rawText, empId) {
     const holDuty = parseFloat(rowMatch[6]) || 0;
     const holExtra= parseFloat(rowMatch[7]) || 0;
 
-    // যে কোনো একটি মান > 0 হলে সেদিন হলিডে/DO duty হয়েছে
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
-      holidayDaysList.push({
-        date,
-        doDuty, doExtra,
-        holDuty, holExtra
-      });
+      holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     }
   }
 
-  const holidayCount = holidayDaysList.length;
-
   return {
-    calc: {
-      category,
-      otHours: Number(otHours.toFixed(2)),
-      holiday: holidayCount,
-      night: nightCount
-    },
-    raw: m ? {
-      regDuty: m[1], regExtra: m[2],
-      doDuty: m[3],  doExtra: m[4],
-      holDuty: m[5], holExtra: m[6],
-      nightCount: m[7]
-    } : null,
-    holidayDaysList
+    otHours: Number(otHours.toFixed(2)),
+    nightCount,
+    holidayCount: holidayDays.length,
+    holidayDays,
+    rawLine,
+    totalHourLine: !!m
   };
 }
 
 /* ============================================================
-   APPLY CALCULATION TO UI
+   Render current page
    ============================================================ */
-function applyCalculation(calc) {
-  document.getElementById('inpCategory').value = calc.category;
-  document.getElementById('inpOtHours').value = calc.otHours;
-  document.getElementById('inpHoliday').value = calc.holiday;
-  document.getElementById('inpNight').value = calc.night;
+async function renderCurrentPage() {
+  if (!currentPdf) return;
 
-  document.getElementById('categoryBadge').innerText = RATE_TABLE[calc.category].name;
-  recalculate();
-  document.getElementById('dashboard').style.display = "block";
+  const page = await currentPdf.getPage(currentPageNum);
+  const canvas = document.getElementById('pdf-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const viewport = page.getViewport({ scale: 2.0 });
+  const dpr = window.devicePixelRatio || 2;
+
+  canvas.width = Math.floor(viewport.width * dpr);
+  canvas.height = Math.floor(viewport.height * dpr);
+  canvas.style.width = "100%";
+  canvas.style.maxWidth = viewport.width + "px";
+  canvas.style.height = "auto";
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
+
+  await page.render({
+    canvasContext: ctx,
+    transform: transform,
+    viewport: viewport
+  }).promise;
+
+  document.getElementById('pageIndicator').innerText = `${currentPageNum} / ${totalPages}`;
+  document.getElementById('prevBtn').disabled = currentPageNum <= 1;
+  document.getElementById('nextBtn').disabled = currentPageNum >= totalPages;
+  document.getElementById('pageJumpInput').value = currentPageNum;
+  document.getElementById('pageJumpInput').max = totalPages;
 }
 
-function showRawValues(raw) {
-  const box = document.getElementById('rawBox');
-  const span = document.getElementById('rawValues');
-  if (!raw) { box.style.display = "none"; return; }
-  box.style.display = "block";
-  span.innerHTML =
-    `Reg D=${raw.regDuty} E=${raw.regExtra} | ` +
-    `DO D=${raw.doDuty} E=${raw.doExtra} | ` +
-    `Hol D=${raw.holDuty} E=${raw.holExtra} | ` +
-    `Night=${raw.nightCount}`;
+function changePage(delta) {
+  const newPage = currentPageNum + delta;
+  if (newPage < 1 || newPage > totalPages) return;
+  currentPageNum = newPage;
+  renderCurrentPage();
 }
 
-function showHolidayDaysList(list) {
-  const box = document.getElementById('holidayDaysBox');
-  const span = document.getElementById('holidayDaysList');
-  if (!list || list.length === 0) { box.style.display = "none"; return; }
-  box.style.display = "block";
-  const lines = list.map((d, i) =>
-    `${i + 1}. ${d.date} → DO(${d.doDuty}+${d.doExtra}) Hol(${d.holDuty}+${d.holExtra})`
-  );
-  span.innerHTML = lines.join("<br>");
+function jumpToPage() {
+  const v = parseInt(document.getElementById('pageJumpInput').value) || 1;
+  if (v < 1 || v > totalPages) { alert("১ থেকে " + totalPages + " এর মধ্যে দিন"); return; }
+  currentPageNum = v;
+  renderCurrentPage();
 }
 
 /* ============================================================
-   RECALCULATE
+   Auto-detect category
+   ============================================================ */
+function autoDetectCategory(empId) {
+  let cat = "CF";
+  if (empId.startsWith("CF")) cat = "CF";
+  else if (empId.startsWith("RF")) cat = "JO";
+  document.getElementById('inpCategory').value = cat;
+  recalculate();
+}
+
+/* ============================================================
+   Recalculate
    ============================================================ */
 function recalculate() {
   const cat = document.getElementById('inpCategory').value;
@@ -680,85 +736,37 @@ function recalculate() {
 }
 
 /* ============================================================
-   CACHE HIT — Load from URL
+   Reset
    ============================================================ */
-async function showResultFromUrl(fileUrl, pageNum, searchId, month) {
-  const canvas = document.getElementById('pdf-canvas');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const openBtn = document.getElementById('openBtn');
+function resetAll() {
+  document.getElementById('step1').style.display = "block";
+  document.getElementById('step2').style.display = "none";
+  document.getElementById('step3').classList.remove('show');
+  document.getElementById('status').innerText = "";
+  document.getElementById('progress').style.display = "none";
+  document.getElementById('progress').innerText = "";
+  document.getElementById('employeeId').value = "";
+  document.getElementById('ocrStatus').innerText = "";
 
-  const task = pdfjsLib.getDocument(fileUrl);
-  const pdf = await task.promise;
-  const page = await pdf.getPage(pageNum);
-  matchedPdfPage = page;
-  renderPageHD(page, canvas, 1.5);
+  document.getElementById('inpOtHours').value = 0;
+  document.getElementById('inpHoliday').value = 0;
+  document.getElementById('inpNight').value = 0;
 
-  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
-  downloadBtn.href = singlePageBlobUrl;
-  downloadBtn.setAttribute('download', `Overtime_${searchId}_${month}.pdf`);
-  downloadBtn.style.display = "inline-block";
-  openBtn.style.display = "inline-block";
+  document.getElementById('rawBox').style.display = "none";
+  document.getElementById('holidayBox').style.display = "none";
+  document.getElementById('ocrResultInfo').style.display = "none";
+
+  currentPdf = null;
+  currentFileUrl = null;
+  currentPageNum = 1;
+  totalPages = 0;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ============================================================
-   PDF PAGE EXTRACT
+   Service Worker
    ============================================================ */
-async function extractSinglePagePdf(pdfUrl, pageNumber) {
-  const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
-  const src = await PDFLib.PDFDocument.load(bytes);
-  const out = await PDFLib.PDFDocument.create();
-  const [pg] = await out.copyPages(src, [pageNumber - 1]);
-  out.addPage(pg);
-  const outBytes = await out.save();
-  return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
-}
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-function renderPageHD(page, targetCanvas, divider) {
-  const ctx = targetCanvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 2;
-  const viewport = page.getViewport({ scale: 2.5 });
-
-  targetCanvas.width = Math.floor(viewport.width * dpr);
-  targetCanvas.height = Math.floor(viewport.height * dpr);
-  targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
-  targetCanvas.style.height = "auto";
-
-  ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
-  page.render({ canvasContext: ctx, transform, viewport });
-}
-
-/* ============================================================
-   MODAL
-   ============================================================ */
-function openModal() {
-  if (!matchedPdfPage) return;
-  const modal = document.getElementById('pdfModal');
-  const mc = document.getElementById('modal-canvas');
-  mc.width = 0; mc.height = 0;
-  modal.style.display = "block";
-  document.body.style.overflow = "hidden";
-  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
-  renderPageHD(matchedPdfPage, mc, divider);
-}
-function closeModal() {
-  const modal = document.getElementById('pdfModal');
-  if (modal.style.display === "block") {
-    modal.style.display = "none";
-    document.body.style.overflow = "auto";
-    const mc = document.getElementById('modal-canvas');
-    mc.width = 0; mc.height = 0;
-  }
-}
-function modalBackdropClick(e) {
-  if (e.target.id === "pdfModal") closeModal();
-}
-</script>
-
-<script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
