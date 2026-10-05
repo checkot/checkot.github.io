@@ -148,7 +148,7 @@
     background: #d4edda; border: 1px solid #c3e6cb;
     border-radius: 6px; padding: 8px 10px; font-size: 12px;
     color: #155724; margin: 10px 0; line-height: 1.6;
-    max-height: 150px; overflow-y: auto;
+    max-height: 180px; overflow-y: auto;
   }
 
   .reset-btn {
@@ -323,7 +323,7 @@ const RATE_TABLE = {
 };
 
 /* ====== Cache ====== */
-const CACHE_PREFIX = "renata_cache_v8_";
+const CACHE_PREFIX = "renata_cache_v9_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 
 function getCached(month, id) {
@@ -366,7 +366,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   MAIN SEARCH — Text-layer based
+   MAIN SEARCH
    ============================================================ */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
@@ -393,7 +393,6 @@ async function findReport() {
   if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
   matchedPdfPage = null;
 
-  // Abort previous
   currentToken++;
   const myToken = currentToken;
   for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
@@ -407,7 +406,6 @@ async function findReport() {
   searchBtn.disabled = true;
 
   try {
-    // 1) Cache
     const cached = getCached(month, searchId);
     if (cached) {
       progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
@@ -428,7 +426,6 @@ async function findReport() {
       return;
     }
 
-    // 2) GitHub API
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) {
@@ -456,7 +453,6 @@ async function findReport() {
 
     progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
 
-    // 3) Parallel search
     const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
     if (myToken !== currentToken) return;
 
@@ -594,7 +590,7 @@ async function showResult(fileUrl, pageNum, fileName) {
 }
 
 /* ============================================================
-   DUAL EXTRACTION — Text-Layer First, OCR Fallback
+   DUAL EXTRACTION
    ============================================================ */
 async function runOCRForCurrentPage() {
   if (!matchedPdfPage) return;
@@ -738,19 +734,15 @@ function escapeHtml(s) {
 }
 
 /* ============================================================
-   SMART PARSER — Tuned for your PDF format
+   SMART PARSER — Tuned for Text-Layer format
    ============================================================ */
 function parseOCRText(rawText) {
-  // Normalize whitespace (but preserve line structure for line-based scan)
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
   const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l);
 
   let otHours = 0, nightCount = 0, holidayDays = [], rawLine = null, totalHourLine = false;
 
-  /* ============================================================
-     STRATEGY 1: Find "Total Hour" (even glued: "ToTotal Hour")
-     Then extract NEXT 7 numbers.
-     ============================================================ */
+  /* ===== STRATEGY 1: Total Hour ===== */
   const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
 
   if (thIndex !== -1) {
@@ -758,10 +750,8 @@ function parseOCRText(rawText) {
     const numbers = after.match(/\d+\.\d+|\d+/g) || [];
 
     if (numbers.length >= 7) {
-      // First 7 numbers after keyword
       const n = numbers.slice(0, 7).map(x => parseFloat(x));
 
-      // Sanity check: প্রথম ৬টি decimal-like (>0), শেষটি small integer
       const validFormat = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 &&
                           n[3] >= 0 && n[4] >= 0 && n[5] >= 0 &&
                           Number.isInteger(n[6]) && n[6] >= 0 && n[6] < 200;
@@ -782,9 +772,7 @@ function parseOCRText(rawText) {
     }
   }
 
-  /* ============================================================
-     STRATEGY 2: Line-by-line scan
-     ============================================================ */
+  /* ===== STRATEGY 2: Line-by-line ===== */
   if (!totalHourLine) {
     for (let i = 0; i < lines.length; i++) {
       if (/TOTAL\s*HOUR/i.test(lines[i])) {
@@ -802,9 +790,7 @@ function parseOCRText(rawText) {
     }
   }
 
-  /* ============================================================
-     STRATEGY 3: Last 7 numbers of entire text (fallback)
-     ============================================================ */
+  /* ===== STRATEGY 3: Last 7 numbers ===== */
   if (!totalHourLine) {
     const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
     if (allNums.length >= 7) {
@@ -819,10 +805,10 @@ function parseOCRText(rawText) {
   }
 
   /* ============================================================
-     ROW-WISE HOLIDAY SCAN
-     Format: "02/09/2026 08:04 - 19:32 8.47 3.00 0.00 0.00 0.00 0.00 No"
+     ROW-WISE HOLIDAY SCAN — Text-Layer format
+     Format: "DD/MM/YYYY  N1 N2 N3 N4 N5 N6  Yes/No  HH:MM:SS - HH:MM:SS"
      ============================================================ */
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
+  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+\d{2}:\d{2}:\d{2}\s*-\s*\d{2}:\d{2}:\d{2}/gi;
 
   let rm;
   while ((rm = rowRegex.exec(cleanText)) !== null) {
@@ -834,6 +820,22 @@ function parseOCRText(rawText) {
 
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
       holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+    }
+  }
+
+  /* ===== Fallback: looser regex ===== */
+  if (holidayDays.length === 0) {
+    const looseRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
+    while ((rm = looseRegex.exec(cleanText)) !== null) {
+      const date    = rm[1];
+      const doDuty  = parseFloat(rm[4]) || 0;
+      const doExtra = parseFloat(rm[5]) || 0;
+      const holDuty = parseFloat(rm[6]) || 0;
+      const holExtra= parseFloat(rm[7]) || 0;
+
+      if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
+        holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+      }
     }
   }
 
