@@ -3,14 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENATA PLC - Overtime Report Viewer & Calculator</title>
+<title>RENATA PLC - Overtime Report Search & Calculator</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#004085">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="icon.png">
 
+<!-- PDF.js for rendering + text extraction -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<!-- pdf-lib for single-page download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<!-- Tesseract.js for single-page OCR -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <style>
@@ -22,7 +26,7 @@
     margin: 0; min-height: 100vh;
   }
   .card {
-    background: #ffffff; padding: 20px 18px; border-radius: 16px;
+    background: #ffffff; padding: 22px 18px; border-radius: 16px;
     max-width: 500px; margin: 0 auto 15px auto;
     box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     border: 1px solid rgba(255,255,255,0.6);
@@ -70,9 +74,9 @@
   #status { margin-top: 12px; text-align: center; font-weight: 600; font-size: 14px; }
   #progress { margin-top: 6px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
 
-  /* PDF Viewer */
+  /* PDF viewer */
   #pdf-viewer {
-    margin: 15px auto 0 auto; max-width: 100%; text-align: center;
+    margin: 12px auto 0 auto; max-width: 100%; text-align: center;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
   }
   canvas {
@@ -80,37 +84,18 @@
     border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     display: block; margin: 0 auto;
   }
-  .page-controls {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; margin-top: 10px; font-size: 14px;
-  }
-  .page-controls button {
-    width: auto; margin: 0; padding: 8px 14px;
-    font-size: 14px; background-color: #17a2b8;
-  }
-  .page-controls button:hover { background-color: #138496; }
-  .page-controls button:disabled { background-color: #adb5bd; }
-  .page-controls span { font-weight: 600; min-width: 80px; text-align: center; }
 
-  .page-jump {
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px; margin-top: 8px; font-size: 13px;
+  .btn-group { display: flex; gap: 10px; margin-top: 12px; }
+  .btn-action {
+    background-color: #28a745; color: white; text-align: center;
+    text-decoration: none; display: none; padding: 11px;
+    border-radius: 8px; font-weight: 600; flex: 1;
+    font-size: 14px; cursor: pointer;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2); border: none;
   }
-  .page-jump input {
-    width: 70px; margin: 0; padding: 6px 8px; font-size: 14px;
-    text-align: center;
-  }
-  .page-jump button {
-    width: auto; margin: 0; padding: 6px 12px; font-size: 13px;
-    background-color: #6c757d;
-  }
-
-  .confirm-banner {
-    background: #d4edda; border: 2px solid #28a745;
-    border-radius: 8px; padding: 10px; margin-top: 12px;
-    font-size: 13px; color: #155724; text-align: center;
-    font-weight: 600;
-  }
+  .btn-action:hover { background-color: #218838; }
+  .btn-open { background-color: #17a2b8; }
+  .btn-open:hover { background-color: #138496; }
 
   /* Calculator */
   .calc-card { display: none; }
@@ -175,6 +160,28 @@
     font-size: 13px; padding: 9px;
   }
   .reset-btn:hover { background-color: #5a6268; }
+
+  /* Modal */
+  .modal {
+    display: none; position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.92);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    overflow: auto; padding: 60px 10px 20px 10px;
+  }
+  .modal-content-wrapper {
+    position: relative; max-width: 1000px;
+    margin: 0 auto; text-align: center;
+  }
+  .close-btn {
+    position: fixed; top: 15px; right: 15px;
+    background-color: #dc3545; color: white; border: none;
+    padding: 10px 18px; font-size: 15px; font-weight: bold;
+    border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 10000;
+  }
+  .close-btn:hover { background-color: #bd2130; }
+  #modal-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -183,7 +190,7 @@
 <div class="card" id="step1">
   <div class="header">
     <h2>RENATA PLC</h2>
-    <p>Overtime Report Viewer & Calculator</p>
+    <p>Overtime Report Search & Calculator</p>
   </div>
 
   <label>বছর ও মাস নির্বাচন করুন:</label>
@@ -220,10 +227,10 @@
   <div id="progress"></div>
 </div>
 
-<!-- ============ STEP 2: PDF Viewer + Confirm ============ -->
+<!-- ============ STEP 2: PDF Viewer + OCR button ============ -->
 <div class="card" id="step2" style="display:none;">
   <div class="header">
-    <h2 style="font-size:16px;">📄 রিপোর্ট দেখুন</h2>
+    <h2 style="font-size:16px;">📄 রিপোর্ট</h2>
     <p id="viewerTitle">—</p>
   </div>
 
@@ -231,31 +238,22 @@
     <canvas id="pdf-canvas"></canvas>
   </div>
 
-  <div class="page-controls">
-    <button id="prevBtn" onclick="changePage(-1)">◀ আগের</button>
-    <span id="pageIndicator">— / —</span>
-    <button id="nextBtn" onclick="changePage(1)">পরের ▶</button>
+  <div class="btn-group">
+    <a id="downloadBtn" class="btn-action" target="_blank">📥 ডাউনলোড</a>
+    <button id="openBtn" class="btn-action btn-open" onclick="openModal()">🔍 ফুল ভিউ</button>
   </div>
 
-  <div class="page-jump">
-    <span>যেকোনো পেজে যান:</span>
-    <input type="number" id="pageJumpInput" min="1" placeholder="#">
-    <button onclick="jumpToPage()">যান</button>
-  </div>
-
-  <div class="confirm-banner">
-    👆 উপরে আপনার রিপোর্ট চোখে দেখুন। সঠিক পেজ এলে "হিসাব করুন" চাপুন।
+  <div class="info-hint" style="margin-top:12px;">
+    👆 PDF চোখে দেখুন। এখন <strong>"📊 হিসাব করুন"</strong> চাপলে এই পেজটি OCR হবে এবং ক্যালকুলেটরে মান বসে যাবে।
   </div>
 
   <button id="calcBtn" class="btn-calc" onclick="runOCRForCurrentPage()">
-    📊 এই পেজের হিসাব করুন
+    📊 হিসাব করুন (এই পেজ OCR)
   </button>
 
   <div id="ocrStatus" style="text-align:center; font-size:13px; color:#6c757d; margin-top:6px;"></div>
 
-  <button onclick="resetAll()" class="reset-btn" style="margin-top:8px;">
-    🔄 নতুন সার্চ
-  </button>
+  <button onclick="resetAll()" class="reset-btn">🔄 নতুন সার্চ</button>
 </div>
 
 <!-- ============ STEP 3: Calculator ============ -->
@@ -309,6 +307,14 @@
   <button onclick="resetAll()" class="reset-btn">🔄 নতুন সার্চ</button>
 </div>
 
+<!-- Modal -->
+<div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
+  <button class="close-btn" onclick="closeModal()">✕ বন্ধ করুন</button>
+  <div class="modal-content-wrapper">
+    <canvas id="modal-canvas"></canvas>
+  </div>
+</div>
+
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -321,22 +327,51 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
 };
 
+/* ====== Cache ====== */
+const CACHE_PREFIX = "renata_cache_v5_";
+const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
+
+function getCached(month, id) {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (Date.now() - d.ts > CACHE_TTL_MS) {
+      localStorage.removeItem(CACHE_PREFIX + month + "_" + id);
+      return null;
+    }
+    return d;
+  } catch (e) { return null; }
+}
+function setCache(month, id, payload) {
+  try {
+    localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload }));
+  } catch (e) {}
+}
+
 /* ====== State ====== */
+let singlePageBlobUrl = null;
+let matchedPdfPage = null;
 let currentPdf = null;
 let currentFileUrl = null;
 let currentPageNum = 1;
-let totalPages = 0;
-let matchedPageForSearch = 1;
-let ocrWorker = null;
+let currentFileName = "";
 let currentSearchId = "";
+let currentMonth = "";
+let currentToken = 0;
+const activeTasks = new Set();
+let ocrWorker = null;
 
-/* ====== Enter key listener ====== */
+/* ====== Listeners ====== */
 document.getElementById('employeeId').addEventListener('keydown', e => {
   if (e.key === 'Enter') findReport();
 });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
 
 /* ============================================================
-   STEP 1: Find Report
+   🔍 MAIN SEARCH — Text-layer based, FAST
    ============================================================ */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
@@ -353,15 +388,52 @@ async function findReport() {
 
   const searchId = rawId.toUpperCase();
   currentSearchId = searchId;
+  currentMonth = month;
+
+  // Reset
+  document.getElementById('step2').style.display = "none";
+  document.getElementById('step3').classList.remove('show');
+  document.getElementById('downloadBtn').style.display = "none";
+  document.getElementById('openBtn').style.display = "none";
+  if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
+  matchedPdfPage = null;
+
+  // Abort previous
+  currentToken++;
+  const myToken = currentToken;
+  for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
+  activeTasks.clear();
 
   statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "PDF খোঁজা হচ্ছে...";
+  statusDiv.innerText = "দ্রুত সার্চ করা হচ্ছে...";
   progressDiv.style.display = "block";
   progressDiv.innerText = "";
   spinner.style.display = "block";
   searchBtn.disabled = true;
 
   try {
+    // 1) Cache check
+    const cached = getCached(month, searchId);
+    if (cached) {
+      progressDiv.innerText = "⚡ ক্যাশ থেকে লোড হয়েছে";
+      await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
+      if (cached.calc) {
+        applyCalculation(cached.calc);
+        if (cached.rawLine) showRawValues(cached.rawLine);
+        if (cached.holidayDays) showHolidayList(cached.holidayDays);
+        document.getElementById('ocrResultInfo').style.display = "block";
+        document.getElementById('ocrResultInfo').className = "info-hint success";
+        document.getElementById('ocrResultInfo').innerHTML = "✅ আগের হিসাব ক্যাশ থেকে লোড হয়েছে।";
+      }
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month} — ক্যাশ)</small>`;
+      return;
+    }
+
+    // 2) GitHub API
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) {
@@ -374,7 +446,10 @@ async function findReport() {
     }
 
     const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+    const pdfFiles = filesData
+      .filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
+      .map(f => ({ name: f.name, url: f.download_url }));
+
     if (pdfFiles.length === 0) {
       spinner.style.display = "none";
       searchBtn.disabled = false;
@@ -384,39 +459,34 @@ async function findReport() {
       return;
     }
 
-    progressDiv.innerText = `${pdfFiles.length}টি ফাইল স্ক্যান করা হচ্ছে...`;
-    const result = await scanFilesForId(pdfFiles, searchId, progressDiv);
+    progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
 
-    if (!result) {
+    // 3) Parallel text-layer search
+    const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
+    if (myToken !== currentToken) return;
+
+    if (match) {
+      // Save to cache (without calc initially)
+      setCache(month, searchId, {
+        fileUrl: match.fileUrl,
+        pageNum: match.pageNum,
+        fileName: match.fileName
+      });
+
+      await showResult(match.fileUrl, match.pageNum, match.fileName);
+
+      spinner.style.display = "none";
+      searchBtn.disabled = false;
+      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745";
+      statusDiv.innerHTML = `✅ রিপোর্ট পাওয়া গেছে! <br><small>(${month})</small>`;
+    } else {
       spinner.style.display = "none";
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545";
-      statusDiv.innerHTML = `❌ আইডি "${searchId}"-এর রেকর্ড পাওয়া যায়নি।`;
-      return;
+      statusDiv.innerHTML = `❌ আইডি "${rawId}"-এর রেকর্ড ${month}-এ পাওয়া যায়নি।`;
     }
-
-    currentFileUrl = result.fileUrl;
-    currentPdf = result.pdf;
-    totalPages = result.pdf.numPages;
-    matchedPageForSearch = result.pageNum;
-    currentPageNum = result.pageNum;
-
-    document.getElementById('step1').style.display = "none";
-    document.getElementById('step2').style.display = "block";
-    document.getElementById('viewerTitle').innerText = `${searchId} — ${month}`;
-
-    await renderCurrentPage();
-
-    // Auto-detect category
-    autoDetectCategory(searchId);
-
-    spinner.style.display = "none";
-    searchBtn.disabled = false;
-    progressDiv.style.display = "none";
-    statusDiv.innerText = "";
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (err) {
     console.error(err);
@@ -424,91 +494,123 @@ async function findReport() {
     searchBtn.disabled = false;
     progressDiv.style.display = "none";
     statusDiv.style.color = "#dc3545";
-    statusDiv.innerText = "❌ সমস্যা হয়েছে! ইন্টারনেট চেক করুন।";
+    statusDiv.innerText = "❌ ডাটা লোডে সমস্যা! ইন্টারনেট চেক করুন।";
   }
 }
 
 /* ============================================================
-   Scan files: Find which PDF/page has the ID
+   ⚡ Parallel text-layer search
    ============================================================ */
-async function scanFilesForId(pdfFiles, searchId, progressDiv) {
-  for (let i = 0; i < pdfFiles.length; i++) {
-    const file = pdfFiles[i];
-    if (progressDiv) {
-      progressDiv.innerText = `ফাইল ${i + 1}/${pdfFiles.length}: ${file.name}`;
-    }
+async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
+  const total = pdfFiles.length;
+  let scanned = 0;
 
-    try {
-      const pdf = await pdfjsLib.getDocument(file.download_url).promise;
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
 
-      for (let p = 1; p <= pdf.numPages; p++) {
-        const page = await pdf.getPage(p);
-        const tc = await page.getTextContent();
-        const text = tc.items.map(it => it.str).join(" ").toUpperCase();
-
-        // Text-layer check
-        if (text.includes(searchId) && /[A-Z]{3,}/.test(text)) {
-          return { pdf, pageNum: p, fileUrl: file.download_url };
-        }
-
-        // OCR fallback (top header only)
+    pdfFiles.forEach((file) => {
+      (async () => {
+        if (myToken !== currentToken) return;
+        let task = null, pdf = null;
         try {
-          const ocrText = await quickHeaderOCR(page);
-          if (ocrText && ocrText.includes(searchId)) {
-            return { pdf, pageNum: p, fileUrl: file.download_url };
+          task = pdfjsLib.getDocument({
+            url: file.url,
+            disableAutoFetch: true,
+            disableStream: false,
+            rangeChunkSize: 65536
+          });
+          activeTasks.add(task);
+          pdf = await task.promise;
+
+          for (let p = 1; p <= pdf.numPages; p++) {
+            if (myToken !== currentToken || settled) break;
+
+            const page = await pdf.getPage(p);
+            const tc = await page.getTextContent();
+            const text = tc.items.map(i => i.str).join(" ").toUpperCase();
+
+            if (text.includes(searchId)) {
+              finish({
+                page, pageNum: p,
+                fileUrl: file.url,
+                fileName: file.name,
+                pdf
+              });
+              return;
+            }
           }
-        } catch (e) { /* skip */ }
-      }
-    } catch (e) {
-      console.log("PDF load failed:", file.name, e.message);
-    }
-  }
-  return null;
-}
-
-/* ============================================================
-   Quick header OCR (top 28%)
-   ============================================================ */
-async function quickHeaderOCR(pdfPage) {
-  const viewport = pdfPage.getViewport({ scale: 1.5 });
-  const headerHeight = Math.floor(viewport.height * 0.28);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = viewport.width;
-  canvas.height = headerHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  await pdfPage.render({
-    canvasContext: ctx,
-    viewport: viewport,
-    transform: [1, 0, 0, 1, 0, 0]
-  }).promise;
-
-  const cropped = document.createElement('canvas');
-  cropped.width = viewport.width;
-  cropped.height = headerHeight;
-  const cctx = cropped.getContext('2d');
-  cctx.drawImage(canvas, 0, 0, viewport.width, headerHeight, 0, 0, viewport.width, headerHeight);
-
-  if (!ocrWorker) {
-    ocrWorker = await Tesseract.createWorker('eng');
-    await ocrWorker.setParameters({
-      tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:. ',
-      preserve_interword_spaces: '1'
+          scanned++;
+          if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
+        } catch (e) {
+          console.log("PDF error:", file.name, e.message);
+        } finally {
+          if (task) activeTasks.delete(task);
+          if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} }
+        }
+      })();
     });
-  }
 
-  const { data: { text } } = await ocrWorker.recognize(cropped);
-  return text.toUpperCase();
+    setTimeout(() => {
+      if (!settled) {
+        const check = setInterval(() => {
+          if (scanned >= total || myToken !== currentToken) {
+            clearInterval(check);
+            finish(null);
+          }
+        }, 200);
+      }
+    }, 100);
+  });
 }
 
 /* ============================================================
-   🔥 MAIN: OCR only the CURRENT confirmed page
+   📄 Show result: render page, extract single-page PDF
+   ============================================================ */
+async function showResult(fileUrl, pageNum, fileName) {
+  // Load PDF if not already loaded
+  if (!currentPdf || currentFileUrl !== fileUrl) {
+    const task = pdfjsLib.getDocument(fileUrl);
+    currentPdf = await task.promise;
+    currentFileUrl = fileUrl;
+  }
+
+  currentPageNum = pageNum;
+  currentFileName = fileName;
+
+  const page = await currentPdf.getPage(pageNum);
+  matchedPdfPage = page;
+
+  // Render on main canvas
+  renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
+
+  // Show step 2
+  document.getElementById('step2').style.display = "block";
+  document.getElementById('viewerTitle').innerText =
+    `${currentSearchId} — ${currentMonth} (${fileName}, page ${pageNum})`;
+
+  // Extract single page PDF for download
+  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+  const downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.href = singlePageBlobUrl;
+  downloadBtn.setAttribute('download', `Overtime_${currentSearchId}_${currentMonth}.pdf`);
+  downloadBtn.style.display = "inline-block";
+  document.getElementById('openBtn').style.display = "inline-block";
+
+  // Auto-detect category from ID
+  autoDetectCategory(currentSearchId);
+
+  // Clear OCR status
+  document.getElementById('ocrStatus').innerText = "";
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   🔥 SINGLE-PAGE OCR (only the matched page)
    ============================================================ */
 async function runOCRForCurrentPage() {
-  if (!currentPdf) return;
+  if (!matchedPdfPage) return;
 
   const calcBtn = document.getElementById('calcBtn');
   const ocrStatus = document.getElementById('ocrStatus');
@@ -517,7 +619,7 @@ async function runOCRForCurrentPage() {
   ocrStatus.innerText = "OCR শুরু হচ্ছে...";
 
   try {
-    // Ensure worker
+    // Ensure OCR worker
     if (!ocrWorker) {
       ocrStatus.innerText = "OCR engine লোড হচ্ছে (প্রথমবার ~৫ সেকেন্ড)...";
       ocrWorker = await Tesseract.createWorker('eng');
@@ -527,10 +629,9 @@ async function runOCRForCurrentPage() {
       });
     }
 
-    const page = await currentPdf.getPage(currentPageNum);
-
-    ocrStatus.innerText = `Page ${currentPageNum} — high-res render...`;
-    const viewport = page.getViewport({ scale: 2.2 });
+    // Render page at higher scale for OCR accuracy
+    ocrStatus.innerText = "Page render হচ্ছে...";
+    const viewport = matchedPdfPage.getViewport({ scale: 2.2 });
     const canvas = document.createElement('canvas');
     canvas.width = viewport.width;
     canvas.height = viewport.height;
@@ -538,14 +639,14 @@ async function runOCRForCurrentPage() {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
 
-    ocrStatus.innerText = `Page ${currentPageNum} — OCR চলছে...`;
+    ocrStatus.innerText = "OCR চলছে (~৫ সেকেন্ড)...";
     const { data: { text } } = await ocrWorker.recognize(canvas);
 
-    ocrStatus.innerText = `✅ OCR সম্পূর্ণ!`;
+    ocrStatus.innerText = "✅ OCR সম্পূর্ণ!";
 
-    // Parse
+    // Parse text
     const parsed = parseOCRText(text);
 
     // Auto-fill calculator
@@ -554,38 +655,40 @@ async function runOCRForCurrentPage() {
     document.getElementById('inpNight').value = parsed.nightCount;
     recalculate();
 
-    // Show calculator
+    // Show step 3
     document.getElementById('step3').classList.add('show');
 
+    // Info message
     const info = document.getElementById('ocrResultInfo');
     info.style.display = "block";
-
     if (parsed.totalHourLine) {
       info.className = "info-hint success";
-      info.innerHTML = `✅ <strong>OCR সফল!</strong> PDF-এর সাথে সংখ্যাগুলো মিলিয়ে দেখুন। ভুল থাকলে টাইপ করে ঠিক করুন।`;
+      info.innerHTML = `✅ <strong>OCR সফল!</strong> PDF-এর সাথে মিলিয়ে দেখুন। ভুল থাকলে টাইপ করে ঠিক করুন।`;
     } else {
       info.className = "info-hint warn";
-      info.innerHTML = `⚠️ Total Hour লাইন পড়া যায়নি। নিচের মানগুলো <strong>PDF দেখে ম্যানুয়ালি</strong> টাইপ করুন।`;
+      info.innerHTML = `⚠️ Total Hour লাইন পড়া যায়নি। PDF দেখে <strong>ম্যানুয়ালি</strong> টাইপ করুন।`;
     }
 
-    if (parsed.rawLine) {
-      document.getElementById('rawBox').style.display = "block";
-      document.getElementById('rawValues').innerText = parsed.rawLine;
-    } else {
-      document.getElementById('rawBox').style.display = "none";
-    }
+    // Show raw + holiday list
+    if (parsed.rawLine) showRawValues(parsed.rawLine);
+    if (parsed.holidayDays && parsed.holidayDays.length > 0) showHolidayList(parsed.holidayDays);
 
-    if (parsed.holidayDays.length > 0) {
-      document.getElementById('holidayBox').style.display = "block";
-      const lines = parsed.holidayDays.map((d, i) =>
-        `${i + 1}. ${d.date} → DO(${d.doDuty}+${d.doExtra}) Hol(${d.holDuty}+${d.holExtra})`
-      );
-      document.getElementById('holidayList').innerHTML = lines.join("<br>");
-    } else {
-      document.getElementById('holidayBox').style.display = "none";
-    }
+    // Update cache with calc result
+    setCache(currentMonth, currentSearchId, {
+      fileUrl: currentFileUrl,
+      pageNum: currentPageNum,
+      fileName: currentFileName,
+      calc: {
+        category: document.getElementById('inpCategory').value,
+        otHours: parsed.otHours,
+        holiday: parsed.holidayCount,
+        night: parsed.nightCount
+      },
+      rawLine: parsed.rawLine,
+      holidayDays: parsed.holidayDays
+    });
 
-    // Scroll to calculator
+    ocrStatus.innerText = "";
     document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
 
   } catch (e) {
@@ -602,12 +705,9 @@ async function runOCRForCurrentPage() {
 function parseOCRText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
 
-  let otHours = 0;
-  let nightCount = 0;
-  let holidayDays = [];
-  let rawLine = null;
+  let otHours = 0, nightCount = 0, holidayDays = [], rawLine = null;
 
-  // Total Hour line: 7 numbers
+  // Total Hour line (7 numbers)
   const totalHourRegex = /TOTAL\s+HOUR\s*:?\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(\d+)/i;
   const m = cleanText.match(totalHourRegex);
 
@@ -622,17 +722,14 @@ function parseOCRText(rawText) {
 
   // Row-wise holiday scan
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+[\d:]+\s*-\s*[\d:]+\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)/gi;
-
-  let rowMatch;
-  while ((rowMatch = rowRegex.exec(cleanText)) !== null) {
-    const date = rowMatch[1];
-    const doDuty  = parseFloat(rowMatch[4]) || 0;
-    const doExtra = parseFloat(rowMatch[5]) || 0;
-    const holDuty = parseFloat(rowMatch[6]) || 0;
-    const holExtra= parseFloat(rowMatch[7]) || 0;
-
+  let rm;
+  while ((rm = rowRegex.exec(cleanText)) !== null) {
+    const doDuty  = parseFloat(rm[4]) || 0;
+    const doExtra = parseFloat(rm[5]) || 0;
+    const holDuty = parseFloat(rm[6]) || 0;
+    const holExtra= parseFloat(rm[7]) || 0;
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
-      holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+      holidayDays.push({ date: rm[1], doDuty, doExtra, holDuty, holExtra });
     }
   }
 
@@ -647,52 +744,28 @@ function parseOCRText(rawText) {
 }
 
 /* ============================================================
-   Render current page
+   UI helpers
    ============================================================ */
-async function renderCurrentPage() {
-  if (!currentPdf) return;
-
-  const page = await currentPdf.getPage(currentPageNum);
-  const canvas = document.getElementById('pdf-canvas');
-  const ctx = canvas.getContext('2d');
-
-  const viewport = page.getViewport({ scale: 2.0 });
-  const dpr = window.devicePixelRatio || 2;
-
-  canvas.width = Math.floor(viewport.width * dpr);
-  canvas.height = Math.floor(viewport.height * dpr);
-  canvas.style.width = "100%";
-  canvas.style.maxWidth = viewport.width + "px";
-  canvas.style.height = "auto";
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
-
-  await page.render({
-    canvasContext: ctx,
-    transform: transform,
-    viewport: viewport
-  }).promise;
-
-  document.getElementById('pageIndicator').innerText = `${currentPageNum} / ${totalPages}`;
-  document.getElementById('prevBtn').disabled = currentPageNum <= 1;
-  document.getElementById('nextBtn').disabled = currentPageNum >= totalPages;
-  document.getElementById('pageJumpInput').value = currentPageNum;
-  document.getElementById('pageJumpInput').max = totalPages;
+function showRawValues(rawLine) {
+  document.getElementById('rawBox').style.display = "block";
+  document.getElementById('rawValues').innerText = rawLine;
 }
 
-function changePage(delta) {
-  const newPage = currentPageNum + delta;
-  if (newPage < 1 || newPage > totalPages) return;
-  currentPageNum = newPage;
-  renderCurrentPage();
+function showHolidayList(list) {
+  document.getElementById('holidayBox').style.display = "block";
+  const lines = list.map((d, i) =>
+    `${i + 1}. ${d.date} → DO(${d.doDuty}+${d.doExtra}) Hol(${d.holDuty}+${d.holExtra})`
+  );
+  document.getElementById('holidayList').innerHTML = lines.join("<br>");
 }
 
-function jumpToPage() {
-  const v = parseInt(document.getElementById('pageJumpInput').value) || 1;
-  if (v < 1 || v > totalPages) { alert("১ থেকে " + totalPages + " এর মধ্যে দিন"); return; }
-  currentPageNum = v;
-  renderCurrentPage();
+function applyCalculation(calc) {
+  document.getElementById('inpCategory').value = calc.category;
+  document.getElementById('inpOtHours').value = calc.otHours;
+  document.getElementById('inpHoliday').value = calc.holiday;
+  document.getElementById('inpNight').value = calc.night;
+  document.getElementById('step3').classList.add('show');
+  recalculate();
 }
 
 /* ============================================================
@@ -736,6 +809,63 @@ function recalculate() {
 }
 
 /* ============================================================
+   Single-page PDF extraction
+   ============================================================ */
+async function extractSinglePagePdf(pdfUrl, pageNumber) {
+  const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
+  const src = await PDFLib.PDFDocument.load(bytes);
+  const out = await PDFLib.PDFDocument.create();
+  const [pg] = await out.copyPages(src, [pageNumber - 1]);
+  out.addPage(pg);
+  const outBytes = await out.save();
+  return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
+}
+
+/* ============================================================
+   Render page HD
+   ============================================================ */
+function renderPageHD(page, targetCanvas, divider) {
+  const ctx = targetCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 2;
+  const viewport = page.getViewport({ scale: 2.5 });
+
+  targetCanvas.width = Math.floor(viewport.width * dpr);
+  targetCanvas.height = Math.floor(viewport.height * dpr);
+  targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
+  targetCanvas.style.height = "auto";
+
+  ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
+  page.render({ canvasContext: ctx, transform, viewport });
+}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+function openModal() {
+  if (!matchedPdfPage) return;
+  const modal = document.getElementById('pdfModal');
+  const mc = document.getElementById('modal-canvas');
+  mc.width = 0; mc.height = 0;
+  modal.style.display = "block";
+  document.body.style.overflow = "hidden";
+  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
+  renderPageHD(matchedPdfPage, mc, divider);
+}
+function closeModal() {
+  const modal = document.getElementById('pdfModal');
+  if (modal.style.display === "block") {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+    const mc = document.getElementById('modal-canvas');
+    mc.width = 0; mc.height = 0;
+  }
+}
+function modalBackdropClick(e) {
+  if (e.target.id === "pdfModal") closeModal();
+}
+
+/* ============================================================
    Reset
    ============================================================ */
 function resetAll() {
@@ -759,7 +889,7 @@ function resetAll() {
   currentPdf = null;
   currentFileUrl = null;
   currentPageNum = 1;
-  totalPages = 0;
+  matchedPdfPage = null;
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
