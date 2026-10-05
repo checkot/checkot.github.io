@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ওভারটাইম রিপোর্ট সার্চ</title>
+    <!-- PDF.js Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9; text-align: center; }
+        .search-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: inline-block; }
+        input, select, button { padding: 10px; margin: 8px 0; width: 80%; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #status { font-weight: bold; color: #333; margin-top: 15px; }
+        #pdf-viewer { margin-top: 20px; text-align: center; }
+        canvas { border: 1px solid #ddd; max-width: 100%; height: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="search-box">
+        <h2>ওভারটাইম রিপোর্ট</h2>
+        
+        <!-- মাস সিলেক্ট (ফোল্ডার বা ফাইলের জন্য) -->
+        <label for="month">মাস নির্বাচন করুন:</label>
+        <select id="month">
+            <option value="2026-09">সেপ্টেম্বর ২০২৬</option>
+            <option value="2026-10">অক্টোবর ২০২৬</option>
+        </select>
+        <br>
+
+        <!-- এমপ্লয়ি আইডি ইনপুট -->
+        <input type="text" id="employeeId" placeholder="আপনার এমপ্লয়ি আইডি লিখুন (ex: 1001)">
+        <br>
+
+        <button onclick="searchPDF()">খুঁজে বের করুন</button>
+        <div id="status"></div>
+    </div>
+
+    <!-- পিডিএফ দেখানোর জায়গা -->
+    <div id="pdf-viewer">
+        <canvas id="pdf-canvas"></canvas>
+    </div>
+
+    <script>
+        // PDF.js এর Worker সেটআপ
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        async function searchPDF() {
+            const month = document.getElementById('month').value;
+            const empId = document.getElementById('employeeId').value.trim();
+            const statusDiv = document.getElementById('status');
+            const canvas = document.getElementById('pdf-canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (!empId) {
+                alert("অনুগ্রহ করে আপনার আইডি লিখুন!");
+                return;
+            }
+
+            statusDiv.innerText = "সার্চ করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // পুরোনো ক্যানভাস ক্লিয়ার করা
+
+            // আপনার নির্দিষ্ট ফোল্ডারে থাকা যেকোনো ফাইলের নাম এখানে লিস্ট করুন
+            // উদাহরণস্বরূপ: pdfs/2026-10/ ফোল্ডারের অধীনে থাকা ফাইলগুলো
+            const pdfFiles = [
+                `pdfs/${month}/overtime_part1.pdf`,
+                `pdfs/${month}/overtime_part2.pdf`,
+                `pdfs/${month}/monthly_report.pdf`
+            ];
+
+            let found = false;
+
+            // সকল পিডিএফ ফাইল চেক করা হবে
+            for (let fileUrl of pdfFiles) {
+                try {
+                    const loadingTask = pdfjsLib.getDocument(fileUrl);
+                    const pdf = await loadingTask.promise;
+
+                    // পিডিএফের প্রতিটি পেজ স্ক্যান করা হবে
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        const page = await pdf.getPage(pageNum);
+                        const textContent = await page.getTextContent();
+                        
+                        // পেজের সব টেক্সট যোগ করা
+                        const pageText = textContent.items.map(item => item.str).join(" ");
+
+                        // যদি ইউজার আইডি টেক্সটের মধ্যে থাকে
+                        if (pageText.includes(empId)) {
+                            statusDiv.innerHTML = `<span style="color: green;">রিপোর্ট পাওয়া গেছে! (ফাইল: ${fileUrl}, পৃষ্ঠা: ${pageNum})</span>`;
+                            renderPage(page);
+                            found = true;
+                            break;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`ফাইল লোড করতে সমস্যা বা পাওয়া যায়নি: ${fileUrl}`);
+                }
+
+                if (found) break; // আইডি পেয়ে গেলে সার্চ বন্ধ হবে
+            }
+
+            if (!found) {
+                statusDiv.innerHTML = `<span style="color: red;">দুঃখিত! এই আইডির কোন রেকর্ড পাওয়া যায়নি।</span>`;
+            }
+        }
+
+        // পিডিএফ পেজ ক্যানভাসে রেন্ডার করা
+        function renderPage(page) {
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.getElementById('pdf-canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            page.render(renderContext);
+        }
+    </script>
+
+</body>
+</html>
