@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-RENATA Notice Fetcher — Fixed Version
-Telegram channel থেকে notice পড়ে notices.json আপডেট করে
+RENATA Notice Fetcher v3 — Persistent Offset
 """
 import os
 import json
@@ -13,17 +12,53 @@ CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID')
 NOTICES_FILE = 'notices.json'
 MAX_NOTICES = 20
 
-def fetch_channel_messages():
+def load_state():
+    """notices.json থেকে _lastUpdateId পড়ুন"""
+    if not os.path.exists(NOTICES_FILE):
+        return {'notices': [], '_lastUpdateId': 0}
+    try:
+        with open(NOTICES_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return {
+            'notices': data.get('notices', []),
+            '_lastUpdateId': data.get('_lastUpdateId', 0)
+        }
+    except Exception as e:
+        print(f"Load error: {e}")
+        return {'notices': [], '_lastUpdateId': 0}
+
+def save_state(notices, last_update_id):
+    """notices.json-এ state save করুন"""
+    with open(NOTICES_FILE, 'w', encoding='utf-8') as f:
+        json.dump({
+            '_lastUpdateId': last_update_id,
+            'notices': notices
+        }, f, ensure_ascii=False, indent=2)
+    print(f"Saved {len(notices)} notices, offset={last_update_id}")
+
+def fetch_channel_messages(last_offset):
+    """Telegram থেকে messages (offset tracked)"""
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?limit=100"
+    if last_offset > 0:
+        url += f"&offset={last_offset + 1}"
+    
+    print(f"Fetching with offset={last_offset}")
+    
     try:
         with urllib.request.urlopen(url, timeout=15) as response:
             data = json.loads(response.read().decode())
         if not data.get('ok'):
             print(f"API error: {data}")
-            return []
+            return [], last_offset
         
         messages = []
+        max_update_id = last_offset
+        
         for update in data.get('result', []):
+            update_id = update.get('update_id', 0)
+            if update_id > max_update_id:
+                max_update_id = update_id
+            
             post = update.get('channel_post', {})
             if not post:
                 continue
@@ -37,15 +72,16 @@ def fetch_channel_messages():
             date_ts = post.get('date', 0)
             date_str = datetime.fromtimestamp(date_ts).strftime('%Y-%m-%d') if date_ts else datetime.now().strftime('%Y-%m-%d')
             messages.append({
-                'id': 1000000 + message_id,   # ⭐ Prefix to avoid collision
+                'id': 1000000 + message_id,
                 'text': text,
                 'date': date_str,
                 'ts': date_ts
             })
-        return messages
+        
+        return messages, max_update_id
     except Exception as e:
         print(f"Fetch error: {e}")
-        return []
+        return [], last_offset
 
 def parse_notice(text, default_date, notice_id):
     lines = [line.strip() for line in text.split('\n') if line.strip()]
@@ -72,34 +108,23 @@ def parse_notice(text, default_date, notice_id):
         'priority': priority
     }
 
-def load_existing_notices():
-    if not os.path.exists(NOTICES_FILE):
-        return []
-    try:
-        with open(NOTICES_FILE, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return data.get('notices', [])
-    except Exception as e:
-        print(f"Load error: {e}")
-        return []
-
-def save_notices(notices):
-    with open(NOTICES_FILE, 'w', encoding='utf-8') as f:
-        json.dump({'notices': notices}, f, ensure_ascii=False, indent=2)
-    print(f"Saved {len(notices)} notices")
-
 def main():
     if not BOT_TOKEN or not CHANNEL_ID:
         print("Missing BOT_TOKEN or CHANNEL_ID")
         return
     
-    messages = fetch_channel_messages()
+    # Load state
+    state = load_state()
+    existing = state['notices']
+    last_offset = state['_lastUpdateId']
+    
+    # Fetch
+    messages, new_offset = fetch_channel_messages(last_offset)
     print(f"Fetched {len(messages)} messages from Telegram")
     
-    existing = load_existing_notices()
     existing_ids = {n.get('id') for n in existing}
-    
     new_notices = []
+    
     for msg in messages:
         if msg['id'] in existing_ids:
             continue
@@ -110,10 +135,9 @@ def main():
     
     print(f"Found {len(new_notices)} new notices")
     
-    # Merge: new + existing
+    # Merge
     all_notices = new_notices + existing
     
-    # Fallback _ts for old notices
     for n in all_notices:
         if '_ts' not in n:
             try:
@@ -122,18 +146,17 @@ def main():
             except:
                 n['_ts'] = 0
     
-    # Sort latest first
     all_notices.sort(key=lambda x: x.get('_ts', 0), reverse=True)
     all_notices = all_notices[:MAX_NOTICES]
     
-    # Clean _ts
     clean = []
     for n in all_notices:
         n.pop('_ts', None)
         clean.append(n)
     
-    if clean != existing:
-        save_notices(clean)
+    # Save with new offset
+    if clean != existing or new_offset != last_offset:
+        save_state(clean, new_offset)
         print("notices.json updated")
     else:
         print("No changes")
