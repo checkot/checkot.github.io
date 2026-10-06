@@ -97,8 +97,8 @@
   }
   .btn-action:hover { background-color: #004085; }
 
-  .calc-card { display: none; }
-  .calc-card.show { display: block; }
+  .calc-card { display: none !important; }
+  .calc-card.show { display: block !important; }
   .calc-card h3 {
     margin-top: 0; color: #004085; font-size: 16px;
     border-bottom: 2px solid #0056b3; padding-bottom: 6px;
@@ -265,9 +265,7 @@
   }
 
   /* Leaderboard */
-  .leaderboard-card {
-    margin-bottom: 12px;
-  }
+  .leaderboard-card { margin-bottom: 12px; }
   .leaderboard-section-title {
     font-size: 14px; font-weight: 700; color: #004085;
     margin: 16px 0 10px 0;
@@ -283,18 +281,9 @@
     transition: 0.2s;
   }
   .rank-item:hover { background: #e7f3ff; }
-  .rank-item.rank-1 {
-    border-left-color: #ffc107;
-    background: #fff9e6;
-  }
-  .rank-item.rank-2 {
-    border-left-color: #adb5bd;
-    background: #f8f9fa;
-  }
-  .rank-item.rank-3 {
-    border-left-color: #cd7f32;
-    background: #fdf4ec;
-  }
+  .rank-item.rank-1 { border-left-color: #ffc107; background: #fff9e6; }
+  .rank-item.rank-2 { border-left-color: #adb5bd; background: #f8f9fa; }
+  .rank-item.rank-3 { border-left-color: #cd7f32; background: #fdf4ec; }
   .rank-number {
     font-weight: 700; font-size: 20px; min-width: 30px;
     color: #004085; text-align: center;
@@ -304,9 +293,7 @@
     font-size: 14px; color: #333; font-weight: 600;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .rank-id {
-    font-size: 12px; color: #6c757d; margin-top: 2px;
-  }
+  .rank-id { font-size: 12px; color: #6c757d; margin-top: 2px; }
   .rank-value {
     font-weight: 700; color: #28a745;
     font-size: 15px; text-align: right;
@@ -625,14 +612,14 @@ const RATE_TABLE = {
 };
 
 /* ====== Cache Keys ====== */
-const CACHE_PREFIX = "renata_cache_v13_";
+const CACHE_PREFIX = "renata_cache_v14_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v13_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v14_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v13";
+const HISTORY_KEY = "renata_history_v14";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v13_";
-const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const LEADERBOARD_PREFIX = "renata_lb_v14_";
+const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 /* ====== State ====== */
 let singlePageBlobUrl = null;
@@ -779,7 +766,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   MAIN SEARCH
+   MAIN SEARCH — with direct runExtraction call
    ============================================================ */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
@@ -798,9 +785,13 @@ async function findReport() {
   currentSearchId = searchId;
   currentMonth = month;
 
+  // Reset UI
   ['step2','step3','step4','step5','step6','step7'].forEach(id => {
-    document.getElementById(id).style.display = (id === 'step2' ? 'none' : 'none');
-    document.getElementById(id).classList.remove('show');
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.display = "none";
+      el.classList.remove('show');
+    }
   });
   document.getElementById('downloadBtn').style.display = "none";
   document.getElementById('openBtn').style.display = "none";
@@ -824,6 +815,7 @@ async function findReport() {
   searchBtn.disabled = true;
 
   try {
+    // Cache check
     const cached = getCached(month, searchId);
     if (cached) {
       await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
@@ -833,10 +825,19 @@ async function findReport() {
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       addToHistory(searchId, month, cached.fileName);
-      setTimeout(() => runExtraction(), 200);
+
+      // Direct extraction call
+      try {
+        await runExtraction();
+      } catch (e) {
+        console.error("Extraction failed:", e);
+        statusDiv.style.color = "#dc3545";
+        statusDiv.innerText = "Extraction error: " + (e.message || e);
+      }
       return;
     }
 
+    // Fetch PDF list
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) {
@@ -876,7 +877,15 @@ async function findReport() {
       statusDiv.style.color = "#28a745";
       statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
       addToHistory(searchId, month, match.fileName);
-      setTimeout(() => runExtraction(), 300);
+
+      // Direct extraction call
+      try {
+        await runExtraction();
+      } catch (e) {
+        console.error("Extraction failed:", e);
+        statusDiv.style.color = "#dc3545";
+        statusDiv.innerText = "Extraction error: " + (e.message || e);
+      }
     } else {
       spinner.style.display = "none";
       searchBtn.disabled = false;
@@ -968,27 +977,38 @@ async function showResult(fileUrl, pageNum, fileName) {
   document.getElementById('openBtn').style.display = "block";
 }
 
-/* ====== Auto Extraction ====== */
+/* ============================================================
+   EXTRACTION — Direct call, no setTimeout
+   ============================================================ */
 async function runExtraction() {
-  if (!matchedPdfPage) return;
+  if (!matchedPdfPage) {
+    console.log("runExtraction: matchedPdfPage is null");
+    return;
+  }
   const statusDiv = document.getElementById('status');
+  statusDiv.style.color = "#0056b3";
+  statusDiv.innerText = "Data পড়া হচ্ছে...";
 
   try {
     let rawText = "";
     let parsed = null;
 
+    // Try text-layer first
     try {
       const tc = await matchedPdfPage.getTextContent();
       rawText = tc.items.map(i => i.str).join(" ");
       const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
       const hasTotalHour = /TOTAL\s*HOUR/i.test(cleanText);
       const notGarbage = !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100));
-      if (hasTotalHour && notGarbage) parsed = parseText(rawText);
+      if (hasTotalHour && notGarbage) {
+        parsed = parseText(rawText);
+      }
     } catch (e) { console.log("Text-Layer error:", e.message); }
 
+    // OCR fallback
     if (!parsed || !parsed.totalHourLine) {
       statusDiv.style.color = "#0056b3";
-      statusDiv.innerText = "OCR চলছে...";
+      statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
       if (!ocrWorker) {
         ocrWorker = await Tesseract.createWorker('eng');
         await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' });
@@ -1006,6 +1026,7 @@ async function runExtraction() {
       parsed = parseText(rawText);
     }
 
+    // Grade extraction
     let gradeText = "";
     const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     if (gm) gradeText = gm[0];
@@ -1037,12 +1058,26 @@ async function runExtraction() {
 
     statusDiv.style.color = "#28a745";
     statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
-    document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+
+    // Force show all calc cards
+    ['step3','step4','step5','step6','step7'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('show');
+        el.style.display = 'block';
+      }
+    });
+
+    // Smooth scroll
+    setTimeout(() => {
+      document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+    }, 200);
 
   } catch (e) {
-    console.error(e);
+    console.error("runExtraction error:", e);
     statusDiv.style.color = "#dc3545";
     statusDiv.innerText = "Extraction সমস্যা: " + e.message;
+    throw e;
   }
 }
 
@@ -1077,11 +1112,9 @@ function applyExtraction(parsed, detection) {
     recalculate();
   }
 
-  document.getElementById('step3').classList.add('show');
   showHolidayList(parsed.holidayDays);
   showNightList(parsed.nightDays);
   showRemarks(parsed.punchProblems, detection);
-  document.getElementById('step4').classList.add('show');
 }
 
 /* ====== Detect category ====== */
@@ -1178,14 +1211,12 @@ function showHolidayList(list) {
       return `${i + 1}. ${d.date} — ${parts.join(", ")}`;
     }).join("<br>");
   }
-  document.getElementById('step5').classList.add('show');
 }
 
 function showNightList(list) {
   const box = document.getElementById('nightList');
   if (!list || list.length === 0) box.innerText = "এই মাসে কোনো নাইট ডিউটি নেই";
   else box.innerHTML = list.map((d, i) => `${i + 1}. ${d}`).join("<br>");
-  document.getElementById('step6').classList.add('show');
 }
 
 function showRemarks(punchProblems, detection) {
@@ -1209,7 +1240,6 @@ function showRemarks(punchProblems, detection) {
     box.className = "remarks-box remarks-warn";
     box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
   }
-  document.getElementById('step7').classList.add('show');
 }
 
 /* ====== Recalculate ====== */
@@ -1386,7 +1416,7 @@ function resetComparison() {
 }
 
 /* ============================================================
-   LEADERBOARD — Phase B
+   LEADERBOARD
    ============================================================ */
 function initLeaderboardPage() {
   const month = getCurrentMonth();
@@ -1419,7 +1449,6 @@ async function startLeaderboardScan(forceRescan = false) {
   hint.innerText = "PDF load হচ্ছে...";
 
   try {
-    // Cache check
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
       if (cached) {
@@ -1435,7 +1464,6 @@ async function startLeaderboardScan(forceRescan = false) {
       }
     }
 
-    // Get PDF list
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
@@ -1447,7 +1475,6 @@ async function startLeaderboardScan(forceRescan = false) {
 
     if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
 
-    // Load all PDFs first
     hint.innerText = "PDF লোড হচ্ছে...";
     const loadedPdfs = [];
     for (const file of pdfFiles) {
@@ -1455,7 +1482,6 @@ async function startLeaderboardScan(forceRescan = false) {
       loadedPdfs.push({ file, pdf });
     }
 
-    // Count total pages
     let totalPages = 0;
     loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
 
@@ -1463,7 +1489,6 @@ async function startLeaderboardScan(forceRescan = false) {
     const skipped = [];
     let processedPages = 0;
 
-    // Process each PDF
     for (const { file, pdf } of loadedPdfs) {
       const numPages = pdf.numPages;
       const CONCURRENCY = 4;
@@ -1492,7 +1517,6 @@ async function startLeaderboardScan(forceRescan = false) {
       }
     }
 
-    // Sort & Top 3
     const validEmps = employees.filter(e => e.valid);
     const topDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty).slice(0, 3);
     const topOT = [...validEmps].sort((a,b) => b.otHours - a.otHours).slice(0, 3);
@@ -1544,18 +1568,15 @@ async function processLeaderboardPage(pdf, pageNum) {
     const hasTH = /TOTAL\s*HOUR/i.test(cleanText);
     if (!hasTH) return { valid: false, id };
 
-    // Name extraction
     const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
     const name = nameMatch ? nameMatch[1].trim().substring(0, 45) : "";
 
-    // Grade extraction
     const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     const gradeText = gm ? gm[0] : "";
 
     const detection = detectCategory(gradeText, id);
     if (!detection.valid) return { valid: false, id };
 
-    // Parse total hour line
     const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
     const after = cleanText.substring(thIndex, thIndex + 300);
     const nums = (after.match(/\d+\.\d+|\d+/g) || []).slice(0, 7).map(parseFloat);
@@ -1572,7 +1593,6 @@ async function processLeaderboardPage(pdf, pageNum) {
     const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
     const otHours = regExtra + doExtra + holExtra;
 
-    // Row-wise scan for holiday count
     let holidayCount = 0;
     const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
     let rm;
@@ -1587,7 +1607,6 @@ async function processLeaderboardPage(pdf, pageNum) {
       if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
     }
 
-    // Calculate earned
     const r = RATE_TABLE[detection.category];
     const otAmount = otHours * r.otRate;
     let holidayAmount = 0;
@@ -1711,8 +1730,11 @@ function modalBackdropClick(e) {
 /* ====== Reset ====== */
 function resetAll() {
   ['step2','step3','step4','step5','step6','step7'].forEach(id => {
-    document.getElementById(id).style.display = "none";
-    document.getElementById(id).classList.remove('show');
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.display = "none";
+      el.classList.remove('show');
+    }
   });
   document.getElementById('status').innerText = "";
   document.getElementById('progress').style.display = "none";
@@ -1739,4 +1761,3 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
