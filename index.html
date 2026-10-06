@@ -10,6 +10,22 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="icon.png">
 
+<!-- Open Graph / Social Preview -->
+<meta property="og:title" content="RENATA PLC - Overtime Report">
+<meta property="og:description" content="Overtime Report Search & Calculator - দ্রুত ও সহজে আপনার ওভারটাইম হিসাব দেখুন">
+<meta property="og:image" content="https://checkot.github.io/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://checkot.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RENATA PLC Overtime Report">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RENATA PLC - Overtime Report">
+<meta name="twitter:description" content="Overtime Report Search & Calculator">
+<meta name="twitter:image" content="https://checkot.github.io/og-image.png">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
@@ -425,13 +441,13 @@ const RATE_TABLE = {
   JO:   { otRate: 40, nightRate: 400, holidayType: "flat", holidayFlat: 300, name: "Junior Officer (Below B)" },
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat", holidayFlat: 400, name: "Junior Officer B & Above" }
 };
-const CACHE_PREFIX = "renata_cache_v18_";
+const CACHE_PREFIX = "renata_cache_v19_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v18_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v19_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v18";
+const HISTORY_KEY = "renata_history_v19";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v18_";
+const LEADERBOARD_PREFIX = "renata_lb_v19_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 let singlePageBlobUrl = null;
