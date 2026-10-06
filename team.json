@@ -1,0 +1,25 @@
+{
+  "team": [
+    {
+      "id": "RF22111",
+      "name": "Mr. Md. Sohel Mia",
+      "designation": "Junior Officer D",
+      "whatsapp": "8801690268001",
+      "photo": "team/sohel.png"
+    },
+    {
+      "id": "CF5242",
+      "name": "Mr. Md. Shohidul Islam",
+      "designation": "Contractual",
+      "whatsapp": "8801766251116",
+      "photo": "team/shohidul.png"
+    },
+    {
+      "id": "CF8355",
+      "name": "Mr. Johirul Islam Porag",
+      "designation": "Contractual",
+      "whatsapp": "8801871370703",
+      "photo": "team/johirul.png"
+    }
+  ]
+}
