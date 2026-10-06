@@ -34,26 +34,50 @@ input:focus, select:focus { border-color: #0056b3; background-color: #fff; box-s
 button { width: 100%; background-color: #0056b3; color: white; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 600; margin-top: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,86,179,0.2); }
 button:hover { background-color: #004085; }
 button:disabled { background-color: #6c757d; cursor: not-allowed; }
-
 .spinner { display: none; width: 22px; height: 22px; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 12px auto 0 auto; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 #status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; }
 #progress { margin-top: 5px; text-align: center; font-size: 11px; color: #6c757d; display: none; }
-
-/* Compact search summary */
 .search-summary { display: none; background: #fff; padding: 12px 16px; border-radius: 12px; max-width: 500px; margin: 0 auto 12px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; align-items: center; gap: 10px; transition: 0.2s; border-left: 4px solid #0056b3; }
 .search-summary.show { display: flex; }
 .search-summary:active { background: #f8f9fa; }
 .search-summary .id-badge { background: #0056b3; color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; }
 .search-summary .month-info { flex: 1; font-size: 13px; color: #333; font-weight: 600; }
 .search-summary .edit-icon { color: #0056b3; font-size: 18px; }
-
 #pdf-viewer { margin: 12px auto 0 auto; max-width: 100%; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
 
-.btn-group { display: flex; gap: 10px; margin-top: 12px; }
-.btn-action { background-color: #0056b3; color: white; text-align: center; text-decoration: none; display: none; padding: 10px; border-radius: 8px; font-weight: 600; flex: 1; font-size: 13px; cursor: pointer; border: none; box-shadow: 0 3px 8px rgba(0,86,179,0.2); transition: 0.2s; }
-.btn-action:hover { background-color: #004085; }
+/* FIXED: equal buttons */
+.btn-group { display: flex; gap: 10px; margin-top: 12px; align-items: stretch; }
+.btn-action {
+  background-color: #0056b3 !important;
+  color: white !important;
+  text-align: center;
+  text-decoration: none;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  flex: 1;
+  font-size: 13px;
+  cursor: pointer;
+  border: none !important;
+  box-shadow: 0 3px 8px rgba(0,86,179,0.2);
+  transition: 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-action:hover { background-color: #004085 !important; }
 
 .calc-card { display: none !important; }
 .calc-card.show { display: block !important; }
@@ -61,22 +85,16 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 .badge { background: #0056b3; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: normal; }
 .badge.warn { background: #dc3545; }
 .grade-info { font-size: 11px; color: #6c757d; margin-bottom: 10px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #0056b3; }
-
-/* Compact 2-column calculator */
 .calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
 .calc-compact .field { display: flex; flex-direction: column; }
 .calc-compact .field label { margin: 0 0 2px 0; font-size: 11px; font-weight: 600; color: #6c757d; }
 .calc-compact .field input, .calc-compact .field select { margin: 0; padding: 7px 8px; font-size: 13px; text-align: right; }
 .calc-compact .field select { text-align: left; padding: 7px 4px; font-size: 12px; }
-
 .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin: 10px 0; padding: 10px 0; border-top: 1px dashed #ccc; font-size: 12px; }
 .report-grid .item { display: flex; justify-content: space-between; }
 .report-grid .item span:first-child { color: #6c757d; }
 .report-grid .item span:last-child { font-weight: 600; color: #333; }
-
 .report-row.total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #28a745; font-weight: bold; font-size: 16px; color: #28a745; }
-
-/* Collapsible sections */
 .collapse-card { background: #fff; padding: 0; border-radius: 14px; max-width: 500px; margin: 0 auto 12px auto; box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow: hidden; }
 .collapse-header { padding: 14px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: 0.2s; }
 .collapse-header:active { background: #f8f9fa; }
@@ -86,16 +104,13 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 .collapse-header.expanded .arrow { transform: rotate(180deg); }
 .collapse-body { padding: 0 16px 16px 16px; display: none; }
 .collapse-body.show { display: block; }
-
 .info-list { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #333; margin: 0; line-height: 1.7; }
-
 .remarks-box { border-radius: 8px; padding: 12px 14px; font-size: 12px; line-height: 1.7; margin: 0; }
 .remarks-ok { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
 .remarks-warn { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
 .remarks-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
 .remarks-box ul { margin: 6px 0 0 20px; padding: 0; }
 .remarks-box li { margin: 4px 0; }
-
 .compare-hint { font-size: 11px; color: #6c757d; margin-top: 6px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #ffc107; line-height: 1.5; }
 .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
 .compare-table th, .compare-table td { padding: 7px 5px; text-align: right; border-bottom: 1px solid #e9ecef; }
@@ -104,7 +119,6 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 .compare-table tr.total-row td { font-weight: 700; color: #28a745; font-size: 14px; border-top: 2px solid #28a745; border-bottom: none; padding-top: 10px; }
 .compare-diff { text-align: center; font-size: 12px; color: #6c757d; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 8px; }
 .compare-diff strong { color: #004085; }
-
 .reset-btn { background-color: #6c757d; margin-top: 10px; font-size: 12px; padding: 8px; }
 .reset-btn:hover { background-color: #5a6268; }
 
@@ -121,17 +135,14 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 .drawer-item:hover { background: #f8f9fa; border-left-color: #0056b3; }
 .drawer-item.active { background: #e7f3ff; border-left-color: #0056b3; color: #004085; font-weight: 600; }
 .drawer-divider { height: 1px; background: #e9ecef; margin: 6px 20px; }
-
 .page { display: none; }
 .page.active { display: block; }
-
 .history-item { padding: 12px 14px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #e9ecef; }
 .history-item:hover { background: #e7f3ff; }
 .history-item .id { font-weight: 700; color: #004085; font-size: 13px; }
 .history-item .meta { font-size: 11px; color: #6c757d; margin-top: 2px; }
 .history-item .time { font-size: 11px; color: #adb5bd; }
 .empty-msg { text-align: center; color: #adb5bd; padding: 30px 20px; font-size: 13px; }
-
 .settings-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e9ecef; font-size: 13px; }
 .settings-row:last-child { border-bottom: none; }
 .settings-row .label { color: #6c757d; }
@@ -148,12 +159,27 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 .rank-item.rank-1 { border-left-color: #ffc107; background: #fff9e6; }
 .rank-item.rank-2 { border-left-color: #adb5bd; }
 .rank-item.rank-3 { border-left-color: #cd7f32; background: #fdf4ec; }
+.rank-item.mine { background: #d4edda !important; border-left-color: #28a745 !important; box-shadow: 0 0 0 2px #28a745 inset; }
 .rank-number { font-weight: 700; font-size: 20px; min-width: 30px; color: #004085; text-align: center; }
 .rank-info { flex: 1; min-width: 0; }
 .rank-name { font-size: 13px; color: #333; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank-id { font-size: 11px; color: #6c757d; margin-top: 2px; }
 .rank-value { font-weight: 700; color: #28a745; font-size: 14px; text-align: right; }
 .rank-meta { font-size: 10px; color: #6c757d; text-align: right; margin-top: 2px; }
+
+/* My Rank Footnote */
+.my-rank-note { background: #e7f3ff; border: 1px solid #b8daff; border-radius: 8px; padding: 10px 12px; margin-top: 10px; font-size: 12px; color: #004085; line-height: 1.6; }
+.my-rank-note .my-rank-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.my-rank-note .my-rank-line strong { color: #28a745; font-size: 14px; }
+.my-rank-note .view-full-btn { background: #0056b3; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 4px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.my-rank-note .view-full-btn:hover { background: #004085; }
+
+/* Full Ranking Scrollable */
+.full-ranking { max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding: 4px 2px; border-radius: 8px; display: none; }
+.full-ranking.show { display: block; }
+.full-ranking::-webkit-scrollbar { width: 6px; }
+.full-ranking::-webkit-scrollbar-thumb { background: #adb5bd; border-radius: 3px; }
+
 .scan-progress-bar { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin: 12px 0; }
 .scan-progress-fill { height: 100%; background: #0056b3; width: 0%; transition: width 0.3s ease; }
 .scan-counter { text-align: center; font-size: 13px; color: #333; font-weight: 600; margin: 12px 0; }
@@ -204,7 +230,6 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
     <button id="backToLbBtn" class="menu-btn" onclick="backToLeaderboard()" style="display:none; font-size: 22px; color: #28a745;">↩</button>
   </div>
 
-  <!-- Search Form (bara state) -->
   <div class="card" id="searchFormCard">
     <label>বছর ও মাস নির্বাচন করুন:</label>
     <div class="row">
@@ -232,33 +257,27 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
     <div id="progress"></div>
   </div>
 
-  <!-- Compact Summary (after search) -->
   <div class="search-summary" id="searchSummary" onclick="expandSearchForm()">
     <div class="id-badge" id="summaryId">—</div>
     <div class="month-info" id="summaryMonth">—</div>
     <div class="edit-icon">✏️</div>
   </div>
 
-  <!-- PDF Viewer -->
   <div class="card" id="step2" style="display:none;">
     <div class="header" style="margin-bottom: 12px;">
       <h2 style="font-size:14px;">রিপোর্ট</h2>
       <p id="viewerTitle" style="font-size: 11px;">—</p>
     </div>
-    <div id="pdf-viewer">
-      <canvas id="pdf-canvas"></canvas>
-    </div>
+    <div id="pdf-viewer"><canvas id="pdf-canvas"></canvas></div>
     <div class="btn-group">
       <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
       <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
     </div>
   </div>
 
-  <!-- Calculator (compact 2-column) -->
   <div class="card calc-card" id="step3">
     <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
     <div id="gradeInfo" class="grade-info" style="display:none;"></div>
-
     <div id="calcInputs">
       <div class="calc-compact">
         <div class="field">
@@ -269,35 +288,20 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
             <option value="JO_B">JO_B - Jr. Officer B+</option>
           </select>
         </div>
-        <div class="field">
-          <label>ওটি ঘণ্টা (Extra)</label>
-          <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
-        </div>
-        <div class="field">
-          <label>হলিডে/DO দিন</label>
-          <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
-        </div>
-        <div class="field">
-          <label>নাইট সংখ্যা</label>
-          <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
-        </div>
+        <div class="field"><label>ওটি ঘণ্টা (Extra)</label><input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()"></div>
+        <div class="field"><label>হলিডে/DO দিন</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
+        <div class="field"><label>নাইট সংখ্যা</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
       </div>
-
       <div class="report-grid">
         <div class="item"><span>ওটি রেট:</span><span id="lblRate">৳ 0/hr</span></div>
         <div class="item"><span>ওটি বিল:</span><span id="lblOtAmount">৳ 0</span></div>
         <div class="item"><span>হলিডে বিল:</span><span id="lblHolidayAmount">৳ 0</span></div>
         <div class="item"><span>নাইট বিল:</span><span id="lblNightAmount">৳ 0</span></div>
       </div>
-
-      <div class="report-row total">
-        <span>সর্বমোট প্রাপ্য:</span>
-        <span id="lblGrandTotal">৳ 0</span>
-      </div>
+      <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span><span id="lblGrandTotal">৳ 0</span></div>
     </div>
   </div>
 
-  <!-- Comparison (collapsible) -->
   <div class="collapse-card calc-card" id="step4">
     <div class="collapse-header" onclick="toggleCollapse('step4Body', this)">
       <span class="title">অন্য সহকর্মীর সাথে তুলনা</span>
@@ -316,7 +320,6 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
     </div>
   </div>
 
-  <!-- Holiday List (collapsible) -->
   <div class="collapse-card calc-card" id="step5">
     <div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
       <span class="title">হলিডে / DO ডিউটির দিন</span>
@@ -328,7 +331,6 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
     </div>
   </div>
 
-  <!-- Night List (collapsible) -->
   <div class="collapse-card calc-card" id="step6">
     <div class="collapse-header" onclick="toggleCollapse('step6Body', this)">
       <span class="title">নাইট ডিউটির দিন</span>
@@ -340,7 +342,6 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
     </div>
   </div>
 
-  <!-- Remarks (always visible) -->
   <div class="card calc-card" id="step7">
     <div class="section-title" style="font-size:13px;font-weight:700;color:#004085;margin:0 0 8px 0;padding-bottom:4px;border-bottom:2px solid #e9ecef;">মন্তব্য</div>
     <div id="remarksBox" class="remarks-box">—</div>
@@ -371,18 +372,57 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
   </div>
 
   <div class="card" id="lbResultCard" style="display:none;">
+    <!-- Duty Section -->
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">সেরা ৩ Duty kora employee</div>
       <div id="lbTopDuty"></div>
+      <div class="my-rank-note" id="myRankDutyNote">
+        <div class="my-rank-line">
+          <span>আপনার অবস্থান (<span id="myRankDutyId">—</span>):</span>
+          <strong id="myRankDutyPos">—</strong>
+        </div>
+        <button class="view-full-btn" onclick="toggleFullRanking('duty')">
+          <span id="dutyBtnText">সম্পূর্ণ তালিকা দেখুন</span>
+          <span id="dutyBtnArrow">▼</span>
+        </button>
+      </div>
+      <div class="full-ranking" id="fullRankingDuty"></div>
     </div>
+
+    <!-- OT Section -->
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most OT kora employee</div>
       <div id="lbTopOT"></div>
+      <div class="my-rank-note" id="myRankOTNote">
+        <div class="my-rank-line">
+          <span>আপনার অবস্থান (<span id="myRankOTId">—</span>):</span>
+          <strong id="myRankOTPos">—</strong>
+        </div>
+        <button class="view-full-btn" onclick="toggleFullRanking('ot')">
+          <span id="otBtnText">সম্পূর্ণ তালিকা দেখুন</span>
+          <span id="otBtnArrow">▼</span>
+        </button>
+      </div>
+      <div class="full-ranking" id="fullRankingOT"></div>
     </div>
+
+    <!-- Earned Section -->
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most Earned employee</div>
       <div id="lbTopEarned"></div>
+      <div class="my-rank-note" id="myRankEarnedNote">
+        <div class="my-rank-line">
+          <span>আপনার অবস্থান (<span id="myRankEarnedId">—</span>):</span>
+          <strong id="myRankEarnedPos">—</strong>
+        </div>
+        <button class="view-full-btn" onclick="toggleFullRanking('earned')">
+          <span id="earnedBtnText">সম্পূর্ণ তালিকা দেখুন</span>
+          <span id="earnedBtnArrow">▼</span>
+        </button>
+      </div>
+      <div class="full-ranking" id="fullRankingEarned"></div>
     </div>
+
     <div class="bad-data-note" id="lbBadData" style="display:none;"></div>
     <div class="tap-hint">যেকোনো employee-এ tap করে তার পূর্ণ রিপোর্ট দেখুন</div>
     <button onclick="startLeaderboardScan(true)" class="reset-btn" style="background:#0056b3;margin-top:16px;">আবার Scan করুন</button>
@@ -408,10 +448,7 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 <div class="page" id="page-settings">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()">☰</button>
-    <div class="header">
-      <h2>সেটিংস</h2>
-      <p>Information</p>
-    </div>
+    <div class="header"><h2>সেটিংস</h2><p>Information</p></div>
   </div>
   <div class="card">
     <div class="settings-row"><span class="label">App Version</span><span class="value">1.0.0</span></div>
@@ -429,30 +466,25 @@ canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius
 
 <!-- Floating WhatsApp -->
 <a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help">
-  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/>
-  </svg>
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/></svg>
 </a>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
 const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
-
 const RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
   JO:   { otRate: 40, nightRate: 400, holidayType: "flat", holidayFlat: 300, name: "Junior Officer (Below B)" },
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat", holidayFlat: 400, name: "Junior Officer B & Above" }
 };
-
-const CACHE_PREFIX = "renata_cache_v16_";
+const CACHE_PREFIX = "renata_cache_v17_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v16_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v17_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v16";
+const HISTORY_KEY = "renata_history_v17";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v16_";
+const LEADERBOARD_PREFIX = "renata_lb_v17_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 let singlePageBlobUrl = null;
@@ -468,117 +500,41 @@ const activeTasks = new Set();
 let ocrWorker = null;
 let currentResult = null;
 let isScanning = false;
+let currentLeaderboardResult = null;
 
-/* ========== Bengali digits ========== */
-function bn(str) {
-  const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
-  return String(str).replace(/[0-9]/g, d => map[d]);
-}
-
-/* ========== Init year dropdown ========== */
+function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
 function initYearDropdown() {
   const ySel = document.getElementById('yearSelect');
-  const now = new Date();
-  const currYear = now.getFullYear();
+  const now = new Date(); const currYear = now.getFullYear();
   ySel.innerHTML = '';
   for (let y = currYear - 2; y <= currYear + 1; y++) {
-    const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = bn(y);
-    ySel.appendChild(opt);
+    const opt = document.createElement('option'); opt.value = y; opt.textContent = bn(y); ySel.appendChild(opt);
   }
 }
-
-/* ========== Auto select previous month ========== */
 function setDefaultMonth() {
-  const now = new Date();
-  let year = now.getFullYear();
-  let month = now.getMonth() + 1;
-  month -= 1;
-  if (month === 0) { month = 12; year -= 1; }
-  const yStr = String(year);
-  const mStr = String(month).padStart(2, '0');
+  const now = new Date(); let year = now.getFullYear(); let month = now.getMonth() + 1;
+  month -= 1; if (month === 0) { month = 12; year -= 1; }
+  const yStr = String(year); const mStr = String(month).padStart(2, '0');
   const ySel = document.getElementById('yearSelect');
   let yearExists = false;
-  for (const opt of ySel.options) {
-    if (opt.value === yStr) { yearExists = true; break; }
-  }
-  if (!yearExists) {
-    const opt = document.createElement('option');
-    opt.value = yStr;
-    opt.textContent = bn(yStr);
-    ySel.appendChild(opt);
-    Array.from(ySel.options).sort((a,b) => parseInt(a.value) - parseInt(b.value)).forEach(o => ySel.appendChild(o));
-  }
+  for (const opt of ySel.options) if (opt.value === yStr) { yearExists = true; break; }
+  if (!yearExists) { const opt = document.createElement('option'); opt.value = yStr; opt.textContent = bn(yStr); ySel.appendChild(opt); }
   ySel.value = yStr;
   document.getElementById('monthSelect').value = mStr;
 }
+function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; } return d; } catch (e) { return null; } }
+function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
+function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
+function setLeaderboardCache(month, payload) { try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
 
-/* ========== Cache helpers ========== */
-function getCached(month, id) {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id);
-    if (!raw) return null;
-    const d = JSON.parse(raw);
-    if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; }
-    return d;
-  } catch (e) { return null; }
-}
-function setCache(month, id, payload) {
-  try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
-}
-function getCompareCache(month, id1, id2) {
-  try {
-    const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2;
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const d = JSON.parse(raw);
-    if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; }
-    return d;
-  } catch (e) { return null; }
-}
-function setCompareCache(month, id1, id2, payload) {
-  try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
-}
-function getLeaderboardCache(month) {
-  try {
-    const raw = localStorage.getItem(LEADERBOARD_PREFIX + month);
-    if (!raw) return null;
-    const d = JSON.parse(raw);
-    if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; }
-    return d;
-  } catch (e) { return null; }
-}
-function setLeaderboardCache(month, payload) {
-  try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
-}
+function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function addToHistory(id, month, name) { try { let list = getHistory(); list = list.filter(x => !(x.id === id && x.month === month)); list.unshift({ id, month, name: name || "", ts: Date.now() }); if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX); localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch (e) {} }
+function clearHistory() { try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {} }
 
-/* ========== History ========== */
-function getHistory() {
-  try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
-}
-function addToHistory(id, month, name) {
-  try {
-    let list = getHistory();
-    list = list.filter(x => !(x.id === id && x.month === month));
-    list.unshift({ id, month, name: name || "", ts: Date.now() });
-    if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-  } catch (e) {}
-}
-function clearHistory() {
-  try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {}
-}
-
-/* ========== Drawer / Page ========== */
-function openDrawer() {
-  document.getElementById('drawer').classList.add('active');
-  document.getElementById('drawerOverlay').classList.add('active');
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('active');
-  document.getElementById('drawerOverlay').classList.remove('active');
-}
+function openDrawer() { document.getElementById('drawer').classList.add('active'); document.getElementById('drawerOverlay').classList.add('active'); }
+function closeDrawer() { document.getElementById('drawer').classList.remove('active'); document.getElementById('drawerOverlay').classList.remove('active'); }
 function switchPage(pageName) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + pageName).classList.add('active');
@@ -590,42 +546,14 @@ function switchPage(pageName) {
   closeDrawer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-/* ========== History rendering ========== */
 function renderHistory() {
-  const list = getHistory();
-  const box = document.getElementById('historyList');
+  const list = getHistory(); const box = document.getElementById('historyList');
   if (list.length === 0) { box.innerHTML = '<div class="empty-msg">এখনো কোনো সার্চ করা হয়নি।</div>'; return; }
-  box.innerHTML = list.map(h => {
-    const date = new Date(h.ts);
-    const timeStr = date.toLocaleString('bn-BD', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-    return `<div class="history-item" onclick="replayHistory('${h.id}', '${h.month}')">
-      <div><div class="id">${h.id}</div><div class="meta">${h.month}</div></div>
-      <div class="time">${timeStr}</div></div>`;
-  }).join('');
+  box.innerHTML = list.map(h => { const date = new Date(h.ts); const timeStr = date.toLocaleString('bn-BD', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); return `<div class="history-item" onclick="replayHistory('${h.id}', '${h.month}')"><div><div class="id">${h.id}</div><div class="meta">${h.month}</div></div><div class="time">${timeStr}</div></div>`; }).join('');
 }
-function replayHistory(id, month) {
-  const [year, mon] = month.split('-');
-  document.getElementById('yearSelect').value = year;
-  document.getElementById('monthSelect').value = mon;
-  document.getElementById('employeeId').value = id;
-  switchPage('search');
-  setTimeout(() => findReport(), 300);
-}
-function backToLeaderboard() {
-  document.getElementById('backToLbBtn').style.display = "none";
-  switchPage('leaderboard');
-  const month = getCurrentMonth();
-  const cached = getLeaderboardCache(month);
-  if (cached) {
-    document.getElementById('lbInitialCard').style.display = "none";
-    document.getElementById('lbScanCard').style.display = "none";
-    document.getElementById('lbResultCard').style.display = "block";
-    renderLeaderboardResult(cached);
-  }
-}
+function replayHistory(id, month) { const [year, mon] = month.split('-'); document.getElementById('yearSelect').value = year; document.getElementById('monthSelect').value = mon; document.getElementById('employeeId').value = id; switchPage('search'); setTimeout(() => findReport(), 300); }
+function backToLeaderboard() { document.getElementById('backToLbBtn').style.display = "none"; switchPage('leaderboard'); const month = getCurrentMonth(); const cached = getLeaderboardCache(month); if (cached) { renderLeaderboardResult(cached); document.getElementById('lbInitialCard').style.display = "none"; document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; } }
 
-/* ========== Compact UI toggles ========== */
 function enterCompactMode(empId, month) {
   document.getElementById('searchFormCard').style.display = "none";
   document.getElementById('searchSummary').classList.add('show');
@@ -644,100 +572,63 @@ function expandSearchForm() {
 function toggleCollapse(bodyId, headerEl) {
   const body = document.getElementById(bodyId);
   const isOpen = body.classList.contains('show');
-  if (isOpen) {
-    body.classList.remove('show');
-    headerEl.classList.remove('expanded');
-  } else {
-    body.classList.add('show');
-    headerEl.classList.add('expanded');
-  }
+  if (isOpen) { body.classList.remove('show'); headerEl.classList.remove('expanded'); }
+  else { body.classList.add('show'); headerEl.classList.add('expanded'); }
 }
 
-/* ========== Event Listeners ========== */
 document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
 document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
 
-/* ========== MAIN SEARCH ========== */
 async function findReport() {
-  const year  = document.getElementById('yearSelect').value;
-  const mon   = document.getElementById('monthSelect').value;
+  const year = document.getElementById('yearSelect').value;
+  const mon = document.getElementById('monthSelect').value;
   const month = `${year}-${mon}`;
   const rawId = document.getElementById('employeeId').value.trim();
   const statusDiv = document.getElementById('status');
   const progressDiv = document.getElementById('progress');
   const spinner = document.getElementById('spinner');
   const searchBtn = document.getElementById('searchBtn');
-
   if (!rawId) { alert("অনুগ্রহ করে Employee ID লিখুন!"); return; }
   const searchId = rawId.toUpperCase();
-  currentSearchId = searchId;
-  currentMonth = month;
-
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.style.display = "none"; el.classList.remove('show'); }
-  });
+  currentSearchId = searchId; currentMonth = month;
+  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
   document.getElementById('downloadBtn').style.display = "none";
   document.getElementById('openBtn').style.display = "none";
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareId').value = "";
-  ['step4Body','step5Body','step6Body'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('show');
-  });
+  ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
-  matchedPdfPage = null;
-  currentResult = null;
-
+  matchedPdfPage = null; currentResult = null;
   currentToken++;
   const myToken = currentToken;
   for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
   activeTasks.clear();
-
-  statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "সার্চ করা হচ্ছে...";
-  progressDiv.style.display = "block";
-  progressDiv.innerText = "";
-  spinner.style.display = "block";
-  searchBtn.disabled = true;
-
+  statusDiv.style.color = "#0056b3"; statusDiv.innerText = "সার্চ করা হচ্ছে...";
+  progressDiv.style.display = "block"; progressDiv.innerText = "";
+  spinner.style.display = "block"; searchBtn.disabled = true;
   try {
     const cached = getCached(month, searchId);
     if (cached) {
       await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
-      statusDiv.style.color = "#28a745";
-      statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
       addToHistory(searchId, month, cached.fileName);
       enterCompactMode(searchId, month);
       try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color="#dc3545"; statusDiv.innerText = "Error: " + e.message; }
       return;
     }
-
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
-    if (!resp.ok) {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`; return;
-    }
-
+    if (!resp.ok) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "#dc3545"; statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`; return; }
     const filesData = await resp.json();
     const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-
-    if (pdfFiles.length === 0) {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return;
-    }
-
+    if (pdfFiles.length === 0) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "#dc3545"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return; }
     progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
     const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
     if (myToken !== currentToken) return;
-
     if (match) {
       setCache(month, searchId, { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName });
       await showResult(match.fileUrl, match.pageNum, match.fileName);
@@ -750,16 +641,11 @@ async function findReport() {
       spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
       statusDiv.style.color = "#dc3545"; statusDiv.innerHTML = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
     }
-  } catch (err) {
-    console.error(err);
-    spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-    statusDiv.style.color = "#dc3545"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।";
-  }
+  } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "#dc3545"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
 }
 
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
-  const total = pdfFiles.length;
-  let scanned = 0;
+  const total = pdfFiles.length; let scanned = 0;
   return new Promise((resolve) => {
     let settled = false;
     const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
@@ -769,45 +655,28 @@ async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
         let task = null, pdf = null;
         try {
           task = pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 });
-          activeTasks.add(task);
-          pdf = await task.promise;
+          activeTasks.add(task); pdf = await task.promise;
           for (let p = 1; p <= pdf.numPages; p++) {
             if (myToken !== currentToken || settled) break;
             const page = await pdf.getPage(p);
             const tc = await page.getTextContent();
             const text = tc.items.map(i => i.str).join(" ").toUpperCase();
-            if (text.includes(searchId)) {
-              finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return;
-            }
+            if (text.includes(searchId)) { finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return; }
           }
           scanned++;
           if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
         } catch (e) { console.log("PDF error:", file.name, e.message); }
-        finally {
-          if (task) activeTasks.delete(task);
-          if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} }
-        }
+        finally { if (task) activeTasks.delete(task); if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} } }
       })();
     });
-    setTimeout(() => {
-      if (!settled) {
-        const check = setInterval(() => {
-          if (scanned >= total || myToken !== currentToken) { clearInterval(check); finish(null); }
-        }, 200);
-      }
-    }, 100);
+    setTimeout(() => { if (!settled) { const check = setInterval(() => { if (scanned >= total || myToken !== currentToken) { clearInterval(check); finish(null); } }, 200); } }, 100);
   });
 }
 
 async function showResult(fileUrl, pageNum, fileName) {
-  if (!currentPdf || currentFileUrl !== fileUrl) {
-    const task = pdfjsLib.getDocument(fileUrl);
-    currentPdf = await task.promise;
-    currentFileUrl = fileUrl;
-  }
+  if (!currentPdf || currentFileUrl !== fileUrl) { const task = pdfjsLib.getDocument(fileUrl); currentPdf = await task.promise; currentFileUrl = fileUrl; }
   currentPageNum = pageNum; currentFileName = fileName;
-  const page = await currentPdf.getPage(pageNum);
-  matchedPdfPage = page;
+  const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
   renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
   document.getElementById('step2').style.display = "block";
   document.getElementById('viewerTitle').innerText = `${currentSearchId} — ${currentMonth}`;
@@ -815,103 +684,65 @@ async function showResult(fileUrl, pageNum, fileName) {
   const downloadBtn = document.getElementById('downloadBtn');
   downloadBtn.href = singlePageBlobUrl;
   downloadBtn.setAttribute('download', `Overtime_${currentSearchId}_${currentMonth}.pdf`);
-  downloadBtn.style.display = "block";
-  document.getElementById('openBtn').style.display = "block";
+  downloadBtn.style.display = "flex";
+  document.getElementById('openBtn').style.display = "flex";
 }
 
-/* ========== Extraction ========== */
 async function runExtraction() {
   if (!matchedPdfPage) return;
   const statusDiv = document.getElementById('status');
   statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data পড়া হচ্ছে...";
   try {
     let rawText = "", parsed = null;
-    try {
-      const tc = await matchedPdfPage.getTextContent();
-      rawText = tc.items.map(i => i.str).join(" ");
-      const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-      if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText);
-    } catch (e) { console.log("Text error:", e.message); }
-
+    try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
     if (!parsed || !parsed.totalHourLine) {
       statusDiv.style.color = "#0056b3"; statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
-      if (!ocrWorker) {
-        ocrWorker = await Tesseract.createWorker('eng');
-        await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' });
-      }
+      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
       const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas');
-      canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas);
-      rawText = ocrResult?.data?.text || "";
-      parsed = parseText(rawText);
+      const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
     }
-
     let gradeText = "";
     const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     if (gm) gradeText = gm[0];
-
     const detection = detectCategory(gradeText, currentSearchId);
     applyExtraction(parsed, detection);
-
     const r = RATE_TABLE[detection.category] || RATE_TABLE.JO;
     const otAmount = parsed.otHours * r.otRate;
     let holidayAmount = 0;
     if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
     else holidayAmount = parsed.holidayCount * r.holidayFlat;
     const nightAmount = parsed.nightCount * r.nightRate;
-
     currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
-
     const myAmountDiv = document.getElementById('compareMyAmount');
-    myAmountDiv.style.display = "block";
-    myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
-
+    myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
     statusDiv.style.color = "#28a745"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
-
-    ['step3','step4','step5','step6','step7'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.classList.add('show'); el.style.display = 'block'; }
-    });
-
+    ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
     setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
-  } catch (e) {
-    console.error("runExtraction error:", e);
-    statusDiv.style.color = "#dc3545";
-    statusDiv.innerText = "Extraction সমস্যা: " + e.message;
-    throw e;
-  }
+  } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "#dc3545"; statusDiv.innerText = "Extraction সমস্যা: " + e.message; throw e; }
 }
 
 function applyExtraction(parsed, detection) {
   const gradeInfo = document.getElementById('gradeInfo');
   const calcInputs = document.getElementById('calcInputs');
   const categoryBadge = document.getElementById('categoryBadge');
-  if (detection.gradeText || detection.reason) {
-    gradeInfo.style.display = "block";
-    gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason}`;
-  }
+  if (detection.gradeText || detection.reason) { gradeInfo.style.display = "block"; gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason}`; }
   if (detection.valid && detection.category) {
     document.getElementById('inpCategory').value = detection.category;
     document.getElementById('inpOtHours').value = parsed.otHours;
     document.getElementById('inpHoliday').value = parsed.holidayCount;
     document.getElementById('inpNight').value = parsed.nightCount;
-    categoryBadge.className = "badge";
-    categoryBadge.innerText = RATE_TABLE[detection.category].name;
-    calcInputs.style.display = "block";
-    recalculate();
+    categoryBadge.className = "badge"; categoryBadge.innerText = RATE_TABLE[detection.category].name;
+    calcInputs.style.display = "block"; recalculate();
   } else {
     document.getElementById('inpCategory').value = "JO";
     document.getElementById('inpOtHours').value = 0;
     document.getElementById('inpHoliday').value = 0;
     document.getElementById('inpNight').value = 0;
-    categoryBadge.className = "badge warn";
-    categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
-    calcInputs.style.display = "none";
-    recalculate();
+    categoryBadge.className = "badge warn"; categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
+    calcInputs.style.display = "none"; recalculate();
   }
   showHolidayList(parsed.holidayDays);
   showNightList(parsed.nightDays);
@@ -921,22 +752,13 @@ function applyExtraction(parsed, detection) {
 function detectCategory(gradeText, empId) {
   const g = (gradeText || "").toUpperCase().trim();
   if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual", gradeText: g || "CF" };
-  if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) {
-    return { category: null, valid: false, reason: "Management/Executive — ক্যাটাগরির বাইরে", gradeText: g };
-  }
+  if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) return { category: null, valid: false, reason: "Management/Executive", gradeText: g };
   const gradeMatch = g.match(/JUNIOR\s+OFFICER\s+([A-F])\b/i);
   const levelMatch = g.match(/\bM(\d{2})\b/);
   const gradeLetter = gradeMatch ? gradeMatch[1].toUpperCase() : null;
   const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
-  if (gradeLetter) {
-    if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g };
-    if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g };
-  }
-  if (levelNum !== null) {
-    if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum}`, gradeText: g };
-    if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g };
-    return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g };
-  }
+  if (gradeLetter) { if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; }
+  if (levelNum !== null) { if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum}`, gradeText: g }; if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g }; return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g }; }
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
 
@@ -957,10 +779,7 @@ function parseText(rawText) {
   }
   if (!totalHourLine) {
     const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
-    if (allNums.length >= 7) {
-      const n = allNums.slice(-7).map(parseFloat);
-      if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; }
-    }
+    if (allNums.length >= 7) { const n = allNums.slice(-7).map(parseFloat); if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; } }
   }
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
   let rm;
@@ -985,16 +804,7 @@ function showHolidayList(list) {
   const cnt = document.getElementById('holidayCount');
   cnt.textContent = `(${bn(list ? list.length : 0)})`;
   if (!list || list.length === 0) box.innerText = "এই মাসে কোনো হলিডে বা DO ডিউটি নেই";
-  else {
-    box.innerHTML = list.map((d, i) => {
-      const parts = [];
-      if (d.doDuty > 0) parts.push(`DO Duty ${d.doDuty} hr`);
-      if (d.doExtra > 0) parts.push(`DO Extra ${d.doExtra} hr`);
-      if (d.holDuty > 0) parts.push(`Holiday ${d.holDuty} hr`);
-      if (d.holExtra > 0) parts.push(`Holiday Extra ${d.holExtra} hr`);
-      return `${i + 1}. ${d.date} — ${parts.join(", ")}`;
-    }).join("<br>");
-  }
+  else box.innerHTML = list.map((d, i) => { const parts = []; if (d.doDuty > 0) parts.push(`DO Duty ${d.doDuty} hr`); if (d.doExtra > 0) parts.push(`DO Extra ${d.doExtra} hr`); if (d.holDuty > 0) parts.push(`Holiday ${d.holDuty} hr`); if (d.holExtra > 0) parts.push(`Holiday Extra ${d.holExtra} hr`); return `${i + 1}. ${d.date} — ${parts.join(", ")}`; }).join("<br>");
 }
 function showNightList(list) {
   const box = document.getElementById('nightList');
@@ -1008,19 +818,10 @@ function showRemarks(punchProblems, detection) {
   const issues = [];
   if (!detection.valid) issues.push(`Grade সমস্যা: ${detection.reason}`);
   if (punchProblems && punchProblems.length > 0) issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
-  if (issues.length === 0) {
-    box.className = "remarks-box remarks-ok";
-    box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।";
-  } else if (!detection.valid && punchProblems.length > 0) {
-    box.className = "remarks-box remarks-error";
-    box.innerHTML = `সমস্যা:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`;
-  } else if (!detection.valid) {
-    box.className = "remarks-box remarks-error";
-    box.innerHTML = `আপনার Grade/Designation ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
-  } else {
-    box.className = "remarks-box remarks-warn";
-    box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
-  }
+  if (issues.length === 0) { box.className = "remarks-box remarks-ok"; box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।"; }
+  else if (!detection.valid && punchProblems.length > 0) { box.className = "remarks-box remarks-error"; box.innerHTML = `সমস্যা:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`; }
+  else if (!detection.valid) { box.className = "remarks-box remarks-error"; box.innerHTML = `আপনার Grade/Designation ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
+  else { box.className = "remarks-box remarks-warn"; box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
 }
 
 function recalculate() {
@@ -1042,7 +843,6 @@ function recalculate() {
   document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
 }
 
-/* ========== Comparison ========== */
 async function runComparison() {
   const otherId = document.getElementById('compareId').value.trim().toUpperCase();
   const statusDiv = document.getElementById('compareStatus');
@@ -1053,53 +853,28 @@ async function runComparison() {
   if (!currentResult) { alert("প্রথমে হিসাব সম্পন্ন হতে হবে।"); return; }
   compareBtn.disabled = true; resultDiv.style.display = "none";
   const cached = getCompareCache(currentMonth, currentSearchId, otherId);
-  if (cached) {
-    statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
-    showComparison(currentResult, cached.other, cached.otherId);
-    compareBtn.disabled = false; return;
-  }
-  statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "খোঁজা হচ্ছে... একটু সময় লাগবে।";
+  if (cached) { statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন"; showComparison(currentResult, cached.other, cached.otherId); compareBtn.disabled = false; return; }
+  statusDiv.style.color = "#0056b3"; statusDiv.innerText = "খোঁজা হচ্ছে... একটু সময় লাগবে।";
   try {
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
+    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
     const filesData = await resp.json();
     const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    currentToken++;
-    const myToken = currentToken;
+    currentToken++; const myToken = currentToken;
     const match = await parallelSearch(pdfFiles, otherId, myToken, null);
-    if (!match) {
-      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `আইডি "${otherId}" পাওয়া যায়নি`;
-      compareBtn.disabled = false; return;
-    }
+    if (!match) { statusDiv.style.color = "#dc3545"; statusDiv.innerText = `আইডি "${otherId}" পাওয়া যায়নি`; compareBtn.disabled = false; return; }
     statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data extract হচ্ছে...";
     let otherParsed = null, otherGradeText = "";
-    try {
-      const tc = await match.page.getTextContent();
-      const txt = tc.items.map(i => i.str).join(" ");
-      const cleanText = txt.replace(/\s+/g, " ").toUpperCase();
-      if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt);
-      const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-      if (gm) otherGradeText = gm[0];
-    } catch (e) {}
+    try { const tc = await match.page.getTextContent(); const txt = tc.items.map(i => i.str).join(" "); const cleanText = txt.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt); const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0]; } catch (e) {}
     if (!otherParsed || !otherParsed.totalHourLine) {
       statusDiv.innerText = "OCR চলছে...";
-      if (!ocrWorker) {
-        ocrWorker = await Tesseract.createWorker('eng');
-        await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' });
-      }
+      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
       const viewport = match.page.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas');
-      canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       await match.page.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas);
-      const ocrTxt = ocrResult?.data?.text || "";
-      otherParsed = parseText(ocrTxt);
-      const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-      if (gm) otherGradeText = gm[0];
+      const ocrResult = await ocrWorker.recognize(canvas); const ocrTxt = ocrResult?.data?.text || ""; otherParsed = parseText(ocrTxt);
+      const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0];
     }
     const otherDetect = detectCategory(otherGradeText, otherId);
     const r = RATE_TABLE[otherDetect.category] || RATE_TABLE.JO;
@@ -1112,18 +887,13 @@ async function runComparison() {
     setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
     showComparison(currentResult, otherResult, otherId);
     statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
-  } catch (e) {
-    console.error(e);
-    statusDiv.style.color = "#dc3545"; statusDiv.innerText = "তুলনায় সমস্যা: " + e.message;
-  } finally { compareBtn.disabled = false; }
+  } catch (e) { console.error(e); statusDiv.style.color = "#dc3545"; statusDiv.innerText = "তুলনায় সমস্যা: " + e.message; } finally { compareBtn.disabled = false; }
 }
 
 function showComparison(mine, other, otherId) {
   const div = document.getElementById('compareResult');
   const diff = mine.totalEarned - other.totalEarned;
-  const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন`
-                  : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন`
-                  : `সমান পেয়েছেন`;
+  const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন` : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন` : `সমান পেয়েছেন`;
   div.innerHTML = `
     <table class="compare-table">
       <tr><th></th><th>আপনি</th><th>${otherId}</th></tr>
@@ -1141,32 +911,26 @@ function showComparison(mine, other, otherId) {
   div.style.display = "block";
   document.getElementById('compareInputArea').style.display = "none";
 }
-function resetComparison() {
-  document.getElementById('compareResult').style.display = "none";
-  document.getElementById('compareInputArea').style.display = "block";
-  document.getElementById('compareId').value = "";
-  document.getElementById('compareStatus').innerText = "";
-}
+function resetComparison() { document.getElementById('compareResult').style.display = "none"; document.getElementById('compareInputArea').style.display = "block"; document.getElementById('compareId').value = ""; document.getElementById('compareStatus').innerText = ""; }
 
-/* ========== Leaderboard ========== */
+/* ============ LEADERBOARD ============ */
 function initLeaderboardPage() {
   const month = getCurrentMonth();
   document.getElementById('lbSubtitle').innerText = month;
   const cached = getLeaderboardCache(month);
   if (cached) {
+    currentLeaderboardResult = cached;
+    renderLeaderboardResult(cached);
     document.getElementById('lbInitialCard').style.display = "none";
     document.getElementById('lbScanCard').style.display = "none";
     document.getElementById('lbResultCard').style.display = "block";
-    renderLeaderboardResult(cached);
   } else {
     document.getElementById('lbInitialCard').style.display = "block";
     document.getElementById('lbScanCard').style.display = "none";
     document.getElementById('lbResultCard').style.display = "none";
   }
 }
-function getCurrentMonth() {
-  return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`;
-}
+function getCurrentMonth() { return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`; }
 
 async function startLeaderboardScan(forceRescan = false) {
   const month = getCurrentMonth();
@@ -1178,39 +942,22 @@ async function startLeaderboardScan(forceRescan = false) {
   const fill = document.getElementById('lbScanFill');
   const hint = document.getElementById('lbScanHint');
   counter.innerText = "০ / ০ employee scan হয়েছে";
-  fill.style.width = "0%";
-  hint.innerText = "PDF load হচ্ছে...";
+  fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
   try {
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
-      if (cached) {
-        hint.innerText = "ক্যাশ থেকে লোড হয়েছে";
-        fill.style.width = "100%";
-        setTimeout(() => {
-          renderLeaderboardResult(cached);
-          document.getElementById('lbScanCard').style.display = "none";
-          document.getElementById('lbResultCard').style.display = "block";
-          isScanning = false;
-        }, 300);
-        return;
-      }
+      if (cached) { hint.innerText = "ক্যাশ থেকে লোড হয়েছে"; fill.style.width = "100%"; setTimeout(() => { currentLeaderboardResult = cached; renderLeaderboardResult(cached); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 300); return; }
     }
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
+    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
     const filesData = await resp.json();
     const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
     if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
     hint.innerText = "PDF লোড হচ্ছে...";
     const loadedPdfs = [];
-    for (const file of pdfFiles) {
-      const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
-      loadedPdfs.push({ file, pdf });
-    }
-    let totalPages = 0;
-    loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
-    const employees = [];
-    const skipped = [];
+    for (const file of pdfFiles) { const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise; loadedPdfs.push({ file, pdf }); }
+    let totalPages = 0; loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
+    const employees = []; const skipped = [];
     let processedPages = 0;
     for (const { file, pdf } of loadedPdfs) {
       const numPages = pdf.numPages;
@@ -1221,10 +968,7 @@ async function startLeaderboardScan(forceRescan = false) {
         for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
         nextPage += batch.length;
         const results = await Promise.all(batch);
-        for (const r of results) {
-          if (r.valid) employees.push(r);
-          else if (r.id) skipped.push(r.id);
-        }
+        for (const r of results) { if (r.valid) employees.push(r); else if (r.id) skipped.push(r.id); }
         processedPages += results.length;
         const percent = Math.floor((processedPages / totalPages) * 100);
         fill.style.width = percent + "%";
@@ -1234,28 +978,15 @@ async function startLeaderboardScan(forceRescan = false) {
       }
     }
     const validEmps = employees.filter(e => e.valid);
-    const topDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty).slice(0, 3);
-    const topOT = [...validEmps].sort((a,b) => b.otHours - a.otHours).slice(0, 3);
-    const topEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned).slice(0, 3);
-    const result = { month, topDuty, topOT, topEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
+    const sortedByDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty);
+    const sortedByOT = [...validEmps].sort((a,b) => b.otHours - a.otHours);
+    const sortedByEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned);
+    const result = { month, allEmployees: validEmps, sortedByDuty, sortedByOT, sortedByEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
     setLeaderboardCache(month, result);
-    fill.style.width = "100%";
-    hint.innerText = "সম্পন্ন!";
-    setTimeout(() => {
-      renderLeaderboardResult(result);
-      document.getElementById('lbScanCard').style.display = "none";
-      document.getElementById('lbResultCard').style.display = "block";
-      isScanning = false;
-    }, 400);
-  } catch (e) {
-    console.error(e);
-    hint.innerText = "সমস্যা: " + e.message;
-    isScanning = false;
-    setTimeout(() => {
-      document.getElementById('lbScanCard').style.display = "none";
-      document.getElementById('lbInitialCard').style.display = "block";
-    }, 2000);
-  }
+    currentLeaderboardResult = result;
+    fill.style.width = "100%"; hint.innerText = "সম্পন্ন!";
+    setTimeout(() => { renderLeaderboardResult(result); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 400);
+  } catch (e) { console.error(e); hint.innerText = "সমস্যা: " + e.message; isScanning = false; setTimeout(() => { document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbInitialCard').style.display = "block"; }, 2000); }
 }
 
 async function processLeaderboardPage(pdf, pageNum) {
@@ -1288,8 +1019,7 @@ async function processLeaderboardPage(pdf, pageNum) {
     const otHours = regExtra + doExtra + holExtra;
     let holidayCount = 0;
     const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
-    let rm;
-    const seen = new Set();
+    let rm; const seen = new Set();
     while ((rm = rowRegex.exec(cleanText)) !== null) {
       if (seen.has(rm[1])) continue;
       seen.add(rm[1]);
@@ -1305,26 +1035,24 @@ async function processLeaderboardPage(pdf, pageNum) {
     const nightAmount = nightCount * r.nightRate;
     const totalEarned = otAmount + holidayAmount + nightAmount;
     return { valid: true, id, name, grade: gradeText, category: detection.category, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
-  } catch (e) {
-    console.log("Page error:", e.message);
-    return { valid: false, id: null };
-  }
+  } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
 }
 
 function renderLeaderboardResult(result) {
-  renderRankList('lbTopDuty', result.topDuty, 'duty');
-  renderRankList('lbTopOT', result.topOT, 'ot');
-  renderRankList('lbTopEarned', result.topEarned, 'earned');
+  currentLeaderboardResult = result;
+  const topDuty = result.sortedByDuty.slice(0, 3);
+  const topOT = result.sortedByOT.slice(0, 3);
+  const topEarned = result.sortedByEarned.slice(0, 3);
+  renderTop3('lbTopDuty', topDuty, 'duty');
+  renderTop3('lbTopOT', topOT, 'ot');
+  renderTop3('lbTopEarned', topEarned, 'earned');
+  updateMyRankNotes();
   const badDiv = document.getElementById('lbBadData');
-  if (result.skippedCount > 0) {
-    badDiv.style.display = "block";
-    badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`;
-  } else {
-    badDiv.style.display = "none";
-  }
+  if (result.skippedCount > 0) { badDiv.style.display = "block"; badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`; }
+  else badDiv.style.display = "none";
 }
 
-function renderRankList(elementId, list, type) {
+function renderTop3(elementId, list, type) {
   const box = document.getElementById(elementId);
   if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px;">কোনো data পাওয়া যায়নি</div>'; return; }
   box.innerHTML = list.map((e, i) => {
@@ -1340,6 +1068,60 @@ function renderRankList(elementId, list, type) {
   }).join('');
 }
 
+function updateMyRankNotes() {
+  const myId = currentSearchId;
+  ['duty','ot','earned'].forEach(type => {
+    const idSpan = document.getElementById(`myRank${type.charAt(0).toUpperCase()+type.slice(1)}Id`);
+    const posSpan = document.getElementById(`myRank${type.charAt(0).toUpperCase()+type.slice(1)}Pos`);
+    if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
+    const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+    const idx = sorted.findIndex(e => e.id === myId);
+    idSpan.textContent = myId;
+    if (idx === -1) posSpan.textContent = "তালিকায় নেই";
+    else {
+      const emp = sorted[idx];
+      const val = type === 'duty' ? `${emp.totalDuty} ঘণ্টা` : type === 'ot' ? `${emp.otHours} ঘণ্টা` : `৳ ${emp.totalEarned.toFixed(2)}`;
+      posSpan.textContent = `${bn(idx + 1)} তম (${val})`;
+    }
+  });
+}
+
+function toggleFullRanking(type) {
+  const boxId = `fullRanking${type.charAt(0).toUpperCase()+type.slice(1)}`;
+  const btnTextId = `${type}BtnText`;
+  const btnArrowId = `${type}BtnArrow`;
+  const box = document.getElementById(boxId);
+  const btnText = document.getElementById(btnTextId);
+  const btnArrow = document.getElementById(btnArrowId);
+  if (box.classList.contains('show')) {
+    box.classList.remove('show');
+    btnText.textContent = "সম্পূর্ণ তালিকা দেখুন";
+    btnArrow.textContent = "▼";
+    return;
+  }
+  if (!currentLeaderboardResult) return;
+  const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+  box.innerHTML = sorted.map((e, i) => {
+    const isMine = e.id === currentSearchId;
+    let valueStr = "", metaStr = "";
+    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
+    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
+    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
+    return `<div class="rank-item ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
+      <div class="rank-number">${bn(i + 1)}</div>
+      <div class="rank-info"><div class="rank-name">${e.name || '—'}${isMine ? ' (আপনি)' : ''}</div><div class="rank-id">${e.id}</div></div>
+      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
+    </div>`;
+  }).join('');
+  box.classList.add('show');
+  btnText.textContent = "সম্পূর্ণ তালিকা লুকান";
+  btnArrow.textContent = "▲";
+  setTimeout(() => {
+    const myRow = box.querySelector('.rank-item.mine');
+    if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
+
 async function viewEmployeeFromLeaderboard(empId) {
   const month = getCurrentMonth();
   const [year, mon] = month.split('-');
@@ -1351,7 +1133,6 @@ async function viewEmployeeFromLeaderboard(empId) {
   setTimeout(() => { findReport(); }, 400);
 }
 
-/* ========== PDF / Render helpers ========== */
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
   const src = await PDFLib.PDFDocument.load(bytes);
@@ -1380,45 +1161,32 @@ function openModal() {
   const modal = document.getElementById('pdfModal');
   const mc = document.getElementById('modal-canvas');
   mc.width = 0; mc.height = 0;
-  modal.style.display = "block";
-  document.body.style.overflow = "hidden";
+  modal.style.display = "block"; document.body.style.overflow = "hidden";
   const divider = window.innerWidth < 768 ? 1.15 : 1.0;
   renderPageHD(matchedPdfPage, mc, divider);
 }
 function closeModal() {
   const modal = document.getElementById('pdfModal');
   if (modal.style.display === "block") {
-    modal.style.display = "none";
-    document.body.style.overflow = "auto";
-    const mc = document.getElementById('modal-canvas');
-    mc.width = 0; mc.height = 0;
+    modal.style.display = "none"; document.body.style.overflow = "auto";
+    const mc = document.getElementById('modal-canvas'); mc.width = 0; mc.height = 0;
   }
 }
 function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
 
 function resetAll() {
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.style.display = "none"; el.classList.remove('show'); }
-  });
-  ['step4Body','step5Body','step6Body'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('show');
-  });
+  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
+  ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
-  document.getElementById('status').innerText = "";
-  document.getElementById('progress').style.display = "none";
+  document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
   document.getElementById('employeeId').value = "";
-  document.getElementById('inpOtHours').value = 0;
-  document.getElementById('inpHoliday').value = 0;
-  document.getElementById('inpNight').value = 0;
+  document.getElementById('inpOtHours').value = 0; document.getElementById('inpHoliday').value = 0; document.getElementById('inpNight').value = 0;
   document.getElementById('compareId').value = "";
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareStatus').innerText = "";
   document.getElementById('backToLbBtn').style.display = "none";
-  currentPdf = null; currentFileUrl = null; currentPageNum = 1;
-  matchedPdfPage = null; currentResult = null;
+  currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
   document.getElementById('searchFormCard').style.display = "block";
   document.getElementById('searchSummary').classList.remove('show');
   document.getElementById('mainHeader').classList.remove('compact');
@@ -1426,13 +1194,10 @@ function resetAll() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ========== Init ========== */
 initYearDropdown();
 setDefaultMonth();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 </script>
 </body>
 </html>
