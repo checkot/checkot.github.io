@@ -15,118 +15,169 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 15px 12px; background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); margin: 0; min-height: 100vh; overflow-x: hidden; }
-  .card { background: #ffffff; padding: 22px 18px; border-radius: 16px; max-width: 500px; margin: 0 auto 15px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.6); }
-  .top-bar { display: flex; align-items: center; gap: 12px; max-width: 500px; margin: 0 auto 12px auto; }
-  .menu-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; color: #004085; padding: 4px 8px; border-radius: 6px; width: auto; margin: 0; box-shadow: none; }
-  .menu-btn:hover { background: rgba(0,64,133,0.08); }
-  .header { text-align: center; margin-bottom: 18px; flex: 1; }
-  .header h2 { margin: 0; color: #004085; font-size: 20px; font-weight: 700; }
-  .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 12px; }
-  label { font-weight: 600; display: block; margin-top: 12px; color: #495057; font-size: 14px; }
-  input, select { width: 100%; padding: 11px 13px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 8px; font-size: 15px; outline: none; transition: all 0.2s; background-color: #f8f9fa; }
-  input:focus, select:focus { border-color: #0056b3; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15); }
-  .row { display: flex; gap: 8px; margin-top: 5px; }
-  .row select { margin-top: 0; flex: 1; }
-  button { width: 100%; background-color: #0056b3; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; margin-top: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2); }
-  button:hover { background-color: #004085; }
-  button:disabled { background-color: #6c757d; cursor: not-allowed; }
-  .spinner { display: none; width: 22px; height: 22px; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 12px auto 0 auto; }
-  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  #status { margin-top: 12px; text-align: center; font-weight: 600; font-size: 14px; }
-  #progress { margin-top: 6px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
-  #pdf-viewer { margin: 12px auto 0 auto; max-width: 100%; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
-  .btn-group { display: flex; gap: 10px; margin-top: 12px; }
-  .btn-action { background-color: #0056b3; color: white; text-align: center; text-decoration: none; display: none; padding: 11px; border-radius: 8px; font-weight: 600; flex: 1; font-size: 14px; cursor: pointer; border: none; box-shadow: 0 3px 8px rgba(0, 86, 179, 0.2); transition: 0.2s; }
-  .btn-action:hover { background-color: #004085; }
-  .calc-card { display: none !important; }
-  .calc-card.show { display: block !important; }
-  .calc-card h3 { margin-top: 0; color: #004085; font-size: 16px; border-bottom: 2px solid #0056b3; padding-bottom: 6px; }
-  .badge { background: #0056b3; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: normal; }
-  .badge.warn { background: #dc3545; }
-  .grade-info { font-size: 12px; color: #6c757d; margin-bottom: 12px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #0056b3; }
-  .input-grid { display: grid; grid-template-columns: 1fr 110px; gap: 8px; align-items: center; margin: 6px 0; font-size: 14px; color: #333; }
-  .input-grid label { margin: 0; font-weight: 500; font-size: 14px; }
-  .input-grid input, .input-grid select { margin: 0; padding: 7px 9px; font-size: 14px; text-align: right; }
-  .input-grid select { text-align: left; padding: 7px 6px; font-size: 13px; }
-  .report-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #333; }
-  .report-row.total { font-weight: bold; font-size: 17px; color: #28a745; border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 12px; }
-  .info-list { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #333; margin: 10px 0; line-height: 1.7; }
-  .section-title { font-size: 14px; font-weight: 700; color: #004085; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #e9ecef; }
-  .remarks-box { border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.7; margin: 10px 0; }
-  .remarks-ok { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-  .remarks-warn { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
-  .remarks-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
-  .remarks-box ul { margin: 6px 0 0 20px; padding: 0; }
-  .remarks-box li { margin: 4px 0; }
-  .compare-hint { font-size: 12px; color: #6c757d; margin-top: 6px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #ffc107; line-height: 1.5; }
-  .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-  .compare-table th, .compare-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid #e9ecef; }
-  .compare-table th:first-child, .compare-table td:first-child { text-align: left; color: #6c757d; font-weight: 500; }
-  .compare-table th { color: #004085; font-weight: 700; font-size: 12px; background: #f8f9fa; }
-  .compare-table tr.total-row td { font-weight: 700; color: #28a745; font-size: 15px; border-top: 2px solid #28a745; border-bottom: none; padding-top: 12px; }
-  .compare-diff { text-align: center; font-size: 13px; color: #6c757d; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 8px; }
-  .compare-diff strong { color: #004085; }
-  .reset-btn { background-color: #6c757d; margin-top: 10px; font-size: 13px; padding: 9px; }
-  .reset-btn:hover { background-color: #5a6268; }
-  .drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
-  .drawer-overlay.active { display: block; }
-  .drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #ffffff; box-shadow: 4px 0 20px rgba(0,0,0,0.15); z-index: 1001; transition: left 0.3s ease; overflow-y: auto; }
-  .drawer.active { left: 0; }
-  .drawer-header { padding: 20px 20px 15px 20px; background: #004085; color: #ffffff; }
-  .drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
-  .drawer-header p { margin: 4px 0 0 0; font-size: 11px; opacity: 0.8; }
-  .drawer-menu { padding: 10px 0; }
-  .drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; color: #333; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
-  .drawer-item:hover { background: #f8f9fa; border-left-color: #0056b3; }
-  .drawer-item.active { background: #e7f3ff; border-left-color: #0056b3; color: #004085; font-weight: 600; }
-  .drawer-divider { height: 1px; background: #e9ecef; margin: 6px 20px; }
-  .page { display: none; }
-  .page.active { display: block; }
-  .history-item { padding: 12px 14px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #e9ecef; }
-  .history-item:hover { background: #e7f3ff; }
-  .history-item .id { font-weight: 700; color: #004085; font-size: 14px; }
-  .history-item .meta { font-size: 11px; color: #6c757d; margin-top: 2px; }
-  .history-item .time { font-size: 11px; color: #adb5bd; }
-  .empty-msg { text-align: center; color: #adb5bd; padding: 30px 20px; font-size: 13px; }
-  .settings-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e9ecef; font-size: 14px; }
-  .settings-row:last-child { border-bottom: none; }
-  .settings-row .label { color: #6c757d; }
-  .settings-row .value { color: #333; font-weight: 600; text-align: right; }
-  .settings-footer { text-align: center; color: #adb5bd; font-size: 11px; padding: 20px 0; }
-  .leaderboard-card { margin-bottom: 12px; }
-  .leaderboard-section-title { font-size: 14px; font-weight: 700; color: #004085; margin: 16px 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #0056b3; }
-  .leaderboard-section-title:first-child { margin-top: 0; }
-  .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #e9ecef; transition: 0.2s; cursor: pointer; -webkit-tap-highlight-color: rgba(0,86,179,0.1); }
-  .rank-item:active { background: #d4e7ff !important; }
-  .rank-item:hover { background: #e7f3ff; }
-  .rank-item.rank-1 { border-left-color: #ffc107; background: #fff9e6; }
-  .rank-item.rank-2 { border-left-color: #adb5bd; background: #f8f9fa; }
-  .rank-item.rank-3 { border-left-color: #cd7f32; background: #fdf4ec; }
-  .rank-number { font-weight: 700; font-size: 20px; min-width: 30px; color: #004085; text-align: center; }
-  .rank-info { flex: 1; min-width: 0; }
-  .rank-name { font-size: 14px; color: #333; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .rank-id { font-size: 12px; color: #6c757d; margin-top: 2px; }
-  .rank-value { font-weight: 700; color: #28a745; font-size: 15px; text-align: right; }
-  .rank-meta { font-size: 11px; color: #6c757d; text-align: right; margin-top: 2px; }
-  .scan-progress-bar { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin: 12px 0; }
-  .scan-progress-fill { height: 100%; background: #0056b3; width: 0%; transition: width 0.3s ease; }
-  .scan-counter { text-align: center; font-size: 14px; color: #333; font-weight: 600; margin: 12px 0; }
-  .scan-hint { text-align: center; font-size: 12px; color: #6c757d; margin-top: 8px; line-height: 1.5; }
-  .bad-data-note { font-size: 12px; color: #856404; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 8px 12px; margin-top: 16px; }
-  .tap-hint { text-align: center; font-size: 11px; color: #adb5bd; margin-top: 8px; font-style: italic; }
-  .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.92); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 90px 10px; }
-  #modal-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
-  .modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); text-align: center; z-index: 10000; }
-  .close-btn { background-color: #495057; color: white; border: none; padding: 12px 30px; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: 0.2s; min-width: 200px; }
-  .close-btn:hover { background-color: #343a40; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 15px 12px 80px 12px; background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); margin: 0; min-height: 100vh; overflow-x: hidden; }
+.card { background: #fff; padding: 18px 16px; border-radius: 14px; max-width: 500px; margin: 0 auto 12px auto; box-shadow: 0 6px 18px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.6); }
+.top-bar { display: flex; align-items: center; gap: 10px; max-width: 500px; margin: 0 auto 10px auto; }
+.menu-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; color: #004085; padding: 4px 8px; border-radius: 6px; width: auto; margin: 0; box-shadow: none; }
+.menu-btn:hover { background: rgba(0,64,133,0.08); }
+.header { text-align: center; flex: 1; }
+.header h2 { margin: 0; color: #004085; font-size: 18px; font-weight: 700; }
+.header p { color: #6c757d; margin: 2px 0 0 0; font-size: 11px; }
+.header.compact h2 { font-size: 15px; }
+.header.compact p { display: none; }
+label { font-weight: 600; display: block; margin-top: 10px; color: #495057; font-size: 13px; }
+input, select { width: 100%; padding: 10px 12px; margin-top: 4px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.2s; background-color: #f8f9fa; }
+input:focus, select:focus { border-color: #0056b3; background-color: #fff; box-shadow: 0 0 0 3px rgba(0,86,179,0.15); }
+.row { display: flex; gap: 8px; margin-top: 4px; }
+.row select { margin-top: 0; flex: 1; }
+button { width: 100%; background-color: #0056b3; color: white; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 600; margin-top: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,86,179,0.2); }
+button:hover { background-color: #004085; }
+button:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+.spinner { display: none; width: 22px; height: 22px; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 12px auto 0 auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+#status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; }
+#progress { margin-top: 5px; text-align: center; font-size: 11px; color: #6c757d; display: none; }
+
+/* Compact search summary */
+.search-summary { display: none; background: #fff; padding: 12px 16px; border-radius: 12px; max-width: 500px; margin: 0 auto 12px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; align-items: center; gap: 10px; transition: 0.2s; border-left: 4px solid #0056b3; }
+.search-summary.show { display: flex; }
+.search-summary:active { background: #f8f9fa; }
+.search-summary .id-badge { background: #0056b3; color: white; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; }
+.search-summary .month-info { flex: 1; font-size: 13px; color: #333; font-weight: 600; }
+.search-summary .edit-icon { color: #0056b3; font-size: 18px; }
+
+#pdf-viewer { margin: 12px auto 0 auto; max-width: 100%; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
+
+.btn-group { display: flex; gap: 10px; margin-top: 12px; }
+.btn-action { background-color: #0056b3; color: white; text-align: center; text-decoration: none; display: none; padding: 10px; border-radius: 8px; font-weight: 600; flex: 1; font-size: 13px; cursor: pointer; border: none; box-shadow: 0 3px 8px rgba(0,86,179,0.2); transition: 0.2s; }
+.btn-action:hover { background-color: #004085; }
+
+.calc-card { display: none !important; }
+.calc-card.show { display: block !important; }
+.calc-card h3 { margin-top: 0; color: #004085; font-size: 15px; border-bottom: 2px solid #0056b3; padding-bottom: 6px; }
+.badge { background: #0056b3; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: normal; }
+.badge.warn { background: #dc3545; }
+.grade-info { font-size: 11px; color: #6c757d; margin-bottom: 10px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #0056b3; }
+
+/* Compact 2-column calculator */
+.calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.calc-compact .field { display: flex; flex-direction: column; }
+.calc-compact .field label { margin: 0 0 2px 0; font-size: 11px; font-weight: 600; color: #6c757d; }
+.calc-compact .field input, .calc-compact .field select { margin: 0; padding: 7px 8px; font-size: 13px; text-align: right; }
+.calc-compact .field select { text-align: left; padding: 7px 4px; font-size: 12px; }
+
+.report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin: 10px 0; padding: 10px 0; border-top: 1px dashed #ccc; font-size: 12px; }
+.report-grid .item { display: flex; justify-content: space-between; }
+.report-grid .item span:first-child { color: #6c757d; }
+.report-grid .item span:last-child { font-weight: 600; color: #333; }
+
+.report-row.total { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 2px dashed #28a745; font-weight: bold; font-size: 16px; color: #28a745; }
+
+/* Collapsible sections */
+.collapse-card { background: #fff; padding: 0; border-radius: 14px; max-width: 500px; margin: 0 auto 12px auto; box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow: hidden; }
+.collapse-header { padding: 14px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: 0.2s; }
+.collapse-header:active { background: #f8f9fa; }
+.collapse-header .title { font-size: 13px; font-weight: 700; color: #004085; flex: 1; }
+.collapse-header .count { font-size: 12px; color: #6c757d; font-weight: normal; margin-right: 6px; }
+.collapse-header .arrow { font-size: 14px; color: #0056b3; transition: transform 0.2s; }
+.collapse-header.expanded .arrow { transform: rotate(180deg); }
+.collapse-body { padding: 0 16px 16px 16px; display: none; }
+.collapse-body.show { display: block; }
+
+.info-list { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #333; margin: 0; line-height: 1.7; }
+
+.remarks-box { border-radius: 8px; padding: 12px 14px; font-size: 12px; line-height: 1.7; margin: 0; }
+.remarks-ok { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+.remarks-warn { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
+.remarks-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+.remarks-box ul { margin: 6px 0 0 20px; padding: 0; }
+.remarks-box li { margin: 4px 0; }
+
+.compare-hint { font-size: 11px; color: #6c757d; margin-top: 6px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #ffc107; line-height: 1.5; }
+.compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+.compare-table th, .compare-table td { padding: 7px 5px; text-align: right; border-bottom: 1px solid #e9ecef; }
+.compare-table th:first-child, .compare-table td:first-child { text-align: left; color: #6c757d; font-weight: 500; }
+.compare-table th { color: #004085; font-weight: 700; font-size: 11px; background: #f8f9fa; }
+.compare-table tr.total-row td { font-weight: 700; color: #28a745; font-size: 14px; border-top: 2px solid #28a745; border-bottom: none; padding-top: 10px; }
+.compare-diff { text-align: center; font-size: 12px; color: #6c757d; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 8px; }
+.compare-diff strong { color: #004085; }
+
+.reset-btn { background-color: #6c757d; margin-top: 10px; font-size: 12px; padding: 8px; }
+.reset-btn:hover { background-color: #5a6268; }
+
+/* Drawer */
+.drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+.drawer-overlay.active { display: block; }
+.drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; box-shadow: 4px 0 20px rgba(0,0,0,0.15); z-index: 1001; transition: left 0.3s ease; overflow-y: auto; }
+.drawer.active { left: 0; }
+.drawer-header { padding: 20px 20px 15px 20px; background: #004085; color: #fff; }
+.drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.drawer-header p { margin: 4px 0 0 0; font-size: 11px; opacity: 0.8; }
+.drawer-menu { padding: 10px 0; }
+.drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; color: #333; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
+.drawer-item:hover { background: #f8f9fa; border-left-color: #0056b3; }
+.drawer-item.active { background: #e7f3ff; border-left-color: #0056b3; color: #004085; font-weight: 600; }
+.drawer-divider { height: 1px; background: #e9ecef; margin: 6px 20px; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.history-item { padding: 12px 14px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #e9ecef; }
+.history-item:hover { background: #e7f3ff; }
+.history-item .id { font-weight: 700; color: #004085; font-size: 13px; }
+.history-item .meta { font-size: 11px; color: #6c757d; margin-top: 2px; }
+.history-item .time { font-size: 11px; color: #adb5bd; }
+.empty-msg { text-align: center; color: #adb5bd; padding: 30px 20px; font-size: 13px; }
+
+.settings-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e9ecef; font-size: 13px; }
+.settings-row:last-child { border-bottom: none; }
+.settings-row .label { color: #6c757d; }
+.settings-row .value { color: #333; font-weight: 600; text-align: right; }
+.settings-footer { text-align: center; color: #adb5bd; font-size: 11px; padding: 20px 0; }
+
+/* Leaderboard */
+.leaderboard-card { margin-bottom: 12px; }
+.leaderboard-section-title { font-size: 13px; font-weight: 700; color: #004085; margin: 16px 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #0056b3; }
+.leaderboard-section-title:first-child { margin-top: 0; }
+.rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #e9ecef; transition: 0.2s; cursor: pointer; -webkit-tap-highlight-color: rgba(0,86,179,0.1); }
+.rank-item:active { background: #d4e7ff !important; }
+.rank-item:hover { background: #e7f3ff; }
+.rank-item.rank-1 { border-left-color: #ffc107; background: #fff9e6; }
+.rank-item.rank-2 { border-left-color: #adb5bd; }
+.rank-item.rank-3 { border-left-color: #cd7f32; background: #fdf4ec; }
+.rank-number { font-weight: 700; font-size: 20px; min-width: 30px; color: #004085; text-align: center; }
+.rank-info { flex: 1; min-width: 0; }
+.rank-name { font-size: 13px; color: #333; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-id { font-size: 11px; color: #6c757d; margin-top: 2px; }
+.rank-value { font-weight: 700; color: #28a745; font-size: 14px; text-align: right; }
+.rank-meta { font-size: 10px; color: #6c757d; text-align: right; margin-top: 2px; }
+.scan-progress-bar { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin: 12px 0; }
+.scan-progress-fill { height: 100%; background: #0056b3; width: 0%; transition: width 0.3s ease; }
+.scan-counter { text-align: center; font-size: 13px; color: #333; font-weight: 600; margin: 12px 0; }
+.scan-hint { text-align: center; font-size: 12px; color: #6c757d; margin-top: 8px; line-height: 1.5; }
+.bad-data-note { font-size: 11px; color: #856404; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 8px 12px; margin-top: 16px; }
+.tap-hint { text-align: center; font-size: 11px; color: #adb5bd; margin-top: 8px; font-style: italic; }
+
+/* Modal */
+.modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.92); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 90px 10px; }
+#modal-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+.modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); text-align: center; z-index: 10000; }
+.close-btn { background-color: #495057; color: white; border: none; padding: 12px 30px; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: 0.2s; min-width: 200px; }
+.close-btn:hover { background-color: #343a40; }
+
+/* Floating WhatsApp */
+.wa-float { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37,211,102,0.4); z-index: 999; text-decoration: none; transition: 0.2s; }
+.wa-float:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(37,211,102,0.5); }
+.wa-float svg { width: 32px; height: 32px; fill: white; }
 </style>
 </head>
 <body>
- <!-- Drawer -->
+
+<!-- Drawer -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
@@ -146,21 +197,18 @@
 <div class="page active" id="page-search">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()">☰</button>
-    <div class="header" style="margin-bottom: 0;">
+    <div class="header" id="mainHeader">
       <h2>RENATA PLC</h2>
       <p>Overtime Report Search & Calculator</p>
     </div>
-    <button id="backToLbBtn" class="menu-btn" onclick="backToLeaderboard()" style="display:none; font-size: 22px; color: #28a745;" title="সেরা তালিকায় ফিরুন">↩</button>
+    <button id="backToLbBtn" class="menu-btn" onclick="backToLeaderboard()" style="display:none; font-size: 22px; color: #28a745;">↩</button>
   </div>
 
-  <div class="card">
+  <!-- Search Form (bara state) -->
+  <div class="card" id="searchFormCard">
     <label>বছর ও মাস নির্বাচন করুন:</label>
     <div class="row">
-      <select id="yearSelect">
-        <option value="2025">২০২৫</option>
-        <option value="2026" selected>২০২৬</option>
-        <option value="2027">২০২৭</option>
-      </select>
+      <select id="yearSelect"></select>
       <select id="monthSelect">
         <option value="01">জানুয়ারি (Jan)</option>
         <option value="02">ফেব্রুয়ারি (Feb)</option>
@@ -170,27 +218,32 @@
         <option value="06">জুন (Jun)</option>
         <option value="07">জুলাই (Jul)</option>
         <option value="08">আগস্ট (Aug)</option>
-        <option value="09" selected>সেপ্টেম্বর (Sep)</option>
+        <option value="09">সেপ্টেম্বর (Sep)</option>
         <option value="10">অক্টোবর (Oct)</option>
         <option value="11">নভেম্বর (Nov)</option>
         <option value="12">ডিসেম্বর (Dec)</option>
       </select>
     </div>
-
     <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
     <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850" autocomplete="off" inputmode="text">
-
     <button id="searchBtn" onclick="findReport()">রিপোর্ট খুঁজুন</button>
-
     <div id="spinner" class="spinner"></div>
     <div id="status"></div>
     <div id="progress"></div>
   </div>
 
+  <!-- Compact Summary (after search) -->
+  <div class="search-summary" id="searchSummary" onclick="expandSearchForm()">
+    <div class="id-badge" id="summaryId">—</div>
+    <div class="month-info" id="summaryMonth">—</div>
+    <div class="edit-icon">✏️</div>
+  </div>
+
+  <!-- PDF Viewer -->
   <div class="card" id="step2" style="display:none;">
     <div class="header" style="margin-bottom: 12px;">
-      <h2 style="font-size:16px;">রিপোর্ট</h2>
-      <p id="viewerTitle">—</p>
+      <h2 style="font-size:14px;">রিপোর্ট</h2>
+      <p id="viewerTitle" style="font-size: 11px;">—</p>
     </div>
     <div id="pdf-viewer">
       <canvas id="pdf-canvas"></canvas>
@@ -201,55 +254,95 @@
     </div>
   </div>
 
+  <!-- Calculator (compact 2-column) -->
   <div class="card calc-card" id="step3">
     <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
     <div id="gradeInfo" class="grade-info" style="display:none;"></div>
+
     <div id="calcInputs">
-      <div class="input-grid">
-        <label>ক্যাটাগরি:</label>
-        <select id="inpCategory" onchange="recalculate()">
-          <option value="CF">CF - Contractual</option>
-          <option value="JO">JO - Junior Officer (Below B)</option>
-          <option value="JO_B">JO_B - Junior Officer B & Above</option>
-        </select>
+      <div class="calc-compact">
+        <div class="field">
+          <label>ক্যাটাগরি</label>
+          <select id="inpCategory" onchange="recalculate()">
+            <option value="CF">CF - Contractual</option>
+            <option value="JO">JO - Junior Officer</option>
+            <option value="JO_B">JO_B - Jr. Officer B+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ওটি ঘণ্টা (Extra)</label>
+          <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
+        </div>
+        <div class="field">
+          <label>হলিডে/DO দিন</label>
+          <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
+        </div>
+        <div class="field">
+          <label>নাইট সংখ্যা</label>
+          <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
+        </div>
       </div>
-      <div class="input-grid"><label>ওটি ঘণ্টা (Extra):</label><input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()"></div>
-      <div class="input-grid"><label>হলিডে/DO দিন:</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
-      <div class="input-grid"><label>নাইট সংখ্যা:</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
-      <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
-      <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
-      <div class="report-row"><span>ওটি অমাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
-      <div class="report-row"><span>হলিডে বিল:</span> <span id="lblHolidayAmount">৳ 0</span></div>
-      <div class="report-row"><span>নাইট বিল:</span> <span id="lblNightAmount">৳ 0</span></div>
-      <div class="report-row total"><span>সর্বমোট প্রাপ্য:</span> <span id="lblGrandTotal">৳ 0</span></div>
+
+      <div class="report-grid">
+        <div class="item"><span>ওটি রেট:</span><span id="lblRate">৳ 0/hr</span></div>
+        <div class="item"><span>ওটি বিল:</span><span id="lblOtAmount">৳ 0</span></div>
+        <div class="item"><span>হলিডে বিল:</span><span id="lblHolidayAmount">৳ 0</span></div>
+        <div class="item"><span>নাইট বিল:</span><span id="lblNightAmount">৳ 0</span></div>
+      </div>
+
+      <div class="report-row total">
+        <span>সর্বমোট প্রাপ্য:</span>
+        <span id="lblGrandTotal">৳ 0</span>
+      </div>
     </div>
   </div>
 
-  <div class="card calc-card" id="step4">
-    <h3>অন্য সহকর্মীর সাথে তুলনা</h3>
-    <div id="compareInputArea">
-      <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
-      <label>অন্য Employee ID:</label>
-      <input type="text" id="compareId" placeholder="উদাহরণ: CF8355" autocomplete="off" inputmode="text">
-      <button id="compareBtn" onclick="runComparison()">তুলনা করুন</button>
-      <div class="compare-hint">একটু সময় লাগবে, ধৈর্য ধরুন।</div>
-      <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;"></div>
+  <!-- Comparison (collapsible) -->
+  <div class="collapse-card calc-card" id="step4">
+    <div class="collapse-header" onclick="toggleCollapse('step4Body', this)">
+      <span class="title">অন্য সহকর্মীর সাথে তুলনা</span>
+      <span class="arrow">▼</span>
     </div>
-    <div id="compareResult" style="display:none;"></div>
+    <div class="collapse-body" id="step4Body">
+      <div id="compareInputArea">
+        <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
+        <label>অন্য Employee ID:</label>
+        <input type="text" id="compareId" placeholder="উদাহরণ: CF8355" autocomplete="off" inputmode="text">
+        <button id="compareBtn" onclick="runComparison()">তুলনা করুন</button>
+        <div class="compare-hint">একটু সময় লাগবে, ধৈর্য ধরুন।</div>
+        <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:12px;"></div>
+      </div>
+      <div id="compareResult" style="display:none;"></div>
+    </div>
   </div>
 
-  <div class="card calc-card" id="step5">
-    <div class="section-title">হলিডে / DO ডিউটির দিন</div>
-    <div id="holidayList" class="info-list">—</div>
+  <!-- Holiday List (collapsible) -->
+  <div class="collapse-card calc-card" id="step5">
+    <div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
+      <span class="title">হলিডে / DO ডিউটির দিন</span>
+      <span class="count" id="holidayCount">(০)</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="collapse-body" id="step5Body">
+      <div id="holidayList" class="info-list">—</div>
+    </div>
   </div>
 
-  <div class="card calc-card" id="step6">
-    <div class="section-title">নাইট ডিউটির দিন</div>
-    <div id="nightList" class="info-list">—</div>
+  <!-- Night List (collapsible) -->
+  <div class="collapse-card calc-card" id="step6">
+    <div class="collapse-header" onclick="toggleCollapse('step6Body', this)">
+      <span class="title">নাইট ডিউটির দিন</span>
+      <span class="count" id="nightCount">(০)</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div class="collapse-body" id="step6Body">
+      <div id="nightList" class="info-list">—</div>
+    </div>
   </div>
 
+  <!-- Remarks (always visible) -->
   <div class="card calc-card" id="step7">
-    <div class="section-title">মন্তব্য</div>
+    <div class="section-title" style="font-size:13px;font-weight:700;color:#004085;margin:0 0 8px 0;padding-bottom:4px;border-bottom:2px solid #e9ecef;">মন্তব্য</div>
     <div id="remarksBox" class="remarks-box">—</div>
     <button onclick="resetAll()" class="reset-btn">নতুন সার্চ</button>
   </div>
@@ -259,7 +352,7 @@
 <div class="page" id="page-leaderboard">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()">☰</button>
-    <div class="header" style="margin-bottom: 0;">
+    <div class="header">
       <h2>সেরা কে এই মাসে?</h2>
       <p id="lbSubtitle">—</p>
     </div>
@@ -300,7 +393,7 @@
 <div class="page" id="page-history">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()">☰</button>
-    <div class="header" style="margin-bottom: 0;">
+    <div class="header">
       <h2>আমার হিস্ট্রি</h2>
       <p>সাম্প্রতিক সার্চ</p>
     </div>
@@ -315,7 +408,7 @@
 <div class="page" id="page-settings">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()">☰</button>
-    <div class="header" style="margin-bottom: 0;">
+    <div class="header">
       <h2>সেটিংস</h2>
       <p>Information</p>
     </div>
@@ -330,13 +423,17 @@
 
 <!-- Modal -->
 <div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
-  <div class="modal-content-wrapper">
-    <canvas id="modal-canvas"></canvas>
-  </div>
-  <div class="modal-bottom">
-    <button class="close-btn" onclick="closeModal()">বন্ধ করুন</button>
-  </div>
+  <div class="modal-content-wrapper"><canvas id="modal-canvas"></canvas></div>
+  <div class="modal-bottom"><button class="close-btn" onclick="closeModal()">বন্ধ করুন</button></div>
 </div>
+
+<!-- Floating WhatsApp -->
+<a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/>
+  </svg>
+</a>
+
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -345,17 +442,17 @@ const REPO_NAME = "checkot.github.io";
 
 const RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
-  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
+  JO:   { otRate: 40, nightRate: 400, holidayType: "flat", holidayFlat: 300, name: "Junior Officer (Below B)" },
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat", holidayFlat: 400, name: "Junior Officer B & Above" }
 };
 
-const CACHE_PREFIX = "renata_cache_v15_";
+const CACHE_PREFIX = "renata_cache_v16_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v15_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v16_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v15";
+const HISTORY_KEY = "renata_history_v16";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v15_";
+const LEADERBOARD_PREFIX = "renata_lb_v16_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 let singlePageBlobUrl = null;
@@ -371,8 +468,53 @@ const activeTasks = new Set();
 let ocrWorker = null;
 let currentResult = null;
 let isScanning = false;
-let cameFromLeaderboard = false;
 
+/* ========== Bengali digits ========== */
+function bn(str) {
+  const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+  return String(str).replace(/[0-9]/g, d => map[d]);
+}
+
+/* ========== Init year dropdown ========== */
+function initYearDropdown() {
+  const ySel = document.getElementById('yearSelect');
+  const now = new Date();
+  const currYear = now.getFullYear();
+  ySel.innerHTML = '';
+  for (let y = currYear - 2; y <= currYear + 1; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = bn(y);
+    ySel.appendChild(opt);
+  }
+}
+
+/* ========== Auto select previous month ========== */
+function setDefaultMonth() {
+  const now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  month -= 1;
+  if (month === 0) { month = 12; year -= 1; }
+  const yStr = String(year);
+  const mStr = String(month).padStart(2, '0');
+  const ySel = document.getElementById('yearSelect');
+  let yearExists = false;
+  for (const opt of ySel.options) {
+    if (opt.value === yStr) { yearExists = true; break; }
+  }
+  if (!yearExists) {
+    const opt = document.createElement('option');
+    opt.value = yStr;
+    opt.textContent = bn(yStr);
+    ySel.appendChild(opt);
+    Array.from(ySel.options).sort((a,b) => parseInt(a.value) - parseInt(b.value)).forEach(o => ySel.appendChild(o));
+  }
+  ySel.value = yStr;
+  document.getElementById('monthSelect').value = mStr;
+}
+
+/* ========== Cache helpers ========== */
 function getCached(month, id) {
   try {
     const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id);
@@ -411,6 +553,7 @@ function setLeaderboardCache(month, payload) {
   try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
 }
 
+/* ========== History ========== */
 function getHistory() {
   try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
 }
@@ -427,6 +570,7 @@ function clearHistory() {
   try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {}
 }
 
+/* ========== Drawer / Page ========== */
 function openDrawer() {
   document.getElementById('drawer').classList.add('active');
   document.getElementById('drawerOverlay').classList.add('active');
@@ -435,7 +579,6 @@ function closeDrawer() {
   document.getElementById('drawer').classList.remove('active');
   document.getElementById('drawerOverlay').classList.remove('active');
 }
-
 function switchPage(pageName) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + pageName).classList.add('active');
@@ -448,6 +591,7 @@ function switchPage(pageName) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* ========== History rendering ========== */
 function renderHistory() {
   const list = getHistory();
   const box = document.getElementById('historyList');
@@ -460,7 +604,6 @@ function renderHistory() {
       <div class="time">${timeStr}</div></div>`;
   }).join('');
 }
-
 function replayHistory(id, month) {
   const [year, mon] = month.split('-');
   document.getElementById('yearSelect').value = year;
@@ -469,9 +612,7 @@ function replayHistory(id, month) {
   switchPage('search');
   setTimeout(() => findReport(), 300);
 }
-
 function backToLeaderboard() {
-  cameFromLeaderboard = false;
   document.getElementById('backToLbBtn').style.display = "none";
   switchPage('leaderboard');
   const month = getCurrentMonth();
@@ -484,10 +625,40 @@ function backToLeaderboard() {
   }
 }
 
+/* ========== Compact UI toggles ========== */
+function enterCompactMode(empId, month) {
+  document.getElementById('searchFormCard').style.display = "none";
+  document.getElementById('searchSummary').classList.add('show');
+  document.getElementById('summaryId').textContent = empId;
+  const [y, m] = month.split('-');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('summaryMonth').textContent = monthNames[parseInt(m)-1] + ' ' + y;
+  document.getElementById('mainHeader').classList.add('compact');
+}
+function expandSearchForm() {
+  document.getElementById('searchFormCard').style.display = "block";
+  document.getElementById('searchSummary').classList.remove('show');
+  document.getElementById('mainHeader').classList.remove('compact');
+  document.getElementById('employeeId').focus();
+}
+function toggleCollapse(bodyId, headerEl) {
+  const body = document.getElementById(bodyId);
+  const isOpen = body.classList.contains('show');
+  if (isOpen) {
+    body.classList.remove('show');
+    headerEl.classList.remove('expanded');
+  } else {
+    body.classList.add('show');
+    headerEl.classList.add('expanded');
+  }
+}
+
+/* ========== Event Listeners ========== */
 document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
 document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
 
+/* ========== MAIN SEARCH ========== */
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
   const mon   = document.getElementById('monthSelect').value;
@@ -512,6 +683,11 @@ async function findReport() {
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareId').value = "";
+  ['step4Body','step5Body','step6Body'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+  document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
   matchedPdfPage = null;
   currentResult = null;
@@ -538,6 +714,7 @@ async function findReport() {
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       addToHistory(searchId, month, cached.fileName);
+      enterCompactMode(searchId, month);
       try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color="#dc3545"; statusDiv.innerText = "Error: " + e.message; }
       return;
     }
@@ -550,8 +727,7 @@ async function findReport() {
     }
 
     const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
-      .map(f => ({ name: f.name, url: f.download_url }));
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
 
     if (pdfFiles.length === 0) {
       spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
@@ -568,6 +744,7 @@ async function findReport() {
       spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
       statusDiv.style.color = "#28a745"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
       addToHistory(searchId, month, match.fileName);
+      enterCompactMode(searchId, month);
       try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color="#dc3545"; statusDiv.innerText = "Error: " + e.message; }
     } else {
       spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
@@ -642,26 +819,22 @@ async function showResult(fileUrl, pageNum, fileName) {
   document.getElementById('openBtn').style.display = "block";
 }
 
+/* ========== Extraction ========== */
 async function runExtraction() {
-  if (!matchedPdfPage) { console.log("matchedPdfPage null"); return; }
+  if (!matchedPdfPage) return;
   const statusDiv = document.getElementById('status');
-  statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "Data পড়া হচ্ছে...";
-
+  statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data পড়া হচ্ছে...";
   try {
     let rawText = "", parsed = null;
     try {
       const tc = await matchedPdfPage.getTextContent();
       rawText = tc.items.map(i => i.str).join(" ");
       const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-      const hasTH = /TOTAL\s*HOUR/i.test(cleanText);
-      const notGarbage = !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100));
-      if (hasTH && notGarbage) parsed = parseText(rawText);
+      if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText);
     } catch (e) { console.log("Text error:", e.message); }
 
     if (!parsed || !parsed.totalHourLine) {
-      statusDiv.style.color = "#0056b3";
-      statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
+      statusDiv.style.color = "#0056b3"; statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
       if (!ocrWorker) {
         ocrWorker = await Tesseract.createWorker('eng');
         await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' });
@@ -691,25 +864,20 @@ async function runExtraction() {
     else holidayAmount = parsed.holidayCount * r.holidayFlat;
     const nightAmount = parsed.nightCount * r.nightRate;
 
-    currentResult = {
-      category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount,
-      otAmount, holidayAmount, nightAmount,
-      totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid
-    };
+    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
 
     const myAmountDiv = document.getElementById('compareMyAmount');
     myAmountDiv.style.display = "block";
     myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
 
-    statusDiv.style.color = "#28a745";
-    statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
+    statusDiv.style.color = "#28a745"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
 
     ['step3','step4','step5','step6','step7'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.classList.add('show'); el.style.display = 'block'; }
     });
 
-    setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth' }); }, 200);
+    setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
   } catch (e) {
     console.error("runExtraction error:", e);
     statusDiv.style.color = "#dc3545";
@@ -724,7 +892,7 @@ function applyExtraction(parsed, detection) {
   const categoryBadge = document.getElementById('categoryBadge');
   if (detection.gradeText || detection.reason) {
     gradeInfo.style.display = "block";
-    gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | Detection: ${detection.reason}`;
+    gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason}`;
   }
   if (detection.valid && detection.category) {
     document.getElementById('inpCategory').value = detection.category;
@@ -752,7 +920,7 @@ function applyExtraction(parsed, detection) {
 
 function detectCategory(gradeText, empId) {
   const g = (gradeText || "").toUpperCase().trim();
-  if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual (CF)", gradeText: g || "CF" };
+  if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual", gradeText: g || "CF" };
   if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) {
     return { category: null, valid: false, reason: "Management/Executive — ক্যাটাগরির বাইরে", gradeText: g };
   }
@@ -765,9 +933,9 @@ function detectCategory(gradeText, empId) {
     if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g };
   }
   if (levelNum !== null) {
-    if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `Level M${levelNum}`, gradeText: g };
-    if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `Level M${levelNum}`, gradeText: g };
-    return { category: null, valid: false, reason: `Level M${levelNum} — বাইরে`, gradeText: g };
+    if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum}`, gradeText: g };
+    if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g };
+    return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g };
   }
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
@@ -777,15 +945,13 @@ function parseText(rawText) {
   let otHours = 0, nightCount = 0;
   let holidayDays = [], nightDays = [], punchProblems = [];
   let totalHourLine = false;
-
   const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
   if (thIndex !== -1) {
     const after = cleanText.substring(thIndex, thIndex + 300);
     const numbers = after.match(/\d+\.\d+|\d+/g) || [];
     if (numbers.length >= 7) {
       const n = numbers.slice(0, 7).map(x => parseFloat(x));
-      const valid = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 && n[3] >= 0 && n[4] >= 0 && n[5] >= 0 &&
-                    Number.isInteger(n[6]) && n[6] < 200;
+      const valid = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 && n[3] >= 0 && n[4] >= 0 && n[5] >= 0 && Number.isInteger(n[6]) && n[6] < 200;
       if (valid) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; }
     }
   }
@@ -796,7 +962,6 @@ function parseText(rawText) {
       if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; }
     }
   }
-
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
   let rm;
   const seenDates = new Set();
@@ -812,47 +977,46 @@ function parseText(rawText) {
     if (isNight) nightDays.push(date);
     if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
   }
-
   return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
 }
 
 function showHolidayList(list) {
   const box = document.getElementById('holidayList');
+  const cnt = document.getElementById('holidayCount');
+  cnt.textContent = `(${bn(list ? list.length : 0)})`;
   if (!list || list.length === 0) box.innerText = "এই মাসে কোনো হলিডে বা DO ডিউটি নেই";
   else {
     box.innerHTML = list.map((d, i) => {
       const parts = [];
       if (d.doDuty > 0) parts.push(`DO Duty ${d.doDuty} hr`);
       if (d.doExtra > 0) parts.push(`DO Extra ${d.doExtra} hr`);
-      if (d.holDuty > 0) parts.push(`Holiday Duty ${d.holDuty} hr`);
+      if (d.holDuty > 0) parts.push(`Holiday ${d.holDuty} hr`);
       if (d.holExtra > 0) parts.push(`Holiday Extra ${d.holExtra} hr`);
       return `${i + 1}. ${d.date} — ${parts.join(", ")}`;
     }).join("<br>");
   }
 }
-
 function showNightList(list) {
   const box = document.getElementById('nightList');
+  const cnt = document.getElementById('nightCount');
+  cnt.textContent = `(${bn(list ? list.length : 0)})`;
   if (!list || list.length === 0) box.innerText = "এই মাসে কোনো নাইট ডিউটি নেই";
   else box.innerHTML = list.map((d, i) => `${i + 1}. ${d}`).join("<br>");
 }
-
 function showRemarks(punchProblems, detection) {
   const box = document.getElementById('remarksBox');
   const issues = [];
   if (!detection.valid) issues.push(`Grade সমস্যা: ${detection.reason}`);
-  if (punchProblems && punchProblems.length > 0) {
-    issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
-  }
+  if (punchProblems && punchProblems.length > 0) issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
   if (issues.length === 0) {
     box.className = "remarks-box remarks-ok";
     box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।";
   } else if (!detection.valid && punchProblems.length > 0) {
     box.className = "remarks-box remarks-error";
-    box.innerHTML = `নিম্নলিখিত সমস্যা আছে:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`;
+    box.innerHTML = `সমস্যা:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`;
   } else if (!detection.valid) {
     box.className = "remarks-box remarks-error";
-    box.innerHTML = `আপনার Grade বা Designation আমাদের ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
+    box.innerHTML = `আপনার Grade/Designation ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
   } else {
     box.className = "remarks-box remarks-warn";
     box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`;
@@ -871,66 +1035,54 @@ function recalculate() {
   else holidayAmount = holiday * r.holidayFlat;
   const nightAmount = night * r.nightRate;
   const grandTotal = otAmount + holidayAmount + nightAmount;
-  document.getElementById('lblRate').innerText = `৳ ${r.otRate} / hr`;
+  document.getElementById('lblRate').innerText = `৳ ${r.otRate}/hr`;
   document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
   document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
   document.getElementById('lblNightAmount').innerText = `৳ ${nightAmount.toFixed(2)}`;
   document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
 }
 
+/* ========== Comparison ========== */
 async function runComparison() {
   const otherId = document.getElementById('compareId').value.trim().toUpperCase();
   const statusDiv = document.getElementById('compareStatus');
   const compareBtn = document.getElementById('compareBtn');
   const resultDiv = document.getElementById('compareResult');
-
   if (!otherId) { alert("অন্য Employee ID লিখুন!"); return; }
   if (otherId === currentSearchId) { alert("একই ID দিয়ে তুলনা করা যাবে না!"); return; }
-  if (!currentResult) { alert("প্রথমে আপনার হিসাব সম্পন্ন হতে হবে।"); return; }
-
+  if (!currentResult) { alert("প্রথমে হিসাব সম্পন্ন হতে হবে।"); return; }
   compareBtn.disabled = true; resultDiv.style.display = "none";
-
   const cached = getCompareCache(currentMonth, currentSearchId, otherId);
   if (cached) {
     statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
     showComparison(currentResult, cached.other, cached.otherId);
     compareBtn.disabled = false; return;
   }
-
   statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "অন্য employee-এর data খোঁজা হচ্ছে... ধৈর্য ধরুন।";
-
+  statusDiv.innerText = "খোঁজা হচ্ছে... একটু সময় লাগবে।";
   try {
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
     const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
-      .map(f => ({ name: f.name, url: f.download_url }));
-
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
     currentToken++;
     const myToken = currentToken;
     const match = await parallelSearch(pdfFiles, otherId, myToken, null);
-
     if (!match) {
-      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `আইডি "${otherId}"-এর রেকর্ড পাওয়া যায়নি`;
+      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `আইডি "${otherId}" পাওয়া যায়নি`;
       compareBtn.disabled = false; return;
     }
-
-    statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data extract করা হচ্ছে...";
-
+    statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data extract হচ্ছে...";
     let otherParsed = null, otherGradeText = "";
     try {
       const tc = await match.page.getTextContent();
       const txt = tc.items.map(i => i.str).join(" ");
       const cleanText = txt.replace(/\s+/g, " ").toUpperCase();
-      if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) {
-        otherParsed = parseText(txt);
-      }
+      if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt);
       const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
       if (gm) otherGradeText = gm[0];
     } catch (e) {}
-
     if (!otherParsed || !otherParsed.totalHourLine) {
       statusDiv.innerText = "OCR চলছে...";
       if (!ocrWorker) {
@@ -949,7 +1101,6 @@ async function runComparison() {
       const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
       if (gm) otherGradeText = gm[0];
     }
-
     const otherDetect = detectCategory(otherGradeText, otherId);
     const r = RATE_TABLE[otherDetect.category] || RATE_TABLE.JO;
     const otAmount = otherParsed.otHours * r.otRate;
@@ -957,14 +1108,7 @@ async function runComparison() {
     if (r.holidayType === "hourly") holidayAmount = otherParsed.holidayCount * r.holidayHours * r.otRate;
     else holidayAmount = otherParsed.holidayCount * r.holidayFlat;
     const nightAmount = otherParsed.nightCount * r.nightRate;
-
-    const otherResult = {
-      category: otherDetect.category, categoryName: r.name,
-      otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount,
-      otAmount, holidayAmount, nightAmount,
-      totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText
-    };
-
+    const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
     setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
     showComparison(currentResult, otherResult, otherId);
     statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
@@ -979,10 +1123,10 @@ function showComparison(mine, other, otherId) {
   const diff = mine.totalEarned - other.totalEarned;
   const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন`
                   : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন`
-                  : `আপনি সমান পেয়েছেন`;
+                  : `সমান পেয়েছেন`;
   div.innerHTML = `
     <table class="compare-table">
-      <tr><th></th><th>আপনি (${currentSearchId})</th><th>${otherId}</th></tr>
+      <tr><th></th><th>আপনি</th><th>${otherId}</th></tr>
       <tr><td>ক্যাটাগরি</td><td>${RATE_TABLE[mine.category]?.name || '—'}</td><td>${other.categoryName || '—'}</td></tr>
       <tr><td>ওটি ঘণ্টা</td><td>${mine.otHours}</td><td>${other.otHours}</td></tr>
       <tr><td>হলিডে</td><td>${mine.holiday}</td><td>${other.holiday}</td></tr>
@@ -997,7 +1141,6 @@ function showComparison(mine, other, otherId) {
   div.style.display = "block";
   document.getElementById('compareInputArea').style.display = "none";
 }
-
 function resetComparison() {
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
@@ -1005,7 +1148,7 @@ function resetComparison() {
   document.getElementById('compareStatus').innerText = "";
 }
 
-/* Leaderboard */
+/* ========== Leaderboard ========== */
 function initLeaderboardPage() {
   const month = getCurrentMonth();
   document.getElementById('lbSubtitle').innerText = month;
@@ -1021,7 +1164,6 @@ function initLeaderboardPage() {
     document.getElementById('lbResultCard').style.display = "none";
   }
 }
-
 function getCurrentMonth() {
   return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`;
 }
@@ -1029,18 +1171,15 @@ function getCurrentMonth() {
 async function startLeaderboardScan(forceRescan = false) {
   const month = getCurrentMonth();
   isScanning = true;
-
   document.getElementById('lbInitialCard').style.display = "none";
   document.getElementById('lbScanCard').style.display = "block";
   document.getElementById('lbResultCard').style.display = "none";
-
   const counter = document.getElementById('lbScanCounter');
   const fill = document.getElementById('lbScanFill');
   const hint = document.getElementById('lbScanHint');
   counter.innerText = "০ / ০ employee scan হয়েছে";
   fill.style.width = "0%";
   hint.innerText = "PDF load হচ্ছে...";
-
   try {
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
@@ -1056,37 +1195,30 @@ async function startLeaderboardScan(forceRescan = false) {
         return;
       }
     }
-
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
     const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
-      .map(f => ({ name: f.name, url: f.download_url }));
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
     if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
-
     hint.innerText = "PDF লোড হচ্ছে...";
     const loadedPdfs = [];
     for (const file of pdfFiles) {
       const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
       loadedPdfs.push({ file, pdf });
     }
-
     let totalPages = 0;
     loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
     const employees = [];
     const skipped = [];
     let processedPages = 0;
-
     for (const { file, pdf } of loadedPdfs) {
       const numPages = pdf.numPages;
       const CONCURRENCY = 4;
       let nextPage = 1;
       while (nextPage <= numPages) {
         const batch = [];
-        for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) {
-          batch.push(processLeaderboardPage(pdf, nextPage + i));
-        }
+        for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
         nextPage += batch.length;
         const results = await Promise.all(batch);
         for (const r of results) {
@@ -1096,17 +1228,15 @@ async function startLeaderboardScan(forceRescan = false) {
         processedPages += results.length;
         const percent = Math.floor((processedPages / totalPages) * 100);
         fill.style.width = percent + "%";
-        counter.innerText = `${processedPages} / ${totalPages} employee scan হয়েছে`;
+        counter.innerText = `${bn(processedPages)} / ${bn(totalPages)} employee scan হয়েছে`;
         hint.innerText = "ধৈর্য ধরুন...";
         await new Promise(res => setTimeout(res, 10));
       }
     }
-
     const validEmps = employees.filter(e => e.valid);
     const topDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty).slice(0, 3);
     const topOT = [...validEmps].sort((a,b) => b.otHours - a.otHours).slice(0, 3);
     const topEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned).slice(0, 3);
-
     const result = { month, topDuty, topOT, topEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
     setLeaderboardCache(month, result);
     fill.style.width = "100%";
@@ -1135,33 +1265,27 @@ async function processLeaderboardPage(pdf, pageNum) {
     const items = tc.items.map(i => i.str);
     const text = items.join(" ");
     const upper = text.toUpperCase();
-
     const idMatch = upper.match(/\b(CF|RF)\d{3,5}\b/);
     if (!idMatch) return { valid: false, id: null };
     const id = idMatch[0];
     const cleanText = upper.replace(/\s+/g, " ");
     if (!/TOTAL\s*HOUR/i.test(cleanText)) return { valid: false, id };
-
     const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
     const name = nameMatch ? nameMatch[1].trim().substring(0, 45) : "";
-
     const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     const gradeText = gm ? gm[0] : "";
     const detection = detectCategory(gradeText, id);
     if (!detection.valid) return { valid: false, id };
-
     const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
     const after = cleanText.substring(thIndex, thIndex + 300);
     const nums = (after.match(/\d+\.\d+|\d+/g) || []).slice(0, 7).map(parseFloat);
     if (nums.length < 7) return { valid: false, id };
-
     const regDuty = nums[0] || 0, regExtra = nums[1] || 0;
     const doDuty = nums[2] || 0, doExtra = nums[3] || 0;
     const holDuty = nums[4] || 0, holExtra = nums[5] || 0;
     const nightCount = nums[6] || 0;
     const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
     const otHours = regExtra + doExtra + holExtra;
-
     let holidayCount = 0;
     const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
     let rm;
@@ -1173,7 +1297,6 @@ async function processLeaderboardPage(pdf, pageNum) {
       const hd = parseFloat(rm[6]) || 0, he = parseFloat(rm[7]) || 0;
       if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
     }
-
     const r = RATE_TABLE[detection.category];
     const otAmount = otHours * r.otRate;
     let holidayAmount = 0;
@@ -1181,12 +1304,7 @@ async function processLeaderboardPage(pdf, pageNum) {
     else holidayAmount = holidayCount * r.holidayFlat;
     const nightAmount = nightCount * r.nightRate;
     const totalEarned = otAmount + holidayAmount + nightAmount;
-
-    return {
-      valid: true, id, name, grade: gradeText, category: detection.category,
-      totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)),
-      nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2))
-    };
+    return { valid: true, id, name, grade: gradeText, category: detection.category, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
   } catch (e) {
     console.log("Page error:", e.message);
     return { valid: false, id: null };
@@ -1200,7 +1318,7 @@ function renderLeaderboardResult(result) {
   const badDiv = document.getElementById('lbBadData');
   if (result.skippedCount > 0) {
     badDiv.style.display = "block";
-    badDiv.innerText = `${result.skippedCount} জন employee-এর data পাওয়া যায়নি বা ক্যাটাগরির বাইরে।`;
+    badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`;
   } else {
     badDiv.style.display = "none";
   }
@@ -1208,30 +1326,20 @@ function renderLeaderboardResult(result) {
 
 function renderRankList(elementId, list, type) {
   const box = document.getElementById(elementId);
-  if (!list || list.length === 0) {
-    box.innerHTML = '<div class="empty-msg" style="padding: 15px;">কোনো data পাওয়া যায়নি</div>';
-    return;
-  }
+  if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px;">কোনো data পাওয়া যায়নি</div>'; return; }
   box.innerHTML = list.map((e, i) => {
     let valueStr = "", metaStr = "";
-    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = `Grade: ${e.grade || '—'}`; }
-    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = `Grade: ${e.grade || '—'}`; }
-    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} hr | Hol: ${e.holidayCount} | Night: ${e.nightCount}`; }
+    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || '—'; }
+    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || '—'; }
+    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
     return `<div class="rank-item rank-${i + 1}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
       <div class="rank-number">${i + 1}</div>
-      <div class="rank-info">
-        <div class="rank-name">${e.name || '—'}</div>
-        <div class="rank-id">${e.id}</div>
-      </div>
-      <div>
-        <div class="rank-value">${valueStr}</div>
-        <div class="rank-meta">${metaStr}</div>
-      </div>
+      <div class="rank-info"><div class="rank-name">${e.name || '—'}</div><div class="rank-id">${e.id}</div></div>
+      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
     </div>`;
   }).join('');
 }
 
-/* Tap to view full report */
 async function viewEmployeeFromLeaderboard(empId) {
   const month = getCurrentMonth();
   const [year, mon] = month.split('-');
@@ -1239,11 +1347,11 @@ async function viewEmployeeFromLeaderboard(empId) {
   document.getElementById('monthSelect').value = mon;
   document.getElementById('employeeId').value = empId;
   document.getElementById('backToLbBtn').style.display = "block";
-  cameFromLeaderboard = true;
   switchPage('search');
   setTimeout(() => { findReport(); }, 400);
 }
 
+/* ========== PDF / Render helpers ========== */
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
   const src = await PDFLib.PDFDocument.load(bytes);
@@ -1293,6 +1401,11 @@ function resetAll() {
     const el = document.getElementById(id);
     if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
+  ['step4Body','step5Body','step6Body'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+  document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   document.getElementById('status').innerText = "";
   document.getElementById('progress').style.display = "none";
   document.getElementById('employeeId').value = "";
@@ -1303,15 +1416,19 @@ function resetAll() {
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareStatus').innerText = "";
-  currentPdf = null;
-  currentFileUrl = null;
-  currentPageNum = 1;
-  matchedPdfPage = null;
-  currentResult = null;
-  cameFromLeaderboard = false;
   document.getElementById('backToLbBtn').style.display = "none";
+  currentPdf = null; currentFileUrl = null; currentPageNum = 1;
+  matchedPdfPage = null; currentResult = null;
+  document.getElementById('searchFormCard').style.display = "block";
+  document.getElementById('searchSummary').classList.remove('show');
+  document.getElementById('mainHeader').classList.remove('compact');
+  setDefaultMonth();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+/* ========== Init ========== */
+initYearDropdown();
+setDefaultMonth();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
