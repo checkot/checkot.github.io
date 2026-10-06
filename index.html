@@ -28,9 +28,6 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <style>
-/* ============================================
-   DESIGN TOKENS
-   ============================================ */
 :root {
   --bg: #F8FAFC;
   --surface: #FFFFFF;
@@ -39,7 +36,6 @@
   --primary-blue: #2563EB;
   --primary-blue-hover: #1D4ED8;
   --accent: #0D9488;
-  --accent-hover: #0F766E;
   --text: #0F172A;
   --text-2: #334155;
   --muted: #64748B;
@@ -62,13 +58,7 @@
   --radius-sm: 6px;
   --radius: 10px;
   --radius-lg: 12px;
-  --radius-xl: 14px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
+  --nav-height: 0px;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -85,32 +75,92 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================
-   LAYOUT
-   ============================================ */
-.container { max-width: 500px; margin: 0 auto; }
+/* ============ TOP NAVIGATION (Desktop) ============ */
+.topnav {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  margin: -12px -12px 16px -12px;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+.topnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.topnav-brand img { width: 32px; height: 32px; border-radius: 6px; }
+.topnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.topnav-brand-text strong { font-size: 15px; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; }
+.topnav-brand-text small { font-size: 10px; color: var(--muted); font-weight: 500; }
+.topnav-menu {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  align-items: center;
+}
+.topnav-item {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+}
+.topnav-item:hover { background: var(--surface-2); color: var(--text); }
+.topnav-item.active { background: var(--info-bg); color: var(--primary-blue); }
+
+/* ============ MOBILE TOP BAR ============ */
 .top-bar {
-  display: flex; align-items: center; gap: 10px;
-  max-width: 500px; margin: 0 auto 12px auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 500px;
+  margin: 0 auto 12px auto;
   padding: 4px 0;
 }
 .menu-btn {
-  background: transparent; border: none;
-  font-size: 22px; cursor: pointer; color: var(--primary);
-  padding: 8px; border-radius: var(--radius-sm); width: auto;
-  margin: 0; box-shadow: none; line-height: 1;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--primary);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  width: auto;
+  margin: 0;
+  box-shadow: none;
+  line-height: 1;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 .menu-btn:hover { background: var(--surface-2); }
+.mobile-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
 .header { text-align: center; flex: 1; }
 .header h2 { margin: 0; color: var(--primary); font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
 .header p { color: var(--muted); margin: 2px 0 0 0; font-size: 11px; font-weight: 500; }
 .header.compact h2 { font-size: 15px; }
 .header.compact p { display: none; }
 
-/* ============================================
-   CARDS
-   ============================================ */
+/* ============ CARDS ============ */
 .card {
   background: var(--surface);
   padding: 16px;
@@ -130,9 +180,7 @@ body {
   overflow: hidden;
 }
 
-/* ============================================
-   TYPOGRAPHY
-   ============================================ */
+/* ============ TYPOGRAPHY ============ */
 label {
   font-weight: 600;
   display: block;
@@ -143,9 +191,7 @@ label {
 }
 label:first-child { margin-top: 0; }
 
-/* ============================================
-   FORM ELEMENTS
-   ============================================ */
+/* ============ FORM ============ */
 input, select {
   width: 100%;
   padding: 12px 14px;
@@ -174,17 +220,9 @@ select {
 }
 .row { display: flex; gap: 8px; margin-top: 6px; }
 .row select { margin-top: 0; flex: 1; }
+#employeeId { font-size: 16px; font-weight: 600; letter-spacing: 0.02em; padding: 14px; }
 
-#employeeId {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 14px;
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
+/* ============ BUTTONS ============ */
 button {
   width: 100%;
   background: var(--primary-blue);
@@ -207,15 +245,9 @@ button {
 button:hover { background: var(--primary-blue-hover); }
 button:active { transform: scale(0.99); }
 button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
-
 #searchBtn { margin-top: 14px; }
 
-.btn-group {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  align-items: stretch;
-}
+.btn-group { display: flex; gap: 8px; margin-top: 12px; align-items: stretch; }
 .btn-action {
   background: var(--primary-blue) !important;
   color: white !important;
@@ -256,9 +288,7 @@ button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
 }
 .reset-btn:hover { background: var(--surface-2); color: var(--text); }
 
-/* ============================================
-   SPINNER / STATUS
-   ============================================ */
+/* ============ SPINNER / STATUS ============ */
 .spinner {
   display: none;
   width: 20px; height: 20px;
@@ -269,24 +299,10 @@ button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
   margin: 12px auto 0 auto;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-#status {
-  margin-top: 10px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--text-2);
-}
-#progress {
-  margin-top: 4px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  display: none;
-}
+#status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; color: var(--text-2); }
+#progress { margin-top: 4px; text-align: center; font-size: 12px; color: var(--muted); display: none; }
 
-/* ============================================
-   SEARCH SUMMARY (compact mode)
-   ============================================ */
+/* ============ SEARCH SUMMARY ============ */
 .search-summary {
   display: none;
   background: var(--surface);
@@ -313,17 +329,10 @@ button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-.search-summary .month-info {
-  flex: 1;
-  font-size: 13px;
-  color: var(--text-2);
-  font-weight: 600;
-}
+.search-summary .month-info { flex: 1; font-size: 13px; color: var(--text-2); font-weight: 600; }
 .search-summary .edit-icon { color: var(--muted); font-size: 16px; }
 
-/* ============================================
-   PDF VIEWER
-   ============================================ */
+/* ============ PDF VIEWER ============ */
 #pdf-viewer {
   margin: 12px auto 0 auto;
   max-width: 100%;
@@ -341,9 +350,7 @@ canvas {
   margin: 0 auto;
 }
 
-/* ============================================
-   CALCULATOR
-   ============================================ */
+/* ============ CALCULATOR ============ */
 .calc-card { display: none !important; }
 .calc-card.show { display: block !important; }
 .calc-card h3 {
@@ -382,13 +389,7 @@ canvas {
   font-weight: 500;
   line-height: 1.5;
 }
-
-.calc-compact {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 10px 0;
-}
+.calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
 .calc-compact .field { display: flex; flex-direction: column; }
 .calc-compact .field label {
   margin: 0 0 4px 0;
@@ -406,19 +407,9 @@ canvas {
   text-align: right;
   font-weight: 600;
 }
-.calc-compact .field select {
-  text-align: left;
-  padding: 9px 28px 9px 10px;
-  font-size: 13px;
-}
+.calc-compact .field select { text-align: left; padding: 9px 28px 9px 10px; font-size: 13px; }
 
-/* Result blocks */
-.result-blocks {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 12px 0;
-}
+.result-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
 .result-block {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -440,11 +431,6 @@ canvas {
   font-weight: 700;
   color: var(--text);
   font-variant-numeric: tabular-nums;
-}
-.result-block .rb-sub {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 500;
 }
 .result-block.accent-ot { border-left: 3px solid var(--primary-blue); }
 .result-block.accent-holiday { border-left: 3px solid var(--accent); }
@@ -477,9 +463,7 @@ canvas {
   letter-spacing: -0.02em;
 }
 
-/* ============================================
-   COLLAPSIBLE
-   ============================================ */
+/* ============ COLLAPSIBLE ============ */
 .collapse-header {
   padding: 14px 16px;
   cursor: pointer;
@@ -542,9 +526,7 @@ canvas {
   line-height: 1.7;
 }
 
-/* ============================================
-   REMARKS
-   ============================================ */
+/* ============ REMARKS ============ */
 .remarks-box {
   border-radius: var(--radius);
   padding: 12px 14px;
@@ -553,32 +535,14 @@ canvas {
   margin: 0;
   border: 1px solid;
 }
-.remarks-ok {
-  background: var(--success-bg);
-  border-color: var(--success-border);
-  color: #14532D;
-}
-.remarks-warn {
-  background: var(--warning-bg);
-  border-color: var(--warning-border);
-  color: #78350F;
-}
-.remarks-error {
-  background: var(--danger-bg);
-  border-color: var(--danger-border);
-  color: #7F1D1D;
-}
-.remarks-info {
-  background: var(--info-bg);
-  border-color: var(--info-border);
-  color: #1E3A8A;
-}
+.remarks-ok { background: var(--success-bg); border-color: var(--success-border); color: #14532D; }
+.remarks-warn { background: var(--warning-bg); border-color: var(--warning-border); color: #78350F; }
+.remarks-error { background: var(--danger-bg); border-color: var(--danger-border); color: #7F1D1D; }
+.remarks-info { background: var(--info-bg); border-color: var(--info-border); color: #1E3A8A; }
 .remarks-box ul { margin: 6px 0 0 18px; padding: 0; }
 .remarks-box li { margin: 4px 0; }
 
-/* ============================================
-   COMPARISON
-   ============================================ */
+/* ============ COMPARISON ============ */
 .compare-hint {
   font-size: 11.5px;
   color: var(--warning);
@@ -636,9 +600,68 @@ canvas {
 }
 .compare-diff strong { color: var(--primary); }
 
-/* ============================================
-   DRAWER
-   ============================================ */
+/* ============ NOTICES ============ */
+.notice-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--primary-blue);
+  transition: background 0.15s;
+}
+.notice-item.priority-high { border-left-color: var(--danger); background: var(--danger-bg); }
+.notice-item.priority-low { border-left-color: var(--muted); background: var(--surface-2); }
+.notice-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px; line-height: 1.4; }
+.notice-body { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 6px; }
+.notice-date { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ============ ERP TEAM ============ */
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  transition: box-shadow 0.15s;
+}
+.team-member:hover { box-shadow: var(--shadow-md); }
+.team-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface-2);
+}
+.team-info { flex: 1; min-width: 0; }
+.team-name { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.3; }
+.team-desig { font-size: 12px; color: var(--primary-blue); font-weight: 600; margin-bottom: 2px; }
+.team-id { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
+.team-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #25D366;
+  color: white;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+  flex-shrink: 0;
+  min-height: 38px;
+}
+.team-wa:hover { background: #128C7E; }
+.team-wa svg { width: 16px; height: 16px; fill: currentColor; }
+
+/* ============ DRAWER ============ */
 .drawer-overlay {
   display: none;
   position: fixed;
@@ -668,9 +691,13 @@ canvas {
   padding: 20px 20px 16px 20px;
   background: var(--primary);
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
-.drawer-header p { margin: 4px 0 0 0; font-size: 11px; opacity: 0.7; font-weight: 500; }
+.drawer-header img { width: 36px; height: 36px; border-radius: 8px; }
+.drawer-header-text h3 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.drawer-header-text p { margin: 3px 0 0 0; font-size: 11px; opacity: 0.75; font-weight: 500; }
 .drawer-menu { padding: 8px 0; flex: 1; }
 .drawer-item {
   display: flex;
@@ -700,6 +727,17 @@ canvas {
   font-weight: 600;
 }
 .drawer-item.active::before { background: var(--primary-blue); }
+.drawer-badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
 .drawer-divider { height: 1px; background: var(--border); margin: 6px 20px; }
 .drawer-footer {
   padding: 14px 20px;
@@ -710,15 +748,11 @@ canvas {
   font-weight: 500;
 }
 
-/* ============================================
-   PAGE VISIBILITY
-   ============================================ */
+/* ============ PAGE ============ */
 .page { display: none; }
 .page.active { display: block; }
 
-/* ============================================
-   HISTORY
-   ============================================ */
+/* ============ HISTORY ============ */
 .history-item {
   padding: 12px 14px;
   background: var(--surface-2);
@@ -736,17 +770,9 @@ canvas {
 .history-item .id { font-weight: 700; color: var(--primary); font-size: 13px; letter-spacing: 0.01em; }
 .history-item .meta { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; }
 .history-item .time { font-size: 11px; color: var(--muted); font-weight: 500; }
-.empty-msg {
-  text-align: center;
-  color: var(--muted);
-  padding: 32px 20px;
-  font-size: 13px;
-  font-weight: 500;
-}
+.empty-msg { text-align: center; color: var(--muted); padding: 32px 20px; font-size: 13px; font-weight: 500; }
 
-/* ============================================
-   SETTINGS
-   ============================================ */
+/* ============ SETTINGS ============ */
 .settings-row {
   display: flex;
   justify-content: space-between;
@@ -758,17 +784,9 @@ canvas {
 .settings-row:last-child { border-bottom: none; }
 .settings-row .label { color: var(--muted); font-weight: 500; }
 .settings-row .value { color: var(--text); font-weight: 600; text-align: right; }
-.settings-footer {
-  text-align: center;
-  color: var(--muted);
-  font-size: 11px;
-  padding: 20px 0 4px 0;
-  font-weight: 500;
-}
+.settings-footer { text-align: center; color: var(--muted); font-size: 11px; padding: 20px 0 4px 0; font-weight: 500; }
 
-/* ============================================
-   LEADERBOARD
-   ============================================ */
+/* ============ LEADERBOARD ============ */
 .leaderboard-card { margin-bottom: 12px; }
 .leaderboard-section-title {
   font-size: 13px;
@@ -781,7 +799,6 @@ canvas {
   letter-spacing: 0.03em;
 }
 .leaderboard-section-title:first-child { margin-top: 0; }
-
 .rank-item {
   display: flex;
   align-items: center;
@@ -796,27 +813,10 @@ canvas {
 }
 .rank-item:hover { background: var(--info-bg); border-color: var(--info-border); }
 .rank-item:active { background: var(--info-bg); }
-.rank-item.rank-1 {
-  background: linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 100%);
-  border-color: #FDE68A;
-  border-left: 4px solid #F59E0B;
-}
-.rank-item.rank-2 {
-  background: linear-gradient(135deg, #F1F5F9 0%, #F8FAFC 100%);
-  border-color: var(--border);
-  border-left: 4px solid #94A3B8;
-}
-.rank-item.rank-3 {
-  background: linear-gradient(135deg, #FFEDD5 0%, #FEF3C7 100%);
-  border-color: #FDBA74;
-  border-left: 4px solid #EA580C;
-}
-.rank-item.mine {
-  background: var(--success-bg) !important;
-  border-color: var(--success-border) !important;
-  border-left: 4px solid var(--success) !important;
-  box-shadow: 0 0 0 2px var(--success-border);
-}
+.rank-item.rank-1 { background: linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 100%); border-color: #FDE68A; border-left: 4px solid #F59E0B; }
+.rank-item.rank-2 { background: linear-gradient(135deg, #F1F5F9 0%, #F8FAFC 100%); border-color: var(--border); border-left: 4px solid #94A3B8; }
+.rank-item.rank-3 { background: linear-gradient(135deg, #FFEDD5 0%, #FEF3C7 100%); border-color: #FDBA74; border-left: 4px solid #EA580C; }
+.rank-item.mine { background: var(--success-bg) !important; border-color: var(--success-border) !important; border-left: 4px solid var(--success) !important; box-shadow: 0 0 0 2px var(--success-border); }
 .rank-number {
   font-weight: 800;
   font-size: 17px;
@@ -836,31 +836,11 @@ canvas {
 .rank-item.rank-3 .rank-number { background: #EA580C; color: white; border-color: #EA580C; }
 .rank-item.mine .rank-number { background: var(--success); color: white; border-color: var(--success); }
 .rank-info { flex: 1; min-width: 0; }
-.rank-name {
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.rank-name { font-size: 13px; color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank-id { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; letter-spacing: 0.02em; }
-.rank-value {
-  font-weight: 700;
-  color: var(--success);
-  font-size: 14px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.rank-meta {
-  font-size: 10px;
-  color: var(--muted);
-  text-align: right;
-  margin-top: 2px;
-  font-weight: 500;
-}
+.rank-value { font-weight: 700; color: var(--success); font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+.rank-meta { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; font-weight: 500; }
 
-/* My rank note */
 .my-rank-note {
   background: var(--info-bg);
   border: 1px solid var(--info-border);
@@ -871,14 +851,7 @@ canvas {
   color: var(--primary-blue);
   line-height: 1.6;
 }
-.my-rank-note .my-rank-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
+.my-rank-note .my-rank-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .my-rank-note .my-rank-line > span:first-child { font-weight: 500; }
 .my-rank-note .my-rank-line strong { color: var(--success); font-size: 13px; font-weight: 700; }
 .my-rank-note .view-full-btn {
@@ -900,52 +873,14 @@ canvas {
   min-height: 40px;
 }
 .my-rank-note .view-full-btn:hover { background: var(--primary-blue-hover); }
-
-/* Full ranking scrollable */
-.full-ranking {
-  max-height: 60vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-top: 10px;
-  padding: 2px;
-  border-radius: var(--radius);
-  display: none;
-}
+.full-ranking { max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding: 2px; border-radius: var(--radius); display: none; }
 .full-ranking.show { display: block; animation: slideDown 0.2s ease; }
 .full-ranking::-webkit-scrollbar { width: 6px; }
 .full-ranking::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-
-.scan-progress-bar {
-  width: 100%;
-  height: 6px;
-  background: var(--border);
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 14px 0;
-}
-.scan-progress-fill {
-  height: 100%;
-  background: var(--primary-blue);
-  width: 0%;
-  transition: width 0.3s ease;
-  border-radius: 999px;
-}
-.scan-counter {
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-2);
-  font-weight: 600;
-  margin: 12px 0;
-  font-variant-numeric: tabular-nums;
-}
-.scan-hint {
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 8px;
-  line-height: 1.5;
-  font-weight: 500;
-}
+.scan-progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 14px 0; }
+.scan-progress-fill { height: 100%; background: var(--primary-blue); width: 0%; transition: width 0.3s ease; border-radius: 999px; }
+.scan-counter { text-align: center; font-size: 13px; color: var(--text-2); font-weight: 600; margin: 12px 0; font-variant-numeric: tabular-nums; }
+.scan-hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; font-weight: 500; }
 .bad-data-note {
   font-size: 11.5px;
   color: var(--warning);
@@ -957,70 +892,17 @@ canvas {
   font-weight: 500;
   line-height: 1.5;
 }
-.tap-hint {
-  text-align: center;
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 10px;
-  font-weight: 500;
-}
+.tap-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 500; }
 
-/* ============================================
-   MODAL
-   ============================================ */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.95);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.modal-content-wrapper {
-  position: relative;
-  max-width: 1000px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 20px 10px 96px 10px;
-}
-#modal-canvas {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius);
-  display: block;
-  margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-.modal-bottom {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  padding: 14px;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.98), transparent);
-  text-align: center;
-  z-index: 10000;
-}
-.close-btn {
-  background: var(--surface);
-  color: var(--text);
-  border: none;
-  padding: 12px 30px;
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: var(--radius);
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  transition: background 0.15s;
-  min-width: 180px;
-  min-height: 44px;
-  font-family: inherit;
-}
+/* ============ MODAL ============ */
+.modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 96px 10px; }
+#modal-canvas { max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), transparent); text-align: center; z-index: 10000; }
+.close-btn { background: var(--surface); color: var(--text); border: none; padding: 12px 30px; font-size: 14px; font-weight: 700; border-radius: var(--radius); cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: background 0.15s; min-width: 180px; min-height: 44px; font-family: inherit; }
 .close-btn:hover { background: var(--surface-2); }
 
-/* ============================================
-   FLOATING WHATSAPP
-   ============================================ */
+/* ============ WHATSAPP FLOAT ============ */
 .wa-float {
   position: fixed;
   bottom: 18px;
@@ -1040,35 +922,39 @@ canvas {
 .wa-float:hover { transform: scale(1.06); box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45); }
 .wa-float svg { width: 26px; height: 26px; fill: white; }
 
-/* ============================================
-   DESKTOP
-   ============================================ */
+/* ============ DESKTOP ============ */
 @media (min-width: 900px) {
-  body { padding: 20px 20px 88px 20px; }
-  .top-bar { max-width: 1100px; }
+  body { padding: 0 24px 88px 24px; }
+  .top-bar { display: none; }
+  .topnav { display: flex; }
+
   #page-search.active {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    max-width: 1100px;
+    gap: 20px;
+    max-width: 1200px;
     margin: 0 auto;
     align-items: start;
   }
-  #page-search.active .top-bar { grid-column: 1 / -1; }
   #page-search.active #searchFormCard,
-  #page-search.active #searchSummary {
-    grid-column: 1 / -1;
-    max-width: 100%;
-  }
+  #page-search.active #searchSummary { grid-column: 1 / -1; max-width: 100%; }
   #page-search.active #step2 { grid-column: 1; max-width: 100%; margin: 0; }
   #page-search.active #step3 { grid-column: 2; max-width: 100%; margin: 0; }
   #page-search.active #step4 { grid-column: 2; max-width: 100%; margin: 0; }
   #page-search.active #step5 { grid-column: 1; max-width: 100%; margin: 0; }
   #page-search.active #step6 { grid-column: 2; max-width: 100%; margin: 0; }
-  #page-search.active #step7 { grid-column: 1; max-width: 100%; margin: 0; }
-  #page-leaderboard .card { max-width: 900px; }
+  #page-search.active #step7 { grid-column: 1 / -1; max-width: 100%; margin: 0; }
+  #page-search.active #noticesCard { grid-column: 1 / -1; max-width: 100%; margin: 0; }
+
+  .header h2 { font-size: 22px; }
+  .header p { font-size: 13px; }
+  .card, .collapse-card, .search-summary { max-width: 100%; }
+
+  #page-leaderboard .card { max-width: 1000px; }
   #page-history .card,
-  #page-settings .card { max-width: 700px; }
+  #page-settings .card,
+  #page-team .card,
+  #page-notices .card { max-width: 800px; }
 }
 
 @media (min-width: 600px) and (max-width: 899px) {
@@ -1076,32 +962,53 @@ canvas {
   .top-bar { max-width: 680px; }
 }
 
-/* ============================================
-   SMALL MOBILE (360px)
-   ============================================ */
 @media (max-width: 380px) {
   body { padding: 10px 10px 88px 10px; font-size: 13px; }
   .card { padding: 14px; }
-  .header h2 { font-size: 16px; }
   .calc-compact { gap: 6px; }
   .result-blocks { gap: 6px; }
   .grand-total-block .gt-value { font-size: 19px; }
-  .search-summary { padding: 12px 14px; }
+  .team-member { flex-direction: column; align-items: flex-start; }
+  .team-wa { width: 100%; }
 }
 </style>
 </head>
 <body>
 
-<!-- Drawer -->
+<!-- Top Navigation (Desktop) -->
+<div class="topnav">
+  <a class="topnav-brand" onclick="switchPage('search')">
+    <img src="icon.png" alt="RENATA">
+    <div class="topnav-brand-text">
+      <strong>RENATA PLC</strong>
+      <small>Overtime Report</small>
+    </div>
+  </a>
+  <div class="topnav-menu">
+    <button class="topnav-item" data-nav="search" onclick="switchPage('search')">রিপোর্ট</button>
+    <button class="topnav-item" data-nav="leaderboard" onclick="switchPage('leaderboard')">সেরা</button>
+    <button class="topnav-item" data-nav="history" onclick="switchPage('history')">হিস্ট্রি</button>
+    <button class="topnav-item" data-nav="notices" onclick="switchPage('notices')">নোটিশ</button>
+    <button class="topnav-item" data-nav="team" onclick="switchPage('team')">ERP টিম</button>
+    <button class="topnav-item" data-nav="settings" onclick="switchPage('settings')">সেটিংস</button>
+  </div>
+</div>
+
+<!-- Drawer (Mobile) -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <h3>RENATA PLC</h3>
-    <p>Overtime Report</p>
+    <img src="icon.png" alt="RENATA">
+    <div class="drawer-header-text">
+      <h3>RENATA PLC</h3>
+      <p>Overtime Report</p>
+    </div>
   </div>
   <div class="drawer-menu">
     <div class="drawer-item active" data-page="search" onclick="switchPage('search')">রিপোর্ট খুঁজুন</div>
     <div class="drawer-item" data-page="leaderboard" onclick="switchPage('leaderboard')">সেরা কে এই মাসে?</div>
+    <div class="drawer-item" data-page="notices" onclick="switchPage('notices')">নোটিশ <span class="drawer-badge" id="noticesBadge" style="display:none;">!</span></div>
+    <div class="drawer-item" data-page="team" onclick="switchPage('team')">ERP টিম</div>
     <div class="drawer-item" data-page="history" onclick="switchPage('history')">আমার হিস্ট্রি</div>
     <div class="drawer-divider"></div>
     <div class="drawer-item" data-page="settings" onclick="switchPage('settings')">সেটিংস</div>
@@ -1113,6 +1020,7 @@ canvas {
 <div class="page active" id="page-search">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
     <div class="header" id="mainHeader">
       <h2>RENATA PLC</h2>
       <p>Overtime Report Search & Calculator</p>
@@ -1184,26 +1092,12 @@ canvas {
         <div class="field"><label>হলিডে/DO দিন</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
         <div class="field"><label>নাইট সংখ্যা</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
       </div>
-
       <div class="result-blocks">
-        <div class="result-block accent-rate">
-          <span class="rb-label">রেট</span>
-          <span class="rb-value" id="lblRate">৳ 0/hr</span>
-        </div>
-        <div class="result-block accent-ot">
-          <span class="rb-label">ওটি বিল</span>
-          <span class="rb-value" id="lblOtAmount">৳ 0</span>
-        </div>
-        <div class="result-block accent-holiday">
-          <span class="rb-label">হলিডে বিল</span>
-          <span class="rb-value" id="lblHolidayAmount">৳ 0</span>
-        </div>
-        <div class="result-block accent-night">
-          <span class="rb-label">নাইট বিল</span>
-          <span class="rb-value" id="lblNightAmount">৳ 0</span>
-        </div>
+        <div class="result-block accent-rate"><span class="rb-label">রেট</span><span class="rb-value" id="lblRate">৳ 0/hr</span></div>
+        <div class="result-block accent-ot"><span class="rb-label">ওটি বিল</span><span class="rb-value" id="lblOtAmount">৳ 0</span></div>
+        <div class="result-block accent-holiday"><span class="rb-label">হলিডে বিল</span><span class="rb-value" id="lblHolidayAmount">৳ 0</span></div>
+        <div class="result-block accent-night"><span class="rb-label">নাইট বিল</span><span class="rb-value" id="lblNightAmount">৳ 0</span></div>
       </div>
-
       <div class="grand-total-block">
         <span class="gt-label">সর্বমোট প্রাপ্য</span>
         <span class="gt-value" id="lblGrandTotal">৳ 0</span>
@@ -1256,82 +1150,95 @@ canvas {
     <div id="remarksBox" class="remarks-box remarks-info">—</div>
     <button onclick="resetAll()" class="reset-btn">নতুন সার্চ</button>
   </div>
+
+  <!-- Notices on Search Page -->
+  <div class="card calc-card" id="noticesCard" style="max-width: 500px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border);">
+      <div style="font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.03em;">নোটিশ বোর্ড</div>
+      <button onclick="switchPage('notices')" style="width: auto; margin: 0; padding: 5px 10px; font-size: 11px; min-height: 30px; background: transparent; color: var(--primary-blue); border: 1px solid var(--border-strong);">সব দেখুন</button>
+    </div>
+    <div id="noticesHomeList"></div>
+  </div>
 </div>
 
 <!-- Page: Leaderboard -->
 <div class="page" id="page-leaderboard">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
     <div class="header">
       <h2>সেরা কে এই মাসে?</h2>
       <p id="lbSubtitle">—</p>
     </div>
   </div>
-
   <div class="card" id="lbInitialCard">
     <div class="empty-msg" style="padding: 20px 0;">সব employee-এর data scan করে দেখা হবে এই মাসে কারা সেরা।</div>
     <button onclick="startLeaderboardScan()">Scan শুরু করুন</button>
     <div class="scan-hint">সময় লাগবে ৫-১০ সেকেন্ড। ধৈর্য ধরুন।</div>
   </div>
-
   <div class="card" id="lbScanCard" style="display:none;">
     <div class="scan-counter" id="lbScanCounter">০ / ০ employee scan হয়েছে</div>
     <div class="scan-progress-bar"><div class="scan-progress-fill" id="lbScanFill"></div></div>
     <div class="scan-hint" id="lbScanHint">PDF load হচ্ছে...</div>
   </div>
-
   <div class="card" id="lbResultCard" style="display:none;">
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">সেরা ৩ Duty kora employee</div>
       <div id="lbTopDuty"></div>
       <div class="my-rank-note">
-        <div class="my-rank-line">
-          <span>আপনার অবস্থান (<span id="myRankDutyId">—</span>):</span>
-          <strong id="myRankDutyPos">—</strong>
-        </div>
-        <button class="view-full-btn" onclick="toggleFullRanking('duty')">
-          <span id="dutyBtnText">সম্পূর্ণ তালিকা দেখুন</span>
-          <span id="dutyBtnArrow">▼</span>
-        </button>
+        <div class="my-rank-line"><span>আপনার অবস্থান (<span id="myRankDutyId">—</span>):</span><strong id="myRankDutyPos">—</strong></div>
+        <button class="view-full-btn" onclick="toggleFullRanking('duty')"><span id="dutyBtnText">সম্পূর্ণ তালিকা দেখুন</span><span id="dutyBtnArrow">▼</span></button>
       </div>
       <div class="full-ranking" id="fullRankingDuty"></div>
     </div>
-
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most OT kora employee</div>
       <div id="lbTopOT"></div>
       <div class="my-rank-note">
-        <div class="my-rank-line">
-          <span>আপনার অবস্থান (<span id="myRankOTId">—</span>):</span>
-          <strong id="myRankOTPos">—</strong>
-        </div>
-        <button class="view-full-btn" onclick="toggleFullRanking('ot')">
-          <span id="otBtnText">সম্পূর্ণ তালিকা দেখুন</span>
-          <span id="otBtnArrow">▼</span>
-        </button>
+        <div class="my-rank-line"><span>আপনার অবস্থান (<span id="myRankOTId">—</span>):</span><strong id="myRankOTPos">—</strong></div>
+        <button class="view-full-btn" onclick="toggleFullRanking('ot')"><span id="otBtnText">সম্পূর্ণ তালিকা দেখুন</span><span id="otBtnArrow">▼</span></button>
       </div>
       <div class="full-ranking" id="fullRankingOT"></div>
     </div>
-
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most Earned employee</div>
       <div id="lbTopEarned"></div>
       <div class="my-rank-note">
-        <div class="my-rank-line">
-          <span>আপনার অবস্থান (<span id="myRankEarnedId">—</span>):</span>
-          <strong id="myRankEarnedPos">—</strong>
-        </div>
-        <button class="view-full-btn" onclick="toggleFullRanking('earned')">
-          <span id="earnedBtnText">সম্পূর্ণ তালিকা দেখুন</span>
-          <span id="earnedBtnArrow">▼</span>
-        </button>
+        <div class="my-rank-line"><span>আপনার অবস্থান (<span id="myRankEarnedId">—</span>):</span><strong id="myRankEarnedPos">—</strong></div>
+        <button class="view-full-btn" onclick="toggleFullRanking('earned')"><span id="earnedBtnText">সম্পূর্ণ তালিকা দেখুন</span><span id="earnedBtnArrow">▼</span></button>
       </div>
       <div class="full-ranking" id="fullRankingEarned"></div>
     </div>
-
     <div class="bad-data-note" id="lbBadData" style="display:none;"></div>
     <div class="tap-hint">যেকোনো employee-এ tap করে তার পূর্ণ রিপোর্ট দেখুন</div>
     <button onclick="startLeaderboardScan(true)" class="reset-btn" style="background: var(--primary-blue); color: white; border-color: var(--primary-blue);">আবার Scan করুন</button>
+  </div>
+</div>
+
+<!-- Page: Notices -->
+<div class="page" id="page-notices">
+  <div class="top-bar">
+    <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
+    <div class="header"><h2>নোটিশ বোর্ড</h2><p>General Notice</p></div>
+  </div>
+  <div class="card">
+    <div id="noticesFullList"></div>
+  </div>
+</div>
+
+<!-- Page: ERP Team -->
+<div class="page" id="page-team">
+  <div class="top-bar">
+    <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
+    <div class="header"><h2>ERP টিম</h2><p>যেকোনো সমস্যায় যোগাযোগ করুন</p></div>
+  </div>
+  <div class="card">
+    <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px; padding: 10px 12px; background: var(--info-bg); border-radius: var(--radius); border-left: 3px solid var(--primary-blue); line-height: 1.6; font-weight: 500;">
+      আপনার ওভারটাইম রিপোর্ট, In/Out Punch সমস্যা বা Grade সংক্রান্ত যেকোনো বিষয়ে নিচের টিম মেম্বারদের সাথে সরাসরি WhatsApp-এ যোগাযোগ করুন।
+    </div>
+    <div id="teamList"></div>
   </div>
 </div>
 
@@ -1339,10 +1246,8 @@ canvas {
 <div class="page" id="page-history">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
-    <div class="header">
-      <h2>আমার হিস্ট্রি</h2>
-      <p>সাম্প্রতিক সার্চ</p>
-    </div>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
+    <div class="header"><h2>আমার হিস্ট্রি</h2><p>সাম্প্রতিক সার্চ</p></div>
   </div>
   <div class="card">
     <div id="historyList"></div>
@@ -1354,6 +1259,7 @@ canvas {
 <div class="page" id="page-settings">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
+    <img class="mobile-logo" src="icon.png" alt="RENATA">
     <div class="header"><h2>সেটিংস</h2><p>Information</p></div>
   </div>
   <div class="card">
@@ -1370,20 +1276,20 @@ canvas {
   <div class="modal-bottom"><button class="close-btn" onclick="closeModal()">বন্ধ করুন</button></div>
 </div>
 
-<!-- WhatsApp -->
+<!-- WhatsApp Float -->
 <a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help" aria-label="WhatsApp Help">
   <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/></svg>
 </a>
-
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (UI Modernized v22)
-   ⚠️ JS Logic Unchanged — Only Cache version bumped
+   RENATA PLC - Overtime Report (v23 — Desktop Nav + Notices + ERP Team)
+   ⚠️ Core JS Logic Unchanged — Only additions
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
+const BASE_URL = `https://${GITHUB_USERNAME}.github.io/`;
 
 /* ===== RATE TABLE (unchanged) ===== */
 const RATE_TABLE = {
@@ -1392,17 +1298,20 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-/* ===== CACHE VERSION (v21 → v22) ===== */
-const CACHE_PREFIX = "renata_cache_v22_";
+/* ===== CACHE VERSION (v22 → v23) ===== */
+const CACHE_PREFIX = "renata_cache_v23_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v22_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v23_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v22";
+const HISTORY_KEY = "renata_history_v23";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v22_";
+const LEADERBOARD_PREFIX = "renata_lb_v23_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+const TEAM_CACHE_KEY = "renata_team_v23";
+const NOTICES_CACHE_KEY = "renata_notices_v23";
+const NOTICES_READ_KEY = "renata_notices_read_v23";
 
-/* ===== STATE (unchanged) ===== */
+/* ===== STATE ===== */
 let singlePageBlobUrl = null;
 let matchedPdfPage = null;
 let currentPdf = null;
@@ -1417,6 +1326,8 @@ let ocrWorker = null;
 let currentResult = null;
 let isScanning = false;
 let currentLeaderboardResult = null;
+let teamData = null;
+let noticesData = null;
 
 /* ===== HELPERS ===== */
 function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
@@ -1462,11 +1373,22 @@ function closeDrawer() { document.getElementById('drawer').classList.remove('act
 function switchPage(pageName) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + pageName).classList.add('active');
+
+  // Drawer items (mobile)
   document.querySelectorAll('.drawer-item').forEach(item => item.classList.remove('active'));
-  const activeItem = document.querySelector('.drawer-item[data-page="' + pageName + '"]');
-  if (activeItem) activeItem.classList.add('active');
+  const activeDrawer = document.querySelector('.drawer-item[data-page="' + pageName + '"]');
+  if (activeDrawer) activeDrawer.classList.add('active');
+
+  // Top nav items (desktop)
+  document.querySelectorAll('.topnav-item').forEach(item => item.classList.remove('active'));
+  const activeNav = document.querySelector('.topnav-item[data-nav="' + pageName + '"]');
+  if (activeNav) activeNav.classList.add('active');
+
   if (pageName === 'history') renderHistory();
   if (pageName === 'leaderboard') initLeaderboardPage();
+  if (pageName === 'team') renderTeamPage();
+  if (pageName === 'notices') renderNoticesPage();
+
   closeDrawer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1530,12 +1452,149 @@ function toggleCollapse(bodyId, headerEl) {
   else { body.classList.add('show'); headerEl.classList.add('expanded'); }
 }
 
+/* ============================================================
+   TEAM & NOTICES — Fetch from JSON files
+   ============================================================ */
+async function loadTeamData() {
+  // Cache from localStorage first
+  try {
+    const cached = localStorage.getItem(TEAM_CACHE_KEY);
+    if (cached) {
+      const d = JSON.parse(cached);
+      if (Date.now() - d.ts < 1000 * 60 * 60 * 24) { teamData = d.data; return teamData; }
+    }
+  } catch (e) {}
+  // Fetch fresh
+  try {
+    const resp = await fetch('team.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('team.json not found');
+    const data = await resp.json();
+    teamData = data.team || [];
+    try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
+    return teamData;
+  } catch (e) {
+    console.warn('Team data load failed:', e.message);
+    return teamData || [];
+  }
+}
+
+async function loadNoticesData() {
+  try {
+    const cached = localStorage.getItem(NOTICES_CACHE_KEY);
+    if (cached) {
+      const d = JSON.parse(cached);
+      if (Date.now() - d.ts < 1000 * 60 * 30) { noticesData = d.data; return noticesData; }
+    }
+  } catch (e) {}
+  try {
+    const resp = await fetch('notices.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('notices.json not found');
+    const data = await resp.json();
+    noticesData = data.notices || [];
+    try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
+    return noticesData;
+  } catch (e) {
+    console.warn('Notices load failed:', e.message);
+    return noticesData || [];
+  }
+}
+
+function getReadNotices() {
+  try { const raw = localStorage.getItem(NOTICES_READ_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
+}
+function markAllNoticesRead() {
+  try { localStorage.setItem(NOTICES_READ_KEY, JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {}
+  updateNoticesBadge();
+}
+function updateNoticesBadge() {
+  const badge = document.getElementById('noticesBadge');
+  if (!badge || !noticesData) return;
+  const read = getReadNotices();
+  const unreadCount = noticesData.filter(n => !read.includes(n.id)).length;
+  if (unreadCount > 0) { badge.style.display = 'inline-block'; badge.textContent = bn(unreadCount); }
+  else { badge.style.display = 'none'; }
+}
+
+/* ============================================================
+   RENDER NOTICES (Home + Full page)
+   ============================================================ */
+function formatNoticeDate(dateStr) {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch (e) { return dateStr; }
+}
+
+function renderNoticeItem(n) {
+  const priority = (n.priority || 'normal').toLowerCase();
+  const priorityClass = priority === 'high' ? 'priority-high' : priority === 'low' ? 'priority-low' : '';
+  return `<div class="notice-item ${priorityClass}">
+    <div class="notice-title">${n.title || '—'}</div>
+    <div class="notice-body">${n.body || ''}</div>
+    <div class="notice-date">${formatNoticeDate(n.date)}</div>
+  </div>`;
+}
+
+async function renderNoticesHome() {
+  const box = document.getElementById('noticesHomeList');
+  if (!box) return;
+  box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">লোড হচ্ছে...</div>';
+  const notices = await loadNoticesData();
+  if (!notices || notices.length === 0) {
+    box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
+    return;
+  }
+  const recent = notices.slice(0, 3);
+  box.innerHTML = recent.map(renderNoticeItem).join('');
+  updateNoticesBadge();
+}
+
+async function renderNoticesPage() {
+  const box = document.getElementById('noticesFullList');
+  if (!box) return;
+  box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
+  const notices = await loadNoticesData();
+  if (!notices || notices.length === 0) {
+    box.innerHTML = '<div class="empty-msg">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
+    return;
+  }
+  box.innerHTML = notices.map(renderNoticeItem).join('');
+  markAllNoticesRead();
+}
+
+/* ============================================================
+   RENDER ERP TEAM
+   ============================================================ */
+async function renderTeamPage() {
+  const box = document.getElementById('teamList');
+  if (!box) return;
+  box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
+  const team = await loadTeamData();
+  if (!team || team.length === 0) {
+    box.innerHTML = '<div class="empty-msg">ERP Team information currently unavailable.</div>';
+    return;
+  }
+  box.innerHTML = team.map(m => `
+    <div class="team-member">
+      <img class="team-photo" src="${m.photo || 'icon.png'}" alt="${m.name || 'Team'}" onerror="this.src='icon.png';">
+      <div class="team-info">
+        <div class="team-name">${m.name || '—'}</div>
+        <div class="team-desig">${m.designation || '—'}</div>
+        <div class="team-id">ID: ${m.id || '—'}</div>
+      </div>
+      <a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RENATA Overtime App — সহায়তা প্রয়োজন')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
+      </a>
+    </div>
+  `).join('');
+}
+
 /* ===== EVENTS ===== */
 document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
 document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
 
-/* ===== MAIN SEARCH (unchanged logic) ===== */
+/* ===== MAIN SEARCH (unchanged) ===== */
 async function findReport() {
   const year = document.getElementById('yearSelect').value;
   const mon = document.getElementById('monthSelect').value;
@@ -1600,7 +1659,7 @@ async function findReport() {
   } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
 }
 
-/* ===== PARALLEL SEARCH (unchanged) ===== */
+/* ===== PARALLEL SEARCH ===== */
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   const total = pdfFiles.length; let scanned = 0;
   return new Promise((resolve) => {
@@ -1646,7 +1705,7 @@ async function showResult(fileUrl, pageNum, fileName) {
   document.getElementById('openBtn').style.display = "flex";
 }
 
-/* ===== RUN EXTRACTION (unchanged) ===== */
+/* ===== RUN EXTRACTION ===== */
 async function runExtraction() {
   if (!matchedPdfPage) return;
   const statusDiv = document.getElementById('status');
@@ -1679,6 +1738,9 @@ async function runExtraction() {
     myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
     statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
     ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
+    // Show notices card after result too
+    const nc = document.getElementById('noticesCard');
+    if (nc) { nc.classList.add('show'); nc.style.display = 'block'; }
     setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
   } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Extraction সমস্যা: " + e.message; throw e; }
 }
@@ -1761,7 +1823,7 @@ function parseText(rawText) {
   return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
 }
 
-/* ===== LIST RENDERS ===== */
+/* ===== LISTS ===== */
 function showHolidayList(list) {
   const box = document.getElementById('holidayList');
   const cnt = document.getElementById('holidayCount');
@@ -2170,11 +2232,24 @@ function resetAll() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===== INIT ===== */
+/* ============================================================
+   INIT — Load JSON data + Start
+   ============================================================ */
 initYearDropdown();
 setDefaultMonth();
 
+// Load notices on startup (home page)
+renderNoticesHome();
+
+// Pre-load team data in background
+loadTeamData().then(() => {
+  // If user is already on team page, render
+  if (document.getElementById('page-team').classList.contains('active')) renderTeamPage();
+});
+
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 </script>
+</body>
+</html>
 </body>
 </html>
