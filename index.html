@@ -16,351 +16,117 @@
 
 <style>
   * { box-sizing: border-box; }
-  body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    padding: 15px 12px;
-    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-    margin: 0; min-height: 100vh;
-    overflow-x: hidden;
-  }
-  .card {
-    background: #ffffff; padding: 22px 18px; border-radius: 16px;
-    max-width: 500px; margin: 0 auto 15px auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    border: 1px solid rgba(255,255,255,0.6);
-  }
-  .top-bar {
-    display: flex; align-items: center; gap: 12px;
-    max-width: 500px; margin: 0 auto 12px auto;
-  }
-  .menu-btn {
-    background: transparent; border: none;
-    font-size: 24px; cursor: pointer; color: #004085;
-    padding: 4px 8px; border-radius: 6px; width: auto;
-    margin: 0; box-shadow: none;
-  }
+  body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 15px 12px; background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%); margin: 0; min-height: 100vh; overflow-x: hidden; }
+  .card { background: #ffffff; padding: 22px 18px; border-radius: 16px; max-width: 500px; margin: 0 auto 15px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.6); }
+  .top-bar { display: flex; align-items: center; gap: 12px; max-width: 500px; margin: 0 auto 12px auto; }
+  .menu-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; color: #004085; padding: 4px 8px; border-radius: 6px; width: auto; margin: 0; box-shadow: none; }
   .menu-btn:hover { background: rgba(0,64,133,0.08); }
   .header { text-align: center; margin-bottom: 18px; flex: 1; }
   .header h2 { margin: 0; color: #004085; font-size: 20px; font-weight: 700; }
   .header p { color: #6c757d; margin: 4px 0 0 0; font-size: 12px; }
   label { font-weight: 600; display: block; margin-top: 12px; color: #495057; font-size: 14px; }
-  input, select {
-    width: 100%; padding: 11px 13px; margin-top: 5px;
-    border: 1px solid #ced4da; border-radius: 8px;
-    font-size: 15px; outline: none; transition: all 0.2s;
-    background-color: #f8f9fa;
-  }
-  input:focus, select:focus {
-    border-color: #0056b3; background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
-  }
+  input, select { width: 100%; padding: 11px 13px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 8px; font-size: 15px; outline: none; transition: all 0.2s; background-color: #f8f9fa; }
+  input:focus, select:focus { border-color: #0056b3; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15); }
   .row { display: flex; gap: 8px; margin-top: 5px; }
   .row select { margin-top: 0; flex: 1; }
-  button {
-    width: 100%; background-color: #0056b3; color: white;
-    border: none; padding: 12px; border-radius: 8px;
-    font-size: 15px; font-weight: 600; margin-top: 15px;
-    cursor: pointer; transition: 0.2s;
-    box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
-  }
+  button { width: 100%; background-color: #0056b3; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; margin-top: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2); }
   button:hover { background-color: #004085; }
   button:disabled { background-color: #6c757d; cursor: not-allowed; }
-
-  .spinner {
-    display: none; width: 22px; height: 22px;
-    border: 3px solid #f3f3f3; border-top: 3px solid #0056b3;
-    border-radius: 50%; animation: spin 0.8s linear infinite;
-    margin: 12px auto 0 auto;
-  }
+  .spinner { display: none; width: 22px; height: 22px; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 12px auto 0 auto; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   #status { margin-top: 12px; text-align: center; font-weight: 600; font-size: 14px; }
   #progress { margin-top: 6px; text-align: center; font-size: 12px; color: #6c757d; display: none; }
-
-  #pdf-viewer {
-    margin: 12px auto 0 auto; max-width: 100%; text-align: center;
-    overflow-x: auto; -webkit-overflow-scrolling: touch;
-  }
-  canvas {
-    border: 1px solid #dee2e6; max-width: 100%; height: auto;
-    border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    display: block; margin: 0 auto;
-  }
-
+  #pdf-viewer { margin: 12px auto 0 auto; max-width: 100%; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  canvas { border: 1px solid #dee2e6; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: block; margin: 0 auto; }
   .btn-group { display: flex; gap: 10px; margin-top: 12px; }
-  .btn-action {
-    background-color: #0056b3; color: white; text-align: center;
-    text-decoration: none; display: none; padding: 11px;
-    border-radius: 8px; font-weight: 600; flex: 1;
-    font-size: 14px; cursor: pointer; border: none;
-    box-shadow: 0 3px 8px rgba(0, 86, 179, 0.2);
-    transition: 0.2s;
-  }
+  .btn-action { background-color: #0056b3; color: white; text-align: center; text-decoration: none; display: none; padding: 11px; border-radius: 8px; font-weight: 600; flex: 1; font-size: 14px; cursor: pointer; border: none; box-shadow: 0 3px 8px rgba(0, 86, 179, 0.2); transition: 0.2s; }
   .btn-action:hover { background-color: #004085; }
-
   .calc-card { display: none !important; }
   .calc-card.show { display: block !important; }
-  .calc-card h3 {
-    margin-top: 0; color: #004085; font-size: 16px;
-    border-bottom: 2px solid #0056b3; padding-bottom: 6px;
-  }
-  .badge {
-    background: #0056b3; color: white; padding: 3px 8px;
-    border-radius: 4px; font-size: 12px; font-weight: normal;
-  }
+  .calc-card h3 { margin-top: 0; color: #004085; font-size: 16px; border-bottom: 2px solid #0056b3; padding-bottom: 6px; }
+  .badge { background: #0056b3; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: normal; }
   .badge.warn { background: #dc3545; }
-  .grade-info {
-    font-size: 12px; color: #6c757d; margin-bottom: 12px;
-    padding: 6px 10px; background: #f8f9fa; border-radius: 6px;
-    border-left: 3px solid #0056b3;
-  }
-  .input-grid {
-    display: grid; grid-template-columns: 1fr 110px;
-    gap: 8px; align-items: center; margin: 6px 0;
-    font-size: 14px; color: #333;
-  }
+  .grade-info { font-size: 12px; color: #6c757d; margin-bottom: 12px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #0056b3; }
+  .input-grid { display: grid; grid-template-columns: 1fr 110px; gap: 8px; align-items: center; margin: 6px 0; font-size: 14px; color: #333; }
   .input-grid label { margin: 0; font-weight: 500; font-size: 14px; }
-  .input-grid input, .input-grid select {
-    margin: 0; padding: 7px 9px; font-size: 14px;
-    text-align: right;
-  }
+  .input-grid input, .input-grid select { margin: 0; padding: 7px 9px; font-size: 14px; text-align: right; }
   .input-grid select { text-align: left; padding: 7px 6px; font-size: 13px; }
-
-  .report-row {
-    display: flex; justify-content: space-between;
-    margin: 8px 0; font-size: 14px; color: #333;
-  }
-  .report-row.total {
-    font-weight: bold; font-size: 17px; color: #28a745;
-    border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 12px;
-  }
-
-  .info-list {
-    background: #f8f9fa; border: 1px solid #dee2e6;
-    border-radius: 6px; padding: 10px 12px; font-size: 13px;
-    color: #333; margin: 10px 0; line-height: 1.7;
-  }
-
-  .section-title {
-    font-size: 14px; font-weight: 700; color: #004085;
-    margin-bottom: 8px; padding-bottom: 4px;
-    border-bottom: 2px solid #e9ecef;
-  }
-
-  .remarks-box {
-    border-radius: 8px; padding: 12px 14px;
-    font-size: 13px; line-height: 1.7;
-    margin: 10px 0;
-  }
+  .report-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; color: #333; }
+  .report-row.total { font-weight: bold; font-size: 17px; color: #28a745; border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 12px; }
+  .info-list { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #333; margin: 10px 0; line-height: 1.7; }
+  .section-title { font-size: 14px; font-weight: 700; color: #004085; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #e9ecef; }
+  .remarks-box { border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.7; margin: 10px 0; }
   .remarks-ok { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
   .remarks-warn { background: #fff3cd; border: 1px solid #ffc107; color: #856404; }
   .remarks-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
   .remarks-box ul { margin: 6px 0 0 20px; padding: 0; }
   .remarks-box li { margin: 4px 0; }
-
-  .compare-hint {
-    font-size: 12px; color: #6c757d; margin-top: 6px;
-    padding: 6px 10px; background: #f8f9fa; border-radius: 6px;
-    border-left: 3px solid #ffc107;
-    line-height: 1.5;
-  }
-  .compare-table {
-    width: 100%; border-collapse: collapse; margin: 10px 0;
-    font-size: 13px;
-  }
-  .compare-table th, .compare-table td {
-    padding: 8px 6px; text-align: right;
-    border-bottom: 1px solid #e9ecef;
-  }
-  .compare-table th:first-child, .compare-table td:first-child {
-    text-align: left; color: #6c757d; font-weight: 500;
-  }
-  .compare-table th {
-    color: #004085; font-weight: 700; font-size: 12px;
-    background: #f8f9fa;
-  }
-  .compare-table tr.total-row td {
-    font-weight: 700; color: #28a745; font-size: 15px;
-    border-top: 2px solid #28a745; border-bottom: none;
-    padding-top: 12px;
-  }
-  .compare-diff {
-    text-align: center; font-size: 13px; color: #6c757d;
-    padding: 10px; background: #f8f9fa; border-radius: 6px;
-    margin-top: 8px;
-  }
+  .compare-hint { font-size: 12px; color: #6c757d; margin-top: 6px; padding: 6px 10px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #ffc107; line-height: 1.5; }
+  .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  .compare-table th, .compare-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid #e9ecef; }
+  .compare-table th:first-child, .compare-table td:first-child { text-align: left; color: #6c757d; font-weight: 500; }
+  .compare-table th { color: #004085; font-weight: 700; font-size: 12px; background: #f8f9fa; }
+  .compare-table tr.total-row td { font-weight: 700; color: #28a745; font-size: 15px; border-top: 2px solid #28a745; border-bottom: none; padding-top: 12px; }
+  .compare-diff { text-align: center; font-size: 13px; color: #6c757d; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 8px; }
   .compare-diff strong { color: #004085; }
-
-  .reset-btn {
-    background-color: #6c757d; margin-top: 10px;
-    font-size: 13px; padding: 9px;
-  }
+  .reset-btn { background-color: #6c757d; margin-top: 10px; font-size: 13px; padding: 9px; }
   .reset-btn:hover { background-color: #5a6268; }
-
-  /* Drawer */
-  .drawer-overlay {
-    display: none; position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-    z-index: 1000;
-  }
+  .drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
   .drawer-overlay.active { display: block; }
-  .drawer {
-    position: fixed; top: 0; left: -300px; width: 280px;
-    height: 100%; background: #ffffff;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-    z-index: 1001; transition: left 0.3s ease;
-    overflow-y: auto;
-  }
+  .drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #ffffff; box-shadow: 4px 0 20px rgba(0,0,0,0.15); z-index: 1001; transition: left 0.3s ease; overflow-y: auto; }
   .drawer.active { left: 0; }
-  .drawer-header {
-    padding: 20px 20px 15px 20px;
-    background: #004085; color: #ffffff;
-  }
+  .drawer-header { padding: 20px 20px 15px 20px; background: #004085; color: #ffffff; }
   .drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
   .drawer-header p { margin: 4px 0 0 0; font-size: 11px; opacity: 0.8; }
   .drawer-menu { padding: 10px 0; }
-  .drawer-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 20px; cursor: pointer;
-    color: #333; font-size: 14px; font-weight: 500;
-    border-left: 3px solid transparent;
-    transition: 0.2s;
-  }
+  .drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; color: #333; font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
   .drawer-item:hover { background: #f8f9fa; border-left-color: #0056b3; }
-  .drawer-item.active {
-    background: #e7f3ff; border-left-color: #0056b3;
-    color: #004085; font-weight: 600;
-  }
+  .drawer-item.active { background: #e7f3ff; border-left-color: #0056b3; color: #004085; font-weight: 600; }
   .drawer-divider { height: 1px; background: #e9ecef; margin: 6px 20px; }
-
   .page { display: none; }
   .page.active { display: block; }
-
-  .history-item {
-    padding: 12px 14px; background: #f8f9fa;
-    border-radius: 8px; margin-bottom: 8px;
-    display: flex; justify-content: space-between;
-    align-items: center; cursor: pointer;
-    transition: 0.2s; border: 1px solid #e9ecef;
-  }
+  .history-item { padding: 12px 14px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #e9ecef; }
   .history-item:hover { background: #e7f3ff; }
   .history-item .id { font-weight: 700; color: #004085; font-size: 14px; }
   .history-item .meta { font-size: 11px; color: #6c757d; margin-top: 2px; }
   .history-item .time { font-size: 11px; color: #adb5bd; }
-  .empty-msg {
-    text-align: center; color: #adb5bd;
-    padding: 30px 20px; font-size: 13px;
-  }
-
-  .settings-row {
-    display: flex; justify-content: space-between;
-    padding: 12px 0; border-bottom: 1px solid #e9ecef;
-    font-size: 14px;
-  }
+  .empty-msg { text-align: center; color: #adb5bd; padding: 30px 20px; font-size: 13px; }
+  .settings-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e9ecef; font-size: 14px; }
   .settings-row:last-child { border-bottom: none; }
   .settings-row .label { color: #6c757d; }
   .settings-row .value { color: #333; font-weight: 600; text-align: right; }
-  .settings-footer {
-    text-align: center; color: #adb5bd;
-    font-size: 11px; padding: 20px 0;
-  }
-
-  /* Leaderboard */
+  .settings-footer { text-align: center; color: #adb5bd; font-size: 11px; padding: 20px 0; }
   .leaderboard-card { margin-bottom: 12px; }
-  .leaderboard-section-title {
-    font-size: 14px; font-weight: 700; color: #004085;
-    margin: 16px 0 10px 0;
-    padding-bottom: 6px;
-    border-bottom: 2px solid #0056b3;
-  }
+  .leaderboard-section-title { font-size: 14px; font-weight: 700; color: #004085; margin: 16px 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #0056b3; }
   .leaderboard-section-title:first-child { margin-top: 0; }
-  .rank-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; background: #f8f9fa;
-    border-radius: 10px; margin-bottom: 8px;
-    border-left: 4px solid #e9ecef;
-    transition: 0.2s;
-  }
+  .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #e9ecef; transition: 0.2s; cursor: pointer; -webkit-tap-highlight-color: rgba(0,86,179,0.1); }
+  .rank-item:active { background: #d4e7ff !important; }
   .rank-item:hover { background: #e7f3ff; }
   .rank-item.rank-1 { border-left-color: #ffc107; background: #fff9e6; }
   .rank-item.rank-2 { border-left-color: #adb5bd; background: #f8f9fa; }
   .rank-item.rank-3 { border-left-color: #cd7f32; background: #fdf4ec; }
-  .rank-number {
-    font-weight: 700; font-size: 20px; min-width: 30px;
-    color: #004085; text-align: center;
-  }
+  .rank-number { font-weight: 700; font-size: 20px; min-width: 30px; color: #004085; text-align: center; }
   .rank-info { flex: 1; min-width: 0; }
-  .rank-name {
-    font-size: 14px; color: #333; font-weight: 600;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+  .rank-name { font-size: 14px; color: #333; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rank-id { font-size: 12px; color: #6c757d; margin-top: 2px; }
-  .rank-value {
-    font-weight: 700; color: #28a745;
-    font-size: 15px; text-align: right;
-  }
-  .rank-meta {
-    font-size: 11px; color: #6c757d; text-align: right;
-    margin-top: 2px;
-  }
-  .scan-progress-bar {
-    width: 100%; height: 8px; background: #e9ecef;
-    border-radius: 4px; overflow: hidden; margin: 12px 0;
-  }
-  .scan-progress-fill {
-    height: 100%; background: #0056b3; width: 0%;
-    transition: width 0.3s ease;
-  }
-  .scan-counter {
-    text-align: center; font-size: 14px; color: #333;
-    font-weight: 600; margin: 12px 0;
-  }
-  .scan-hint {
-    text-align: center; font-size: 12px; color: #6c757d;
-    margin-top: 8px; line-height: 1.5;
-  }
-  .bad-data-note {
-    font-size: 12px; color: #856404;
-    background: #fff3cd; border: 1px solid #ffc107;
-    border-radius: 6px; padding: 8px 12px;
-    margin-top: 16px;
-  }
-
-  /* Modal */
-  .modal {
-    display: none; position: fixed; z-index: 9999;
-    left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.92);
-    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-  }
-  .modal-content-wrapper {
-    position: relative; max-width: 1000px;
-    margin: 0 auto; text-align: center;
-    padding: 20px 10px 90px 10px;
-  }
-  #modal-canvas {
-    max-width: 100%; height: auto;
-    border-radius: 8px; display: block; margin: 0 auto;
-  }
-  .modal-bottom {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    padding: 15px;
-    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-    text-align: center; z-index: 10000;
-  }
-  .close-btn {
-    background-color: #495057; color: white; border: none;
-    padding: 12px 30px; font-size: 15px; font-weight: 600;
-    border-radius: 8px; cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    transition: 0.2s; min-width: 200px;
-  }
+  .rank-value { font-weight: 700; color: #28a745; font-size: 15px; text-align: right; }
+  .rank-meta { font-size: 11px; color: #6c757d; text-align: right; margin-top: 2px; }
+  .scan-progress-bar { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin: 12px 0; }
+  .scan-progress-fill { height: 100%; background: #0056b3; width: 0%; transition: width 0.3s ease; }
+  .scan-counter { text-align: center; font-size: 14px; color: #333; font-weight: 600; margin: 12px 0; }
+  .scan-hint { text-align: center; font-size: 12px; color: #6c757d; margin-top: 8px; line-height: 1.5; }
+  .bad-data-note { font-size: 12px; color: #856404; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 8px 12px; margin-top: 16px; }
+  .tap-hint { text-align: center; font-size: 11px; color: #adb5bd; margin-top: 8px; font-style: italic; }
+  .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.92); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 90px 10px; }
+  #modal-canvas { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+  .modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); text-align: center; z-index: 10000; }
+  .close-btn { background-color: #495057; color: white; border: none; padding: 12px 30px; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: 0.2s; min-width: 200px; }
   .close-btn:hover { background-color: #343a40; }
 </style>
 </head>
 <body>
-
-<!-- Drawer -->
+ <!-- Drawer -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
@@ -384,6 +150,7 @@
       <h2>RENATA PLC</h2>
       <p>Overtime Report Search & Calculator</p>
     </div>
+    <button id="backToLbBtn" class="menu-btn" onclick="backToLeaderboard()" style="display:none; font-size: 22px; color: #28a745;" title="সেরা তালিকায় ফিরুন">↩</button>
   </div>
 
   <div class="card">
@@ -411,8 +178,7 @@
     </div>
 
     <label for="employeeId">এমপ্লয়ি আইডি (Employee ID):</label>
-    <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850"
-           autocomplete="off" inputmode="text">
+    <input type="text" id="employeeId" placeholder="উদাহরণ: RF20850" autocomplete="off" inputmode="text">
 
     <button id="searchBtn" onclick="findReport()">রিপোর্ট খুঁজুন</button>
 
@@ -438,7 +204,6 @@
   <div class="card calc-card" id="step3">
     <h3>ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
     <div id="gradeInfo" class="grade-info" style="display:none;"></div>
-
     <div id="calcInputs">
       <div class="input-grid">
         <label>ক্যাটাগরি:</label>
@@ -448,18 +213,9 @@
           <option value="JO_B">JO_B - Junior Officer B & Above</option>
         </select>
       </div>
-      <div class="input-grid">
-        <label>ওটি ঘণ্টা (Extra):</label>
-        <input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()">
-      </div>
-      <div class="input-grid">
-        <label>হলিডে/DO দিন:</label>
-        <input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()">
-      </div>
-      <div class="input-grid">
-        <label>নাইট সংখ্যা:</label>
-        <input type="number" id="inpNight" value="0" step="1" oninput="recalculate()">
-      </div>
+      <div class="input-grid"><label>ওটি ঘণ্টা (Extra):</label><input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()"></div>
+      <div class="input-grid"><label>হলিডে/DO দিন:</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
+      <div class="input-grid"><label>নাইট সংখ্যা:</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
       <hr style="border:none;border-top:1px dashed #ccc;margin:12px 0;">
       <div class="report-row"><span>ওটি রেট:</span> <strong id="lblRate">৳ 0 / hr</strong></div>
       <div class="report-row"><span>ওটি অমাউন্ট:</span> <span id="lblOtAmount">৳ 0</span></div>
@@ -474,8 +230,7 @@
     <div id="compareInputArea">
       <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
       <label>অন্য Employee ID:</label>
-      <input type="text" id="compareId" placeholder="উদাহরণ: CF8355"
-             autocomplete="off" inputmode="text">
+      <input type="text" id="compareId" placeholder="উদাহরণ: CF8355" autocomplete="off" inputmode="text">
       <button id="compareBtn" onclick="runComparison()">তুলনা করুন</button>
       <div class="compare-hint">একটু সময় লাগবে, ধৈর্য ধরুন।</div>
       <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;"></div>
@@ -511,18 +266,14 @@
   </div>
 
   <div class="card" id="lbInitialCard">
-    <div class="empty-msg" style="padding: 20px;">
-      সব employee-এর data scan করে দেখা হবে এই মাসে কারা সেরা।
-    </div>
+    <div class="empty-msg" style="padding: 20px;">সব employee-এর data scan করে দেখা হবে এই মাসে কারা সেরা।</div>
     <button onclick="startLeaderboardScan()">Scan শুরু করুন</button>
     <div class="scan-hint">সময় লাগবে ৫-১০ সেকেন্ড। ধৈর্য ধরুন।</div>
   </div>
 
   <div class="card" id="lbScanCard" style="display:none;">
     <div class="scan-counter" id="lbScanCounter">০ / ০ employee scan হয়েছে</div>
-    <div class="scan-progress-bar">
-      <div class="scan-progress-fill" id="lbScanFill"></div>
-    </div>
+    <div class="scan-progress-bar"><div class="scan-progress-fill" id="lbScanFill"></div></div>
     <div class="scan-hint" id="lbScanHint">PDF load হচ্ছে...</div>
   </div>
 
@@ -531,19 +282,16 @@
       <div class="leaderboard-section-title">সেরা ৩ Duty kora employee</div>
       <div id="lbTopDuty"></div>
     </div>
-
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most OT kora employee</div>
       <div id="lbTopOT"></div>
     </div>
-
     <div class="leaderboard-card">
       <div class="leaderboard-section-title">Top 3 Most Earned employee</div>
       <div id="lbTopEarned"></div>
     </div>
-
     <div class="bad-data-note" id="lbBadData" style="display:none;"></div>
-
+    <div class="tap-hint">যেকোনো employee-এ tap করে তার পূর্ণ রিপোর্ট দেখুন</div>
     <button onclick="startLeaderboardScan(true)" class="reset-btn" style="background:#0056b3;margin-top:16px;">আবার Scan করুন</button>
   </div>
 </div>
@@ -573,18 +321,9 @@
     </div>
   </div>
   <div class="card">
-    <div class="settings-row">
-      <span class="label">App Version</span>
-      <span class="value">1.0.0</span>
-    </div>
-    <div class="settings-row">
-      <span class="label">Developed by</span>
-      <span class="value">Md. Ariful Islam</span>
-    </div>
-    <div class="settings-row">
-      <span class="label">Designation</span>
-      <span class="value">Coating PR</span>
-    </div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.0.0</span></div>
+    <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
+    <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-footer">© 2026 RENATA PLC</div>
   </div>
 </div>
@@ -598,7 +337,6 @@
     <button class="close-btn" onclick="closeModal()">বন্ধ করুন</button>
   </div>
 </div>
-
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -611,17 +349,15 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 400, name: "Junior Officer B & Above" }
 };
 
-/* ====== Cache Keys ====== */
-const CACHE_PREFIX = "renata_cache_v14_";
+const CACHE_PREFIX = "renata_cache_v15_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v14_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v15_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v14";
+const HISTORY_KEY = "renata_history_v15";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v14_";
+const LEADERBOARD_PREFIX = "renata_lb_v15_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
-/* ====== State ====== */
 let singlePageBlobUrl = null;
 let matchedPdfPage = null;
 let currentPdf = null;
@@ -635,8 +371,8 @@ const activeTasks = new Set();
 let ocrWorker = null;
 let currentResult = null;
 let isScanning = false;
+let cameFromLeaderboard = false;
 
-/* ====== Cache helpers ====== */
 function getCached(month, id) {
   try {
     const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id);
@@ -647,8 +383,7 @@ function getCached(month, id) {
   } catch (e) { return null; }
 }
 function setCache(month, id, payload) {
-  try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); }
-  catch (e) {}
+  try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
 }
 function getCompareCache(month, id1, id2) {
   try {
@@ -661,10 +396,7 @@ function getCompareCache(month, id1, id2) {
   } catch (e) { return null; }
 }
 function setCompareCache(month, id1, id2, payload) {
-  try {
-    const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2;
-    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), ...payload }));
-  } catch (e) {}
+  try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
 }
 function getLeaderboardCache(month) {
   try {
@@ -676,14 +408,11 @@ function getLeaderboardCache(month) {
   } catch (e) { return null; }
 }
 function setLeaderboardCache(month, payload) {
-  try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); }
-  catch (e) {}
+  try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {}
 }
 
-/* ====== History ====== */
 function getHistory() {
-  try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; }
-  catch (e) { return []; }
+  try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
 }
 function addToHistory(id, month, name) {
   try {
@@ -698,7 +427,6 @@ function clearHistory() {
   try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {}
 }
 
-/* ====== Drawer ====== */
 function openDrawer() {
   document.getElementById('drawer').classList.add('active');
   document.getElementById('drawerOverlay').classList.add('active');
@@ -708,40 +436,28 @@ function closeDrawer() {
   document.getElementById('drawerOverlay').classList.remove('active');
 }
 
-/* ====== Page switching ====== */
 function switchPage(pageName) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + pageName).classList.add('active');
-
   document.querySelectorAll('.drawer-item').forEach(item => item.classList.remove('active'));
   const activeItem = document.querySelector('.drawer-item[data-page="' + pageName + '"]');
   if (activeItem) activeItem.classList.add('active');
-
   if (pageName === 'history') renderHistory();
   if (pageName === 'leaderboard') initLeaderboardPage();
-
   closeDrawer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ====== History rendering ====== */
 function renderHistory() {
   const list = getHistory();
   const box = document.getElementById('historyList');
-  if (list.length === 0) {
-    box.innerHTML = '<div class="empty-msg">এখনো কোনো সার্চ করা হয়নি।</div>';
-    return;
-  }
+  if (list.length === 0) { box.innerHTML = '<div class="empty-msg">এখনো কোনো সার্চ করা হয়নি।</div>'; return; }
   box.innerHTML = list.map(h => {
     const date = new Date(h.ts);
     const timeStr = date.toLocaleString('bn-BD', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     return `<div class="history-item" onclick="replayHistory('${h.id}', '${h.month}')">
-      <div>
-        <div class="id">${h.id}</div>
-        <div class="meta">${h.month}</div>
-      </div>
-      <div class="time">${timeStr}</div>
-    </div>`;
+      <div><div class="id">${h.id}</div><div class="meta">${h.month}</div></div>
+      <div class="time">${timeStr}</div></div>`;
   }).join('');
 }
 
@@ -754,25 +470,28 @@ function replayHistory(id, month) {
   setTimeout(() => findReport(), 300);
 }
 
-/* ====== Listeners ====== */
-document.getElementById('employeeId').addEventListener('keydown', e => {
-  if (e.key === 'Enter') findReport();
-});
-document.getElementById('compareId').addEventListener('keydown', e => {
-  if (e.key === 'Enter') runComparison();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); closeDrawer(); }
-});
+function backToLeaderboard() {
+  cameFromLeaderboard = false;
+  document.getElementById('backToLbBtn').style.display = "none";
+  switchPage('leaderboard');
+  const month = getCurrentMonth();
+  const cached = getLeaderboardCache(month);
+  if (cached) {
+    document.getElementById('lbInitialCard').style.display = "none";
+    document.getElementById('lbScanCard').style.display = "none";
+    document.getElementById('lbResultCard').style.display = "block";
+    renderLeaderboardResult(cached);
+  }
+}
 
-/* ============================================================
-   MAIN SEARCH — with direct runExtraction call
-   ============================================================ */
+document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
+document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
+
 async function findReport() {
   const year  = document.getElementById('yearSelect').value;
   const mon   = document.getElementById('monthSelect').value;
   const month = `${year}-${mon}`;
-
   const rawId = document.getElementById('employeeId').value.trim();
   const statusDiv = document.getElementById('status');
   const progressDiv = document.getElementById('progress');
@@ -780,18 +499,13 @@ async function findReport() {
   const searchBtn = document.getElementById('searchBtn');
 
   if (!rawId) { alert("অনুগ্রহ করে Employee ID লিখুন!"); return; }
-
   const searchId = rawId.toUpperCase();
   currentSearchId = searchId;
   currentMonth = month;
 
-  // Reset UI
   ['step2','step3','step4','step5','step6','step7'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      el.style.display = "none";
-      el.classList.remove('show');
-    }
+    if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
   document.getElementById('downloadBtn').style.display = "none";
   document.getElementById('openBtn').style.display = "none";
@@ -815,7 +529,6 @@ async function findReport() {
   searchBtn.disabled = true;
 
   try {
-    // Cache check
     const cached = getCached(month, searchId);
     if (cached) {
       await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
@@ -825,94 +538,54 @@ async function findReport() {
       searchBtn.disabled = false;
       progressDiv.style.display = "none";
       addToHistory(searchId, month, cached.fileName);
-
-      // Direct extraction call
-      try {
-        await runExtraction();
-      } catch (e) {
-        console.error("Extraction failed:", e);
-        statusDiv.style.color = "#dc3545";
-        statusDiv.innerText = "Extraction error: " + (e.message || e);
-      }
+      try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color="#dc3545"; statusDiv.innerText = "Error: " + e.message; }
       return;
     }
 
-    // Fetch PDF list
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) {
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#dc3545";
-      statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`;
-      return;
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`; return;
     }
 
     const filesData = await resp.json();
-    const pdfFiles = filesData
-      .filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
       .map(f => ({ name: f.name, url: f.download_url }));
 
     if (pdfFiles.length === 0) {
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#dc3545";
-      statusDiv.innerText = `এই মাসে কোনো PDF নেই`;
-      return;
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return;
     }
 
     progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
-
     const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
     if (myToken !== currentToken) return;
 
     if (match) {
       setCache(month, searchId, { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName });
       await showResult(match.fileUrl, match.pageNum, match.fileName);
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#28a745";
-      statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+      statusDiv.style.color = "#28a745"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
       addToHistory(searchId, month, match.fileName);
-
-      // Direct extraction call
-      try {
-        await runExtraction();
-      } catch (e) {
-        console.error("Extraction failed:", e);
-        statusDiv.style.color = "#dc3545";
-        statusDiv.innerText = "Extraction error: " + (e.message || e);
-      }
+      try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color="#dc3545"; statusDiv.innerText = "Error: " + e.message; }
     } else {
-      spinner.style.display = "none";
-      searchBtn.disabled = false;
-      progressDiv.style.display = "none";
-      statusDiv.style.color = "#dc3545";
-      statusDiv.innerHTML = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+      statusDiv.style.color = "#dc3545"; statusDiv.innerHTML = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
     }
-
   } catch (err) {
     console.error(err);
-    spinner.style.display = "none";
-    searchBtn.disabled = false;
-    progressDiv.style.display = "none";
-    statusDiv.style.color = "#dc3545";
-    statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।";
+    spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+    statusDiv.style.color = "#dc3545"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।";
   }
 }
 
-/* ====== Parallel search ====== */
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   const total = pdfFiles.length;
   let scanned = 0;
-
   return new Promise((resolve) => {
     let settled = false;
     const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
-
     pdfFiles.forEach((file) => {
       (async () => {
         if (myToken !== currentToken) return;
@@ -921,15 +594,13 @@ async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
           task = pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 });
           activeTasks.add(task);
           pdf = await task.promise;
-
           for (let p = 1; p <= pdf.numPages; p++) {
             if (myToken !== currentToken || settled) break;
             const page = await pdf.getPage(p);
             const tc = await page.getTextContent();
             const text = tc.items.map(i => i.str).join(" ").toUpperCase();
             if (text.includes(searchId)) {
-              finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf });
-              return;
+              finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return;
             }
           }
           scanned++;
@@ -941,7 +612,6 @@ async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
         }
       })();
     });
-
     setTimeout(() => {
       if (!settled) {
         const check = setInterval(() => {
@@ -952,23 +622,18 @@ async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   });
 }
 
-/* ====== Show result ====== */
 async function showResult(fileUrl, pageNum, fileName) {
   if (!currentPdf || currentFileUrl !== fileUrl) {
     const task = pdfjsLib.getDocument(fileUrl);
     currentPdf = await task.promise;
     currentFileUrl = fileUrl;
   }
-  currentPageNum = pageNum;
-  currentFileName = fileName;
-
+  currentPageNum = pageNum; currentFileName = fileName;
   const page = await currentPdf.getPage(pageNum);
   matchedPdfPage = page;
   renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
-
   document.getElementById('step2').style.display = "block";
   document.getElementById('viewerTitle').innerText = `${currentSearchId} — ${currentMonth}`;
-
   singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
   const downloadBtn = document.getElementById('downloadBtn');
   downloadBtn.href = singlePageBlobUrl;
@@ -977,35 +642,23 @@ async function showResult(fileUrl, pageNum, fileName) {
   document.getElementById('openBtn').style.display = "block";
 }
 
-/* ============================================================
-   EXTRACTION — Direct call, no setTimeout
-   ============================================================ */
 async function runExtraction() {
-  if (!matchedPdfPage) {
-    console.log("runExtraction: matchedPdfPage is null");
-    return;
-  }
+  if (!matchedPdfPage) { console.log("matchedPdfPage null"); return; }
   const statusDiv = document.getElementById('status');
   statusDiv.style.color = "#0056b3";
   statusDiv.innerText = "Data পড়া হচ্ছে...";
 
   try {
-    let rawText = "";
-    let parsed = null;
-
-    // Try text-layer first
+    let rawText = "", parsed = null;
     try {
       const tc = await matchedPdfPage.getTextContent();
       rawText = tc.items.map(i => i.str).join(" ");
       const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-      const hasTotalHour = /TOTAL\s*HOUR/i.test(cleanText);
+      const hasTH = /TOTAL\s*HOUR/i.test(cleanText);
       const notGarbage = !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100));
-      if (hasTotalHour && notGarbage) {
-        parsed = parseText(rawText);
-      }
-    } catch (e) { console.log("Text-Layer error:", e.message); }
+      if (hasTH && notGarbage) parsed = parseText(rawText);
+    } catch (e) { console.log("Text error:", e.message); }
 
-    // OCR fallback
     if (!parsed || !parsed.totalHourLine) {
       statusDiv.style.color = "#0056b3";
       statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
@@ -1015,18 +668,15 @@ async function runExtraction() {
       }
       const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
       const canvas = document.createElement('canvas');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      canvas.width = viewport.width; canvas.height = viewport.height;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
       const ocrResult = await ocrWorker.recognize(canvas);
       rawText = ocrResult?.data?.text || "";
       parsed = parseText(rawText);
     }
 
-    // Grade extraction
     let gradeText = "";
     const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     if (gm) gradeText = gm[0];
@@ -1042,14 +692,9 @@ async function runExtraction() {
     const nightAmount = parsed.nightCount * r.nightRate;
 
     currentResult = {
-      category: detection.category,
-      otHours: parsed.otHours,
-      holiday: parsed.holidayCount,
-      night: parsed.nightCount,
+      category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount,
       otAmount, holidayAmount, nightAmount,
-      totalEarned: otAmount + holidayAmount + nightAmount,
-      grade: gradeText,
-      valid: detection.valid
+      totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid
     };
 
     const myAmountDiv = document.getElementById('compareMyAmount');
@@ -1059,20 +704,12 @@ async function runExtraction() {
     statusDiv.style.color = "#28a745";
     statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
 
-    // Force show all calc cards
     ['step3','step4','step5','step6','step7'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) {
-        el.classList.add('show');
-        el.style.display = 'block';
-      }
+      if (el) { el.classList.add('show'); el.style.display = 'block'; }
     });
 
-    // Smooth scroll
-    setTimeout(() => {
-      document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
-    }, 200);
-
+    setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth' }); }, 200);
   } catch (e) {
     console.error("runExtraction error:", e);
     statusDiv.style.color = "#dc3545";
@@ -1081,17 +718,14 @@ async function runExtraction() {
   }
 }
 
-/* ====== Apply extraction ====== */
 function applyExtraction(parsed, detection) {
   const gradeInfo = document.getElementById('gradeInfo');
   const calcInputs = document.getElementById('calcInputs');
   const categoryBadge = document.getElementById('categoryBadge');
-
   if (detection.gradeText || detection.reason) {
     gradeInfo.style.display = "block";
     gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | Detection: ${detection.reason}`;
   }
-
   if (detection.valid && detection.category) {
     document.getElementById('inpCategory').value = detection.category;
     document.getElementById('inpOtHours').value = parsed.otHours;
@@ -1111,41 +745,33 @@ function applyExtraction(parsed, detection) {
     calcInputs.style.display = "none";
     recalculate();
   }
-
   showHolidayList(parsed.holidayDays);
   showNightList(parsed.nightDays);
   showRemarks(parsed.punchProblems, detection);
 }
 
-/* ====== Detect category ====== */
 function detectCategory(gradeText, empId) {
   const g = (gradeText || "").toUpperCase().trim();
-
   if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual (CF)", gradeText: g || "CF" };
-
   if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) {
     return { category: null, valid: false, reason: "Management/Executive — ক্যাটাগরির বাইরে", gradeText: g };
   }
-
   const gradeMatch = g.match(/JUNIOR\s+OFFICER\s+([A-F])\b/i);
   const levelMatch = g.match(/\bM(\d{2})\b/);
   const gradeLetter = gradeMatch ? gradeMatch[1].toUpperCase() : null;
   const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
-
   if (gradeLetter) {
-    if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter} (B & Above)`, gradeText: g };
-    if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter} (Below B)`, gradeText: g };
+    if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g };
+    if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g };
   }
   if (levelNum !== null) {
     if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `Level M${levelNum}`, gradeText: g };
     if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `Level M${levelNum}`, gradeText: g };
-    return { category: null, valid: false, reason: `Level M${levelNum} — ক্যাটাগরির বাইরে`, gradeText: g };
+    return { category: null, valid: false, reason: `Level M${levelNum} — বাইরে`, gradeText: g };
   }
-
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
 
-/* ====== Parse text ====== */
 function parseText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
   let otHours = 0, nightCount = 0;
@@ -1178,26 +804,18 @@ function parseText(rawText) {
     const date = rm[1];
     if (seenDates.has(date)) continue;
     seenDates.add(date);
-    const doDuty  = parseFloat(rm[4]) || 0;
-    const doExtra = parseFloat(rm[5]) || 0;
-    const holDuty = parseFloat(rm[6]) || 0;
-    const holExtra= parseFloat(rm[7]) || 0;
+    const doDuty = parseFloat(rm[4]) || 0, doExtra = parseFloat(rm[5]) || 0;
+    const holDuty = parseFloat(rm[6]) || 0, holExtra = parseFloat(rm[7]) || 0;
     const isNight = rm[8].toUpperCase() === "YES";
-    const inTime  = rm[9];
-    const outTime = rm[10];
+    const inTime = rm[9], outTime = rm[10];
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     if (isNight) nightDays.push(date);
     if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
   }
 
-  return {
-    otHours: Number(otHours.toFixed(2)), nightCount,
-    holidayCount: holidayDays.length,
-    holidayDays, nightDays, punchProblems, totalHourLine
-  };
+  return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
 }
 
-/* ====== List rendering ====== */
 function showHolidayList(list) {
   const box = document.getElementById('holidayList');
   if (!list || list.length === 0) box.innerText = "এই মাসে কোনো হলিডে বা DO ডিউটি নেই";
@@ -1222,10 +840,9 @@ function showNightList(list) {
 function showRemarks(punchProblems, detection) {
   const box = document.getElementById('remarksBox');
   const issues = [];
-  if (!detection.valid) issues.push(`Grade সনাক্তকরণ সমস্যা: ${detection.reason}`);
+  if (!detection.valid) issues.push(`Grade সমস্যা: ${detection.reason}`);
   if (punchProblems && punchProblems.length > 0) {
-    const dates = punchProblems.map(p => p.date).join(", ");
-    issues.push(`In/Out Punch সমস্যা: ${dates}`);
+    issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
   }
   if (issues.length === 0) {
     box.className = "remarks-box remarks-ok";
@@ -1242,7 +859,6 @@ function showRemarks(punchProblems, detection) {
   }
 }
 
-/* ====== Recalculate ====== */
 function recalculate() {
   const cat = document.getElementById('inpCategory').value;
   const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
@@ -1255,7 +871,6 @@ function recalculate() {
   else holidayAmount = holiday * r.holidayFlat;
   const nightAmount = night * r.nightRate;
   const grandTotal = otAmount + holidayAmount + nightAmount;
-
   document.getElementById('lblRate').innerText = `৳ ${r.otRate} / hr`;
   document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
   document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
@@ -1263,42 +878,34 @@ function recalculate() {
   document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
 }
 
-/* ============================================================
-   COMPARISON
-   ============================================================ */
 async function runComparison() {
   const otherId = document.getElementById('compareId').value.trim().toUpperCase();
   const statusDiv = document.getElementById('compareStatus');
   const compareBtn = document.getElementById('compareBtn');
   const resultDiv = document.getElementById('compareResult');
 
-  if (!otherId) { alert("অনুগ্রহ করে অন্য Employee ID লিখুন!"); return; }
+  if (!otherId) { alert("অন্য Employee ID লিখুন!"); return; }
   if (otherId === currentSearchId) { alert("একই ID দিয়ে তুলনা করা যাবে না!"); return; }
   if (!currentResult) { alert("প্রথমে আপনার হিসাব সম্পন্ন হতে হবে।"); return; }
 
-  compareBtn.disabled = true;
-  resultDiv.style.display = "none";
+  compareBtn.disabled = true; resultDiv.style.display = "none";
 
   const cached = getCompareCache(currentMonth, currentSearchId, otherId);
   if (cached) {
-    statusDiv.style.color = "#28a745";
-    statusDiv.innerText = "তুলনা সম্পন্ন";
+    statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
     showComparison(currentResult, cached.other, cached.otherId);
-    compareBtn.disabled = false;
-    return;
+    compareBtn.disabled = false; return;
   }
 
   statusDiv.style.color = "#0056b3";
-  statusDiv.innerText = "অন্য employee-এর data খোঁজা হচ্ছে... একটু সময় লাগবে, ধৈর্য ধরুন।";
+  statusDiv.innerText = "অন্য employee-এর data খোঁজা হচ্ছে... ধৈর্য ধরুন।";
 
   try {
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
-
     const filesData = await resp.json();
-    const pdfFiles = filesData
-      .filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
       .map(f => ({ name: f.name, url: f.download_url }));
 
     currentToken++;
@@ -1306,17 +913,13 @@ async function runComparison() {
     const match = await parallelSearch(pdfFiles, otherId, myToken, null);
 
     if (!match) {
-      statusDiv.style.color = "#dc3545";
-      statusDiv.innerText = `আইডি "${otherId}"-এর রেকর্ড পাওয়া যায়নি`;
-      compareBtn.disabled = false;
-      return;
+      statusDiv.style.color = "#dc3545"; statusDiv.innerText = `আইডি "${otherId}"-এর রেকর্ড পাওয়া যায়নি`;
+      compareBtn.disabled = false; return;
     }
 
-    statusDiv.style.color = "#0056b3";
-    statusDiv.innerText = "Data extract করা হচ্ছে...";
+    statusDiv.style.color = "#0056b3"; statusDiv.innerText = "Data extract করা হচ্ছে...";
 
-    let otherParsed = null;
-    let otherGradeText = "";
+    let otherParsed = null, otherGradeText = "";
     try {
       const tc = await match.page.getTextContent();
       const txt = tc.items.map(i => i.str).join(" ");
@@ -1329,18 +932,16 @@ async function runComparison() {
     } catch (e) {}
 
     if (!otherParsed || !otherParsed.totalHourLine) {
-      statusDiv.innerText = "OCR চলছে (তুলনার জন্য)...";
+      statusDiv.innerText = "OCR চলছে...";
       if (!ocrWorker) {
         ocrWorker = await Tesseract.createWorker('eng');
         await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' });
       }
       const viewport = match.page.getViewport({ scale: 3.0 });
       const canvas = document.createElement('canvas');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      canvas.width = viewport.width; canvas.height = viewport.height;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       await match.page.render({ canvasContext: ctx, viewport }).promise;
       const ocrResult = await ocrWorker.recognize(canvas);
       const ocrTxt = ocrResult?.data?.text || "";
@@ -1358,28 +959,19 @@ async function runComparison() {
     const nightAmount = otherParsed.nightCount * r.nightRate;
 
     const otherResult = {
-      category: otherDetect.category,
-      categoryName: r.name,
-      otHours: otherParsed.otHours,
-      holiday: otherParsed.holidayCount,
-      night: otherParsed.nightCount,
+      category: otherDetect.category, categoryName: r.name,
+      otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount,
       otAmount, holidayAmount, nightAmount,
-      totalEarned: otAmount + holidayAmount + nightAmount,
-      grade: otherGradeText
+      totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText
     };
 
     setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
     showComparison(currentResult, otherResult, otherId);
-    statusDiv.style.color = "#28a745";
-    statusDiv.innerText = "তুলনা সম্পন্ন";
-
+    statusDiv.style.color = "#28a745"; statusDiv.innerText = "তুলনা সম্পন্ন";
   } catch (e) {
     console.error(e);
-    statusDiv.style.color = "#dc3545";
-    statusDiv.innerText = "তুলনায় সমস্যা: " + e.message;
-  } finally {
-    compareBtn.disabled = false;
-  }
+    statusDiv.style.color = "#dc3545"; statusDiv.innerText = "তুলনায় সমস্যা: " + e.message;
+  } finally { compareBtn.disabled = false; }
 }
 
 function showComparison(mine, other, otherId) {
@@ -1388,7 +980,6 @@ function showComparison(mine, other, otherId) {
   const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন`
                   : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন`
                   : `আপনি সমান পেয়েছেন`;
-
   div.innerHTML = `
     <table class="compare-table">
       <tr><th></th><th>আপনি (${currentSearchId})</th><th>${otherId}</th></tr>
@@ -1402,8 +993,7 @@ function showComparison(mine, other, otherId) {
       <tr class="total-row"><td>সর্বমোট</td><td>৳ ${mine.totalEarned.toFixed(2)}</td><td>৳ ${other.totalEarned.toFixed(2)}</td></tr>
     </table>
     <div class="compare-diff"><strong>${diffText}</strong></div>
-    <button onclick="resetComparison()" class="reset-btn">আরেকজনের সাথে তুলনা</button>
-  `;
+    <button onclick="resetComparison()" class="reset-btn">আরেকজনের সাথে তুলনা</button>`;
   div.style.display = "block";
   document.getElementById('compareInputArea').style.display = "none";
 }
@@ -1415,21 +1005,25 @@ function resetComparison() {
   document.getElementById('compareStatus').innerText = "";
 }
 
-/* ============================================================
-   LEADERBOARD
-   ============================================================ */
+/* Leaderboard */
 function initLeaderboardPage() {
   const month = getCurrentMonth();
   document.getElementById('lbSubtitle').innerText = month;
-  document.getElementById('lbInitialCard').style.display = "block";
-  document.getElementById('lbScanCard').style.display = "none";
-  document.getElementById('lbResultCard').style.display = "none";
+  const cached = getLeaderboardCache(month);
+  if (cached) {
+    document.getElementById('lbInitialCard').style.display = "none";
+    document.getElementById('lbScanCard').style.display = "none";
+    document.getElementById('lbResultCard').style.display = "block";
+    renderLeaderboardResult(cached);
+  } else {
+    document.getElementById('lbInitialCard').style.display = "block";
+    document.getElementById('lbScanCard').style.display = "none";
+    document.getElementById('lbResultCard').style.display = "none";
+  }
 }
 
 function getCurrentMonth() {
-  const year = document.getElementById('yearSelect').value;
-  const mon = document.getElementById('monthSelect').value;
-  return `${year}-${mon}`;
+  return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`;
 }
 
 async function startLeaderboardScan(forceRescan = false) {
@@ -1443,7 +1037,6 @@ async function startLeaderboardScan(forceRescan = false) {
   const counter = document.getElementById('lbScanCounter');
   const fill = document.getElementById('lbScanFill');
   const hint = document.getElementById('lbScanHint');
-
   counter.innerText = "০ / ০ employee scan হয়েছে";
   fill.style.width = "0%";
   hint.innerText = "PDF load হচ্ছে...";
@@ -1467,12 +1060,9 @@ async function startLeaderboardScan(forceRescan = false) {
     const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
     const resp = await fetch(apiUrl);
     if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
-
     const filesData = await resp.json();
-    const pdfFiles = filesData
-      .filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
+    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf'))
       .map(f => ({ name: f.name, url: f.download_url }));
-
     if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
 
     hint.innerText = "PDF লোড হচ্ছে...";
@@ -1484,7 +1074,6 @@ async function startLeaderboardScan(forceRescan = false) {
 
     let totalPages = 0;
     loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
-
     const employees = [];
     const skipped = [];
     let processedPages = 0;
@@ -1492,7 +1081,6 @@ async function startLeaderboardScan(forceRescan = false) {
     for (const { file, pdf } of loadedPdfs) {
       const numPages = pdf.numPages;
       const CONCURRENCY = 4;
-
       let nextPage = 1;
       while (nextPage <= numPages) {
         const batch = [];
@@ -1500,19 +1088,16 @@ async function startLeaderboardScan(forceRescan = false) {
           batch.push(processLeaderboardPage(pdf, nextPage + i));
         }
         nextPage += batch.length;
-
         const results = await Promise.all(batch);
         for (const r of results) {
           if (r.valid) employees.push(r);
           else if (r.id) skipped.push(r.id);
         }
-
         processedPages += results.length;
         const percent = Math.floor((processedPages / totalPages) * 100);
         fill.style.width = percent + "%";
         counter.innerText = `${processedPages} / ${totalPages} employee scan হয়েছে`;
         hint.innerText = "ধৈর্য ধরুন...";
-
         await new Promise(res => setTimeout(res, 10));
       }
     }
@@ -1522,16 +1107,8 @@ async function startLeaderboardScan(forceRescan = false) {
     const topOT = [...validEmps].sort((a,b) => b.otHours - a.otHours).slice(0, 3);
     const topEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned).slice(0, 3);
 
-    const result = {
-      month,
-      topDuty, topOT, topEarned,
-      skippedCount: skipped.length,
-      skippedIds: skipped,
-      totalScanned: processedPages
-    };
-
+    const result = { month, topDuty, topOT, topEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
     setLeaderboardCache(month, result);
-
     fill.style.width = "100%";
     hint.innerText = "সম্পন্ন!";
     setTimeout(() => {
@@ -1540,7 +1117,6 @@ async function startLeaderboardScan(forceRescan = false) {
       document.getElementById('lbResultCard').style.display = "block";
       isScanning = false;
     }, 400);
-
   } catch (e) {
     console.error(e);
     hint.innerText = "সমস্যা: " + e.message;
@@ -1563,17 +1139,14 @@ async function processLeaderboardPage(pdf, pageNum) {
     const idMatch = upper.match(/\b(CF|RF)\d{3,5}\b/);
     if (!idMatch) return { valid: false, id: null };
     const id = idMatch[0];
-
     const cleanText = upper.replace(/\s+/g, " ");
-    const hasTH = /TOTAL\s*HOUR/i.test(cleanText);
-    if (!hasTH) return { valid: false, id };
+    if (!/TOTAL\s*HOUR/i.test(cleanText)) return { valid: false, id };
 
     const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
     const name = nameMatch ? nameMatch[1].trim().substring(0, 45) : "";
 
     const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
     const gradeText = gm ? gm[0] : "";
-
     const detection = detectCategory(gradeText, id);
     if (!detection.valid) return { valid: false, id };
 
@@ -1582,14 +1155,10 @@ async function processLeaderboardPage(pdf, pageNum) {
     const nums = (after.match(/\d+\.\d+|\d+/g) || []).slice(0, 7).map(parseFloat);
     if (nums.length < 7) return { valid: false, id };
 
-    const regDuty  = nums[0] || 0;
-    const regExtra = nums[1] || 0;
-    const doDuty   = nums[2] || 0;
-    const doExtra  = nums[3] || 0;
-    const holDuty  = nums[4] || 0;
-    const holExtra = nums[5] || 0;
+    const regDuty = nums[0] || 0, regExtra = nums[1] || 0;
+    const doDuty = nums[2] || 0, doExtra = nums[3] || 0;
+    const holDuty = nums[4] || 0, holExtra = nums[5] || 0;
     const nightCount = nums[6] || 0;
-
     const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
     const otHours = regExtra + doExtra + holExtra;
 
@@ -1600,10 +1169,8 @@ async function processLeaderboardPage(pdf, pageNum) {
     while ((rm = rowRegex.exec(cleanText)) !== null) {
       if (seen.has(rm[1])) continue;
       seen.add(rm[1]);
-      const dd = parseFloat(rm[4]) || 0;
-      const de = parseFloat(rm[5]) || 0;
-      const hd = parseFloat(rm[6]) || 0;
-      const he = parseFloat(rm[7]) || 0;
+      const dd = parseFloat(rm[4]) || 0, de = parseFloat(rm[5]) || 0;
+      const hd = parseFloat(rm[6]) || 0, he = parseFloat(rm[7]) || 0;
       if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
     }
 
@@ -1616,16 +1183,10 @@ async function processLeaderboardPage(pdf, pageNum) {
     const totalEarned = otAmount + holidayAmount + nightAmount;
 
     return {
-      valid: true,
-      id, name, grade: gradeText,
-      category: detection.category,
-      totalDuty: Number(totalDuty.toFixed(2)),
-      otHours: Number(otHours.toFixed(2)),
-      nightCount,
-      holidayCount,
-      totalEarned: Number(totalEarned.toFixed(2))
+      valid: true, id, name, grade: gradeText, category: detection.category,
+      totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)),
+      nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2))
     };
-
   } catch (e) {
     console.log("Page error:", e.message);
     return { valid: false, id: null };
@@ -1636,7 +1197,6 @@ function renderLeaderboardResult(result) {
   renderRankList('lbTopDuty', result.topDuty, 'duty');
   renderRankList('lbTopOT', result.topOT, 'ot');
   renderRankList('lbTopEarned', result.topEarned, 'earned');
-
   const badDiv = document.getElementById('lbBadData');
   if (result.skippedCount > 0) {
     badDiv.style.display = "block";
@@ -1653,19 +1213,11 @@ function renderRankList(elementId, list, type) {
     return;
   }
   box.innerHTML = list.map((e, i) => {
-    let valueStr = "";
-    let metaStr = "";
-    if (type === 'duty') {
-      valueStr = `${e.totalDuty} ঘণ্টা`;
-      metaStr = `Grade: ${e.grade || '—'}`;
-    } else if (type === 'ot') {
-      valueStr = `${e.otHours} ঘণ্টা`;
-      metaStr = `Grade: ${e.grade || '—'}`;
-    } else if (type === 'earned') {
-      valueStr = `৳ ${e.totalEarned.toFixed(2)}`;
-      metaStr = `OT: ${e.otHours} hr | Hol: ${e.holidayCount} | Night: ${e.nightCount}`;
-    }
-    return `<div class="rank-item rank-${i + 1}">
+    let valueStr = "", metaStr = "";
+    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = `Grade: ${e.grade || '—'}`; }
+    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = `Grade: ${e.grade || '—'}`; }
+    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} hr | Hol: ${e.holidayCount} | Night: ${e.nightCount}`; }
+    return `<div class="rank-item rank-${i + 1}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
       <div class="rank-number">${i + 1}</div>
       <div class="rank-info">
         <div class="rank-name">${e.name || '—'}</div>
@@ -1679,7 +1231,19 @@ function renderRankList(elementId, list, type) {
   }).join('');
 }
 
-/* ====== PDF helpers ====== */
+/* Tap to view full report */
+async function viewEmployeeFromLeaderboard(empId) {
+  const month = getCurrentMonth();
+  const [year, mon] = month.split('-');
+  document.getElementById('yearSelect').value = year;
+  document.getElementById('monthSelect').value = mon;
+  document.getElementById('employeeId').value = empId;
+  document.getElementById('backToLbBtn').style.display = "block";
+  cameFromLeaderboard = true;
+  switchPage('search');
+  setTimeout(() => { findReport(); }, 400);
+}
+
 async function extractSinglePagePdf(pdfUrl, pageNumber) {
   const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
   const src = await PDFLib.PDFDocument.load(bytes);
@@ -1703,7 +1267,6 @@ function renderPageHD(page, targetCanvas, divider) {
   page.render({ canvasContext: ctx, transform, viewport });
 }
 
-/* ====== Modal ====== */
 function openModal() {
   if (!matchedPdfPage) return;
   const modal = document.getElementById('pdfModal');
@@ -1723,18 +1286,12 @@ function closeModal() {
     mc.width = 0; mc.height = 0;
   }
 }
-function modalBackdropClick(e) {
-  if (e.target.id === "pdfModal") closeModal();
-}
+function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
 
-/* ====== Reset ====== */
 function resetAll() {
   ['step2','step3','step4','step5','step6','step7'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      el.style.display = "none";
-      el.classList.remove('show');
-    }
+    if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
   document.getElementById('status').innerText = "";
   document.getElementById('progress').style.display = "none";
@@ -1751,10 +1308,11 @@ function resetAll() {
   currentPageNum = 1;
   matchedPdfPage = null;
   currentResult = null;
+  cameFromLeaderboard = false;
+  document.getElementById('backToLbBtn').style.display = "none";
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ====== Service Worker ====== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
