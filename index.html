@@ -229,6 +229,46 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .result-block.accent-holiday { border-left: 3px solid var(--accent); }
 .result-block.accent-night { border-left: 3px solid var(--primary); }
 .result-block.accent-rate { border-left: 3px solid var(--muted); }
+.result-block.accent-plain { border-left: 3px solid #9333EA; }
+
+/* Day Summary Grid */
+.day-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.day-summary-grid .ds-cell {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.day-summary-grid .ds-cell.plain {
+  background: #FAF5FF;
+  border-color: #E9D5FF;
+}
+.day-summary-grid .ds-label {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.day-summary-grid .ds-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+.day-summary-grid .ds-cell.plain .ds-value { color: #7E22CE; }
+
 .grand-total-block { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1.5px solid var(--info-border); border-radius: var(--radius); padding: 14px 16px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .grand-total-block .gt-label { font-size: 13px; font-weight: 600; color: var(--primary-blue); text-transform: uppercase; letter-spacing: 0.02em; }
 .grand-total-block .gt-value { font-size: 22px; font-weight: 800; color: var(--primary-blue); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
@@ -322,7 +362,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .settings-row .value { color: var(--text); font-weight: 600; text-align: right; }
 .settings-footer { text-align: center; color: var(--muted); font-size: 11px; padding: 20px 0 4px 0; font-weight: 500; }
 
-/* ============ LEADERBOARD BASE (will be overridden by esports theme) ============ */
+/* ============ LEADERBOARD BASE ============ */
 .lb-wrapper { padding: 12px; }
 .lb-hero { background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 12px 12px 12px; margin-bottom: 10px; }
 .lb-hero-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
@@ -358,7 +398,23 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .rank-number { font-weight: 800; font-size: 12px; width: 26px; height: 26px; min-width: 26px; color: var(--primary); display: flex; align-items: center; justify-content: center; background: var(--surface); border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; }
 .rank-info { flex: 1; min-width: 0; }
 .rank-name { font-size: 13px; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rank-id { font-size: 10.5px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.rank-id-line { font-size: 10.5px; color: var(--muted); font-weight: 600; margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.rank-id-line .rank-id { color: var(--muted); font-variant-numeric: tabular-nums; }
+.rank-id-line .rank-desig {
+  display: inline-block;
+  background: #E0E7FF;
+  color: #3730A3;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.rank-id-line .rank-desig.cf {
+  background: #FCE7F3;
+  color: #9D174D;
+}
 .rank-value { font-weight: 800; color: var(--success); font-size: 13.5px; text-align: right; flex-shrink: 0; }
 .rank-meta { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; }
 .bad-data-note { font-size: 11.5px; color: var(--warning); background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); padding: 9px 12px; margin-top: 10px; font-weight: 500; }
@@ -381,6 +437,117 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 #modal-canvas { max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; }
 .modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), transparent); text-align: center; z-index: 10000; }
 .close-btn { background: var(--surface); color: var(--text); border: none; padding: 12px 30px; font-size: 14px; font-weight: 700; border-radius: var(--radius); cursor: pointer; min-width: 180px; min-height: 44px; font-family: inherit; }
+
+/* ============ LEADERBOARD FULL-LIST MODAL ============ */
+.lb-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0; top: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  overflow: hidden;
+}
+.lb-modal.open { display: flex; align-items: center; justify-content: center; padding: 16px; }
+.lb-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: lbModalSlide 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@keyframes lbModalSlide {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.lb-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  flex-shrink: 0;
+}
+.lb-modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.lb-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.01em;
+}
+.lb-modal-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.lb-modal-close {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.lb-modal-close:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+.lb-modal-close:active { transform: scale(0.94); }
+.lb-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px 20px 16px;
+  overscroll-behavior: contain;
+}
+.lb-modal-body::-webkit-scrollbar { width: 6px; }
+.lb-modal-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+.lb-modal-body .rank-item { margin-bottom: 6px; }
+.lb-modal-body .rank-item.mine {
+  background: var(--success-bg) !important;
+  border-color: var(--success-border) !important;
+  border-left: 4px solid var(--success) !important;
+}
+.lb-modal-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+@media (max-width: 480px) {
+  .lb-modal-content { max-height: 95vh; border-radius: var(--radius); }
+  .lb-modal-header { padding: 14px 14px; }
+  .lb-modal-body { padding: 10px 12px 18px 12px; }
+}
 
 /* ============ WHATSAPP FLOAT ============ */
 .wa-float { position: fixed; bottom: 18px; right: 18px; width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; z-index: 999; text-decoration: none; }
@@ -464,11 +631,11 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 #page-leaderboard .rank-item,
 #page-leaderboard .lb-podium .rank-item,
 #page-leaderboard .lb-panel-list .rank-item,
-#page-leaderboard .full-ranking .rank-item {
+#page-leaderboard .full-ranking .rank-item,
+#page-leaderboard #lbFullListBody .rank-item {
   display: flex; flex-direction: row; align-items: center; gap: 12px;
   background: rgba(26,11,46,.75);
   border: 1.5px solid var(--lb-teal);
-  border-left-width: 1.5px;
   border-radius: 14px;
   padding: 7px 8px;
   min-height: 56px;
@@ -508,7 +675,18 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 }
 
 #page-leaderboard .rank-name { color: #fff; font-size: 14px; font-weight: 800; letter-spacing: .02em; }
-#page-leaderboard .rank-id { color: var(--lb-dim); font-size: 11px; }
+#page-leaderboard .rank-id-line { color: var(--lb-dim); }
+#page-leaderboard .rank-id-line .rank-id { color: var(--lb-dim); }
+#page-leaderboard .rank-id-line .rank-desig {
+  background: rgba(20,184,196,.22);
+  color: var(--lb-teal);
+  border: 1px solid rgba(20,184,196,.5);
+}
+#page-leaderboard .rank-id-line .rank-desig.cf {
+  background: rgba(245,181,10,.22);
+  color: var(--lb-amber);
+  border-color: rgba(245,181,10,.5);
+}
 
 #page-leaderboard .rank-item > div:last-child,
 #page-leaderboard .lb-podium .rank-item > div:last-child {
@@ -528,7 +706,8 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 #page-leaderboard .rank-meta:empty { display: none; }
 
 #page-leaderboard .full-ranking .rank-item.mine,
-#page-leaderboard .rank-item.mine {
+#page-leaderboard .rank-item.mine,
+#page-leaderboard #lbFullListBody .rank-item.mine {
   background: rgba(245,181,10,.16) !important;
   border-color: var(--lb-amber) !important;
   box-shadow: 0 0 0 1px rgba(245,181,10,.35) !important;
@@ -589,24 +768,83 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 }
 
 /* =====================================================
-   DESKTOP ALIGNMENT FIX — REPORT PAGE (>= 900px)
+   LEADERBOARD DESKTOP WIDTH FIX
    ===================================================== */
 @media (min-width: 900px) {
-  #page-search.active { align-items: start; row-gap: 16px; column-gap: 20px; }
-  #page-search.active #step2 { grid-column: 1; grid-row: 2 / span 4; position: sticky; top: 76px; }
-  #page-search.active #step3 { grid-column: 2; grid-row: 2; }
-  #page-search.active #step4 { grid-column: 2; grid-row: 3; }
-  #page-search.active #step5 { grid-column: 2; grid-row: 4; }
-  #page-search.active #step6 { grid-column: 2; grid-row: 5; }
-  #page-search.active #step7 { grid-column: 1 / -1; grid-row: 6; }
-  #page-search.active #noticesCard { grid-column: 1 / -1; grid-row: 7; max-width: 100% !important; }
-  #page-search.active .card,
-  #page-search.active .collapse-card { margin: 0; max-width: 100%; }
+  #page-leaderboard { max-width: 100% !important; width: 100%; padding: 0; margin: 0; }
+  #page-leaderboard .card,
+  #page-leaderboard #lbInitialCard,
+  #page-leaderboard #lbScanCard,
+  #page-leaderboard #lbResultCard {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #page-leaderboard #lbResultCard { padding: 28px 40px 24px 40px; border-radius: 16px; }
+  #page-leaderboard .lb-hero,
+  #page-leaderboard .lb-tabs-card { max-width: 100% !important; width: 100% !important; }
+  #page-leaderboard .lb-podium {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 14px !important;
+    align-items: stretch;
+  }
+  #page-leaderboard .lb-podium .rank-item {
+    margin-bottom: 0 !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 14px 16px !important;
+    min-height: 72px;
+  }
+  #page-leaderboard .lb-podium .rank-item .rank-info { width: auto !important; flex: 1; }
+  #page-leaderboard .lb-podium .rank-item > div:last-child { width: auto !important; text-align: right !important; flex-shrink: 0; }
+  #page-leaderboard .lb-podium .rank-item .rank-value { text-align: right !important; font-size: 15px !important; }
+  #page-leaderboard .lb-podium .rank-item .rank-meta { text-align: right !important; max-width: none !important; }
+  #page-leaderboard .lb-panel-list .rank-item,
+  #page-leaderboard .full-ranking .rank-item { width: 100% !important; }
+  #page-leaderboard .top-bar { display: none; }
+}
+
+/* =====================================================
+   DESKTOP ALIGNMENT FIX — REPORT PAGE (>= 900px) v2
+   ===================================================== */
+@media (min-width: 900px) {
+  #page-search.active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto auto auto;
+    gap: 16px 20px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   #page-search.active #searchFormCard,
-  #page-search.active #searchSummary { grid-row: 1; }
-  #page-search.active #noticesHomeList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #page-search.active #searchSummary {
+    grid-column: 1 / -1; grid-row: 1;
+    max-width: 100%; margin: 0;
+  }
+  #page-search.active #step2 {
+    grid-column: 1; grid-row: 2 / span 5;
+    max-width: 100%; margin: 0;
+    position: sticky; top: 80px; align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  #page-search.active #step3 { grid-column: 2; grid-row: 2; max-width: 100%; margin: 0; }
+  #page-search.active #step4 { grid-column: 2; grid-row: 3; max-width: 100%; margin: 0; }
+  #page-search.active #step5 { grid-column: 2; grid-row: 4; max-width: 100%; margin: 0; }
+  #page-search.active #step6 { grid-column: 2; grid-row: 5; max-width: 100%; margin: 0; }
+  #page-search.active #step7 { grid-column: 1 / -1; grid-row: 6; max-width: 100%; margin: 0; }
+  #page-search.active #noticesCard { grid-column: 1 / -1; grid-row: 7; max-width: 100% !important; margin: 0; }
+  #page-search.active #noticesHomeList {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
   #page-search.active #noticesHomeList .notice-item { margin-bottom: 0; }
-  #page-search.active #pdf-viewer canvas { max-height: 78vh; width: auto; max-width: 100%; }
+  #page-search.active #pdf-viewer canvas { max-height: 70vh; width: auto; max-width: 100%; }
+  #page-search.active .card,
+  #page-search.active .collapse-card { max-width: 100%; margin: 0; }
 }
 </style>
 </head>
@@ -734,6 +972,27 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="result-block accent-holiday"><span class="rb-label">হলিডে বিল</span><span class="rb-value" id="lblHolidayAmount">৳ 0</span></div>
         <div class="result-block accent-night"><span class="rb-label">নাইট বিল</span><span class="rb-value" id="lblNightAmount">৳ 0</span></div>
       </div>
+
+      <!-- NEW: Day Summary -->
+      <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
+        <div class="ds-cell">
+          <span class="ds-label">Regular Days</span>
+          <span class="ds-value" id="dsRegularDays">—</span>
+        </div>
+        <div class="ds-cell">
+          <span class="ds-label">Holiday Days</span>
+          <span class="ds-value" id="dsHolidayDays">—</span>
+        </div>
+        <div class="ds-cell">
+          <span class="ds-label">Night Days</span>
+          <span class="ds-value" id="dsNightDays">—</span>
+        </div>
+        <div class="ds-cell plain">
+          <span class="ds-label">Plain Days</span>
+          <span class="ds-value" id="dsPlainDays">—</span>
+        </div>
+      </div>
+
       <div class="grand-total-block">
         <span class="gt-label">সর্বমোট প্রাপ্য</span>
         <span class="gt-value" id="lblGrandTotal">৳ 0</span>
@@ -823,7 +1082,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 
   <div class="card lb-wrapper" id="lbResultCard" style="display:none;">
-    <!-- HERO: Top 3 Duty -->
     <div class="lb-hero">
       <div class="lb-hero-head">
         <h3 class="lb-hero-title">সেরা ৩ জন</h3>
@@ -832,7 +1090,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <div id="lbTopDuty" class="lb-podium"></div>
     </div>
 
-    <!-- My position (Duty) -->
     <div class="lb-mypos-strip">
       <div class="lb-mypos-label">আপনার অবস্থান — Duty Hours</div>
       <div class="lb-mypos-row">
@@ -841,14 +1098,11 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       </div>
     </div>
 
-    <!-- Duty full list -->
-    <button class="lb-expand-btn lb-expand-duty" onclick="toggleFullRanking('duty')" type="button">
+    <button class="lb-expand-btn lb-expand-duty" onclick="openLbFullList('duty')" type="button">
       <span id="dutyBtnText">Duty-এর সম্পূর্ণ তালিকা দেখুন</span>
-      <span id="dutyBtnArrow" class="lb-expand-arrow">↓</span>
+      <span class="lb-expand-arrow">→</span>
     </button>
-    <div class="full-ranking" id="fullRankingDuty"></div>
 
-    <!-- TABBED: OT + Earnings -->
     <div class="lb-tabs-card">
       <div class="lb-tabs-head">
         <h3 class="lb-tabs-title">সর্বোচ্চ পারফরমার</h3>
@@ -859,11 +1113,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
           <span class="lb-tab-label">OT Hours</span>
         </button>
         <button class="lb-tab" data-lb-tab="earned" role="tab" aria-selected="false" type="button">
-          <span class="lb-tab-label">OT Earnings</span>
+          <span class="lb-tab-label">Total Earning</span>
         </button>
       </div>
 
-      <!-- OT HOURS -->
       <div class="lb-panel active" data-lb-panel="ot">
         <div class="lb-panel-head">
           <span class="lb-panel-sub">সর্বোচ্চ OT করা ৩ জন</span>
@@ -876,14 +1129,12 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
           <strong class="lb-mypos-inline-pos" id="myRankOTPos">—</strong>
         </div>
 
-        <button class="lb-expand-btn" onclick="toggleFullRanking('ot')" type="button">
+        <button class="lb-expand-btn" onclick="openLbFullList('ot')" type="button">
           <span id="otBtnText">সম্পূর্ণ তালিকা দেখুন</span>
-          <span id="otBtnArrow" class="lb-expand-arrow">↓</span>
+          <span class="lb-expand-arrow">→</span>
         </button>
-        <div class="full-ranking" id="fullRankingOT"></div>
       </div>
 
-      <!-- EARNINGS -->
       <div class="lb-panel" data-lb-panel="earned">
         <div class="lb-panel-head">
           <span class="lb-panel-sub">সর্বোচ্চ টাকা আয় করা ৩ জন</span>
@@ -896,11 +1147,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
           <strong class="lb-mypos-inline-pos" id="myRankEarnedPos">—</strong>
         </div>
 
-        <button class="lb-expand-btn" onclick="toggleFullRanking('earned')" type="button">
+        <button class="lb-expand-btn" onclick="openLbFullList('earned')" type="button">
           <span id="earnedBtnText">সম্পূর্ণ তালিকা দেখুন</span>
-          <span id="earnedBtnArrow" class="lb-expand-arrow">↓</span>
+          <span class="lb-expand-arrow">→</span>
         </button>
-        <div class="full-ranking" id="fullRankingEarned"></div>
       </div>
     </div>
 
@@ -971,21 +1221,36 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 </div>
 
-<!-- Modal -->
+<!-- PDF Modal -->
 <div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
   <div class="modal-content-wrapper"><canvas id="modal-canvas"></canvas></div>
   <div class="modal-bottom"><button class="close-btn" onclick="closeModal()">বন্ধ করুন</button></div>
 </div>
 
+<!-- Leaderboard Full-List Modal (NEW) -->
+<div id="lbFullListModal" class="lb-modal" onclick="lbModalBackdropClick(event)">
+  <div class="lb-modal-content" onclick="event.stopPropagation()">
+    <div class="lb-modal-header">
+      <div class="lb-modal-title-wrap">
+        <div class="lb-modal-title" id="lbFullListTitle">সম্পূর্ণ তালিকা</div>
+        <div class="lb-modal-subtitle" id="lbFullListSubtitle">—</div>
+      </div>
+      <button class="lb-modal-close" onclick="closeLbFullList()" aria-label="Close">✕</button>
+    </div>
+    <div class="lb-modal-body" id="lbFullListBody">
+      <div class="lb-modal-empty">লোড হচ্ছে...</div>
+    </div>
+  </div>
+</div>
+
 <!-- WhatsApp Float -->
 <a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help" aria-label="WhatsApp Help">
-  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/></svg>
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 </a>
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v24 — Esports Leaderboard)
-   Core JS Logic 100% Unchanged
+   RENATA PLC - Overtime Report (v25 — Esports + Plain Days)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1027,8 +1292,21 @@ let isScanning = false;
 let currentLeaderboardResult = null;
 let teamData = null;
 let noticesData = null;
+let currentLbListType = null;
 
 function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
+
+/* ===== DESIGNATION HELPER ===== */
+function getDesignation(emp) {
+  if (!emp || !emp.id) return '';
+  const id = String(emp.id).toUpperCase();
+  if (id.startsWith('CF')) return 'Contractual';
+  if (id.startsWith('RF')) return 'Junior Officer';
+  // fallback based on category
+  if (emp.category === 'CF') return 'Contractual';
+  if (emp.category === 'JO' || emp.category === 'JO_B') return 'Junior Officer';
+  return '';
+}
 
 function initYearDropdown() {
   const ySel = document.getElementById('yearSelect');
@@ -1267,7 +1545,13 @@ async function forceRefreshNotices() {
 
 document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
 document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('lbFullListModal').classList.contains('open')) { closeLbFullList(); return; }
+    closeModal();
+    closeDrawer();
+  }
+});
 
 async function findReport() {
   const year = document.getElementById('yearSelect').value;
@@ -1287,6 +1571,7 @@ async function findReport() {
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareId').value = "";
+  document.getElementById('daySummaryGrid').style.display = "none";
   ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
@@ -1404,7 +1689,7 @@ async function runExtraction() {
     if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
     else holidayAmount = parsed.holidayCount * r.holidayFlat;
     const nightAmount = parsed.nightCount * r.nightRate;
-    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
+    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, plainDays: parsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
     const myAmountDiv = document.getElementById('compareMyAmount');
     myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
     statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
@@ -1435,9 +1720,25 @@ function applyExtraction(parsed, detection) {
     categoryBadge.className = "badge warn"; categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
     calcInputs.style.display = "none"; recalculate();
   }
+  showDaySummary(parsed);
   showHolidayList(parsed.holidayDays);
   showNightList(parsed.nightDays);
   showRemarks(parsed.punchProblems, detection);
+}
+
+/* ===== DAY SUMMARY ===== */
+function showDaySummary(parsed) {
+  const grid = document.getElementById('daySummaryGrid');
+  if (!grid) return;
+  const regularDays = parsed.regularDaysCount || 0;
+  const holidayDays = parsed.holidayCount || 0;
+  const nightDays = parsed.nightCount || 0;
+  const plainDays = parsed.plainDaysCount || 0;
+  document.getElementById('dsRegularDays').innerText = bn(regularDays) + ' days';
+  document.getElementById('dsHolidayDays').innerText = bn(holidayDays) + ' days';
+  document.getElementById('dsNightDays').innerText = bn(nightDays) + ' days';
+  document.getElementById('dsPlainDays').innerText = bn(plainDays) + ' days';
+  grid.style.display = 'grid';
 }
 
 function detectCategory(gradeText, empId) {
@@ -1453,10 +1754,12 @@ function detectCategory(gradeText, empId) {
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
 
+/* ===== PARSE TEXT (v25 — with plainDays & regularDays) ===== */
 function parseText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
   let otHours = 0, nightCount = 0;
   let holidayDays = [], nightDays = [], punchProblems = [];
+  let plainDays = [], regularDays = [];
   let totalHourLine = false;
   const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
   if (thIndex !== -1) {
@@ -1472,6 +1775,7 @@ function parseText(rawText) {
     const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
     if (allNums.length >= 7) { const n = allNums.slice(-7).map(parseFloat); if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; } }
   }
+
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
   let rm;
   const seenDates = new Set();
@@ -1479,15 +1783,62 @@ function parseText(rawText) {
     const date = rm[1];
     if (seenDates.has(date)) continue;
     seenDates.add(date);
-    const doDuty = parseFloat(rm[4]) || 0, doExtra = parseFloat(rm[5]) || 0;
-    const holDuty = parseFloat(rm[6]) || 0, holExtra = parseFloat(rm[7]) || 0;
-    const isNight = rm[8].toUpperCase() === "YES";
-    const inTime = rm[9], outTime = rm[10];
-    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+
+    const regDuty  = parseFloat(rm[2]) || 0;   // Regular duty hours
+    const regExtra = parseFloat(rm[3]) || 0;   // Regular OT hours
+    const doDuty   = parseFloat(rm[4]) || 0;
+    const doExtra  = parseFloat(rm[5]) || 0;
+    const holDuty  = parseFloat(rm[6]) || 0;
+    const holExtra = parseFloat(rm[7]) || 0;
+    const isNight  = rm[8].toUpperCase() === "YES";
+    const inTime   = rm[9], outTime = rm[10];
+
+    // Track regular duty days (regDuty > 0)
+    if (regDuty > 0) regularDays.push(date);
+
+    // Holiday/DO day: doDuty > 0 OR holDuty > 0 (regardless of extra)
+    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
+      holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+    }
+
+    // Night tracking
     if (isNight) nightDays.push(date);
+
+    // Punch problems
     if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
+
+    // ============ PLAIN DAY DETECTION ============
+    // Conditions:
+    // - Has any duty (regular / DO / holiday)
+    // - No night
+    // - No OT (no extra hours in ANY category)
+    // - Valid punch (in/out not 00:00:00)
+    const hasAnyDuty = (regDuty + doDuty + holDuty) > 0;
+    const hasAnyExtra = (regExtra + doExtra + holExtra) > 0;
+    const hasValidPunch = inTime !== "00:00:00" && outTime !== "00:00:00";
+
+    if (hasAnyDuty && !isNight && !hasAnyExtra && hasValidPunch) {
+      plainDays.push({
+        date,
+        dutyType: regDuty > 0 ? 'Regular' : (doDuty > 0 ? 'DO' : 'Holiday'),
+        hours: regDuty > 0 ? regDuty : (doDuty > 0 ? doDuty : holDuty)
+      });
+    }
   }
-  return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
+
+  return {
+    otHours: Number(otHours.toFixed(2)),
+    nightCount,
+    holidayCount: holidayDays.length,
+    holidayDays,
+    nightDays,
+    punchProblems,
+    totalHourLine,
+    regularDaysCount: regularDays.length,
+    regularDays,
+    plainDaysCount: plainDays.length,
+    plainDays
+  };
 }
 
 function showHolidayList(list) {
@@ -1574,7 +1925,7 @@ async function runComparison() {
     if (r.holidayType === "hourly") holidayAmount = otherParsed.holidayCount * r.holidayHours * r.otRate;
     else holidayAmount = otherParsed.holidayCount * r.holidayFlat;
     const nightAmount = otherParsed.nightCount * r.nightRate;
-    const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
+    const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, plainDays: otherParsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
     setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
     showComparison(currentResult, otherResult, otherId);
     statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন";
@@ -1592,6 +1943,7 @@ function showComparison(mine, other, otherId) {
       <tr><td>ওটি ঘণ্টা</td><td>${mine.otHours}</td><td>${other.otHours}</td></tr>
       <tr><td>হলিডে</td><td>${mine.holiday}</td><td>${other.holiday}</td></tr>
       <tr><td>নাইট</td><td>${mine.night}</td><td>${other.night}</td></tr>
+      <tr><td>Plain Days</td><td>${mine.plainDays || 0}</td><td>${other.plainDays || 0}</td></tr>
       <tr><td>ওটি বিল</td><td>৳ ${mine.otAmount.toFixed(2)}</td><td>৳ ${other.otAmount.toFixed(2)}</td></tr>
       <tr><td>হলিডে বিল</td><td>৳ ${mine.holidayAmount.toFixed(2)}</td><td>৳ ${other.holidayAmount.toFixed(2)}</td></tr>
       <tr><td>নাইট বিল</td><td>৳ ${mine.nightAmount.toFixed(2)}</td><td>৳ ${other.nightAmount.toFixed(2)}</td></tr>
@@ -1604,6 +1956,7 @@ function showComparison(mine, other, otherId) {
 }
 function resetComparison() { document.getElementById('compareResult').style.display = "none"; document.getElementById('compareInputArea').style.display = "block"; document.getElementById('compareId').value = ""; document.getElementById('compareStatus').innerText = ""; }
 
+/* ===== LEADERBOARD ===== */
 function initLeaderboardPage() {
   const month = getCurrentMonth();
   document.getElementById('lbSubtitle').innerText = month;
@@ -1728,6 +2081,32 @@ async function processLeaderboardPage(pdf, pageNum) {
   } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
 }
 
+/* ===== BUILD RANK ITEM HTML (shared) ===== */
+function buildRankItemHTML(e, index, type, isMine) {
+  let valueStr = "", metaStr = "";
+  if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
+  else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
+  else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
+
+  const desig = getDesignation(e);
+  const desigClass = desig === 'Contractual' ? 'rank-desig cf' : 'rank-desig';
+
+  return `<div class="rank-item ${index < 3 ? 'rank-' + (index + 1) : ''} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
+    <div class="rank-number">${bn(index + 1)}</div>
+    <div class="rank-info">
+      <div class="rank-name">${e.name || '—'}${isMine ? ' (আপনি)' : ''}</div>
+      <div class="rank-id-line">
+        <span class="rank-id">${e.id}</span>
+        ${desig ? `<span class="${desigClass}">${desig}</span>` : ''}
+      </div>
+    </div>
+    <div>
+      <div class="rank-value">${valueStr}</div>
+      <div class="rank-meta">${metaStr}</div>
+    </div>
+  </div>`;
+}
+
 function renderLeaderboardResult(result) {
   try {
     currentLeaderboardResult = result;
@@ -1748,17 +2127,7 @@ function renderTop3(elementId, list, type) {
   const box = document.getElementById(elementId);
   if (!box) return;
   if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px 0; color: #A9A4C9;">কোনো data পাওয়া যায়নি</div>'; return; }
-  box.innerHTML = list.map((e, i) => {
-    let valueStr = "", metaStr = "";
-    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
-    return `<div class="rank-item rank-${i + 1}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
-      <div class="rank-number">${i + 1}</div>
-      <div class="rank-info"><div class="rank-name">${e.name || '—'}</div><div class="rank-id">${e.id}</div></div>
-      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
-    </div>`;
-  }).join('');
+  box.innerHTML = list.map((e, i) => buildRankItemHTML(e, i, type, false)).join('');
 }
 
 function updateMyRankNotes() {
@@ -1783,44 +2152,66 @@ function updateMyRankNotes() {
   });
 }
 
-function toggleFullRanking(type) {
-  const mapping = { duty: 'Duty', ot: 'OT', earned: 'Earned' };
-  const suffix = mapping[type];
-  const boxId = `fullRanking${suffix}`;
-  const btnTextId = `${type}BtnText`;
-  const btnArrowId = `${type}BtnArrow`;
-  const box = document.getElementById(boxId);
-  const btnText = document.getElementById(btnTextId);
-  const btnArrow = document.getElementById(btnArrowId);
-  if (!box) return;
-  if (box.classList.contains('show')) {
-    box.classList.remove('show');
-    if (btnText) btnText.textContent = type === 'duty' ? "Duty-এর সম্পূর্ণ তালিকা দেখুন" : "সম্পূর্ণ তালিকা দেখুন";
-    if (btnArrow) btnArrow.textContent = "↓";
+/* ===== FULL-LIST MODAL ===== */
+function openLbFullList(type) {
+  const modal = document.getElementById('lbFullListModal');
+  const titleEl = document.getElementById('lbFullListTitle');
+  const subEl = document.getElementById('lbFullListSubtitle');
+  const body = document.getElementById('lbFullListBody');
+
+  if (!currentLeaderboardResult) {
+    body.innerHTML = '<div class="lb-modal-empty">প্রথমে Scan করুন।</div>';
+    titleEl.textContent = 'সম্পূর্ণ তালিকা';
+    subEl.textContent = '—';
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
     return;
   }
-  if (!currentLeaderboardResult) return;
+
+  const typeLabels = {
+    duty: { title: 'Duty Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ Duty Hours' },
+    ot:   { title: 'OT Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ OT করা' },
+    earned: { title: 'Total Earning — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ টাকা আয়' }
+  };
+  const meta = typeLabels[type] || { title: 'সম্পূর্ণ তালিকা', sub: '—' };
+  titleEl.textContent = meta.title;
+  subEl.textContent = `${meta.sub} • ${currentLeaderboardResult.month || ''}`;
+
   const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
-  if (!sorted) return;
-  box.innerHTML = sorted.map((e, i) => {
-    const isMine = e.id === currentSearchId;
-    let valueStr = "", metaStr = "";
-    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
-    return `<div class="rank-item ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
-      <div class="rank-number">${bn(i + 1)}</div>
-      <div class="rank-info"><div class="rank-name">${e.name || '—'}${isMine ? ' (আপনি)' : ''}</div><div class="rank-id">${e.id}</div></div>
-      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
-    </div>`;
-  }).join('');
-  box.classList.add('show');
-  if (btnText) btnText.textContent = type === 'duty' ? "Duty-এর সম্পূর্ণ তালিকা লুকান" : "সম্পূর্ণ তালিকা লুকান";
-  if (btnArrow) btnArrow.textContent = "↑";
-  setTimeout(() => { const myRow = box.querySelector('.rank-item.mine'); if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+
+  if (!sorted || sorted.length === 0) {
+    body.innerHTML = '<div class="lb-modal-empty">কোনো data পাওয়া যায়নি।</div>';
+  } else {
+    body.innerHTML = sorted.map((e, i) => buildRankItemHTML(e, i, type, e.id === currentSearchId)).join('');
+  }
+
+  currentLbListType = type;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Auto-scroll to "my" row
+  setTimeout(() => {
+    const myRow = body.querySelector('.rank-item.mine');
+    if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+}
+
+function closeLbFullList() {
+  const modal = document.getElementById('lbFullListModal');
+  modal.classList.remove('open');
+  document.body.style.overflow = 'auto';
+  currentLbListType = null;
+}
+
+function lbModalBackdropClick(e) {
+  if (e.target.id === 'lbFullListModal') closeLbFullList();
 }
 
 async function viewEmployeeFromLeaderboard(empId) {
+  // Close any open modal first
+  if (document.getElementById('lbFullListModal').classList.contains('open')) {
+    closeLbFullList();
+  }
   const month = getCurrentMonth();
   const [year, mon] = month.split('-');
   document.getElementById('yearSelect').value = year;
@@ -1883,6 +2274,7 @@ function resetAll() {
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareStatus').innerText = "";
+  document.getElementById('daySummaryGrid').style.display = "none";
   document.getElementById('backToLbBtn').style.display = "none";
   currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
   document.getElementById('searchFormCard').style.display = "block";
