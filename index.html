@@ -887,6 +887,237 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   .team-member { flex-direction: column; align-items: flex-start; }
   .team-wa { width: 100%; }
 }
+
+
+/* =====================================================
+   RANKING REDESIGN PATCH (esports style) + DESKTOP ALIGNMENT FIX
+   Paste this ENTIRE block just before the closing </style> tag.
+   No HTML/JS changes needed.
+   ===================================================== */
+
+#page-leaderboard {
+  --lb-bg: #0B0618;
+  --lb-bg-2: #1A0B2E;
+  --lb-teal: #14B8C4;
+  --lb-amber: #F5B50A;
+  --lb-ink: #0B0618;
+  --lb-text: #FFFFFF;
+  --lb-dim: #A9A4C9;
+}
+
+/* ---------- Main dark card ---------- */
+#page-leaderboard #lbResultCard {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 80% 0%, var(--lb-bg-2) 0%, var(--lb-bg) 70%);
+  border: 1px solid rgba(20,184,196,.45);
+  padding: 18px 14px 16px;
+}
+#page-leaderboard #lbResultCard::before,
+#page-leaderboard #lbResultCard::after {
+  content: ''; position: absolute; width: 90px; height: 90px;
+  background: var(--lb-teal); pointer-events: none; opacity: .9;
+}
+#page-leaderboard #lbResultCard::before { top: 0; left: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
+#page-leaderboard #lbResultCard::after  { bottom: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+#page-leaderboard #lbResultCard > * { position: relative; z-index: 1; }
+
+/* ---------- Hero (Top 3 by duty) ---------- */
+#page-leaderboard .lb-hero,
+#page-leaderboard .lb-tabs-card {
+  background: transparent;
+  border: none;
+  padding: 6px 2px 4px;
+  margin-bottom: 12px;
+}
+#page-leaderboard .lb-hero-head {
+  flex-direction: column; align-items: center; gap: 8px;
+  border-bottom: none; margin-bottom: 14px; padding: 0; text-align: center;
+}
+#page-leaderboard .lb-hero-title,
+#page-leaderboard .lb-tabs-title {
+  color: var(--lb-amber); font-size: 24px; font-weight: 900;
+  letter-spacing: .01em; text-transform: uppercase;
+}
+#page-leaderboard .lb-tabs-title { font-size: 20px; text-align: center; width: 100%; }
+#page-leaderboard .lb-tabs-head { justify-content: center; }
+#page-leaderboard .lb-hero-sub {
+  background: var(--lb-teal); color: #fff; padding: 6px 18px;
+  border-radius: 8px; font-size: 11px; font-weight: 800; letter-spacing: .16em;
+}
+#page-leaderboard .lb-panel-sub { color: var(--lb-dim); }
+#page-leaderboard .lb-panel-head { justify-content: center; margin-bottom: 10px; }
+
+/* ---------- Ranking rows (shared: podium, tabs, full lists) ---------- */
+#page-leaderboard .rank-item,
+#page-leaderboard .lb-podium .rank-item,
+#page-leaderboard .lb-panel-list .rank-item,
+#page-leaderboard .full-ranking .rank-item {
+  display: flex; flex-direction: row; align-items: center; gap: 12px;
+  background: rgba(26,11,46,.75);
+  border: 1.5px solid var(--lb-teal);
+  border-left-width: 1.5px;
+  border-radius: 14px;
+  padding: 7px 8px 7px 8px;
+  min-height: 56px;
+  margin-bottom: 10px;
+  box-shadow: none;
+  transition: background .15s, transform .1s;
+}
+#page-leaderboard .rank-item:last-child { margin-bottom: 0; }
+#page-leaderboard .rank-item:hover { background: rgba(20,184,196,.14); border-color: var(--lb-teal); }
+#page-leaderboard .rank-item:active { transform: scale(.99); }
+
+/* rank number: dark square with teal border */
+#page-leaderboard .rank-number,
+#page-leaderboard .lb-podium .rank-item.rank-1 .rank-number {
+  width: 40px; height: 40px; min-width: 40px;
+  border-radius: 10px;
+  background: rgba(11,6,24,.9);
+  border: 1.5px solid var(--lb-teal);
+  color: #fff; font-size: 18px; font-weight: 900;
+}
+#page-leaderboard .rank-item.rank-1 .rank-number { background: var(--lb-amber); border-color: var(--lb-amber); color: var(--lb-ink); }
+#page-leaderboard .rank-item.rank-2 .rank-number { background: #CBD5E1; border-color: #CBD5E1; color: var(--lb-ink); }
+#page-leaderboard .rank-item.rank-3 .rank-number { background: #F97316; border-color: #F97316; color: var(--lb-ink); }
+
+/* 1st place gets a subtle amber glow instead of a different colour scheme */
+#page-leaderboard .rank-item.rank-1,
+#page-leaderboard .lb-podium .rank-item.rank-1,
+#page-leaderboard .lb-panel-list .rank-item.rank-1 {
+  border-color: var(--lb-amber);
+  background: linear-gradient(90deg, rgba(245,181,10,.14), rgba(26,11,46,.75) 60%);
+  box-shadow: 0 0 0 1px rgba(245,181,10,.25), 0 4px 16px rgba(245,181,10,.12);
+}
+#page-leaderboard .lb-podium .rank-item.rank-2,
+#page-leaderboard .lb-podium .rank-item.rank-3,
+#page-leaderboard .lb-panel-list .rank-item.rank-2,
+#page-leaderboard .lb-panel-list .rank-item.rank-3 {
+  background: rgba(26,11,46,.75); border-color: var(--lb-teal);
+}
+
+/* name + id */
+#page-leaderboard .rank-name { color: #fff; font-size: 14px; font-weight: 800; letter-spacing: .02em; }
+#page-leaderboard .rank-id { color: var(--lb-dim); font-size: 11px; }
+
+/* score: white pill on the right (like the reference) */
+#page-leaderboard .rank-item > div:last-child,
+#page-leaderboard .lb-podium .rank-item > div:last-child {
+  width: auto; min-width: 104px; max-width: 46%;
+  background: #fff; border-radius: 10px;
+  padding: 8px 12px; text-align: center; flex-shrink: 0;
+}
+#page-leaderboard .rank-value,
+#page-leaderboard .lb-podium .rank-item .rank-value,
+#page-leaderboard .lb-podium .rank-item.rank-1 .rank-value {
+  color: var(--lb-ink); font-size: 14px; font-weight: 900; text-align: center;
+}
+#page-leaderboard .rank-meta,
+#page-leaderboard .lb-podium .rank-item .rank-meta {
+  color: #64748B; text-align: center; max-width: 100%; font-size: 10px;
+}
+#page-leaderboard .rank-meta:empty { display: none; }
+
+/* "you" row */
+#page-leaderboard .full-ranking .rank-item.mine,
+#page-leaderboard .rank-item.mine {
+  background: rgba(245,181,10,.16) !important;
+  border-color: var(--lb-amber) !important;
+  box-shadow: 0 0 0 1px rgba(245,181,10,.35) !important;
+}
+#page-leaderboard .rank-item.mine .rank-number { background: var(--lb-amber); border-color: var(--lb-amber); color: var(--lb-ink); }
+
+/* ---------- Desktop: keep rows full-width and equal (no uneven podium) ---------- */
+@media (min-width: 900px) {
+  #page-leaderboard .lb-podium { display: block; }
+  #page-leaderboard .lb-podium .rank-item { flex-direction: row; align-items: center; padding: 8px; gap: 14px; margin-bottom: 10px; }
+  #page-leaderboard .lb-podium .rank-item.rank-1 { order: 0; }
+  #page-leaderboard .lb-podium .rank-item .rank-info { width: auto; }
+  #page-leaderboard #lbResultCard { padding: 24px 28px 20px; }
+}
+
+/* ---------- My-position strips ---------- */
+#page-leaderboard .lb-mypos-strip,
+#page-leaderboard .lb-mypos-inline {
+  background: rgba(20,184,196,.12);
+  border: 1px solid rgba(20,184,196,.5);
+  border-radius: 12px;
+}
+#page-leaderboard .lb-mypos-label,
+#page-leaderboard .lb-mypos-inline-label { color: var(--lb-teal); }
+#page-leaderboard .lb-mypos-id,
+#page-leaderboard .lb-mypos-inline-id { color: #fff; }
+#page-leaderboard .lb-mypos-pos,
+#page-leaderboard .lb-mypos-inline-pos { color: var(--lb-amber); }
+
+/* ---------- Tabs ---------- */
+#page-leaderboard .lb-tabs {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(20,184,196,.4);
+  border-radius: 999px; padding: 4px;
+}
+#page-leaderboard .lb-tab { color: var(--lb-dim); border-radius: 999px; }
+#page-leaderboard .lb-tab:hover { background: transparent; color: #fff; }
+#page-leaderboard .lb-tab.active { background: var(--lb-amber); color: var(--lb-ink); box-shadow: none; }
+#page-leaderboard .lb-tab.active::before { background: var(--lb-ink); }
+
+/* ---------- Buttons: amber pill like the reference CTA ---------- */
+#page-leaderboard .lb-expand-btn {
+  background: var(--lb-amber); color: var(--lb-ink);
+  border: none; border-radius: 999px; font-weight: 800;
+}
+#page-leaderboard .lb-expand-btn:hover { background: #FBC02D; border: none; }
+#page-leaderboard .lb-expand-arrow { color: var(--lb-ink); }
+#page-leaderboard .lb-rescan-btn {
+  background: transparent !important; color: var(--lb-teal) !important;
+  border: 1.5px solid var(--lb-teal) !important; border-radius: 999px;
+}
+#page-leaderboard .lb-rescan-btn:hover { background: rgba(20,184,196,.14) !important; }
+
+/* ---------- Misc ---------- */
+#page-leaderboard .full-ranking::-webkit-scrollbar-thumb { background: var(--lb-teal); }
+#page-leaderboard .tap-hint { color: var(--lb-dim); }
+#page-leaderboard .bad-data-note {
+  background: rgba(245,181,10,.12); border-color: rgba(245,181,10,.45); color: var(--lb-amber);
+}
+
+/* mobile tuning */
+@media (max-width: 380px) {
+  #page-leaderboard .rank-item > div:last-child { min-width: 88px; padding: 6px 8px; }
+  #page-leaderboard .lb-hero-title { font-size: 20px; }
+  #page-leaderboard .rank-number { width: 34px; height: 34px; min-width: 34px; font-size: 15px; }
+}
+
+
+/* =====================================================
+   DESKTOP ALIGNMENT FIX — REPORT PAGE (>= 900px)
+   Left: PDF spans full height.  Right: calc + 3 collapsibles stacked.
+   Remarks + notices full width below.
+   ===================================================== */
+@media (min-width: 900px) {
+  #page-search.active { align-items: start; row-gap: 16px; column-gap: 20px; }
+
+  #page-search.active #step2 { grid-column: 1; grid-row: 2 / span 4; position: sticky; top: 76px; }
+  #page-search.active #step3 { grid-column: 2; grid-row: 2; }
+  #page-search.active #step4 { grid-column: 2; grid-row: 3; }
+  #page-search.active #step5 { grid-column: 2; grid-row: 4; }
+  #page-search.active #step6 { grid-column: 2; grid-row: 5; }
+  #page-search.active #step7 { grid-column: 1 / -1; grid-row: 6; }
+  #page-search.active #noticesCard { grid-column: 1 / -1; grid-row: 7; max-width: 100% !important; }
+
+  /* all cards identical width/margins so both sides line up */
+  #page-search.active .card,
+  #page-search.active .collapse-card { margin: 0; max-width: 100%; }
+  #page-search.active #searchFormCard,
+  #page-search.active #searchSummary { grid-row: 1; }
+
+  /* notices in 3 columns on wide screens */
+  #page-search.active #noticesHomeList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #page-search.active #noticesHomeList .notice-item { margin-bottom: 0; }
+
+  /* limit PDF canvas height so card doesn't leave a big blank area */
+  #page-search.active #pdf-viewer canvas { max-height: 78vh; width: auto; max-width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -1079,7 +1310,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 </div>
 
-<!-- Page: Leaderboard (REDESIGNED) -->
+<!-- Page: Leaderboard (REDESIGNED v24) -->
 <div class="page" id="page-leaderboard">
   <div class="top-bar">
     <button class="menu-btn" onclick="openDrawer()" aria-label="Menu">☰</button>
@@ -1265,7 +1496,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v24 — Leaderboard Redesign)
+   RENATA PLC - Overtime Report (v24 — Esports Leaderboard)
    ⚠️ Core JS Logic 100% Unchanged
    ============================================================ */
 
@@ -1336,7 +1567,7 @@ function setDefaultMonth() {
   document.getElementById('monthSelect').value = mStr;
 }
 
-/* ===== LEADERBOARD TAB SWITCHER (NEW — UI only) ===== */
+/* ===== LEADERBOARD TAB SWITCHER ===== */
 function initLbTabs() {
   const tabs = document.querySelectorAll('.lb-tab');
   const panels = document.querySelectorAll('.lb-panel');
@@ -2163,7 +2394,7 @@ function renderLeaderboardResult(result) {
 function renderTop3(elementId, list, type) {
   const box = document.getElementById(elementId);
   if (!box) return;
-  if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px 0;">কোনো data পাওয়া যায়নি</div>'; return; }
+  if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px 0; color: #A9A4C9;">কোনো data পাওয়া যায়নি</div>'; return; }
   box.innerHTML = list.map((e, i) => {
     let valueStr = "", metaStr = "";
     if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || '—'; }
