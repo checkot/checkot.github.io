@@ -13,7 +13,6 @@ NOTICES_FILE = 'notices.json'
 MAX_NOTICES = 20
 
 def load_state():
-    """notices.json থেকে _lastUpdateId পড়ুন"""
     if not os.path.exists(NOTICES_FILE):
         return {'notices': [], '_lastUpdateId': 0}
     try:
@@ -28,7 +27,6 @@ def load_state():
         return {'notices': [], '_lastUpdateId': 0}
 
 def save_state(notices, last_update_id):
-    """notices.json-এ state save করুন"""
     with open(NOTICES_FILE, 'w', encoding='utf-8') as f:
         json.dump({
             '_lastUpdateId': last_update_id,
@@ -37,12 +35,12 @@ def save_state(notices, last_update_id):
     print(f"Saved {len(notices)} notices, offset={last_update_id}")
 
 def fetch_channel_messages(last_offset):
-    """Telegram থেকে messages (offset tracked)"""
+    # ⭐ offset + 1 → Telegram এর পরের message থেকে শুরু
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?limit=100"
     if last_offset > 0:
         url += f"&offset={last_offset + 1}"
     
-    print(f"Fetching with offset={last_offset}")
+    print(f"Fetching with offset={last_offset + 1 if last_offset > 0 else 'none'}")
     
     try:
         with urllib.request.urlopen(url, timeout=15) as response:
@@ -113,12 +111,13 @@ def main():
         print("Missing BOT_TOKEN or CHANNEL_ID")
         return
     
-    # Load state
     state = load_state()
     existing = state['notices']
     last_offset = state['_lastUpdateId']
     
-    # Fetch
+    print(f"Current offset: {last_offset}")
+    print(f"Existing notices: {len(existing)}")
+    
     messages, new_offset = fetch_channel_messages(last_offset)
     print(f"Fetched {len(messages)} messages from Telegram")
     
@@ -135,7 +134,6 @@ def main():
     
     print(f"Found {len(new_notices)} new notices")
     
-    # Merge
     all_notices = new_notices + existing
     
     for n in all_notices:
@@ -154,10 +152,9 @@ def main():
         n.pop('_ts', None)
         clean.append(n)
     
-    # Save with new offset
     if clean != existing or new_offset != last_offset:
         save_state(clean, new_offset)
-        print("notices.json updated")
+        print(f"✅ notices.json updated, new offset={new_offset}")
     else:
         print("No changes")
 
