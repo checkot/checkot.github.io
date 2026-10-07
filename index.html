@@ -1,980 +1,421 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENATA PLC - Overtime Report</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0F172A">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/png" href="icon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RENATA PLC - Overtime Report</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="icon.png">
 
-<meta property="og:title" content="RENATA PLC - Overtime Report">
-<meta property="og:description" content="Overtime Report Search & Calculator">
-<meta property="og:image" content="https://checkot.github.io/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:url" content="https://checkot.github.io/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="RENATA PLC Overtime Report">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RENATA PLC - Overtime Report">
-<meta name="twitter:description" content="Overtime Report Search & Calculator">
-<meta name="twitter:image" content="https://checkot.github.io/og-image.png">
+  <meta property="og:title" content="RENATA PLC - Overtime Report">
+  <meta property="og:description" content="Overtime Report Search & Calculator">
+  <meta property="og:image" content="https://checkot.github.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://checkot.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="RENATA PLC Overtime Report">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RENATA PLC - Overtime Report">
+  <meta name="twitter:description" content="Overtime Report Search & Calculator">
+  <meta name="twitter:image" content="https://checkot.github.io/og-image.png">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
-<style>
-:root {
-  --bg: #F8FAFC;
-  --surface: #FFFFFF;
-  --surface-2: #F1F5F9;
-  --primary: #0F172A;
-  --primary-blue: #2563EB;
-  --primary-blue-hover: #1D4ED8;
-  --accent: #0D9488;
-  --text: #0F172A;
-  --text-2: #334155;
-  --muted: #64748B;
-  --border: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --success: #16A34A;
-  --success-bg: #F0FDF4;
-  --success-border: #BBF7D0;
-  --warning: #D97706;
-  --warning-bg: #FFFBEB;
-  --warning-border: #FDE68A;
-  --danger: #DC2626;
-  --danger-bg: #FEF2F2;
-  --danger-border: #FECACA;
-  --info-bg: #EFF6FF;
-  --info-border: #BFDBFE;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 12px;
-  --nav-height: 0px;
-}
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-2: #F1F5F9;
+      --primary: #0F172A;
+      --primary-blue: #2563EB;
+      --primary-blue-hover: #1D4ED8;
+      --accent: #0D9488;
+      --text: #0F172A;
+      --text-2: #334155;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --success: #16A34A;
+      --success-bg: #F0FDF4;
+      --success-border: #BBF7D0;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --warning-border: #FDE68A;
+      --danger: #DC2626;
+      --danger-bg: #FEF2F2;
+      --danger-border: #FECACA;
+      --info-bg: #EFF6FF;
+      --info-border: #BFDBFE;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 12px;
+    }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  padding: 12px 12px 88px 12px;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 12px 12px 88px 12px;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* ============ TOP NAVIGATION (Desktop) ============ */
-.topnav {
-  display: none;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
-  margin: -12px -12px 16px -12px;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-.topnav-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.topnav-brand img { width: 32px; height: 32px; border-radius: 6px; }
-.topnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-.topnav-brand-text strong { font-size: 15px; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; }
-.topnav-brand-text small { font-size: 10px; color: var(--muted); font-weight: 500; }
-.topnav-menu {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-  align-items: center;
-}
-.topnav-item {
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-}
-.topnav-item:hover { background: var(--surface-2); color: var(--text); }
-.topnav-item.active { background: var(--info-bg); color: var(--primary-blue); }
+    /* ============ TOP NAVIGATION (Desktop) ============ */
+    .topnav {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      margin: -12px -12px 16px -12px;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .topnav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
+    .topnav-brand img { width: 32px; height: 32px; border-radius: 6px; }
+    .topnav-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .topnav-brand-text strong { font-size: 15px; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; }
+    .topnav-brand-text small { font-size: 10px; color: var(--muted); font-weight: 500; }
+    .topnav-menu { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+    .topnav-item {
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 600; color: var(--text-2);
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+      white-space: nowrap; border: none; background: transparent; font-family: inherit;
+    }
+    .topnav-item:hover { background: var(--surface-2); color: var(--text); }
+    .topnav-item.active { background: var(--info-bg); color: var(--primary-blue); }
 
-/* ============ MOBILE TOP BAR ============ */
-.top-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 500px;
-  margin: 0 auto 12px auto;
-  padding: 4px 0;
-}
-.menu-btn {
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  color: var(--primary);
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  width: auto;
-  margin: 0;
-  box-shadow: none;
-  line-height: 1;
-  transition: background 0.15s;
-  flex-shrink: 0;
-}
-.menu-btn:hover { background: var(--surface-2); }
-.mobile-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  flex-shrink: 0;
-}
-.header { text-align: center; flex: 1; }
-.header h2 { margin: 0; color: var(--primary); font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
-.header p { color: var(--muted); margin: 2px 0 0 0; font-size: 11px; font-weight: 500; }
-.header.compact h2 { font-size: 15px; }
-.header.compact p { display: none; }
+    /* ============ MOBILE TOP BAR ============ */
+    .top-bar { display: flex; align-items: center; gap: 8px; max-width: 500px; margin: 0 auto 12px auto; padding: 4px 0; }
+    .menu-btn {
+      background: transparent; border: none; font-size: 22px; cursor: pointer;
+      color: var(--primary); padding: 8px; border-radius: var(--radius-sm);
+      width: auto; margin: 0; box-shadow: none; line-height: 1; transition: background 0.15s; flex-shrink: 0;
+    }
+    .menu-btn:hover { background: var(--surface-2); }
+    .mobile-logo { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+    .header { text-align: center; flex: 1; }
+    .header h2 { margin: 0; color: var(--primary); font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+    .header p { color: var(--muted); margin: 2px 0 0 0; font-size: 11px; font-weight: 500; }
+    .header.compact h2 { font-size: 15px; }
+    .header.compact p { display: none; }
 
-/* ============ CARDS ============ */
-.card {
-  background: var(--surface);
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  max-width: 500px;
-  margin: 0 auto 10px auto;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-}
-.collapse-card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  max-width: 500px;
-  margin: 0 auto 10px auto;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
+    /* ============ CARDS ============ */
+    .card {
+      background: var(--surface); padding: 16px; border-radius: var(--radius-lg);
+      max-width: 500px; margin: 0 auto 10px auto;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .collapse-card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      max-width: 500px; margin: 0 auto 10px auto;
+      box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden;
+    }
 
-/* ============ TYPOGRAPHY ============ */
-label {
-  font-weight: 600;
-  display: block;
-  margin-top: 12px;
-  color: var(--text-2);
-  font-size: 12px;
-  letter-spacing: 0.01em;
-}
-label:first-child { margin-top: 0; }
+    /* ============ TYPOGRAPHY ============ */
+    label { font-weight: 600; display: block; margin-top: 12px; color: var(--text-2); font-size: 12px; letter-spacing: 0.01em; }
+    label:first-child { margin-top: 0; }
 
-/* ============ FORM ============ */
-input, select {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 6px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  background: var(--surface);
-  color: var(--text);
-  -webkit-appearance: none;
-  appearance: none;
-}
-input::placeholder { color: var(--muted); }
-input:focus, select:focus {
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 34px;
-}
-.row { display: flex; gap: 8px; margin-top: 6px; }
-.row select { margin-top: 0; flex: 1; }
-#employeeId { font-size: 16px; font-weight: 600; letter-spacing: 0.02em; padding: 14px; }
+    /* ============ FORM ============ */
+    input, select {
+      width: 100%; padding: 12px 14px; margin-top: 6px;
+      border: 1px solid var(--border-strong); border-radius: var(--radius);
+      font-size: 14px; font-family: inherit; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: var(--surface); color: var(--text);
+      -webkit-appearance: none; appearance: none;
+    }
+    input::placeholder { color: var(--muted); }
+    input:focus, select:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
+    }
+    .row { display: flex; gap: 8px; margin-top: 6px; }
+    .row select { margin-top: 0; flex: 1; }
+    #employeeId { font-size: 16px; font-weight: 600; letter-spacing: 0.02em; padding: 14px; }
 
-/* ============ BUTTONS ============ */
-button {
-  width: 100%;
-  background: var(--primary-blue);
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  font-size: 14px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.05s;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  letter-spacing: 0.01em;
-}
-button:hover { background: var(--primary-blue-hover); }
-button:active { transform: scale(0.99); }
-button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
-#searchBtn { margin-top: 14px; }
+    /* ============ BUTTONS ============ */
+    button {
+      width: 100%; background: var(--primary-blue); color: white;
+      border: none; padding: 12px 16px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: background 0.15s, transform 0.05s;
+      min-height: 44px; display: inline-flex; align-items: center;
+      justify-content: center; gap: 6px; letter-spacing: 0.01em;
+    }
+    button:hover { background: var(--primary-blue-hover); }
+    button:active { transform: scale(0.99); }
+    button:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.7; }
+    #searchBtn { margin-top: 14px; }
 
-.btn-group { display: flex; gap: 8px; margin-top: 12px; align-items: stretch; }
-.btn-action {
-  background: var(--primary-blue) !important;
-  color: white !important;
-  text-align: center;
-  text-decoration: none;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 12px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  flex: 1;
-  font-size: 13px;
-  cursor: pointer;
-  border: none !important;
-  transition: background 0.15s;
-  appearance: none;
-  -webkit-appearance: none;
-  box-sizing: border-box;
-  font-family: inherit;
-  line-height: 1.2;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.btn-action:hover { background: var(--primary-blue-hover) !important; }
+    .btn-group { display: flex; gap: 8px; margin-top: 12px; align-items: stretch; }
+    .btn-action {
+      background: var(--primary-blue) !important; color: white !important;
+      text-align: center; text-decoration: none; display: none;
+      align-items: center; justify-content: center; min-height: 44px;
+      padding: 0 12px; border-radius: var(--radius); font-weight: 600;
+      flex: 1; font-size: 13px; cursor: pointer; border: none !important;
+      transition: background 0.15s; appearance: none; -webkit-appearance: none;
+      box-sizing: border-box; font-family: inherit; line-height: 1.2; margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .btn-action:hover { background: var(--primary-blue-hover) !important; }
+    .reset-btn {
+      background: transparent; color: var(--muted); border: 1px solid var(--border-strong);
+      margin-top: 12px; font-size: 13px; font-weight: 600; min-height: 40px;
+    }
+    .reset-btn:hover { background: var(--surface-2); color: var(--text); }
 
-.reset-btn {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border-strong);
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  min-height: 40px;
-}
-.reset-btn:hover { background: var(--surface-2); color: var(--text); }
+    /* ============ SPINNER / STATUS ============ */
+    .spinner { display: none; width: 20px; height: 20px; border: 2.5px solid var(--border); border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 12px auto 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; color: var(--text-2); }
+    #progress { margin-top: 4px; text-align: center; font-size: 12px; color: var(--muted); display: none; }
 
-/* ============ SPINNER / STATUS ============ */
-.spinner {
-  display: none;
-  width: 20px; height: 20px;
-  border: 2.5px solid var(--border);
-  border-top-color: var(--primary-blue);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin: 12px auto 0 auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-#status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; color: var(--text-2); }
-#progress { margin-top: 4px; text-align: center; font-size: 12px; color: var(--muted); display: none; }
+    /* ============ SEARCH SUMMARY ============ */
+    .search-summary {
+      display: none; background: var(--surface); padding: 14px 16px;
+      border-radius: var(--radius-lg); max-width: 500px;
+      margin: 0 auto 10px auto; box-shadow: var(--shadow);
+      border: 1px solid var(--border); border-left: 3px solid var(--primary-blue);
+      cursor: pointer; align-items: center; gap: 12px; transition: background 0.15s;
+    }
+    .search-summary.show { display: flex; }
+    .search-summary:active { background: var(--surface-2); }
+    .search-summary .id-badge { background: var(--primary-blue); color: white; padding: 6px 10px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+    .search-summary .month-info { flex: 1; font-size: 13px; color: var(--text-2); font-weight: 600; }
+    .search-summary .edit-icon { color: var(--muted); font-size: 16px; }
 
-/* ============ SEARCH SUMMARY ============ */
-.search-summary {
-  display: none;
-  background: var(--surface);
-  padding: 14px 16px;
-  border-radius: var(--radius-lg);
-  max-width: 500px;
-  margin: 0 auto 10px auto;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--primary-blue);
-  cursor: pointer;
-  align-items: center;
-  gap: 12px;
-  transition: background 0.15s;
-}
-.search-summary.show { display: flex; }
-.search-summary:active { background: var(--surface-2); }
-.search-summary .id-badge {
-  background: var(--primary-blue);
-  color: white;
-  padding: 6px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-.search-summary .month-info { flex: 1; font-size: 13px; color: var(--text-2); font-weight: 600; }
-.search-summary .edit-icon { color: var(--muted); font-size: 16px; }
+    /* ============ PDF VIEWER ============ */
+    #pdf-viewer { margin: 12px auto 0 auto; max-width: 100%; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-radius: var(--radius); box-shadow: var(--shadow-sm); display: block; margin: 0 auto; }
 
-/* ============ PDF VIEWER ============ */
-#pdf-viewer {
-  margin: 12px auto 0 auto;
-  max-width: 100%;
-  text-align: center;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-canvas {
-  border: 1px solid var(--border);
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  display: block;
-  margin: 0 auto;
-}
+    /* ============ CALCULATOR ============ */
+    .calc-card { display: none !important; }
+    .calc-card.show { display: block !important; }
+    .calc-card h3 { margin: 0 0 12px 0; color: var(--primary); font-size: 15px; font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .badge { background: var(--info-bg); color: var(--primary-blue); padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; border: 1px solid var(--info-border); }
+    .badge.warn { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+    .grade-info { font-size: 11px; color: var(--muted); margin-bottom: 12px; padding: 8px 12px; background: var(--surface-2); border-radius: var(--radius-sm); border-left: 3px solid var(--primary-blue); font-weight: 500; line-height: 1.5; }
+    .calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .calc-compact .field { display: flex; flex-direction: column; }
+    .calc-compact .field label { margin: 0 0 4px 0; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    .calc-compact .field input, .calc-compact .field select { margin: 0; padding: 9px 10px; font-size: 14px; text-align: right; font-weight: 600; }
+    .calc-compact .field select { text-align: left; padding: 9px 28px 9px 10px; font-size: 13px; }
+    .result-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .result-block { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .result-block .rb-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .result-block .rb-value { font-size: 15px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+    .result-block.accent-ot { border-left: 3px solid var(--primary-blue); }
+    .result-block.accent-holiday { border-left: 3px solid var(--accent); }
+    .result-block.accent-night { border-left: 3px solid var(--primary); }
+    .result-block.accent-rate { border-left: 3px solid var(--muted); }
+    .grand-total-block { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1.5px solid var(--info-border); border-radius: var(--radius); padding: 14px 16px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .grand-total-block .gt-label { font-size: 13px; font-weight: 600; color: var(--primary-blue); text-transform: uppercase; letter-spacing: 0.02em; }
+    .grand-total-block .gt-value { font-size: 22px; font-weight: 800; color: var(--primary-blue); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 
-/* ============ CALCULATOR ============ */
-.calc-card { display: none !important; }
-.calc-card.show { display: block !important; }
-.calc-card h3 {
-  margin: 0 0 12px 0;
-  color: var(--primary);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.badge {
-  background: var(--info-bg);
-  color: var(--primary-blue);
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid var(--info-border);
-}
-.badge.warn {
-  background: var(--danger-bg);
-  color: var(--danger);
-  border-color: var(--danger-border);
-}
-.grade-info {
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  background: var(--surface-2);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--primary-blue);
-  font-weight: 500;
-  line-height: 1.5;
-}
-.calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
-.calc-compact .field { display: flex; flex-direction: column; }
-.calc-compact .field label {
-  margin: 0 0 4px 0;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.calc-compact .field input,
-.calc-compact .field select {
-  margin: 0;
-  padding: 9px 10px;
-  font-size: 14px;
-  text-align: right;
-  font-weight: 600;
-}
-.calc-compact .field select { text-align: left; padding: 9px 28px 9px 10px; font-size: 13px; }
+    /* ============ COLLAPSIBLE ============ */
+    .collapse-header { padding: 14px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: background 0.15s; user-select: none; }
+    .collapse-header:hover { background: var(--surface-2); }
+    .collapse-header .title { font-size: 13px; font-weight: 700; color: var(--primary); flex: 1; display: flex; align-items: center; gap: 8px; }
+    .collapse-header .count { font-size: 11px; color: var(--primary-blue); background: var(--info-bg); padding: 2px 8px; border-radius: 999px; font-weight: 600; border: 1px solid var(--info-border); }
+    .collapse-header .arrow { font-size: 12px; color: var(--muted); transition: transform 0.2s; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+    .collapse-header.expanded .arrow { transform: rotate(180deg); }
+    .collapse-body { padding: 0 16px 16px 16px; display: none; animation: slideDown 0.2s ease; }
+    .collapse-body.show { display: block; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .info-list { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--text-2); margin: 0; line-height: 1.7; }
 
-.result-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
-.result-block {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.result-block .rb-label {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.result-block .rb-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-.result-block.accent-ot { border-left: 3px solid var(--primary-blue); }
-.result-block.accent-holiday { border-left: 3px solid var(--accent); }
-.result-block.accent-night { border-left: 3px solid var(--primary); }
-.result-block.accent-rate { border-left: 3px solid var(--muted); }
+    /* ============ REMARKS ============ */
+    .remarks-box { border-radius: var(--radius); padding: 12px 14px; font-size: 12.5px; line-height: 1.6; margin: 0; border: 1px solid; }
+    .remarks-ok { background: var(--success-bg); border-color: var(--success-border); color: #14532D; }
+    .remarks-warn { background: var(--warning-bg); border-color: var(--warning-border); color: #78350F; }
+    .remarks-error { background: var(--danger-bg); border-color: var(--danger-border); color: #7F1D1D; }
+    .remarks-info { background: var(--info-bg); border-color: var(--info-border); color: #1E3A8A; }
+    .remarks-box ul { margin: 6px 0 0 18px; padding: 0; }
+    .remarks-box li { margin: 4px 0; }
 
-.grand-total-block {
-  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-  border: 1.5px solid var(--info-border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-top: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-.grand-total-block .gt-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--primary-blue);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-.grand-total-block .gt-value {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--primary-blue);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
+    /* ============ COMPARISON ============ */
+    .compare-hint { font-size: 11.5px; color: var(--warning); margin-top: 8px; padding: 8px 12px; background: var(--warning-bg); border-radius: var(--radius-sm); border-left: 3px solid var(--warning); line-height: 1.5; font-weight: 500; }
+    .compare-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+    .compare-table th, .compare-table td { padding: 8px 6px; text-align: right; border-bottom: 1px solid var(--border); }
+    .compare-table th:first-child, .compare-table td:first-child { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; }
+    .compare-table th { color: var(--primary); font-weight: 700; font-size: 11.5px; background: var(--surface-2); text-transform: uppercase; letter-spacing: 0.03em; }
+    .compare-table tr.total-row td { font-weight: 800; color: var(--success); font-size: 14px; border-top: 2px solid var(--success); border-bottom: none; padding-top: 10px; }
+    .compare-diff { text-align: center; font-size: 12.5px; color: var(--muted); padding: 10px; background: var(--surface-2); border-radius: var(--radius-sm); margin-top: 8px; font-weight: 500; }
+    .compare-diff strong { color: var(--primary); }
 
-/* ============ COLLAPSIBLE ============ */
-.collapse-header {
-  padding: 14px 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  transition: background 0.15s;
-  user-select: none;
-}
-.collapse-header:hover { background: var(--surface-2); }
-.collapse-header:active { background: var(--surface-2); }
-.collapse-header .title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--primary);
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.collapse-header .count {
-  font-size: 11px;
-  color: var(--primary-blue);
-  background: var(--info-bg);
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-weight: 600;
-  border: 1px solid var(--info-border);
-}
-.collapse-header .arrow {
-  font-size: 12px;
-  color: var(--muted);
-  transition: transform 0.2s;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.collapse-header.expanded .arrow { transform: rotate(180deg); }
-.collapse-body {
-  padding: 0 16px 16px 16px;
-  display: none;
-  animation: slideDown 0.2s ease;
-}
-.collapse-body.show { display: block; }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.info-list {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--text-2);
-  margin: 0;
-  line-height: 1.7;
-}
+    /* ============ NOTICES ============ */
+    .notice-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; border-left: 3px solid var(--primary-blue); transition: background 0.15s; }
+    .notice-item.priority-high { border-left-color: var(--danger); background: var(--danger-bg); }
+    .notice-item.priority-low { border-left-color: var(--muted); background: var(--surface-2); }
+    .notice-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px; line-height: 1.4; }
+    .notice-body { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 6px; }
+    .notice-date { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
 
-/* ============ REMARKS ============ */
-.remarks-box {
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  font-size: 12.5px;
-  line-height: 1.6;
-  margin: 0;
-  border: 1px solid;
-}
-.remarks-ok { background: var(--success-bg); border-color: var(--success-border); color: #14532D; }
-.remarks-warn { background: var(--warning-bg); border-color: var(--warning-border); color: #78350F; }
-.remarks-error { background: var(--danger-bg); border-color: var(--danger-border); color: #7F1D1D; }
-.remarks-info { background: var(--info-bg); border-color: var(--info-border); color: #1E3A8A; }
-.remarks-box ul { margin: 6px 0 0 18px; padding: 0; }
-.remarks-box li { margin: 4px 0; }
+    /* ============ ERP TEAM ============ */
+    .team-member { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; transition: box-shadow 0.15s; }
+    .team-member:hover { box-shadow: var(--shadow-md); }
+    .team-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); flex-shrink: 0; background: var(--surface-2); }
+    .team-info { flex: 1; min-width: 0; }
+    .team-name { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.3; }
+    .team-desig { font-size: 12px; color: var(--primary-blue); font-weight: 600; margin-bottom: 2px; }
+    .team-id { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
+    .team-wa { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: #25D366; color: white; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; text-decoration: none; transition: background 0.15s; flex-shrink: 0; min-height: 38px; }
+    .team-wa:hover { background: #128C7E; }
+    .team-wa svg { width: 16px; height: 16px; fill: currentColor; }
 
-/* ============ COMPARISON ============ */
-.compare-hint {
-  font-size: 11.5px;
-  color: var(--warning);
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: var(--warning-bg);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--warning);
-  line-height: 1.5;
-  font-weight: 500;
-}
-.compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0;
-  font-size: 12.5px;
-  font-variant-numeric: tabular-nums;
-}
-.compare-table th, .compare-table td {
-  padding: 8px 6px;
-  text-align: right;
-  border-bottom: 1px solid var(--border);
-}
-.compare-table th:first-child, .compare-table td:first-child {
-  text-align: left;
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 12px;
-}
-.compare-table th {
-  color: var(--primary);
-  font-weight: 700;
-  font-size: 11.5px;
-  background: var(--surface-2);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.compare-table tr.total-row td {
-  font-weight: 800;
-  color: var(--success);
-  font-size: 14px;
-  border-top: 2px solid var(--success);
-  border-bottom: none;
-  padding-top: 10px;
-}
-.compare-diff {
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--muted);
-  padding: 10px;
-  background: var(--surface-2);
-  border-radius: var(--radius-sm);
-  margin-top: 8px;
-  font-weight: 500;
-}
-.compare-diff strong { color: var(--primary); }
+    /* ============ DRAWER ============ */
+    .drawer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 1000; }
+    .drawer-overlay.active { display: block; }
+    .drawer { position: fixed; top: 0; left: -290px; width: 270px; height: 100%; background: var(--surface); box-shadow: 4px 0 20px rgba(15, 23, 42, 0.12); z-index: 1001; transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; display: flex; flex-direction: column; }
+    .drawer.active { left: 0; }
+    .drawer-header { padding: 20px 20px 16px 20px; background: var(--primary); color: #fff; display: flex; align-items: center; gap: 12px; }
+    .drawer-header img { width: 36px; height: 36px; border-radius: 8px; }
+    .drawer-header-text h3 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+    .drawer-header-text p { margin: 3px 0 0 0; font-size: 11px; opacity: 0.75; font-weight: 500; }
+    .drawer-menu { padding: 8px 0; flex: 1; }
+    .drawer-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; cursor: pointer; color: var(--text-2); font-size: 14px; font-weight: 500; border-left: 3px solid transparent; transition: background 0.15s, color 0.15s; }
+    .drawer-item::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); flex-shrink: 0; transition: background 0.15s; }
+    .drawer-item:hover { background: var(--surface-2); color: var(--text); }
+    .drawer-item.active { background: var(--info-bg); border-left-color: var(--primary-blue); color: var(--primary-blue); font-weight: 600; }
+    .drawer-item.active::before { background: var(--primary-blue); }
+    .drawer-badge { margin-left: auto; background: var(--danger); color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+    .drawer-divider { height: 1px; background: var(--border); margin: 6px 20px; }
+    .drawer-footer { padding: 14px 20px; font-size: 10px; color: var(--muted); text-align: center; border-top: 1px solid var(--border); font-weight: 500; }
 
-/* ============ NOTICES ============ */
-.notice-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  margin-bottom: 8px;
-  border-left: 3px solid var(--primary-blue);
-  transition: background 0.15s;
-}
-.notice-item.priority-high { border-left-color: var(--danger); background: var(--danger-bg); }
-.notice-item.priority-low { border-left-color: var(--muted); background: var(--surface-2); }
-.notice-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 4px; line-height: 1.4; }
-.notice-body { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 6px; }
-.notice-date { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    /* ============ PAGE ============ */
+    .page { display: none; }
+    .page.active { display: block; }
 
-/* ============ ERP TEAM ============ */
-.team-member {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 10px;
-  transition: box-shadow 0.15s;
-}
-.team-member:hover { box-shadow: var(--shadow-md); }
-.team-photo {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border);
-  flex-shrink: 0;
-  background: var(--surface-2);
-}
-.team-info { flex: 1; min-width: 0; }
-.team-name { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.3; }
-.team-desig { font-size: 12px; color: var(--primary-blue); font-weight: 600; margin-bottom: 2px; }
-.team-id { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
-.team-wa {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background: #25D366;
-  color: white;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.15s;
-  flex-shrink: 0;
-  min-height: 38px;
-}
-.team-wa:hover { background: #128C7E; }
-.team-wa svg { width: 16px; height: 16px; fill: currentColor; }
+    /* ============ HISTORY ============ */
+    .history-item { padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; border: 1px solid var(--border); }
+    .history-item:hover { background: var(--info-bg); border-color: var(--info-border); }
+    .history-item .id { font-weight: 700; color: var(--primary); font-size: 13px; letter-spacing: 0.01em; }
+    .history-item .meta { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+    .history-item .time { font-size: 11px; color: var(--muted); font-weight: 500; }
+    .empty-msg { text-align: center; color: var(--muted); padding: 32px 20px; font-size: 13px; font-weight: 500; }
 
-/* ============ DRAWER ============ */
-.drawer-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  z-index: 1000;
-}
-.drawer-overlay.active { display: block; }
-.drawer {
-  position: fixed;
-  top: 0; left: -290px;
-  width: 270px;
-  height: 100%;
-  background: var(--surface);
-  box-shadow: 4px 0 20px rgba(15, 23, 42, 0.12);
-  z-index: 1001;
-  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-.drawer.active { left: 0; }
-.drawer-header {
-  padding: 20px 20px 16px 20px;
-  background: var(--primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.drawer-header img { width: 36px; height: 36px; border-radius: 8px; }
-.drawer-header-text h3 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.drawer-header-text p { margin: 3px 0 0 0; font-size: 11px; opacity: 0.75; font-weight: 500; }
-.drawer-menu { padding: 8px 0; flex: 1; }
-.drawer-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 20px;
-  cursor: pointer;
-  color: var(--text-2);
-  font-size: 14px;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  transition: background 0.15s, color 0.15s;
-}
-.drawer-item::before {
-  content: '';
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--border-strong);
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-.drawer-item:hover { background: var(--surface-2); color: var(--text); }
-.drawer-item.active {
-  background: var(--info-bg);
-  border-left-color: var(--primary-blue);
-  color: var(--primary-blue);
-  font-weight: 600;
-}
-.drawer-item.active::before { background: var(--primary-blue); }
-.drawer-badge {
-  margin-left: auto;
-  background: var(--danger);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 999px;
-  min-width: 18px;
-  text-align: center;
-}
-.drawer-divider { height: 1px; background: var(--border); margin: 6px 20px; }
-.drawer-footer {
-  padding: 14px 20px;
-  font-size: 10px;
-  color: var(--muted);
-  text-align: center;
-  border-top: 1px solid var(--border);
-  font-weight: 500;
-}
+    /* ============ SETTINGS ============ */
+    .settings-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 12px; }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row .label { color: var(--muted); font-weight: 500; }
+    .settings-row .value { color: var(--text); font-weight: 600; text-align: right; }
+    .settings-footer { text-align: center; color: var(--muted); font-size: 11px; padding: 20px 0 4px 0; font-weight: 500; }
 
-/* ============ PAGE ============ */
-.page { display: none; }
-.page.active { display: block; }
+    /* ============ LEADERBOARD ============ */
+    .leaderboard-card { margin-bottom: 12px; }
+    .leaderboard-section-title { font-size: 13px; font-weight: 700; color: var(--primary); margin: 0 0 10px 0; padding-bottom: 8px; border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.03em; }
+    .leaderboard-section-title:first-child { margin-top: 0; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius); margin-bottom: 8px; border: 1px solid var(--border); transition: background 0.15s, border-color 0.15s; cursor: pointer; }
+    .rank-item:hover { background: var(--info-bg); border-color: var(--info-border); }
+    .rank-item:active { background: var(--info-bg); }
+    .rank-item.rank-1 { background: linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 100%); border-color: #FDE68A; border-left: 4px solid #F59E0B; }
+    .rank-item.rank-2 { background: linear-gradient(135deg, #F1F5F9 0%, #F8FAFC 100%); border-color: var(--border); border-left: 4px solid #94A3B8; }
+    .rank-item.rank-3 { background: linear-gradient(135deg, #FFEDD5 0%, #FEF3C7 100%); border-color: #FDBA74; border-left: 4px solid #EA580C; }
+    .rank-item.mine { background: var(--success-bg) !important; border-color: var(--success-border) !important; border-left: 4px solid var(--success) !important; box-shadow: 0 0 0 2px var(--success-border); }
+    .rank-number { font-weight: 800; font-size: 17px; min-width: 32px; height: 32px; color: var(--primary); display: flex; align-items: center; justify-content: center; background: var(--surface); border-radius: 50%; border: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+    .rank-item.rank-1 .rank-number { background: #F59E0B; color: white; border-color: #F59E0B; }
+    .rank-item.rank-2 .rank-number { background: #94A3B8; color: white; border-color: #94A3B8; }
+    .rank-item.rank-3 .rank-number { background: #EA580C; color: white; border-color: #EA580C; }
+    .rank-item.mine .rank-number { background: var(--success); color: white; border-color: var(--success); }
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-name { font-size: 13px; color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rank-id { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; letter-spacing: 0.02em; }
+    .rank-value { font-weight: 700; color: var(--success); font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+    .rank-meta { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; font-weight: 500; }
+    .my-rank-note { background: var(--info-bg); border: 1px solid var(--info-border); border-radius: var(--radius); padding: 12px; margin-top: 10px; font-size: 12.5px; color: var(--primary-blue); line-height: 1.6; }
+    .my-rank-note .my-rank-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .my-rank-note .my-rank-line > span:first-child { font-weight: 500; }
+    .my-rank-note .my-rank-line strong { color: var(--success); font-size: 13px; font-weight: 700; }
+    .my-rank-note .view-full-btn { background: var(--primary-blue); color: white; border: none; padding: 9px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 4px; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; }
+    .my-rank-note .view-full-btn:hover { background: var(--primary-blue-hover); }
+    .full-ranking { max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding: 2px; border-radius: var(--radius); display: none; }
+    .full-ranking.show { display: block; animation: slideDown 0.2s ease; }
+    .full-ranking::-webkit-scrollbar { width: 6px; }
+    .full-ranking::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .scan-progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 14px 0; }
+    .scan-progress-fill { height: 100%; background: var(--primary-blue); width: 0%; transition: width 0.3s ease; border-radius: 999px; }
+    .scan-counter { text-align: center; font-size: 13px; color: var(--text-2); font-weight: 600; margin: 12px 0; font-variant-numeric: tabular-nums; }
+    .scan-hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; font-weight: 500; }
+    .bad-data-note { font-size: 11.5px; color: var(--warning); background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 14px; font-weight: 500; line-height: 1.5; }
+    .tap-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 500; }
 
-/* ============ HISTORY ============ */
-.history-item {
-  padding: 12px 14px;
-  background: var(--surface-2);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  border: 1px solid var(--border);
-}
-.history-item:hover { background: var(--info-bg); border-color: var(--info-border); }
-.history-item:active { background: var(--info-bg); }
-.history-item .id { font-weight: 700; color: var(--primary); font-size: 13px; letter-spacing: 0.01em; }
-.history-item .meta { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; }
-.history-item .time { font-size: 11px; color: var(--muted); font-weight: 500; }
-.empty-msg { text-align: center; color: var(--muted); padding: 32px 20px; font-size: 13px; font-weight: 500; }
+    /* ============ MODAL ============ */
+    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 96px 10px; }
+    #modal-canvas { max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), transparent); text-align: center; z-index: 10000; }
+    .close-btn { background: var(--surface); color: var(--text); border: none; padding: 12px 30px; font-size: 14px; font-weight: 700; border-radius: var(--radius); cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: background 0.15s; min-width: 180px; min-height: 44px; font-family: inherit; }
+    .close-btn:hover { background: var(--surface-2); }
 
-/* ============ SETTINGS ============ */
-.settings-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  gap: 12px;
-}
-.settings-row:last-child { border-bottom: none; }
-.settings-row .label { color: var(--muted); font-weight: 500; }
-.settings-row .value { color: var(--text); font-weight: 600; text-align: right; }
-.settings-footer { text-align: center; color: var(--muted); font-size: 11px; padding: 20px 0 4px 0; font-weight: 500; }
+    /* ============ WHATSAPP FLOAT ============ */
+    .wa-float { position: fixed; bottom: 18px; right: 18px; width: 50px; height: 50px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); z-index: 999; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .wa-float:hover { transform: scale(1.06); box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45); }
+    .wa-float svg { width: 26px; height: 26px; fill: white; }
 
-/* ============ LEADERBOARD ============ */
-.leaderboard-card { margin-bottom: 12px; }
-.leaderboard-section-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 0 0 10px 0;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--border);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.leaderboard-section-title:first-child { margin-top: 0; }
-.rank-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--surface-2);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-  transition: background 0.15s, border-color 0.15s;
-  cursor: pointer;
-}
-.rank-item:hover { background: var(--info-bg); border-color: var(--info-border); }
-.rank-item:active { background: var(--info-bg); }
-.rank-item.rank-1 { background: linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 100%); border-color: #FDE68A; border-left: 4px solid #F59E0B; }
-.rank-item.rank-2 { background: linear-gradient(135deg, #F1F5F9 0%, #F8FAFC 100%); border-color: var(--border); border-left: 4px solid #94A3B8; }
-.rank-item.rank-3 { background: linear-gradient(135deg, #FFEDD5 0%, #FEF3C7 100%); border-color: #FDBA74; border-left: 4px solid #EA580C; }
-.rank-item.mine { background: var(--success-bg) !important; border-color: var(--success-border) !important; border-left: 4px solid var(--success) !important; box-shadow: 0 0 0 2px var(--success-border); }
-.rank-number {
-  font-weight: 800;
-  font-size: 17px;
-  min-width: 32px;
-  height: 32px;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface);
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  font-variant-numeric: tabular-nums;
-}
-.rank-item.rank-1 .rank-number { background: #F59E0B; color: white; border-color: #F59E0B; }
-.rank-item.rank-2 .rank-number { background: #94A3B8; color: white; border-color: #94A3B8; }
-.rank-item.rank-3 .rank-number { background: #EA580C; color: white; border-color: #EA580C; }
-.rank-item.mine .rank-number { background: var(--success); color: white; border-color: var(--success); }
-.rank-info { flex: 1; min-width: 0; }
-.rank-name { font-size: 13px; color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rank-id { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 500; letter-spacing: 0.02em; }
-.rank-value { font-weight: 700; color: var(--success); font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
-.rank-meta { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; font-weight: 500; }
+    /* ============ DESKTOP ============ */
+    @media (min-width: 900px) {
+      body { padding: 0 24px 88px 24px; }
+      .top-bar { display: none; }
+      .topnav { display: flex; }
+      #page-search.active { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: start; }
+      #page-search.active .top-bar { grid-column: 1 / -1; }
+      #page-search.active #searchFormCard,
+      #page-search.active #searchSummary { grid-column: 1 / -1; max-width: 100%; }
+      #page-search.active #step2 { grid-column: 1; max-width: 100%; margin: 0; }
+      #page-search.active #step3 { grid-column: 2; max-width: 100%; margin: 0; }
+      #page-search.active #step4 { grid-column: 2; max-width: 100%; margin: 0; }
+      #page-search.active #step5 { grid-column: 1; max-width: 100%; margin: 0; }
+      #page-search.active #step6 { grid-column: 2; max-width: 100%; margin: 0; }
+      #page-search.active #step7 { grid-column: 1 / -1; max-width: 100%; margin: 0; }
+      #page-search.active #noticesCard { grid-column: 1 / -1; max-width: 100%; margin: 0; }
+      .header h2 { font-size: 22px; }
+      .header p { font-size: 13px; }
+      .card, .collapse-card, .search-summary { max-width: 100%; }
+      #page-leaderboard .card { max-width: 1000px; }
+      #page-history .card,
+      #page-settings .card,
+      #page-team .card,
+      #page-notices .card { max-width: 800px; }
+    }
 
-.my-rank-note {
-  background: var(--info-bg);
-  border: 1px solid var(--info-border);
-  border-radius: var(--radius);
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 12.5px;
-  color: var(--primary-blue);
-  line-height: 1.6;
-}
-.my-rank-note .my-rank-line { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.my-rank-note .my-rank-line > span:first-child { font-weight: 500; }
-.my-rank-note .my-rank-line strong { color: var(--success); font-size: 13px; font-weight: 700; }
-.my-rank-note .view-full-btn {
-  background: var(--primary-blue);
-  color: white;
-  border: none;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 4px;
-  transition: background 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 40px;
-}
-.my-rank-note .view-full-btn:hover { background: var(--primary-blue-hover); }
-.full-ranking { max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding: 2px; border-radius: var(--radius); display: none; }
-.full-ranking.show { display: block; animation: slideDown 0.2s ease; }
-.full-ranking::-webkit-scrollbar { width: 6px; }
-.full-ranking::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-.scan-progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; margin: 14px 0; }
-.scan-progress-fill { height: 100%; background: var(--primary-blue); width: 0%; transition: width 0.3s ease; border-radius: 999px; }
-.scan-counter { text-align: center; font-size: 13px; color: var(--text-2); font-weight: 600; margin: 12px 0; font-variant-numeric: tabular-nums; }
-.scan-hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; font-weight: 500; }
-.bad-data-note {
-  font-size: 11.5px;
-  color: var(--warning);
-  background: var(--warning-bg);
-  border: 1px solid var(--warning-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  margin-top: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-}
-.tap-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 500; }
+    @media (min-width: 600px) and (max-width: 899px) {
+      .card, .collapse-card, .search-summary { max-width: 680px; }
+      .top-bar { max-width: 680px; }
+    }
 
-/* ============ MODAL ============ */
-.modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.modal-content-wrapper { position: relative; max-width: 1000px; margin: 0 auto; text-align: center; padding: 20px 10px 96px 10px; }
-#modal-canvas { max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-.modal-bottom { position: fixed; bottom: 0; left: 0; right: 0; padding: 14px; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), transparent); text-align: center; z-index: 10000; }
-.close-btn { background: var(--surface); color: var(--text); border: none; padding: 12px 30px; font-size: 14px; font-weight: 700; border-radius: var(--radius); cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3); transition: background 0.15s; min-width: 180px; min-height: 44px; font-family: inherit; }
-.close-btn:hover { background: var(--surface-2); }
-
-/* ============ WHATSAPP FLOAT ============ */
-.wa-float {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #25D366;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
-  z-index: 999;
-  text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.wa-float:hover { transform: scale(1.06); box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45); }
-.wa-float svg { width: 26px; height: 26px; fill: white; }
-
-/* ============ DESKTOP ============ */
-@media (min-width: 900px) {
-  body { padding: 0 24px 88px 24px; }
-  .top-bar { display: none; }
-  .topnav { display: flex; }
-
-  #page-search.active {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    align-items: start;
-  }
-  #page-search.active #searchFormCard,
-  #page-search.active #searchSummary { grid-column: 1 / -1; max-width: 100%; }
-  #page-search.active #step2 { grid-column: 1; max-width: 100%; margin: 0; }
-  #page-search.active #step3 { grid-column: 2; max-width: 100%; margin: 0; }
-  #page-search.active #step4 { grid-column: 2; max-width: 100%; margin: 0; }
-  #page-search.active #step5 { grid-column: 1; max-width: 100%; margin: 0; }
-  #page-search.active #step6 { grid-column: 2; max-width: 100%; margin: 0; }
-  #page-search.active #step7 { grid-column: 1 / -1; max-width: 100%; margin: 0; }
-  #page-search.active #noticesCard { grid-column: 1 / -1; max-width: 100%; margin: 0; }
-
-  .header h2 { font-size: 22px; }
-  .header p { font-size: 13px; }
-  .card, .collapse-card, .search-summary { max-width: 100%; }
-
-  #page-leaderboard .card { max-width: 1000px; }
-  #page-history .card,
-  #page-settings .card,
-  #page-team .card,
-  #page-notices .card { max-width: 800px; }
-}
-
-@media (min-width: 600px) and (max-width: 899px) {
-  .card, .collapse-card, .search-summary { max-width: 680px; }
-  .top-bar { max-width: 680px; }
-}
-
-@media (max-width: 380px) {
-  body { padding: 10px 10px 88px 10px; font-size: 13px; }
-  .card { padding: 14px; }
-  .calc-compact { gap: 6px; }
-  .result-blocks { gap: 6px; }
-  .grand-total-block .gt-value { font-size: 19px; }
-  .team-member { flex-direction: column; align-items: flex-start; }
-  .team-wa { width: 100%; }
-}
-</style>
+    @media (max-width: 380px) {
+      body { padding: 10px 10px 88px 10px; font-size: 13px; }
+      .card { padding: 14px; }
+      .calc-compact { gap: 6px; }
+      .result-blocks { gap: 6px; }
+      .grand-total-block .gt-value { font-size: 19px; }
+      .team-member { flex-direction: column; align-items: flex-start; }
+      .team-wa { width: 100%; }
+    }
+  </style>
 </head>
 <body>
-
 <!-- Top Navigation (Desktop) -->
 <div class="topnav">
   <a class="topnav-brand" onclick="switchPage('search')">
@@ -1155,7 +596,10 @@ canvas {
   <div class="card calc-card" id="noticesCard" style="max-width: 500px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border);">
       <div style="font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.03em;">নোটিশ বোর্ড</div>
-      <button onclick="switchPage('notices')" style="width: auto; margin: 0; padding: 5px 10px; font-size: 11px; min-height: 30px; background: transparent; color: var(--primary-blue); border: 1px solid var(--border-strong);">সব দেখুন</button>
+      <div style="display: flex; gap: 6px;">
+        <button onclick="forceRefreshNotices()" style="width: auto; margin: 0; padding: 5px 8px; font-size: 13px; min-height: 28px; background: transparent; color: var(--primary-blue); border: 1px solid var(--border-strong);" title="রিফ্রেশ">🔄</button>
+        <button onclick="switchPage('notices')" style="width: auto; margin: 0; padding: 5px 10px; font-size: 11px; min-height: 28px; background: transparent; color: var(--primary-blue); border: 1px solid var(--border-strong);">সব দেখুন</button>
+      </div>
     </div>
     <div id="noticesHomeList"></div>
   </div>
@@ -1223,6 +667,10 @@ canvas {
     <div class="header"><h2>নোটিশ বোর্ড</h2><p>General Notice</p></div>
   </div>
   <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="font-size: 13px; color: var(--muted); font-weight: 500;">সর্বশেষ নোটিশ সবার উপরে</div>
+      <button onclick="forceRefreshNotices()" style="width: auto; margin: 0; padding: 5px 10px; font-size: 13px; min-height: 30px; background: transparent; color: var(--primary-blue); border: 1px solid var(--border-strong);">🔄 রিফ্রেশ</button>
+    </div>
     <div id="noticesFullList"></div>
   </div>
 </div>
@@ -1281,973 +729,1112 @@ canvas {
   <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7zm5.9-8c-0.3-0.2-1.9-0.9-2.2-1s-0.5-0.2-0.7 0.2-0.8 1-1 1.2-0.3 0.2-0.6 0.1c-0.3-0.2-1.3-0.5-2.5-1.5-0.9-0.8-1.5-1.8-1.7-2.1s0-0.5 0.1-0.6 0.3-0.3 0.4-0.5 0.2-0.3 0.3-0.5 0-0.4-0.1-0.5-0.7-1.6-0.9-2.2c-0.2-0.6-0.5-0.5-0.7-0.5s-0.4 0-0.6 0-0.5 0.1-0.8 0.4c-0.3 0.3-1 1-1 2.4s1.1 2.8 1.2 3 2.1 3.2 5.1 4.5c0.7 0.3 1.3 0.5 1.7 0.6 0.7 0.2 1.4 0.2 1.9 0.1 0.6-0.1 1.9-0.8 2.1-1.5s0.3-1.4 0.2-1.5-0.3-0.2-0.7-0.5z"/></svg>
 </a>
 <script>
-/* ============================================================
-   RENATA PLC - Overtime Report (v23 — Desktop Nav + Notices + ERP Team)
-   ⚠️ Core JS Logic Unchanged — Only additions
-   ============================================================ */
+  /* ============================================================
+     RENATA PLC - Overtime Report (v24 — Network-first Notices)
+     ⚠️ Core JS Logic Unchanged — Cache strategy updated
+     ============================================================ */
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-const GITHUB_USERNAME = "checkot";
-const REPO_NAME = "checkot.github.io";
-const BASE_URL = `https://${GITHUB_USERNAME}.github.io/`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+  const GITHUB_USERNAME = "checkot";
+  const REPO_NAME = "checkot.github.io";
 
-/* ===== RATE TABLE (unchanged) ===== */
-const RATE_TABLE = {
-  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
-  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
-};
+  /* ===== RATE TABLE ===== */
+  const RATE_TABLE = {
+    CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
+    JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
+    JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
+  };
 
-/* ===== CACHE VERSION (v22 → v23) ===== */
-const CACHE_PREFIX = "renata_cache_v23_";
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v23_";
-const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v23";
-const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v23_";
-const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const TEAM_CACHE_KEY = "renata_team_v23";
-const NOTICES_CACHE_KEY = "renata_notices_v23";
-const NOTICES_READ_KEY = "renata_notices_read_v23";
+  /* ===== CACHE VERSION (v23 → v24) ===== */
+  const CACHE_PREFIX = "renata_cache_v24_";
+  const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
+  const COMPARE_CACHE_PREFIX = "renata_cmp_v24_";
+  const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+  const HISTORY_KEY = "renata_history_v24";
+  const HISTORY_MAX = 5;
+  const LEADERBOARD_PREFIX = "renata_lb_v24_";
+  const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
-/* ===== STATE ===== */
-let singlePageBlobUrl = null;
-let matchedPdfPage = null;
-let currentPdf = null;
-let currentFileUrl = null;
-let currentPageNum = 1;
-let currentFileName = "";
-let currentSearchId = "";
-let currentMonth = "";
-let currentToken = 0;
-const activeTasks = new Set();
-let ocrWorker = null;
-let currentResult = null;
-let isScanning = false;
-let currentLeaderboardResult = null;
-let teamData = null;
-let noticesData = null;
+  /* ===== NOTICES / TEAM — Network-first cache ===== */
+  const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
+  const TEAM_CACHE_KEY = 'renata_team_cache_v2';
+  const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-/* ===== HELPERS ===== */
-function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
+  /* ===== STATE ===== */
+  let singlePageBlobUrl = null;
+  let matchedPdfPage = null;
+  let currentPdf = null;
+  let currentFileUrl = null;
+  let currentPageNum = 1;
+  let currentFileName = "";
+  let currentSearchId = "";
+  let currentMonth = "";
+  let currentToken = 0;
+  const activeTasks = new Set();
+  let ocrWorker = null;
+  let currentResult = null;
+  let isScanning = false;
+  let currentLeaderboardResult = null;
+  let teamData = null;
+  let noticesData = null;
 
-function initYearDropdown() {
-  const ySel = document.getElementById('yearSelect');
-  const now = new Date(); const currYear = now.getFullYear();
-  ySel.innerHTML = '';
-  for (let y = currYear - 2; y <= currYear + 1; y++) {
-    const opt = document.createElement('option'); opt.value = y; opt.textContent = bn(y); ySel.appendChild(opt);
+  /* ===== HELPERS ===== */
+  function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
+
+  function initYearDropdown() {
+    const ySel = document.getElementById('yearSelect');
+    const now = new Date(); const currYear = now.getFullYear();
+    ySel.innerHTML = '';
+    for (let y = currYear - 2; y <= currYear + 1; y++) {
+      const opt = document.createElement('option'); opt.value = y; opt.textContent = bn(y); ySel.appendChild(opt);
+    }
   }
-}
-function setDefaultMonth() {
-  const now = new Date(); let year = now.getFullYear(); let month = now.getMonth() + 1;
-  month -= 1; if (month === 0) { month = 12; year -= 1; }
-  const yStr = String(year); const mStr = String(month).padStart(2, '0');
-  const ySel = document.getElementById('yearSelect');
-  let yearExists = false;
-  for (const opt of ySel.options) if (opt.value === yStr) { yearExists = true; break; }
-  if (!yearExists) { const opt = document.createElement('option'); opt.value = yStr; opt.textContent = bn(yStr); ySel.appendChild(opt); }
-  ySel.value = yStr;
-  document.getElementById('monthSelect').value = mStr;
-}
+  function setDefaultMonth() {
+    const now = new Date(); let year = now.getFullYear(); let month = now.getMonth() + 1;
+    month -= 1; if (month === 0) { month = 12; year -= 1; }
+    const yStr = String(year); const mStr = String(month).padStart(2, '0');
+    const ySel = document.getElementById('yearSelect');
+    let yearExists = false;
+    for (const opt of ySel.options) if (opt.value === yStr) { yearExists = true; break; }
+    if (!yearExists) { const opt = document.createElement('option'); opt.value = yStr; opt.textContent = bn(yStr); ySel.appendChild(opt); }
+    ySel.value = yStr;
+    document.getElementById('monthSelect').value = mStr;
+  }
 
-/* ===== CACHE ===== */
-function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; } return d; } catch (e) { return null; } }
-function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
-function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
-function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
-function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
-function setLeaderboardCache(month, payload) { try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+  /* ===== CACHE (PDF search result) ===== */
+  function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; } return d; } catch (e) { return null; } }
+  function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+  function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
+  function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+  function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
+  function setLeaderboardCache(month, payload) { try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
 
-/* ===== HISTORY ===== */
-function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function addToHistory(id, month, name) { try { let list = getHistory(); list = list.filter(x => !(x.id === id && x.month === month)); list.unshift({ id, month, name: name || "", ts: Date.now() }); if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX); localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch (e) {} }
-function clearHistory() { try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {} }
+  /* ===== HISTORY ===== */
+  function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+  function addToHistory(id, month, name) { try { let list = getHistory(); list = list.filter(x => !(x.id === id && x.month === month)); list.unshift({ id, month, name: name || "", ts: Date.now() }); if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX); localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch (e) {} }
+  function clearHistory() { try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {} }
 
-/* ===== DRAWER ===== */
-function openDrawer() { document.getElementById('drawer').classList.add('active'); document.getElementById('drawerOverlay').classList.add('active'); }
-function closeDrawer() { document.getElementById('drawer').classList.remove('active'); document.getElementById('drawerOverlay').classList.remove('active'); }
+  /* ===== DRAWER ===== */
+  function openDrawer() { document.getElementById('drawer').classList.add('active'); document.getElementById('drawerOverlay').classList.add('active'); }
+  function closeDrawer() { document.getElementById('drawer').classList.remove('active'); document.getElementById('drawerOverlay').classList.remove('active'); }
 
-/* ===== PAGE SWITCH ===== */
-function switchPage(pageName) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + pageName).classList.add('active');
+  /* ===== PAGE SWITCH ===== */
+  function switchPage(pageName) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + pageName).classList.add('active');
 
-  // Drawer items (mobile)
-  document.querySelectorAll('.drawer-item').forEach(item => item.classList.remove('active'));
-  const activeDrawer = document.querySelector('.drawer-item[data-page="' + pageName + '"]');
-  if (activeDrawer) activeDrawer.classList.add('active');
+    document.querySelectorAll('.drawer-item').forEach(item => item.classList.remove('active'));
+    const activeDrawer = document.querySelector('.drawer-item[data-page="' + pageName + '"]');
+    if (activeDrawer) activeDrawer.classList.add('active');
 
-  // Top nav items (desktop)
-  document.querySelectorAll('.topnav-item').forEach(item => item.classList.remove('active'));
-  const activeNav = document.querySelector('.topnav-item[data-nav="' + pageName + '"]');
-  if (activeNav) activeNav.classList.add('active');
+    document.querySelectorAll('.topnav-item').forEach(item => item.classList.remove('active'));
+    const activeNav = document.querySelector('.topnav-item[data-nav="' + pageName + '"]');
+    if (activeNav) activeNav.classList.add('active');
 
-  if (pageName === 'history') renderHistory();
-  if (pageName === 'leaderboard') initLeaderboardPage();
-  if (pageName === 'team') renderTeamPage();
-  if (pageName === 'notices') renderNoticesPage();
+    if (pageName === 'history') renderHistory();
+    if (pageName === 'leaderboard') initLeaderboardPage();
+    if (pageName === 'team') renderTeamPage();
+    if (pageName === 'notices') renderNoticesPage();
 
-  closeDrawer();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    closeDrawer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-/* ===== HISTORY RENDER ===== */
-function renderHistory() {
-  const list = getHistory(); const box = document.getElementById('historyList');
-  if (list.length === 0) { box.innerHTML = '<div class="empty-msg">এখনো কোনো সার্চ করা হয়নি।</div>'; return; }
-  box.innerHTML = list.map(h => {
-    const date = new Date(h.ts);
-    const timeStr = date.toLocaleString('bn-BD', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-    return `<div class="history-item" onclick="replayHistory('${h.id}', '${h.month}')">
-      <div><div class="id">${h.id}</div><div class="meta">${h.month}</div></div>
-      <div class="time">${timeStr}</div>
+  /* ===== HISTORY RENDER ===== */
+  function renderHistory() {
+    const list = getHistory(); const box = document.getElementById('historyList');
+    if (list.length === 0) { box.innerHTML = '<div class="empty-msg">এখনো কোনো সার্চ করা হয়নি।</div>'; return; }
+    box.innerHTML = list.map(h => {
+      const date = new Date(h.ts);
+      const timeStr = date.toLocaleString('bn-BD', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      return `<div class="history-item" onclick="replayHistory('${h.id}', '${h.month}')">
+        <div><div class="id">${h.id}</div><div class="meta">${h.month}</div></div>
+        <div class="time">${timeStr}</div>
+      </div>`;
+    }).join('');
+  }
+  function replayHistory(id, month) {
+    const [year, mon] = month.split('-');
+    document.getElementById('yearSelect').value = year;
+    document.getElementById('monthSelect').value = mon;
+    document.getElementById('employeeId').value = id;
+    switchPage('search');
+    setTimeout(() => findReport(), 300);
+  }
+  function backToLeaderboard() {
+    document.getElementById('backToLbBtn').style.display = "none";
+    switchPage('leaderboard');
+    const month = getCurrentMonth();
+    const cached = getLeaderboardCache(month);
+    if (cached) {
+      renderLeaderboardResult(cached);
+      document.getElementById('lbInitialCard').style.display = "none";
+      document.getElementById('lbScanCard').style.display = "none";
+      document.getElementById('lbResultCard').style.display = "block";
+    }
+  }
+
+  /* ===== COMPACT MODE ===== */
+  function enterCompactMode(empId, month) {
+    document.getElementById('searchFormCard').style.display = "none";
+    document.getElementById('searchSummary').classList.add('show');
+    document.getElementById('summaryId').textContent = empId;
+    const [y, m] = month.split('-');
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('summaryMonth').textContent = monthNames[parseInt(m)-1] + ' ' + y;
+    document.getElementById('mainHeader').classList.add('compact');
+  }
+  function expandSearchForm() {
+    document.getElementById('searchFormCard').style.display = "block";
+    document.getElementById('searchSummary').classList.remove('show');
+    document.getElementById('mainHeader').classList.remove('compact');
+    document.getElementById('employeeId').focus();
+  }
+
+  /* ===== COLLAPSE ===== */
+  function toggleCollapse(bodyId, headerEl) {
+    const body = document.getElementById(bodyId);
+    const isOpen = body.classList.contains('show');
+    if (isOpen) { body.classList.remove('show'); headerEl.classList.remove('expanded'); }
+    else { body.classList.add('show'); headerEl.classList.add('expanded'); }
+  }
+
+  /* ============================================================
+     NOTICES LOAD — Network-first with 24h offline fallback
+     ============================================================ */
+  async function loadNoticesData() {
+    let cachedData = null;
+    let cachedTs = 0;
+
+    try {
+      const cachedRaw = localStorage.getItem(NOTICES_CACHE_KEY);
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (Array.isArray(cached.data)) {
+          cachedData = cached.data;
+          cachedTs = cached.ts || 0;
+        }
+      }
+    } catch (e) {
+      console.warn('[Notices] Invalid cache:', e);
+      try { localStorage.removeItem(NOTICES_CACHE_KEY); } catch (err) {}
+    }
+
+    // Always network first
+    try {
+      const resp = await fetch('notices.json', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+      const data = await resp.json();
+      noticesData = Array.isArray(data.notices) ? data.notices : [];
+
+      try {
+        localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({
+          ts: Date.now(),
+          data: noticesData
+        }));
+      } catch (e) {}
+
+      console.log('[Notices] Fresh from network:', noticesData.length, 'notices');
+      return noticesData;
+    } catch (e) {
+      console.warn('[Notices] Network failed:', e.message);
+      const ageMs = Date.now() - cachedTs;
+      const ageHours = Math.round(ageMs / (1000 * 60 * 60) * 10) / 10;
+      if (cachedData && ageMs < OFFLINE_FALLBACK_MAX_AGE_MS) {
+        console.log('[Notices] Using offline cache, age:', ageHours, 'hours');
+        noticesData = cachedData;
+        return noticesData;
+      }
+      console.warn('[Notices] Cache too old');
+      return noticesData || [];
+    }
+  }
+
+  /* ============================================================
+     TEAM LOAD — Network-first with 24h offline fallback
+     ============================================================ */
+  async function loadTeamData() {
+    let cachedData = null;
+    let cachedTs = 0;
+
+    try {
+      const cachedRaw = localStorage.getItem(TEAM_CACHE_KEY);
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (Array.isArray(cached.data)) {
+          cachedData = cached.data;
+          cachedTs = cached.ts || 0;
+        }
+      }
+    } catch (e) {
+      try { localStorage.removeItem(TEAM_CACHE_KEY); } catch (err) {}
+    }
+
+    try {
+      const resp = await fetch('team.json', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+      const data = await resp.json();
+      teamData = Array.isArray(data.team) ? data.team : [];
+
+      try {
+        localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({
+          ts: Date.now(),
+          data: teamData
+        }));
+      } catch (e) {}
+
+      return teamData;
+    } catch (e) {
+      console.warn('[Team] Network failed:', e.message);
+      const ageMs = Date.now() - cachedTs;
+      if (cachedData && ageMs < OFFLINE_FALLBACK_MAX_AGE_MS) {
+        teamData = cachedData;
+        return teamData;
+      }
+      return teamData || [];
+    }
+  }
+
+  /* ============================================================
+     RENDER NOTICES
+     ============================================================ */
+  function getReadNotices() {
+    try { const raw = localStorage.getItem("renata_notices_read_v24"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
+  }
+  function markAllNoticesRead() {
+    try { localStorage.setItem("renata_notices_read_v24", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {}
+    updateNoticesBadge();
+  }
+  function updateNoticesBadge() {
+    const badge = document.getElementById('noticesBadge');
+    if (!badge || !noticesData) return;
+    const read = getReadNotices();
+    const unreadCount = noticesData.filter(n => !read.includes(n.id)).length;
+    if (unreadCount > 0) { badge.style.display = 'inline-block'; badge.textContent = bn(unreadCount); }
+    else { badge.style.display = 'none'; }
+  }
+
+  function formatNoticeDate(dateStr) {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch (e) { return dateStr; }
+  }
+
+  function renderNoticeItem(n) {
+    const priority = (n.priority || 'normal').toLowerCase();
+    const priorityClass = priority === 'high' ? 'priority-high' : priority === 'low' ? 'priority-low' : '';
+    return `<div class="notice-item ${priorityClass}">
+      <div class="notice-title">${n.title || '—'}</div>
+      <div class="notice-body">${n.body || ''}</div>
+      <div class="notice-date">${formatNoticeDate(n.date)}</div>
     </div>`;
-  }).join('');
-}
-function replayHistory(id, month) {
-  const [year, mon] = month.split('-');
-  document.getElementById('yearSelect').value = year;
-  document.getElementById('monthSelect').value = mon;
-  document.getElementById('employeeId').value = id;
-  switchPage('search');
-  setTimeout(() => findReport(), 300);
-}
-function backToLeaderboard() {
-  document.getElementById('backToLbBtn').style.display = "none";
-  switchPage('leaderboard');
-  const month = getCurrentMonth();
-  const cached = getLeaderboardCache(month);
-  if (cached) {
-    renderLeaderboardResult(cached);
-    document.getElementById('lbInitialCard').style.display = "none";
-    document.getElementById('lbScanCard').style.display = "none";
-    document.getElementById('lbResultCard').style.display = "block";
   }
-}
 
-/* ===== COMPACT MODE ===== */
-function enterCompactMode(empId, month) {
-  document.getElementById('searchFormCard').style.display = "none";
-  document.getElementById('searchSummary').classList.add('show');
-  document.getElementById('summaryId').textContent = empId;
-  const [y, m] = month.split('-');
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('summaryMonth').textContent = monthNames[parseInt(m)-1] + ' ' + y;
-  document.getElementById('mainHeader').classList.add('compact');
-}
-function expandSearchForm() {
-  document.getElementById('searchFormCard').style.display = "block";
-  document.getElementById('searchSummary').classList.remove('show');
-  document.getElementById('mainHeader').classList.remove('compact');
-  document.getElementById('employeeId').focus();
-}
-
-/* ===== COLLAPSE ===== */
-function toggleCollapse(bodyId, headerEl) {
-  const body = document.getElementById(bodyId);
-  const isOpen = body.classList.contains('show');
-  if (isOpen) { body.classList.remove('show'); headerEl.classList.remove('expanded'); }
-  else { body.classList.add('show'); headerEl.classList.add('expanded'); }
-}
-
-/* ============================================================
-   TEAM & NOTICES — Fetch from JSON files
-   ============================================================ */
-async function loadTeamData() {
-  // Cache from localStorage first
-  try {
-    const cached = localStorage.getItem(TEAM_CACHE_KEY);
-    if (cached) {
-      const d = JSON.parse(cached);
-      if (Date.now() - d.ts < 1000 * 60 * 60 * 24) { teamData = d.data; return teamData; }
-    }
-  } catch (e) {}
-  // Fetch fresh
-  try {
-    const resp = await fetch('team.json?t=' + Date.now());
-    if (!resp.ok) throw new Error('team.json not found');
-    const data = await resp.json();
-    teamData = data.team || [];
-    try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
-    return teamData;
-  } catch (e) {
-    console.warn('Team data load failed:', e.message);
-    return teamData || [];
-  }
-}
-
-async function loadNoticesData() {
-  try {
-    const cached = localStorage.getItem(NOTICES_CACHE_KEY);
-    if (cached) {
-      const d = JSON.parse(cached);
-      if (Date.now() - d.ts < 1000 * 60 * 30) { noticesData = d.data; return noticesData; }
-    }
-  } catch (e) {}
-  try {
-    const resp = await fetch('notices.json?t=' + Date.now());
-    if (!resp.ok) throw new Error('notices.json not found');
-    const data = await resp.json();
-    noticesData = data.notices || [];
-    try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
-    return noticesData;
-  } catch (e) {
-    console.warn('Notices load failed:', e.message);
-    return noticesData || [];
-  }
-}
-
-function getReadNotices() {
-  try { const raw = localStorage.getItem(NOTICES_READ_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
-}
-function markAllNoticesRead() {
-  try { localStorage.setItem(NOTICES_READ_KEY, JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {}
-  updateNoticesBadge();
-}
-function updateNoticesBadge() {
-  const badge = document.getElementById('noticesBadge');
-  if (!badge || !noticesData) return;
-  const read = getReadNotices();
-  const unreadCount = noticesData.filter(n => !read.includes(n.id)).length;
-  if (unreadCount > 0) { badge.style.display = 'inline-block'; badge.textContent = bn(unreadCount); }
-  else { badge.style.display = 'none'; }
-}
-
-/* ============================================================
-   RENDER NOTICES (Home + Full page)
-   ============================================================ */
-function formatNoticeDate(dateStr) {
-  try {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('bn-BD', { day: '2-digit', month: 'short', year: 'numeric' });
-  } catch (e) { return dateStr; }
-}
-
-function renderNoticeItem(n) {
-  const priority = (n.priority || 'normal').toLowerCase();
-  const priorityClass = priority === 'high' ? 'priority-high' : priority === 'low' ? 'priority-low' : '';
-  return `<div class="notice-item ${priorityClass}">
-    <div class="notice-title">${n.title || '—'}</div>
-    <div class="notice-body">${n.body || ''}</div>
-    <div class="notice-date">${formatNoticeDate(n.date)}</div>
-  </div>`;
-}
-
-async function renderNoticesHome() {
-  const box = document.getElementById('noticesHomeList');
-  if (!box) return;
-  box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">লোড হচ্ছে...</div>';
-  const notices = await loadNoticesData();
-  if (!notices || notices.length === 0) {
-    box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
-    return;
-  }
-  const recent = notices.slice(0, 3);
-  box.innerHTML = recent.map(renderNoticeItem).join('');
-  updateNoticesBadge();
-}
-
-async function renderNoticesPage() {
-  const box = document.getElementById('noticesFullList');
-  if (!box) return;
-  box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
-  const notices = await loadNoticesData();
-  if (!notices || notices.length === 0) {
-    box.innerHTML = '<div class="empty-msg">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
-    return;
-  }
-  box.innerHTML = notices.map(renderNoticeItem).join('');
-  markAllNoticesRead();
-}
-
-/* ============================================================
-   RENDER ERP TEAM
-   ============================================================ */
-async function renderTeamPage() {
-  const box = document.getElementById('teamList');
-  if (!box) return;
-  box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
-  const team = await loadTeamData();
-  if (!team || team.length === 0) {
-    box.innerHTML = '<div class="empty-msg">ERP Team information currently unavailable.</div>';
-    return;
-  }
-  box.innerHTML = team.map(m => `
-    <div class="team-member">
-      <img class="team-photo" src="${m.photo || 'icon.png'}" alt="${m.name || 'Team'}" onerror="this.src='icon.png';">
-      <div class="team-info">
-        <div class="team-name">${m.name || '—'}</div>
-        <div class="team-desig">${m.designation || '—'}</div>
-        <div class="team-id">ID: ${m.id || '—'}</div>
-      </div>
-      <a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RENATA Overtime App — সহায়তা প্রয়োজন')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
-        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
-      </a>
-    </div>
-  `).join('');
-}
-
-/* ===== EVENTS ===== */
-document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
-document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
-
-/* ===== MAIN SEARCH (unchanged) ===== */
-async function findReport() {
-  const year = document.getElementById('yearSelect').value;
-  const mon = document.getElementById('monthSelect').value;
-  const month = `${year}-${mon}`;
-  const rawId = document.getElementById('employeeId').value.trim();
-  const statusDiv = document.getElementById('status');
-  const progressDiv = document.getElementById('progress');
-  const spinner = document.getElementById('spinner');
-  const searchBtn = document.getElementById('searchBtn');
-  if (!rawId) { alert("অনুগ্রহ করে Employee ID লিখুন!"); return; }
-  const searchId = rawId.toUpperCase();
-  currentSearchId = searchId; currentMonth = month;
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
-  document.getElementById('downloadBtn').style.display = "none";
-  document.getElementById('openBtn').style.display = "none";
-  document.getElementById('compareResult').style.display = "none";
-  document.getElementById('compareInputArea').style.display = "block";
-  document.getElementById('compareId').value = "";
-  ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
-  document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
-  if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
-  matchedPdfPage = null; currentResult = null;
-  currentToken++;
-  const myToken = currentToken;
-  for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
-  activeTasks.clear();
-  statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "সার্চ করা হচ্ছে...";
-  progressDiv.style.display = "block"; progressDiv.innerText = "";
-  spinner.style.display = "block"; searchBtn.disabled = true;
-  try {
-    const cached = getCached(month, searchId);
-    if (cached) {
-      await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
-      statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      addToHistory(searchId, month, cached.fileName);
-      enterCompactMode(searchId, month);
-      try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Error: " + e.message; }
+  async function renderNoticesHome() {
+    const box = document.getElementById('noticesHomeList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">লোড হচ্ছে...</div>';
+    const notices = await loadNoticesData();
+    if (!notices || notices.length === 0) {
+      box.innerHTML = '<div class="empty-msg" style="padding: 14px; font-size: 12px;">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
       return;
     }
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`; return; }
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    if (pdfFiles.length === 0) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return; }
-    progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
-    const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
-    if (myToken !== currentToken) return;
-    if (match) {
-      setCache(month, searchId, { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName });
-      await showResult(match.fileUrl, match.pageNum, match.fileName);
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
-      addToHistory(searchId, month, match.fileName);
-      enterCompactMode(searchId, month);
-      try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Error: " + e.message; }
-    } else {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      statusDiv.style.color = "var(--danger)"; statusDiv.innerHTML = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
-    }
-  } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
-}
+    const recent = notices.slice(0, 3);
+    box.innerHTML = recent.map(renderNoticeItem).join('');
+    updateNoticesBadge();
+  }
 
-/* ===== PARALLEL SEARCH ===== */
-async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
-  const total = pdfFiles.length; let scanned = 0;
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
-    pdfFiles.forEach((file) => {
-      (async () => {
-        if (myToken !== currentToken) return;
-        let task = null, pdf = null;
-        try {
-          task = pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 });
-          activeTasks.add(task); pdf = await task.promise;
-          for (let p = 1; p <= pdf.numPages; p++) {
-            if (myToken !== currentToken || settled) break;
-            const page = await pdf.getPage(p);
-            const tc = await page.getTextContent();
-            const text = tc.items.map(i => i.str).join(" ").toUpperCase();
-            if (text.includes(searchId)) { finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return; }
-          }
-          scanned++;
-          if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
-        } catch (e) { console.log("PDF error:", file.name, e.message); }
-        finally { if (task) activeTasks.delete(task); if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} } }
-      })();
+  async function renderNoticesPage() {
+    const box = document.getElementById('noticesFullList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
+    const notices = await loadNoticesData();
+    if (!notices || notices.length === 0) {
+      box.innerHTML = '<div class="empty-msg">এই মুহূর্তে কোনো নোটিশ নেই।</div>';
+      return;
+    }
+    box.innerHTML = notices.map(renderNoticeItem).join('');
+    markAllNoticesRead();
+  }
+
+  /* ============================================================
+     RENDER ERP TEAM
+     ============================================================ */
+  async function renderTeamPage() {
+    const box = document.getElementById('teamList');
+    if (!box) return;
+    box.innerHTML = '<div class="empty-msg" style="padding: 20px;">লোড হচ্ছে...</div>';
+    const team = await loadTeamData();
+    if (!team || team.length === 0) {
+      box.innerHTML = '<div class="empty-msg">ERP Team information currently unavailable.</div>';
+      return;
+    }
+    box.innerHTML = team.map(m => `
+      <div class="team-member">
+        <img class="team-photo" src="${m.photo || 'icon.png'}" alt="${m.name || 'Team'}" onerror="this.src='icon.png';">
+        <div class="team-info">
+          <div class="team-name">${m.name || '—'}</div>
+          <div class="team-desig">${m.designation || '—'}</div>
+          <div class="team-id">ID: ${m.id || '—'}</div>
+        </div>
+        <a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RENATA Overtime App — সহায়তা প্রয়োজন')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
+        </a>
+      </div>
+    `).join('');
+  }
+
+  /* ============================================================
+     FORCE REFRESH (Clear all caches)
+     ============================================================ */
+  async function forceRefreshNotices() {
+    try {
+      localStorage.removeItem(NOTICES_CACHE_KEY);
+      localStorage.removeItem(TEAM_CACHE_KEY);
+    } catch (e) {}
+
+    if ('serviceWorker' in navigator) {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const reg of regs) await reg.unregister();
+      } catch (e) {}
+    }
+
+    location.reload();
+  }
+
+  /* ===== EVENTS ===== */
+  document.getElementById('employeeId').addEventListener('keydown', e => { if (e.key === 'Enter') findReport(); });
+  document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeDrawer(); } });
+
+  /* ===== MAIN SEARCH ===== */
+  async function findReport() {
+    const year = document.getElementById('yearSelect').value;
+    const mon = document.getElementById('monthSelect').value;
+    const month = `${year}-${mon}`;
+    const rawId = document.getElementById('employeeId').value.trim();
+    const statusDiv = document.getElementById('status');
+    const progressDiv = document.getElementById('progress');
+    const spinner = document.getElementById('spinner');
+    const searchBtn = document.getElementById('searchBtn');
+    if (!rawId) { alert("অনুগ্রহ করে Employee ID লিখুন!"); return; }
+    const searchId = rawId.toUpperCase();
+    currentSearchId = searchId; currentMonth = month;
+    ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
+    document.getElementById('downloadBtn').style.display = "none";
+    document.getElementById('openBtn').style.display = "none";
+    document.getElementById('compareResult').style.display = "none";
+    document.getElementById('compareInputArea').style.display = "block";
+    document.getElementById('compareId').value = "";
+    ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
+    document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
+    if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
+    matchedPdfPage = null; currentResult = null;
+    currentToken++;
+    const myToken = currentToken;
+    for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
+    activeTasks.clear();
+    statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "সার্চ করা হচ্ছে...";
+    progressDiv.style.display = "block"; progressDiv.innerText = "";
+    spinner.style.display = "block"; searchBtn.disabled = true;
+    try {
+      const cached = getCached(month, searchId);
+      if (cached) {
+        await showResult(cached.fileUrl, cached.pageNum, cached.fileName);
+        statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
+        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+        addToHistory(searchId, month, cached.fileName);
+        enterCompactMode(searchId, month);
+        try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Error: " + e.message; }
+        return;
+      }
+      const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
+      const resp = await fetch(apiUrl);
+      if (!resp.ok) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `"${month}" মাসের ফোল্ডার পাওয়া যায়নি`; return; }
+      const filesData = await resp.json();
+      const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
+      if (pdfFiles.length === 0) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return; }
+      progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
+      const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
+      if (myToken !== currentToken) return;
+      if (match) {
+        setCache(month, searchId, { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName });
+        await showResult(match.fileUrl, match.pageNum, match.fileName);
+        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+        statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
+        addToHistory(searchId, month, match.fileName);
+        enterCompactMode(searchId, month);
+        try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Error: " + e.message; }
+      } else {
+        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+        statusDiv.style.color = "var(--danger)"; statusDiv.innerHTML = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
+      }
+    } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
+  }
+
+  /* ===== PARALLEL SEARCH ===== */
+  async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
+    const total = pdfFiles.length; let scanned = 0;
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
+      pdfFiles.forEach((file) => {
+        (async () => {
+          if (myToken !== currentToken) return;
+          let task = null, pdf = null;
+          try {
+            task = pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 });
+            activeTasks.add(task); pdf = await task.promise;
+            for (let p = 1; p <= pdf.numPages; p++) {
+              if (myToken !== currentToken || settled) break;
+              const page = await pdf.getPage(p);
+              const tc = await page.getTextContent();
+              const text = tc.items.map(i => i.str).join(" ").toUpperCase();
+              if (text.includes(searchId)) { finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return; }
+            }
+            scanned++;
+            if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
+          } catch (e) { console.log("PDF error:", file.name, e.message); }
+          finally { if (task) activeTasks.delete(task); if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} } }
+        })();
+      });
+      setTimeout(() => { if (!settled) { const check = setInterval(() => { if (scanned >= total || myToken !== currentToken) { clearInterval(check); finish(null); } }, 200); } }, 100);
     });
-    setTimeout(() => { if (!settled) { const check = setInterval(() => { if (scanned >= total || myToken !== currentToken) { clearInterval(check); finish(null); } }, 200); } }, 100);
-  });
-}
+  }
 
-/* ===== SHOW RESULT ===== */
-async function showResult(fileUrl, pageNum, fileName) {
-  if (!currentPdf || currentFileUrl !== fileUrl) { const task = pdfjsLib.getDocument(fileUrl); currentPdf = await task.promise; currentFileUrl = fileUrl; }
-  currentPageNum = pageNum; currentFileName = fileName;
-  const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
-  renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
-  document.getElementById('step2').style.display = "block";
-  document.getElementById('viewerTitle').innerText = `${currentSearchId} — ${currentMonth}`;
-  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
-  const downloadBtn = document.getElementById('downloadBtn');
-  downloadBtn.href = singlePageBlobUrl;
-  downloadBtn.setAttribute('download', `Overtime_${currentSearchId}_${currentMonth}.pdf`);
-  downloadBtn.style.display = "flex";
-  document.getElementById('openBtn').style.display = "flex";
-}
+  /* ===== SHOW RESULT ===== */
+  async function showResult(fileUrl, pageNum, fileName) {
+    if (!currentPdf || currentFileUrl !== fileUrl) { const task = pdfjsLib.getDocument(fileUrl); currentPdf = await task.promise; currentFileUrl = fileUrl; }
+    currentPageNum = pageNum; currentFileName = fileName;
+    const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
+    renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
+    document.getElementById('step2').style.display = "block";
+    document.getElementById('viewerTitle').innerText = `${currentSearchId} — ${currentMonth}`;
+    singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.href = singlePageBlobUrl;
+    downloadBtn.setAttribute('download', `Overtime_${currentSearchId}_${currentMonth}.pdf`);
+    downloadBtn.style.display = "flex";
+    document.getElementById('openBtn').style.display = "flex";
+  }
 
-/* ===== RUN EXTRACTION ===== */
-async function runExtraction() {
-  if (!matchedPdfPage) return;
-  const statusDiv = document.getElementById('status');
-  statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Data পড়া হচ্ছে...";
-  try {
-    let rawText = "", parsed = null;
-    try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
-    if (!parsed || !parsed.totalHourLine) {
-      statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
-      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
-      const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
+  /* ===== RUN EXTRACTION ===== */
+  async function runExtraction() {
+    if (!matchedPdfPage) return;
+    const statusDiv = document.getElementById('status');
+    statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Data পড়া হচ্ছে...";
+    try {
+      let rawText = "", parsed = null;
+      try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
+      if (!parsed || !parsed.totalHourLine) {
+        statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
+        if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
+        const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
+        const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
+        const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
+      }
+      let gradeText = "";
+      const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
+      if (gm) gradeText = gm[0];
+      const detection = detectCategory(gradeText, currentSearchId);
+      applyExtraction(parsed, detection);
+      const r = RATE_TABLE[detection.category] || RATE_TABLE.JO;
+      const otAmount = parsed.otHours * r.otRate;
+      let holidayAmount = 0;
+      if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
+      else holidayAmount = parsed.holidayCount * r.holidayFlat;
+      const nightAmount = parsed.nightCount * r.nightRate;
+      currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
+      const myAmountDiv = document.getElementById('compareMyAmount');
+      myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
+      statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
+      ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
+      const nc = document.getElementById('noticesCard');
+      if (nc) { nc.classList.add('show'); nc.style.display = 'block'; }
+      setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
+    } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Extraction সমস্যা: " + e.message; throw e; }
+  }
+
+  /* ===== APPLY EXTRACTION ===== */
+  function applyExtraction(parsed, detection) {
+    const gradeInfo = document.getElementById('gradeInfo');
+    const calcInputs = document.getElementById('calcInputs');
+    const categoryBadge = document.getElementById('categoryBadge');
+    if (detection.gradeText || detection.reason) { gradeInfo.style.display = "block"; gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason}`; }
+    if (detection.valid && detection.category) {
+      document.getElementById('inpCategory').value = detection.category;
+      document.getElementById('inpOtHours').value = parsed.otHours;
+      document.getElementById('inpHoliday').value = parsed.holidayCount;
+      document.getElementById('inpNight').value = parsed.nightCount;
+      categoryBadge.className = "badge"; categoryBadge.innerText = RATE_TABLE[detection.category].name;
+      calcInputs.style.display = "block"; recalculate();
+    } else {
+      document.getElementById('inpCategory').value = "JO";
+      document.getElementById('inpOtHours').value = 0;
+      document.getElementById('inpHoliday').value = 0;
+      document.getElementById('inpNight').value = 0;
+      categoryBadge.className = "badge warn"; categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
+      calcInputs.style.display = "none"; recalculate();
     }
-    let gradeText = "";
-    const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-    if (gm) gradeText = gm[0];
-    const detection = detectCategory(gradeText, currentSearchId);
-    applyExtraction(parsed, detection);
-    const r = RATE_TABLE[detection.category] || RATE_TABLE.JO;
-    const otAmount = parsed.otHours * r.otRate;
-    let holidayAmount = 0;
-    if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
-    else holidayAmount = parsed.holidayCount * r.holidayFlat;
-    const nightAmount = parsed.nightCount * r.nightRate;
-    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
-    const myAmountDiv = document.getElementById('compareMyAmount');
-    myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
-    statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
-    ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
-    // Show notices card after result too
-    const nc = document.getElementById('noticesCard');
-    if (nc) { nc.classList.add('show'); nc.style.display = 'block'; }
-    setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
-  } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Extraction সমস্যা: " + e.message; throw e; }
-}
-
-/* ===== APPLY EXTRACTION ===== */
-function applyExtraction(parsed, detection) {
-  const gradeInfo = document.getElementById('gradeInfo');
-  const calcInputs = document.getElementById('calcInputs');
-  const categoryBadge = document.getElementById('categoryBadge');
-  if (detection.gradeText || detection.reason) { gradeInfo.style.display = "block"; gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason}`; }
-  if (detection.valid && detection.category) {
-    document.getElementById('inpCategory').value = detection.category;
-    document.getElementById('inpOtHours').value = parsed.otHours;
-    document.getElementById('inpHoliday').value = parsed.holidayCount;
-    document.getElementById('inpNight').value = parsed.nightCount;
-    categoryBadge.className = "badge"; categoryBadge.innerText = RATE_TABLE[detection.category].name;
-    calcInputs.style.display = "block"; recalculate();
-  } else {
-    document.getElementById('inpCategory').value = "JO";
-    document.getElementById('inpOtHours').value = 0;
-    document.getElementById('inpHoliday').value = 0;
-    document.getElementById('inpNight').value = 0;
-    categoryBadge.className = "badge warn"; categoryBadge.innerText = "হিসাব করা সম্ভব নয়";
-    calcInputs.style.display = "none"; recalculate();
+    showHolidayList(parsed.holidayDays);
+    showNightList(parsed.nightDays);
+    showRemarks(parsed.punchProblems, detection);
   }
-  showHolidayList(parsed.holidayDays);
-  showNightList(parsed.nightDays);
-  showRemarks(parsed.punchProblems, detection);
-}
 
-/* ===== DETECT CATEGORY ===== */
-function detectCategory(gradeText, empId) {
-  const g = (gradeText || "").toUpperCase().trim();
-  if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual", gradeText: g || "CF" };
-  if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) return { category: null, valid: false, reason: "Management/Executive", gradeText: g };
-  const gradeMatch = g.match(/JUNIOR\s+OFFICER\s+([A-F])\b/i);
-  const levelMatch = g.match(/\bM(\d{2})\b/);
-  const gradeLetter = gradeMatch ? gradeMatch[1].toUpperCase() : null;
-  const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
-  if (gradeLetter) { if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter} (A/B - Same package)`, gradeText: g }; if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; }
-  if (levelNum !== null) { if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum} (A/B)`, gradeText: g }; if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g }; return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g }; }
-  return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
-}
-
-/* ===== PARSE TEXT ===== */
-function parseText(rawText) {
-  const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-  let otHours = 0, nightCount = 0;
-  let holidayDays = [], nightDays = [], punchProblems = [];
-  let totalHourLine = false;
-  const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
-  if (thIndex !== -1) {
-    const after = cleanText.substring(thIndex, thIndex + 300);
-    const numbers = after.match(/\d+\.\d+|\d+/g) || [];
-    if (numbers.length >= 7) {
-      const n = numbers.slice(0, 7).map(x => parseFloat(x));
-      const valid = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 && n[3] >= 0 && n[4] >= 0 && n[5] >= 0 && Number.isInteger(n[6]) && n[6] < 200;
-      if (valid) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; }
-    }
+  /* ===== DETECT CATEGORY ===== */
+  function detectCategory(gradeText, empId) {
+    const g = (gradeText || "").toUpperCase().trim();
+    if (empId.startsWith("CF")) return { category: "CF", valid: true, reason: "Contractual", gradeText: g || "CF" };
+    if (/\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b/i.test(g) && !/JUNIOR\s+OFFICER/i.test(g)) return { category: null, valid: false, reason: "Management/Executive", gradeText: g };
+    const gradeMatch = g.match(/JUNIOR\s+OFFICER\s+([A-F])\b/i);
+    const levelMatch = g.match(/\bM(\d{2})\b/);
+    const gradeLetter = gradeMatch ? gradeMatch[1].toUpperCase() : null;
+    const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
+    if (gradeLetter) { if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; }
+    if (levelNum !== null) { if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum}`, gradeText: g }; if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g }; return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g }; }
+    return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
   }
-  if (!totalHourLine) {
-    const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
-    if (allNums.length >= 7) { const n = allNums.slice(-7).map(parseFloat); if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; } }
-  }
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
-  let rm;
-  const seenDates = new Set();
-  while ((rm = rowRegex.exec(cleanText)) !== null) {
-    const date = rm[1];
-    if (seenDates.has(date)) continue;
-    seenDates.add(date);
-    const doDuty = parseFloat(rm[4]) || 0, doExtra = parseFloat(rm[5]) || 0;
-    const holDuty = parseFloat(rm[6]) || 0, holExtra = parseFloat(rm[7]) || 0;
-    const isNight = rm[8].toUpperCase() === "YES";
-    const inTime = rm[9], outTime = rm[10];
-    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
-    if (isNight) nightDays.push(date);
-    if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
-  }
-  return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
-}
 
-/* ===== LISTS ===== */
-function showHolidayList(list) {
-  const box = document.getElementById('holidayList');
-  const cnt = document.getElementById('holidayCount');
-  cnt.textContent = bn(list ? list.length : 0);
-  if (!list || list.length === 0) box.innerText = "এই মাসে কোনো হলিডে বা DO ডিউটি নেই";
-  else box.innerHTML = list.map((d, i) => { const parts = []; if (d.doDuty > 0) parts.push(`DO Duty ${d.doDuty} hr`); if (d.doExtra > 0) parts.push(`DO Extra ${d.doExtra} hr`); if (d.holDuty > 0) parts.push(`Holiday ${d.holDuty} hr`); if (d.holExtra > 0) parts.push(`Holiday Extra ${d.holExtra} hr`); return `${i + 1}. ${d.date} — ${parts.join(", ")}`; }).join("<br>");
-}
-function showNightList(list) {
-  const box = document.getElementById('nightList');
-  const cnt = document.getElementById('nightCount');
-  cnt.textContent = bn(list ? list.length : 0);
-  if (!list || list.length === 0) box.innerText = "এই মাসে কোনো নাইট ডিউটি নেই";
-  else box.innerHTML = list.map((d, i) => `${i + 1}. ${d}`).join("<br>");
-}
-function showRemarks(punchProblems, detection) {
-  const box = document.getElementById('remarksBox');
-  const issues = [];
-  if (!detection.valid) issues.push(`Grade সমস্যা: ${detection.reason}`);
-  if (punchProblems && punchProblems.length > 0) issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
-  if (issues.length === 0) { box.className = "remarks-box remarks-ok"; box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।"; }
-  else if (!detection.valid && punchProblems.length > 0) { box.className = "remarks-box remarks-error"; box.innerHTML = `সমস্যা:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`; }
-  else if (!detection.valid) { box.className = "remarks-box remarks-error"; box.innerHTML = `আপনার Grade/Designation ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
-  else { box.className = "remarks-box remarks-warn"; box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
-}
-
-/* ===== RECALCULATE ===== */
-function recalculate() {
-  const cat = document.getElementById('inpCategory').value;
-  const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
-  const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
-  const night = parseInt(document.getElementById('inpNight').value) || 0;
-  const r = RATE_TABLE[cat];
-  const otAmount = otHours * r.otRate;
-  let holidayAmount = 0;
-  if (r.holidayType === "hourly") holidayAmount = holiday * r.holidayHours * r.otRate;
-  else holidayAmount = holiday * r.holidayFlat;
-  const nightAmount = night * r.nightRate;
-  const grandTotal = otAmount + holidayAmount + nightAmount;
-  document.getElementById('lblRate').innerText = `৳ ${r.otRate}/hr`;
-  document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
-  document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
-  document.getElementById('lblNightAmount').innerText = `৳ ${nightAmount.toFixed(2)}`;
-  document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
-}
-
-/* ===== COMPARISON ===== */
-async function runComparison() {
-  const otherId = document.getElementById('compareId').value.trim().toUpperCase();
-  const statusDiv = document.getElementById('compareStatus');
-  const compareBtn = document.getElementById('compareBtn');
-  const resultDiv = document.getElementById('compareResult');
-  if (!otherId) { alert("অন্য Employee ID লিখুন!"); return; }
-  if (otherId === currentSearchId) { alert("একই ID দিয়ে তুলনা করা যাবে না!"); return; }
-  if (!currentResult) { alert("প্রথমে হিসাব সম্পন্ন হতে হবে।"); return; }
-  compareBtn.disabled = true; resultDiv.style.display = "none";
-  const cached = getCompareCache(currentMonth, currentSearchId, otherId);
-  if (cached) { statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন"; showComparison(currentResult, cached.other, cached.otherId); compareBtn.disabled = false; return; }
-  statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "খোঁজা হচ্ছে... একটু সময় লাগবে।";
-  try {
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
-    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    currentToken++; const myToken = currentToken;
-    const match = await parallelSearch(pdfFiles, otherId, myToken, null);
-    if (!match) { statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `আইডি "${otherId}" পাওয়া যায়নি`; compareBtn.disabled = false; return; }
-    statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Data extract হচ্ছে...";
-    let otherParsed = null, otherGradeText = "";
-    try { const tc = await match.page.getTextContent(); const txt = tc.items.map(i => i.str).join(" "); const cleanText = txt.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt); const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0]; } catch (e) {}
-    if (!otherParsed || !otherParsed.totalHourLine) {
-      statusDiv.innerText = "OCR চলছে...";
-      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
-      const viewport = match.page.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      await match.page.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas); const ocrTxt = ocrResult?.data?.text || ""; otherParsed = parseText(ocrTxt);
-      const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0];
-    }
-    const otherDetect = detectCategory(otherGradeText, otherId);
-    const r = RATE_TABLE[otherDetect.category] || RATE_TABLE.JO;
-    const otAmount = otherParsed.otHours * r.otRate;
-    let holidayAmount = 0;
-    if (r.holidayType === "hourly") holidayAmount = otherParsed.holidayCount * r.holidayHours * r.otRate;
-    else holidayAmount = otherParsed.holidayCount * r.holidayFlat;
-    const nightAmount = otherParsed.nightCount * r.nightRate;
-    const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
-    setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
-    showComparison(currentResult, otherResult, otherId);
-    statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন";
-  } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "তুলনায় সমস্যা: " + e.message; } finally { compareBtn.disabled = false; }
-}
-
-function showComparison(mine, other, otherId) {
-  const div = document.getElementById('compareResult');
-  const diff = mine.totalEarned - other.totalEarned;
-  const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন` : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন` : `সমান পেয়েছেন`;
-  div.innerHTML = `
-    <table class="compare-table">
-      <tr><th></th><th>আপনি</th><th>${otherId}</th></tr>
-      <tr><td>ক্যাটাগরি</td><td>${RATE_TABLE[mine.category]?.name || '—'}</td><td>${other.categoryName || '—'}</td></tr>
-      <tr><td>ওটি ঘণ্টা</td><td>${mine.otHours}</td><td>${other.otHours}</td></tr>
-      <tr><td>হলিডে</td><td>${mine.holiday}</td><td>${other.holiday}</td></tr>
-      <tr><td>নাইট</td><td>${mine.night}</td><td>${other.night}</td></tr>
-      <tr><td>ওটি বিল</td><td>৳ ${mine.otAmount.toFixed(2)}</td><td>৳ ${other.otAmount.toFixed(2)}</td></tr>
-      <tr><td>হলিডে বিল</td><td>৳ ${mine.holidayAmount.toFixed(2)}</td><td>৳ ${other.holidayAmount.toFixed(2)}</td></tr>
-      <tr><td>নাইট বিল</td><td>৳ ${mine.nightAmount.toFixed(2)}</td><td>৳ ${other.nightAmount.toFixed(2)}</td></tr>
-      <tr class="total-row"><td>সর্বমোট</td><td>৳ ${mine.totalEarned.toFixed(2)}</td><td>৳ ${other.totalEarned.toFixed(2)}</td></tr>
-    </table>
-    <div class="compare-diff"><strong>${diffText}</strong></div>
-    <button onclick="resetComparison()" class="reset-btn">আরেকজনের সাথে তুলনা</button>`;
-  div.style.display = "block";
-  document.getElementById('compareInputArea').style.display = "none";
-}
-function resetComparison() { document.getElementById('compareResult').style.display = "none"; document.getElementById('compareInputArea').style.display = "block"; document.getElementById('compareId').value = ""; document.getElementById('compareStatus').innerText = ""; }
-
-/* ===== LEADERBOARD ===== */
-function initLeaderboardPage() {
-  const month = getCurrentMonth();
-  document.getElementById('lbSubtitle').innerText = month;
-  const cached = getLeaderboardCache(month);
-  if (cached) {
-    currentLeaderboardResult = cached;
-    renderLeaderboardResult(cached);
-    document.getElementById('lbInitialCard').style.display = "none";
-    document.getElementById('lbScanCard').style.display = "none";
-    document.getElementById('lbResultCard').style.display = "block";
-  } else {
-    document.getElementById('lbInitialCard').style.display = "block";
-    document.getElementById('lbScanCard').style.display = "none";
-    document.getElementById('lbResultCard').style.display = "none";
-  }
-}
-function getCurrentMonth() { return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`; }
-
-async function startLeaderboardScan(forceRescan = false) {
-  const month = getCurrentMonth();
-  isScanning = true;
-  document.getElementById('lbInitialCard').style.display = "none";
-  document.getElementById('lbScanCard').style.display = "block";
-  document.getElementById('lbResultCard').style.display = "none";
-  const counter = document.getElementById('lbScanCounter');
-  const fill = document.getElementById('lbScanFill');
-  const hint = document.getElementById('lbScanHint');
-  counter.innerText = "০ / ০ employee scan হয়েছে";
-  fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
-  try {
-    if (!forceRescan) {
-      const cached = getLeaderboardCache(month);
-      if (cached) { hint.innerText = "ক্যাশ থেকে লোড হয়েছে"; fill.style.width = "100%"; setTimeout(() => { currentLeaderboardResult = cached; renderLeaderboardResult(cached); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 300); return; }
-    }
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
-    hint.innerText = "PDF লোড হচ্ছে...";
-    const loadedPdfs = [];
-    for (const file of pdfFiles) { const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise; loadedPdfs.push({ file, pdf }); }
-    let totalPages = 0; loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
-    const employees = []; const skipped = [];
-    let processedPages = 0;
-    for (const { file, pdf } of loadedPdfs) {
-      const numPages = pdf.numPages;
-      const CONCURRENCY = 4;
-      let nextPage = 1;
-      while (nextPage <= numPages) {
-        const batch = [];
-        for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
-        nextPage += batch.length;
-        const results = await Promise.all(batch);
-        for (const r of results) { if (r.valid) employees.push(r); else if (r.id) skipped.push(r.id); }
-        processedPages += results.length;
-        const percent = Math.floor((processedPages / totalPages) * 100);
-        fill.style.width = percent + "%";
-        counter.innerText = `${bn(processedPages)} / ${bn(totalPages)} employee scan হয়েছে`;
-        hint.innerText = "ধৈর্য ধরুন...";
-        await new Promise(res => setTimeout(res, 10));
+  /* ===== PARSE TEXT ===== */
+  function parseText(rawText) {
+    const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
+    let otHours = 0, nightCount = 0;
+    let holidayDays = [], nightDays = [], punchProblems = [];
+    let totalHourLine = false;
+    const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
+    if (thIndex !== -1) {
+      const after = cleanText.substring(thIndex, thIndex + 300);
+      const numbers = after.match(/\d+\.\d+|\d+/g) || [];
+      if (numbers.length >= 7) {
+        const n = numbers.slice(0, 7).map(x => parseFloat(x));
+        const valid = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 && n[3] >= 0 && n[4] >= 0 && n[5] >= 0 && Number.isInteger(n[6]) && n[6] < 200;
+        if (valid) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; }
       }
     }
-    const validEmps = employees.filter(e => e.valid);
-    const sortedByDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty);
-    const sortedByOT = [...validEmps].sort((a,b) => b.otHours - a.otHours);
-    const sortedByEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned);
-    const result = { month, allEmployees: validEmps, sortedByDuty, sortedByOT, sortedByEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
-    setLeaderboardCache(month, result);
-    currentLeaderboardResult = result;
-    fill.style.width = "100%"; hint.innerText = "সম্পন্ন!";
-    setTimeout(() => { renderLeaderboardResult(result); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 400);
-  } catch (e) { console.error(e); hint.innerText = "সমস্যা: " + e.message; isScanning = false; setTimeout(() => { document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbInitialCard').style.display = "block"; }, 2000); }
-}
-
-async function processLeaderboardPage(pdf, pageNum) {
-  try {
-    const page = await pdf.getPage(pageNum);
-    const tc = await page.getTextContent();
-    const items = tc.items.map(i => i.str);
-    const text = items.join(" ");
-    const upper = text.toUpperCase();
-    const idMatch = upper.match(/\b(CF|RF)\d{3,5}\b/);
-    if (!idMatch) return { valid: false, id: null };
-    const id = idMatch[0];
-    const cleanText = upper.replace(/\s+/g, " ");
-    if (!/TOTAL\s*HOUR/i.test(cleanText)) return { valid: false, id };
-    const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
-    const name = nameMatch ? nameMatch[1].trim().substring(0, 45) : "";
-    const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-    const gradeText = gm ? gm[0] : "";
-    const detection = detectCategory(gradeText, id);
-    if (!detection.valid) return { valid: false, id };
-    const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
-    const after = cleanText.substring(thIndex, thIndex + 300);
-    const nums = (after.match(/\d+\.\d+|\d+/g) || []).slice(0, 7).map(parseFloat);
-    if (nums.length < 7) return { valid: false, id };
-    const regDuty = nums[0] || 0, regExtra = nums[1] || 0;
-    const doDuty = nums[2] || 0, doExtra = nums[3] || 0;
-    const holDuty = nums[4] || 0, holExtra = nums[5] || 0;
-    const nightCount = nums[6] || 0;
-    const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
-    const otHours = regExtra + doExtra + holExtra;
-    let holidayCount = 0;
-    const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
-    let rm; const seen = new Set();
-    while ((rm = rowRegex.exec(cleanText)) !== null) {
-      if (seen.has(rm[1])) continue;
-      seen.add(rm[1]);
-      const dd = parseFloat(rm[4]) || 0, de = parseFloat(rm[5]) || 0;
-      const hd = parseFloat(rm[6]) || 0, he = parseFloat(rm[7]) || 0;
-      if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
+    if (!totalHourLine) {
+      const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
+      if (allNums.length >= 7) { const n = allNums.slice(-7).map(parseFloat); if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; } }
     }
-    const r = RATE_TABLE[detection.category];
+    const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
+    let rm;
+    const seenDates = new Set();
+    while ((rm = rowRegex.exec(cleanText)) !== null) {
+      const date = rm[1];
+      if (seenDates.has(date)) continue;
+      seenDates.add(date);
+      const doDuty = parseFloat(rm[4]) || 0, doExtra = parseFloat(rm[5]) || 0;
+      const holDuty = parseFloat(rm[6]) || 0, holExtra = parseFloat(rm[7]) || 0;
+      const isNight = rm[8].toUpperCase() === "YES";
+      const inTime = rm[9], outTime = rm[10];
+      if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
+      if (isNight) nightDays.push(date);
+      if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
+    }
+    return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine };
+  }
+
+  /* ===== LISTS ===== */
+  function showHolidayList(list) {
+    const box = document.getElementById('holidayList');
+    const cnt = document.getElementById('holidayCount');
+    cnt.textContent = bn(list ? list.length : 0);
+    if (!list || list.length === 0) box.innerText = "এই মাসে কোনো হলিডে বা DO ডিউটি নেই";
+    else box.innerHTML = list.map((d, i) => { const parts = []; if (d.doDuty > 0) parts.push(`DO Duty ${d.doDuty} hr`); if (d.doExtra > 0) parts.push(`DO Extra ${d.doExtra} hr`); if (d.holDuty > 0) parts.push(`Holiday ${d.holDuty} hr`); if (d.holExtra > 0) parts.push(`Holiday Extra ${d.holExtra} hr`); return `${i + 1}. ${d.date} — ${parts.join(", ")}`; }).join("<br>");
+  }
+  function showNightList(list) {
+    const box = document.getElementById('nightList');
+    const cnt = document.getElementById('nightCount');
+    cnt.textContent = bn(list ? list.length : 0);
+    if (!list || list.length === 0) box.innerText = "এই মাসে কোনো নাইট ডিউটি নেই";
+    else box.innerHTML = list.map((d, i) => `${i + 1}. ${d}`).join("<br>");
+  }
+  function showRemarks(punchProblems, detection) {
+    const box = document.getElementById('remarksBox');
+    const issues = [];
+    if (!detection.valid) issues.push(`Grade সমস্যা: ${detection.reason}`);
+    if (punchProblems && punchProblems.length > 0) issues.push(`In/Out Punch সমস্যা: ${punchProblems.map(p => p.date).join(", ")}`);
+    if (issues.length === 0) { box.className = "remarks-box remarks-ok"; box.innerHTML = "আপনার সব In/Out Punch সঠিক আছে।"; }
+    else if (!detection.valid && punchProblems.length > 0) { box.className = "remarks-box remarks-error"; box.innerHTML = `সমস্যা:<ul>${issues.map(i => `<li>${i}</li>`).join("")}</ul>ERP Team-এর সাথে যোগাযোগ করুন।`; }
+    else if (!detection.valid) { box.className = "remarks-box remarks-error"; box.innerHTML = `আপনার Grade/Designation ক্যাটাগরির বাইরে।<br>হিসাব করা সম্ভব নয়।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
+    else { box.className = "remarks-box remarks-warn"; box.innerHTML = `আপনার ${punchProblems.map(p => p.date).join(", ")} তারিখে In/Out Punch-এ সমস্যা আছে।<br>ERP Team-এর সাথে যোগাযোগ করুন।`; }
+  }
+
+  /* ===== RECALCULATE ===== */
+  function recalculate() {
+    const cat = document.getElementById('inpCategory').value;
+    const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
+    const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
+    const night = parseInt(document.getElementById('inpNight').value) || 0;
+    const r = RATE_TABLE[cat];
     const otAmount = otHours * r.otRate;
     let holidayAmount = 0;
-    if (r.holidayType === "hourly") holidayAmount = holidayCount * r.holidayHours * r.otRate;
-    else holidayAmount = holidayCount * r.holidayFlat;
-    const nightAmount = nightCount * r.nightRate;
-    const totalEarned = otAmount + holidayAmount + nightAmount;
-    return { valid: true, id, name, grade: gradeText, category: detection.category, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
-  } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
-}
+    if (r.holidayType === "hourly") holidayAmount = holiday * r.holidayHours * r.otRate;
+    else holidayAmount = holiday * r.holidayFlat;
+    const nightAmount = night * r.nightRate;
+    const grandTotal = otAmount + holidayAmount + nightAmount;
+    document.getElementById('lblRate').innerText = `৳ ${r.otRate}/hr`;
+    document.getElementById('lblOtAmount').innerText = `৳ ${otAmount.toFixed(2)}`;
+    document.getElementById('lblHolidayAmount').innerText = `৳ ${holidayAmount.toFixed(2)}`;
+    document.getElementById('lblNightAmount').innerText = `৳ ${nightAmount.toFixed(2)}`;
+    document.getElementById('lblGrandTotal').innerText = `৳ ${grandTotal.toFixed(2)}`;
+  }
 
-function renderLeaderboardResult(result) {
-  try {
-    currentLeaderboardResult = result;
-    const topDuty = result.sortedByDuty.slice(0, 3);
-    const topOT = result.sortedByOT.slice(0, 3);
-    const topEarned = result.sortedByEarned.slice(0, 3);
-    renderTop3('lbTopDuty', topDuty, 'duty');
-    renderTop3('lbTopOT', topOT, 'ot');
-    renderTop3('lbTopEarned', topEarned, 'earned');
-    updateMyRankNotes();
-    const badDiv = document.getElementById('lbBadData');
-    if (result.skippedCount > 0) { badDiv.style.display = "block"; badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`; }
-    else badDiv.style.display = "none";
-  } catch (e) { console.error("renderLeaderboardResult error:", e); alert("Leaderboard render error: " + e.message); }
-}
+  /* ===== COMPARISON ===== */
+  async function runComparison() {
+    const otherId = document.getElementById('compareId').value.trim().toUpperCase();
+    const statusDiv = document.getElementById('compareStatus');
+    const compareBtn = document.getElementById('compareBtn');
+    const resultDiv = document.getElementById('compareResult');
+    if (!otherId) { alert("অন্য Employee ID লিখুন!"); return; }
+    if (otherId === currentSearchId) { alert("একই ID দিয়ে তুলনা করা যাবে না!"); return; }
+    if (!currentResult) { alert("প্রথমে হিসাব সম্পন্ন হতে হবে।"); return; }
+    compareBtn.disabled = true; resultDiv.style.display = "none";
+    const cached = getCompareCache(currentMonth, currentSearchId, otherId);
+    if (cached) { statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন"; showComparison(currentResult, cached.other, cached.otherId); compareBtn.disabled = false; return; }
+    statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "খোঁজা হচ্ছে... একটু সময় লাগবে।";
+    try {
+      const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
+      const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
+      const filesData = await resp.json();
+      const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
+      currentToken++; const myToken = currentToken;
+      const match = await parallelSearch(pdfFiles, otherId, myToken, null);
+      if (!match) { statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `আইডি "${otherId}" পাওয়া যায়নি`; compareBtn.disabled = false; return; }
+      statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Data extract হচ্ছে...";
+      let otherParsed = null, otherGradeText = "";
+      try { const tc = await match.page.getTextContent(); const txt = tc.items.map(i => i.str).join(" "); const cleanText = txt.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt); const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0]; } catch (e) {}
+      if (!otherParsed || !otherParsed.totalHourLine) {
+        statusDiv.innerText = "OCR চলছে...";
+        if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
+        const viewport = match.page.getViewport({ scale: 3.0 });
+        const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await match.page.render({ canvasContext: ctx, viewport }).promise;
+        const ocrResult = await ocrWorker.recognize(canvas); const ocrTxt = ocrResult?.data?.text || ""; otherParsed = parseText(ocrTxt);
+        const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0];
+      }
+      const otherDetect = detectCategory(otherGradeText, otherId);
+      const r = RATE_TABLE[otherDetect.category] || RATE_TABLE.JO;
+      const otAmount = otherParsed.otHours * r.otRate;
+      let holidayAmount = 0;
+      if (r.holidayType === "hourly") holidayAmount = otherParsed.holidayCount * r.holidayHours * r.otRate;
+      else holidayAmount = otherParsed.holidayCount * r.holidayFlat;
+      const nightAmount = otherParsed.nightCount * r.nightRate;
+      const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
+      setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
+      showComparison(currentResult, otherResult, otherId);
+      statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন";
+    } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "তুলনায় সমস্যা: " + e.message; } finally { compareBtn.disabled = false; }
+  }
 
-function renderTop3(elementId, list, type) {
-  const box = document.getElementById(elementId);
-  if (!box) return;
-  if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px 0;">কোনো data পাওয়া যায়নি</div>'; return; }
-  box.innerHTML = list.map((e, i) => {
-    let valueStr = "", metaStr = "";
-    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || '—'; }
-    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || '—'; }
-    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
-    return `<div class="rank-item rank-${i + 1}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
-      <div class="rank-number">${i + 1}</div>
-      <div class="rank-info"><div class="rank-name">${e.name || '—'}</div><div class="rank-id">${e.id}</div></div>
-      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
-    </div>`;
-  }).join('');
-}
+  function showComparison(mine, other, otherId) {
+    const div = document.getElementById('compareResult');
+    const diff = mine.totalEarned - other.totalEarned;
+    const diffText = diff > 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} বেশি পেয়েছেন` : diff < 0 ? `আপনি ৳ ${Math.abs(diff).toFixed(2)} কম পেয়েছেন` : `সমান পেয়েছেন`;
+    div.innerHTML = `
+      <table class="compare-table">
+        <tr><th></th><th>আপনি</th><th>${otherId}</th></tr>
+        <tr><td>ক্যাটাগরি</td><td>${RATE_TABLE[mine.category]?.name || '—'}</td><td>${other.categoryName || '—'}</td></tr>
+        <tr><td>ওটি ঘণ্টা</td><td>${mine.otHours}</td><td>${other.otHours}</td></tr>
+        <tr><td>হলিডে</td><td>${mine.holiday}</td><td>${other.holiday}</td></tr>
+        <tr><td>নাইট</td><td>${mine.night}</td><td>${other.night}</td></tr>
+        <tr><td>ওটি বিল</td><td>৳ ${mine.otAmount.toFixed(2)}</td><td>৳ ${other.otAmount.toFixed(2)}</td></tr>
+        <tr><td>হলিডে বিল</td><td>৳ ${mine.holidayAmount.toFixed(2)}</td><td>৳ ${other.holidayAmount.toFixed(2)}</td></tr>
+        <tr><td>নাইট বিল</td><td>৳ ${mine.nightAmount.toFixed(2)}</td><td>৳ ${other.nightAmount.toFixed(2)}</td></tr>
+        <tr class="total-row"><td>সর্বমোট</td><td>৳ ${mine.totalEarned.toFixed(2)}</td><td>৳ ${other.totalEarned.toFixed(2)}</td></tr>
+      </table>
+      <div class="compare-diff"><strong>${diffText}</strong></div>
+      <button onclick="resetComparison()" class="reset-btn">আরেকজনের সাথে তুলনা</button>`;
+    div.style.display = "block";
+    document.getElementById('compareInputArea').style.display = "none";
+  }
+  function resetComparison() { document.getElementById('compareResult').style.display = "none"; document.getElementById('compareInputArea').style.display = "block"; document.getElementById('compareId').value = ""; document.getElementById('compareStatus').innerText = ""; }
 
-function updateMyRankNotes() {
-  const myId = currentSearchId;
-  const mapping = { duty: 'Duty', ot: 'OT', earned: 'Earned' };
-  Object.keys(mapping).forEach(type => {
+  /* ===== LEADERBOARD ===== */
+  function initLeaderboardPage() {
+    const month = getCurrentMonth();
+    document.getElementById('lbSubtitle').innerText = month;
+    const cached = getLeaderboardCache(month);
+    if (cached) {
+      currentLeaderboardResult = cached;
+      renderLeaderboardResult(cached);
+      document.getElementById('lbInitialCard').style.display = "none";
+      document.getElementById('lbScanCard').style.display = "none";
+      document.getElementById('lbResultCard').style.display = "block";
+    } else {
+      document.getElementById('lbInitialCard').style.display = "block";
+      document.getElementById('lbScanCard').style.display = "none";
+      document.getElementById('lbResultCard').style.display = "none";
+    }
+  }
+  function getCurrentMonth() { return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`; }
+
+  async function startLeaderboardScan(forceRescan = false) {
+    const month = getCurrentMonth();
+    isScanning = true;
+    document.getElementById('lbInitialCard').style.display = "none";
+    document.getElementById('lbScanCard').style.display = "block";
+    document.getElementById('lbResultCard').style.display = "none";
+    const counter = document.getElementById('lbScanCounter');
+    const fill = document.getElementById('lbScanFill');
+    const hint = document.getElementById('lbScanHint');
+    counter.innerText = "০ / ০ employee scan হয়েছে";
+    fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
+    try {
+      if (!forceRescan) {
+        const cached = getLeaderboardCache(month);
+        if (cached) { hint.innerText = "ক্যাশ থেকে লোড হয়েছে"; fill.style.width = "100%"; setTimeout(() => { currentLeaderboardResult = cached; renderLeaderboardResult(cached); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 300); return; }
+      }
+      const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
+      const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("ফোল্ডার পাওয়া যায়নি");
+      const filesData = await resp.json();
+      const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
+      if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো PDF নেই");
+      hint.innerText = "PDF লোড হচ্ছে...";
+      const loadedPdfs = [];
+      for (const file of pdfFiles) { const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise; loadedPdfs.push({ file, pdf }); }
+      let totalPages = 0; loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
+      const employees = []; const skipped = [];
+      let processedPages = 0;
+      for (const { file, pdf } of loadedPdfs) {
+        const numPages = pdf.numPages;
+        const CONCURRENCY = 4;
+        let nextPage = 1;
+        while (nextPage <= numPages) {
+          const batch = [];
+          for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
+          nextPage += batch.length;
+          const results = await Promise.all(batch);
+          for (const r of results) { if (r.valid) employees.push(r); else if (r.id) skipped.push(r.id); }
+          processedPages += results.length;
+          const percent = Math.floor((processedPages / totalPages) * 100);
+          fill.style.width = percent + "%";
+          counter.innerText = `${bn(processedPages)} / ${bn(totalPages)} employee scan হয়েছে`;
+          hint.innerText = "ধৈর্য ধরুন...";
+          await new Promise(res => setTimeout(res, 10));
+        }
+      }
+      const validEmps = employees.filter(e => e.valid);
+      const sortedByDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty);
+      const sortedByOT = [...validEmps].sort((a,b) => b.otHours - a.otHours);
+      const sortedByEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned);
+      const result = { month, allEmployees: validEmps, sortedByDuty, sortedByOT, sortedByEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
+      setLeaderboardCache(month, result);
+      currentLeaderboardResult = result;
+      fill.style.width = "100%"; hint.innerText = "সম্পন্ন!";
+      setTimeout(() => { renderLeaderboardResult(result); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 400);
+    } catch (e) { console.error(e); hint.innerText = "সমস্যা: " + e.message; isScanning = false; setTimeout(() => { document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbInitialCard').style.display = "block"; }, 2000); }
+  }
+
+  async function processLeaderboardPage(pdf, pageNum) {
+    try {
+      const page = await pdf.getPage(pageNum);
+      const tc = await page.getTextContent();
+      const items = tc.items.map(i => i.str);
+      const text = items.join(" ");
+      const upper = text.toUpperCase();
+      const idMatch = upper.match(/\b(CF|RF)\d{3,5}\b/);
+      if (!idMatch) return { valid: false, id: null };
+      const id = idMatch[0];
+      const cleanText = upper.replace(/\s+/g, " ");
+      if (!/TOTAL\s*HOUR/i.test(cleanText)) return { valid: false, id };
+      const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
+      const name = nameMatch ? nameMatch[1].trim().substring(0, 45) : "";
+      const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
+      const gradeText = gm ? gm[0] : "";
+      const detection = detectCategory(gradeText, id);
+      if (!detection.valid) return { valid: false, id };
+      const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
+      const after = cleanText.substring(thIndex, thIndex + 300);
+      const nums = (after.match(/\d+\.\d+|\d+/g) || []).slice(0, 7).map(parseFloat);
+      if (nums.length < 7) return { valid: false, id };
+      const regDuty = nums[0] || 0, regExtra = nums[1] || 0;
+      const doDuty = nums[2] || 0, doExtra = nums[3] || 0;
+      const holDuty = nums[4] || 0, holExtra = nums[5] || 0;
+      const nightCount = nums[6] || 0;
+      const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
+      const otHours = regExtra + doExtra + holExtra;
+      let holidayCount = 0;
+      const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
+      let rm; const seen = new Set();
+      while ((rm = rowRegex.exec(cleanText)) !== null) {
+        if (seen.has(rm[1])) continue;
+        seen.add(rm[1]);
+        const dd = parseFloat(rm[4]) || 0, de = parseFloat(rm[5]) || 0;
+        const hd = parseFloat(rm[6]) || 0, he = parseFloat(rm[7]) || 0;
+        if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
+      }
+      const r = RATE_TABLE[detection.category];
+      const otAmount = otHours * r.otRate;
+      let holidayAmount = 0;
+      if (r.holidayType === "hourly") holidayAmount = holidayCount * r.holidayHours * r.otRate;
+      else holidayAmount = holidayCount * r.holidayFlat;
+      const nightAmount = nightCount * r.nightRate;
+      const totalEarned = otAmount + holidayAmount + nightAmount;
+      return { valid: true, id, name, grade: gradeText, category: detection.category, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
+    } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
+  }
+
+  function renderLeaderboardResult(result) {
+    try {
+      currentLeaderboardResult = result;
+      const topDuty = result.sortedByDuty.slice(0, 3);
+      const topOT = result.sortedByOT.slice(0, 3);
+      const topEarned = result.sortedByEarned.slice(0, 3);
+      renderTop3('lbTopDuty', topDuty, 'duty');
+      renderTop3('lbTopOT', topOT, 'ot');
+      renderTop3('lbTopEarned', topEarned, 'earned');
+      updateMyRankNotes();
+      const badDiv = document.getElementById('lbBadData');
+      if (result.skippedCount > 0) { badDiv.style.display = "block"; badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`; }
+      else badDiv.style.display = "none";
+    } catch (e) { console.error("renderLeaderboardResult error:", e); }
+  }
+
+  function renderTop3(elementId, list, type) {
+    const box = document.getElementById(elementId);
+    if (!box) return;
+    if (!list || list.length === 0) { box.innerHTML = '<div class="empty-msg" style="padding: 15px 0;">কোনো data পাওয়া যায়নি</div>'; return; }
+    box.innerHTML = list.map((e, i) => {
+      let valueStr = "", metaStr = "";
+      if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || '—'; }
+      else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || '—'; }
+      else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
+      return `<div class="rank-item rank-${i + 1}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
+        <div class="rank-number">${i + 1}</div>
+        <div class="rank-info"><div class="rank-name">${e.name || '—'}</div><div class="rank-id">${e.id}</div></div>
+        <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function updateMyRankNotes() {
+    const myId = currentSearchId;
+    const mapping = { duty: 'Duty', ot: 'OT', earned: 'Earned' };
+    Object.keys(mapping).forEach(type => {
+      const suffix = mapping[type];
+      const idSpan = document.getElementById(`myRank${suffix}Id`);
+      const posSpan = document.getElementById(`myRank${suffix}Pos`);
+      if (!idSpan || !posSpan) return;
+      if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
+      const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+      if (!sorted) { idSpan.textContent = myId; posSpan.textContent = "—"; return; }
+      const idx = sorted.findIndex(e => e.id === myId);
+      idSpan.textContent = myId;
+      if (idx === -1) posSpan.textContent = "তালিকায় নেই";
+      else {
+        const emp = sorted[idx];
+        const val = type === 'duty' ? `${emp.totalDuty} ঘণ্টা` : type === 'ot' ? `${emp.otHours} ঘণ্টা` : `৳ ${emp.totalEarned.toFixed(2)}`;
+        posSpan.textContent = `${bn(idx + 1)} তম (${val})`;
+      }
+    });
+  }
+
+  function toggleFullRanking(type) {
+    const mapping = { duty: 'Duty', ot: 'OT', earned: 'Earned' };
     const suffix = mapping[type];
-    const idSpan = document.getElementById(`myRank${suffix}Id`);
-    const posSpan = document.getElementById(`myRank${suffix}Pos`);
-    if (!idSpan || !posSpan) return;
-    if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
+    const boxId = `fullRanking${suffix}`;
+    const btnTextId = `${type}BtnText`;
+    const btnArrowId = `${type}BtnArrow`;
+    const box = document.getElementById(boxId);
+    const btnText = document.getElementById(btnTextId);
+    const btnArrow = document.getElementById(btnArrowId);
+    if (!box) return;
+    if (box.classList.contains('show')) {
+      box.classList.remove('show');
+      if (btnText) btnText.textContent = "সম্পূর্ণ তালিকা দেখুন";
+      if (btnArrow) btnArrow.textContent = "▼";
+      return;
+    }
+    if (!currentLeaderboardResult) return;
     const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
-    if (!sorted) { idSpan.textContent = myId; posSpan.textContent = "—"; return; }
-    const idx = sorted.findIndex(e => e.id === myId);
-    idSpan.textContent = myId;
-    if (idx === -1) posSpan.textContent = "তালিকায় নেই";
-    else {
-      const emp = sorted[idx];
-      const val = type === 'duty' ? `${emp.totalDuty} ঘণ্টা` : type === 'ot' ? `${emp.otHours} ঘণ্টা` : `৳ ${emp.totalEarned.toFixed(2)}`;
-      posSpan.textContent = `${bn(idx + 1)} তম (${val})`;
+    if (!sorted) return;
+    box.innerHTML = sorted.map((e, i) => {
+      const isMine = e.id === currentSearchId;
+      let valueStr = "", metaStr = "";
+      if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
+      else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
+      else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
+      return `<div class="rank-item ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
+        <div class="rank-number">${bn(i + 1)}</div>
+        <div class="rank-info"><div class="rank-name">${e.name || '—'}${isMine ? ' (আপনি)' : ''}</div><div class="rank-id">${e.id}</div></div>
+        <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
+      </div>`;
+    }).join('');
+    box.classList.add('show');
+    if (btnText) btnText.textContent = "সম্পূর্ণ তালিকা লুকান";
+    if (btnArrow) btnArrow.textContent = "▲";
+    setTimeout(() => { const myRow = box.querySelector('.rank-item.mine'); if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+  }
+
+  async function viewEmployeeFromLeaderboard(empId) {
+    const month = getCurrentMonth();
+    const [year, mon] = month.split('-');
+    document.getElementById('yearSelect').value = year;
+    document.getElementById('monthSelect').value = mon;
+    document.getElementById('employeeId').value = empId;
+    document.getElementById('backToLbBtn').style.display = "block";
+    switchPage('search');
+    setTimeout(() => { findReport(); }, 400);
+  }
+
+  /* ===== PDF HELPERS ===== */
+  async function extractSinglePagePdf(pdfUrl, pageNumber) {
+    const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
+    const src = await PDFLib.PDFDocument.load(bytes);
+    const out = await PDFLib.PDFDocument.create();
+    const [pg] = await out.copyPages(src, [pageNumber - 1]);
+    out.addPage(pg);
+    const outBytes = await out.save();
+    return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
+  }
+
+  function renderPageHD(page, targetCanvas, divider) {
+    const ctx = targetCanvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 2;
+    const viewport = page.getViewport({ scale: 2.5 });
+    targetCanvas.width = Math.floor(viewport.width * dpr);
+    targetCanvas.height = Math.floor(viewport.height * dpr);
+    targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
+    targetCanvas.style.height = "auto";
+    ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+    const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
+    page.render({ canvasContext: ctx, transform, viewport });
+  }
+
+  /* ===== MODAL ===== */
+  function openModal() {
+    if (!matchedPdfPage) return;
+    const modal = document.getElementById('pdfModal');
+    const mc = document.getElementById('modal-canvas');
+    mc.width = 0; mc.height = 0;
+    modal.style.display = "block"; document.body.style.overflow = "hidden";
+    const divider = window.innerWidth < 768 ? 1.15 : 1.0;
+    renderPageHD(matchedPdfPage, mc, divider);
+  }
+  function closeModal() {
+    const modal = document.getElementById('pdfModal');
+    if (modal.style.display === "block") {
+      modal.style.display = "none"; document.body.style.overflow = "auto";
+      const mc = document.getElementById('modal-canvas'); mc.width = 0; mc.height = 0;
+    }
+  }
+  function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
+
+  /* ===== RESET ===== */
+  function resetAll() {
+    ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
+    ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
+    document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
+    document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
+    document.getElementById('employeeId').value = "";
+    document.getElementById('inpOtHours').value = 0; document.getElementById('inpHoliday').value = 0; document.getElementById('inpNight').value = 0;
+    document.getElementById('compareId').value = "";
+    document.getElementById('compareResult').style.display = "none";
+    document.getElementById('compareInputArea').style.display = "block";
+    document.getElementById('compareStatus').innerText = "";
+    document.getElementById('backToLbBtn').style.display = "none";
+    currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
+    document.getElementById('searchFormCard').style.display = "block";
+    document.getElementById('searchSummary').classList.remove('show');
+    document.getElementById('mainHeader').classList.remove('compact');
+    setDefaultMonth();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ============================================================
+     SERVICE WORKER REGISTRATION (with update detection)
+     ============================================================ */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js', {
+          updateViaCache: 'none'
+        });
+        await registration.update();
+        console.log('[App] SW registered:', registration.scope);
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') console.log('[App] New SW activated');
+          });
+        });
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      } catch (e) {
+        console.warn('[App] SW registration failed:', e);
+      }
+    });
+  }
+
+  /* ============================================================
+     SMART NOTICE POLLING
+     - Aggressive (60s) for first 5 minutes
+     - Then switch to slow (5 min)
+     ============================================================ */
+  let noticePollInterval = null;
+  let noticePollCount = 0;
+  const FAST_POLL_INTERVAL = 60 * 1000;
+  const SLOW_POLL_INTERVAL = 5 * 60 * 1000;
+  const FAST_POLL_COUNT = 5;
+
+  function startNoticePolling() {
+    if (noticePollInterval) clearInterval(noticePollInterval);
+    noticePollCount = 0;
+
+    noticePollInterval = setInterval(async () => {
+      noticePollCount++;
+      const hasNoticesSection =
+        document.getElementById('noticesHomeList') ||
+        document.getElementById('noticesFullList');
+      if (hasNoticesSection && document.visibilityState === 'visible') {
+        try {
+          await renderNoticesHome();
+          if (document.getElementById('page-notices') &&
+              document.getElementById('page-notices').classList.contains('active')) {
+            await renderNoticesPage();
+          }
+        } catch (e) {}
+      }
+      if (noticePollCount >= FAST_POLL_COUNT) {
+        clearInterval(noticePollInterval);
+        noticePollInterval = setInterval(async () => {
+          if (document.visibilityState === 'visible') {
+            try { await renderNoticesHome(); } catch (e) {}
+          }
+        }, SLOW_POLL_INTERVAL);
+      }
+    }, FAST_POLL_INTERVAL);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      renderNoticesHome();
     }
   });
-}
 
-function toggleFullRanking(type) {
-  const mapping = { duty: 'Duty', ot: 'OT', earned: 'Earned' };
-  const suffix = mapping[type];
-  const boxId = `fullRanking${suffix}`;
-  const btnTextId = `${type}BtnText`;
-  const btnArrowId = `${type}BtnArrow`;
-  const box = document.getElementById(boxId);
-  const btnText = document.getElementById(btnTextId);
-  const btnArrow = document.getElementById(btnArrowId);
-  if (!box) return;
-  if (box.classList.contains('show')) {
-    box.classList.remove('show');
-    if (btnText) btnText.textContent = "সম্পূর্ণ তালিকা দেখুন";
-    if (btnArrow) btnArrow.textContent = "▼";
-    return;
-  }
-  if (!currentLeaderboardResult) return;
-  const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
-  if (!sorted) return;
-  box.innerHTML = sorted.map((e, i) => {
-    const isMine = e.id === currentSearchId;
-    let valueStr = "", metaStr = "";
-    if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
-    else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
-    return `<div class="rank-item ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
-      <div class="rank-number">${bn(i + 1)}</div>
-      <div class="rank-info"><div class="rank-name">${e.name || '—'}${isMine ? ' (আপনি)' : ''}</div><div class="rank-id">${e.id}</div></div>
-      <div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
-    </div>`;
-  }).join('');
-  box.classList.add('show');
-  if (btnText) btnText.textContent = "সম্পূর্ণ তালিকা লুকান";
-  if (btnArrow) btnArrow.textContent = "▲";
-  setTimeout(() => { const myRow = box.querySelector('.rank-item.mine'); if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
-}
-
-async function viewEmployeeFromLeaderboard(empId) {
-  const month = getCurrentMonth();
-  const [year, mon] = month.split('-');
-  document.getElementById('yearSelect').value = year;
-  document.getElementById('monthSelect').value = mon;
-  document.getElementById('employeeId').value = empId;
-  document.getElementById('backToLbBtn').style.display = "block";
-  switchPage('search');
-  setTimeout(() => { findReport(); }, 400);
-}
-
-/* ===== PDF HELPERS ===== */
-async function extractSinglePagePdf(pdfUrl, pageNumber) {
-  const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
-  const src = await PDFLib.PDFDocument.load(bytes);
-  const out = await PDFLib.PDFDocument.create();
-  const [pg] = await out.copyPages(src, [pageNumber - 1]);
-  out.addPage(pg);
-  const outBytes = await out.save();
-  return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
-}
-
-function renderPageHD(page, targetCanvas, divider) {
-  const ctx = targetCanvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 2;
-  const viewport = page.getViewport({ scale: 2.5 });
-  targetCanvas.width = Math.floor(viewport.width * dpr);
-  targetCanvas.height = Math.floor(viewport.height * dpr);
-  targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
-  targetCanvas.style.height = "auto";
-  ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
-  page.render({ canvasContext: ctx, transform, viewport });
-}
-
-/* ===== MODAL ===== */
-function openModal() {
-  if (!matchedPdfPage) return;
-  const modal = document.getElementById('pdfModal');
-  const mc = document.getElementById('modal-canvas');
-  mc.width = 0; mc.height = 0;
-  modal.style.display = "block"; document.body.style.overflow = "hidden";
-  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
-  renderPageHD(matchedPdfPage, mc, divider);
-}
-function closeModal() {
-  const modal = document.getElementById('pdfModal');
-  if (modal.style.display === "block") {
-    modal.style.display = "none"; document.body.style.overflow = "auto";
-    const mc = document.getElementById('modal-canvas'); mc.width = 0; mc.height = 0;
-  }
-}
-function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
-
-/* ===== RESET ===== */
-function resetAll() {
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
-  ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
-  document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
-  document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
-  document.getElementById('employeeId').value = "";
-  document.getElementById('inpOtHours').value = 0; document.getElementById('inpHoliday').value = 0; document.getElementById('inpNight').value = 0;
-  document.getElementById('compareId').value = "";
-  document.getElementById('compareResult').style.display = "none";
-  document.getElementById('compareInputArea').style.display = "block";
-  document.getElementById('compareStatus').innerText = "";
-  document.getElementById('backToLbBtn').style.display = "none";
-  currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
-  document.getElementById('searchFormCard').style.display = "block";
-  document.getElementById('searchSummary').classList.remove('show');
-  document.getElementById('mainHeader').classList.remove('compact');
+  /* ===== INIT ===== */
+  initYearDropdown();
   setDefaultMonth();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
-/* ============================================================
-   INIT — Load JSON data + Start
-   ============================================================ */
-initYearDropdown();
-setDefaultMonth();
+  renderNoticesHome();
+  loadTeamData();
 
-// Load notices on startup (home page)
-renderNoticesHome();
-
-// Pre-load team data in background
-loadTeamData().then(() => {
-  // If user is already on team page, render
-  if (document.getElementById('page-team').classList.contains('active')) renderTeamPage();
-});
-
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+  setTimeout(startNoticePolling, 2000);
 </script>
 </body>
 </html>
