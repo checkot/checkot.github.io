@@ -38,7 +38,7 @@ def fetch_channel_messages(last_offset):
     # ⭐ FIX: use last_offset directly (NOT +1)
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?limit=100"
     if last_offset > 0:
-        url += f"&offset={last_offset}"
+    url += f"&offset={last_offset + 1}"
     
     print(f"Fetching with offset={last_offset if last_offset > 0 else 'none'}")
     
