@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
-RENATA Notice Fetcher v3 — Persistent Offset
-Telegram channel থেকে notice পড়ে notices.json আপডেট করে।
-Offset tracked so only new messages fetched.
+RENATA Notice Fetcher v4 — Corrected Offset
 """
 import os
 import json
@@ -15,7 +13,6 @@ NOTICES_FILE = 'notices.json'
 MAX_NOTICES = 20
 
 def load_state():
-    """notices.json থেকে state পড়ুন"""
     if not os.path.exists(NOTICES_FILE):
         return {'notices': [], '_lastUpdateId': 0}
     try:
@@ -30,7 +27,6 @@ def load_state():
         return {'notices': [], '_lastUpdateId': 0}
 
 def save_state(notices, last_update_id):
-    """notices.json-এ state save করুন (offset সহ)"""
     with open(NOTICES_FILE, 'w', encoding='utf-8') as f:
         json.dump({
             '_lastUpdateId': last_update_id,
@@ -39,12 +35,12 @@ def save_state(notices, last_update_id):
     print(f"Saved {len(notices)} notices, offset={last_update_id}")
 
 def fetch_channel_messages(last_offset):
-    """Telegram থেকে messages (offset tracked)"""
+    # ⭐ FIX: use last_offset directly (NOT +1)
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?limit=100"
     if last_offset > 0:
-        url += f"&offset={last_offset + 1}"
+        url += f"&offset={last_offset}"
     
-    print(f"Fetching with offset={last_offset + 1 if last_offset > 0 else 'none'}")
+    print(f"Fetching with offset={last_offset if last_offset > 0 else 'none'}")
     
     try:
         with urllib.request.urlopen(url, timeout=15) as response:
@@ -86,7 +82,6 @@ def fetch_channel_messages(last_offset):
         return [], last_offset
 
 def parse_notice(text, default_date, notice_id):
-    """Notice text parse করুন"""
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     if not lines:
         return None
