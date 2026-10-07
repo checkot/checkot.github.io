@@ -1,27 +1,20 @@
 #!/usr/bin/env python3
 """
-RENATA Notice Fetcher v5
-Telegram channel থেকে notice পড়ে notices.json আপডেট করে।
-- Persistent offset tracking (Telegram official rule)
-- Priority parsing: [HIGH] / [LOW] / normal
-- Latest-first sorting
-- Max 20 notices
+RENATA Notice Fetcher v6 — Allowed Updates Filter
+Only channel_post updates, ignores my_chat_member
 """
 import os
 import json
 import urllib.request
 from datetime import datetime
 
-# ===== CONFIG =====
 BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID')
 NOTICES_FILE = 'notices.json'
 MAX_NOTICES = 20
 
 
-# ===== STATE MANAGEMENT =====
 def load_state():
-    """notices.json থেকে state পড়ুন"""
     if not os.path.exists(NOTICES_FILE):
         return {'notices': [], '_lastUpdateId': 0}
     try:
@@ -37,7 +30,6 @@ def load_state():
 
 
 def save_state(notices, last_update_id):
-    """notices.json-এ state save করুন (offset সহ)"""
     with open(NOTICES_FILE, 'w', encoding='utf-8') as f:
         json.dump({
             '_lastUpdateId': last_update_id,
@@ -46,10 +38,8 @@ def save_state(notices, last_update_id):
     print(f"Saved {len(notices)} notices, offset={last_update_id}")
 
 
-# ===== TELEGRAM FETCH =====
 def fetch_channel_messages(last_offset):
-    """Telegram থেকে messages (offset tracked)"""
-    # Telegram official rule: offset = last_update_id + 1
+    """Telegram থেকে messages — শুধু channel_post type"""
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?limit=100"
     if last_offset > 0:
         url += f"&offset={last_offset + 1}"
@@ -64,11 +54,17 @@ def fetch_channel_messages(last_offset):
             print(f"API error: {data}")
             return [], last_offset
 
+        result = data.get('result', [])
+        print(f"Raw API response: {len(result)} updates")
+
         messages = []
         max_update_id = last_offset
 
-        for update in data.get('result', []):
+        for update in result:
             update_id = update.get('update_id', 0)
+            update_types = [k for k in update.keys() if k != 'update_id']
+            print(f"  Update {update_id}: type={update_types}")
+
             if update_id > max_update_id:
                 max_update_id = update_id
 
@@ -78,6 +74,7 @@ def fetch_channel_messages(last_offset):
 
             chat_id = str(post.get('chat', {}).get('id', ''))
             if chat_id != str(CHANNEL_ID):
+                print(f"  → Skipped: chat_id mismatch ({chat_id} != {CHANNEL_ID})")
                 continue
 
             text = post.get('text', '').strip()
@@ -106,9 +103,7 @@ def fetch_channel_messages(last_offset):
         return [], last_offset
 
 
-# ===== NOTICE PARSER =====
 def parse_notice(text, default_date, notice_id):
-    """Notice text parse করুন"""
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     if not lines:
         return None
@@ -135,7 +130,6 @@ def parse_notice(text, default_date, notice_id):
     }
 
 
-# ===== MAIN =====
 def main():
     if not BOT_TOKEN or not CHANNEL_ID:
         print("Missing BOT_TOKEN or CHANNEL_ID")
@@ -164,10 +158,8 @@ def main():
 
     print(f"Found {len(new_notices)} new notices")
 
-    # Merge: new + existing
     all_notices = new_notices + existing
 
-    # Add _ts fallback for old notices
     for n in all_notices:
         if '_ts' not in n:
             try:
@@ -176,19 +168,14 @@ def main():
             except Exception:
                 n['_ts'] = 0
 
-    # Sort latest first
     all_notices.sort(key=lambda x: x.get('_ts', 0), reverse=True)
-
-    # Limit
     all_notices = all_notices[:MAX_NOTICES]
 
-    # Clean internal _ts field
     clean = []
     for n in all_notices:
         n.pop('_ts', None)
         clean.append(n)
 
-    # Save if changed
     if clean != existing or new_offset != last_offset:
         save_state(clean, new_offset)
         print(f"✅ notices.json updated, new offset={new_offset}")
