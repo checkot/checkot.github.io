@@ -1,4 +1,12 @@
 {
-  "_lastUpdateId": 966136446,
-  "notices": []
+  "_lastUpdateId": 966136447,
+  "notices": [
+    {
+      "id": 1000021,
+      "title": "Fresh Start",
+      "body": "Reset করার পর প্রথম notice 25",
+      "date": "2026-10-07",
+      "priority": "high"
+    }
+  ]
 }
