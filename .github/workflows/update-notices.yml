@@ -2,9 +2,9 @@ name: Update Notices from Telegram
 
 on:
   schedule:
-    # প্রতি ৫ মিনিটে চেক (GitHub minimum 5 min)
-    - cron: '*/20 * * * *'
-  workflow_dispatch:  # Manual trigger
+    # প্রতি ৩০ মিনিটে চেক
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
