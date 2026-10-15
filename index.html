@@ -439,19 +439,20 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .scan-hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 500; }
 .tap-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 500; }
 
-/* ============ AREA FILTER ============ */
+/* ============ AREA FILTER (Universal) ============ */
 .area-filter-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 12px;
-  margin-bottom: 10px;
+  padding: 14px 12px;
+  margin-bottom: 12px;
 }
 .area-filter-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  gap: 10px;
 }
 .area-filter-title {
   margin: 0;
@@ -468,9 +469,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   font-weight: 700;
   color: var(--primary-blue);
   background: var(--info-bg);
-  padding: 2px 9px;
+  padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid var(--info-border);
+  white-space: nowrap;
 }
 .area-filter-select {
   width: 100%;
@@ -478,11 +480,23 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   border-radius: var(--radius);
   border: 1px solid var(--border-strong);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   background-color: var(--surface);
   color: var(--text);
   font-family: inherit;
   cursor: pointer;
+}
+.area-filter-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+}
+.area-filter-hint strong {
+  color: var(--primary-blue);
+  font-weight: 700;
 }
 
 @media (min-width: 600px) { .lb-hero { padding: 16px; } .lb-tabs-card { padding: 16px; } }
@@ -824,27 +838,66 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   background: rgba(245,181,10,.12); border-color: rgba(245,181,10,.45); color: var(--lb-amber);
 }
 
-/* Area filter dark theme (leaderboard) */
+/* =====================================================
+   UNIVERSAL AREA FILTER — Esports Dark Theme
+   ===================================================== */
 #page-leaderboard .area-filter-card {
-  background: rgba(26,11,46,.6);
-  border: 1px solid rgba(20,184,196,.4);
+  background: linear-gradient(135deg, rgba(20,184,196,.18) 0%, rgba(26,11,46,.85) 100%);
+  border: 1.5px solid var(--lb-amber);
+  box-shadow: 0 0 0 1px rgba(245,181,10,.25), 0 4px 20px rgba(245,181,10,.15);
+  padding: 14px 14px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
-#page-leaderboard .area-filter-title { color: var(--lb-amber); }
+#page-leaderboard .area-filter-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--lb-amber), var(--lb-teal), var(--lb-amber));
+}
+#page-leaderboard .area-filter-title {
+  color: var(--lb-amber);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
 #page-leaderboard .area-filter-count {
-  background: rgba(20,184,196,.18);
+  background: rgba(20,184,196,.25);
   color: var(--lb-teal);
-  border-color: rgba(20,184,196,.45);
+  border-color: rgba(20,184,196,.55);
+  font-weight: 800;
 }
 #page-leaderboard .area-filter-select {
-  background-color: rgba(11,6,24,.7);
+  background-color: rgba(11,6,24,.85);
   color: #fff;
-  border-color: rgba(20,184,196,.5);
+  border: 1.5px solid var(--lb-teal);
+  font-weight: 800;
+  font-size: 15px;
+  padding: 13px 36px 13px 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2314B8C4' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+#page-leaderboard .area-filter-select:focus {
+  border-color: var(--lb-amber);
+  box-shadow: 0 0 0 3px rgba(245,181,10,.2);
+}
+#page-leaderboard .area-filter-hint {
+  color: var(--lb-dim);
+}
+#page-leaderboard .area-filter-hint strong {
+  color: var(--lb-teal);
 }
 
 @media (max-width: 380px) {
   #page-leaderboard .rank-item > div:last-child { min-width: 88px; padding: 6px 8px; }
   #page-leaderboard .lb-hero-title { font-size: 20px; }
   #page-leaderboard .rank-number { width: 34px; height: 34px; min-width: 34px; font-size: 15px; }
+  #page-leaderboard .area-filter-select { font-size: 14px; padding: 11px 32px 11px 12px; }
 }
 
 /* =====================================================
@@ -888,7 +941,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 }
 
 /* =====================================================
-   DESKTOP ALIGNMENT FIX — REPORT PAGE (>= 900px) v2
+   DESKTOP ALIGNMENT FIX — REPORT PAGE (>= 900px)
    ===================================================== */
 @media (min-width: 900px) {
   #page-search.active {
@@ -1161,10 +1214,25 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 
   <div class="card lb-wrapper" id="lbResultCard" style="display:none;">
+    
+    <!-- ⬇️ UNIVERSAL AREA FILTER — সবার উপরে! -->
+    <div class="area-filter-card">
+      <div class="area-filter-head">
+        <h3 class="area-filter-title">🏭 এরিয়া অনুযায়ী দেখুন</h3>
+        <span class="area-filter-count" id="areaFilterCount">—</span>
+      </div>
+      <select class="area-filter-select" id="areaFilter" onchange="applyAreaFilter()">
+        <option value="all">সব এরিয়া</option>
+      </select>
+      <div class="area-filter-hint" id="areaFilterHint">
+        টিপস: উপরে এরিয়া বদলে অন্য সেকশনের সাথে <strong>তুলনা করুন</strong>
+      </div>
+    </div>
+    
     <div class="lb-hero">
       <div class="lb-hero-head">
         <h3 class="lb-hero-title">সেরা ৩ জন</h3>
-        <span class="lb-hero-sub">সর্বোচ্চ Duty Hours</span>
+        <span class="lb-hero-sub" id="lbHeroAreaLabel">সর্বোচ্চ Duty Hours</span>
       </div>
       <div id="lbTopDuty" class="lb-podium"></div>
     </div>
@@ -1181,17 +1249,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <span id="dutyBtnText">Duty-এর সম্পূর্ণ তালিকা দেখুন</span>
       <span class="lb-expand-arrow">→</span>
     </button>
-
-    <!-- Area Filter -->
-    <div class="area-filter-card">
-      <div class="area-filter-head">
-        <h3 class="area-filter-title">🏭 এরিয়া অনুযায়ী দেখুন</h3>
-        <span class="area-filter-count" id="areaFilterCount">—</span>
-      </div>
-      <select class="area-filter-select" id="areaFilter" onchange="applyAreaFilter()">
-        <option value="all">সব এরিয়া</option>
-      </select>
-    </div>
 
     <div class="lb-tabs-card">
       <div class="lb-tabs-head">
@@ -1304,7 +1361,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     <div class="header"><h2>সেটিংস</h2><p>Information</p></div>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.1.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.2.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
@@ -1341,7 +1398,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v27 — Area Filter + Clean Rank Meta)
+   RENATA PLC - Overtime Report (v28 — Universal Area Filter)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1354,13 +1411,13 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-const CACHE_PREFIX = "renata_cache_v27_";
+const CACHE_PREFIX = "renata_cache_v28_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v27_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v28_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v27";
+const HISTORY_KEY = "renata_history_v28";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v27_";
+const LEADERBOARD_PREFIX = "renata_lb_v28_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
@@ -1416,7 +1473,6 @@ async function loadAreaMap() {
       const parsed = JSON.parse(cachedRaw);
       if (parsed && parsed.data && typeof parsed.data === 'object') {
         AREA_MAP = parsed.data;
-        populateAreaDropdown();
       }
     }
   } catch (e) {}
@@ -1430,14 +1486,12 @@ async function loadAreaMap() {
     try {
       localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP }));
     } catch (e) {}
-    populateAreaDropdown();
     updateSettingsAreaCount();
     console.log('[AreaMap] Loaded:', Object.keys(AREA_MAP).length, 'IDs');
     return AREA_MAP;
   } catch (e) {
     console.warn('[AreaMap] Fetch failed, using cache:', e.message);
     AREA_MAP_LOADED = true;
-    populateAreaDropdown();
     updateSettingsAreaCount();
     return AREA_MAP;
   }
@@ -1456,9 +1510,16 @@ function populateAreaDropdown() {
   const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
   const allAreas = [...new Set([...jsonAreas, DEFAULT_AREA])].sort((a, b) => a.localeCompare(b));
 
+  const myArea = currentSearchId ? getAreaForId(currentSearchId) : null;
+
+  let html = '<option value="all">🌐 সব এরিয়া</option>';
+  allAreas.forEach(a => {
+    const isMine = (a === myArea);
+    html += `<option value="${a}">${isMine ? '⭐ ' : ''}${a}${isMine ? ' (আমার)' : ''}</option>`;
+  });
+
   const currentVal = sel.value || 'all';
-  sel.innerHTML = '<option value="all">সব এরিয়া</option>' +
-    allAreas.map(a => `<option value="${a}">${a}</option>`).join('');
+  sel.innerHTML = html;
 
   if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
 }
@@ -1636,8 +1697,8 @@ async function loadTeamData() {
   }
 }
 
-function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v27"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v27", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
+function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v28"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v28", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
@@ -2138,6 +2199,8 @@ async function startLeaderboardScan(forceRescan = false) {
   fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
   try {
     await loadAreaMap();
+    populateAreaDropdown();
+    
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
       if (cached) { hint.innerText = "ক্যাশ থেকে লোড হয়েছে"; fill.style.width = "100%"; setTimeout(() => { currentLeaderboardResult = cached; renderLeaderboardResult(cached); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 300); return; }
@@ -2278,6 +2341,46 @@ function buildRankItemHTML(e, index, type, isMine) {
 function renderLeaderboardResult(result) {
   try {
     currentLeaderboardResult = result;
+    
+    // Auto-select "my area"
+    const areaFilter = document.getElementById('areaFilter');
+    if (areaFilter) {
+      const myArea = currentSearchId ? getAreaForId(currentSearchId) : 'all';
+      populateAreaDropdown();  // dropdown refresh (my area highlight)
+      
+      const hasMyArea = [...areaFilter.options].some(o => o.value === myArea);
+      areaFilter.value = hasMyArea ? myArea : 'all';
+      
+      // Filter apply
+      const area = areaFilter.value;
+      const allEmps = result.allEmployees || [];
+      const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
+      
+      const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
+      const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
+      const sortedByEarned = [...filtered].sort((a,b) => b.totalEarned - a.totalEarned);
+      
+      currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, area };
+      
+      renderTop3('lbTopDuty', sortedByDuty.slice(0, 3), 'duty');
+      renderTop3('lbTopOT', sortedByOT.slice(0, 3), 'ot');
+      renderTop3('lbTopEarned', sortedByEarned.slice(0, 3), 'earned');
+      
+      updateMyRankNotes();
+      updateAreaFilterCount();
+      updateAreaHint();
+      
+      const badDiv = document.getElementById('lbBadData');
+      if (result.skippedCount > 0) {
+        badDiv.style.display = "block";
+        badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`;
+      } else {
+        badDiv.style.display = "none";
+      }
+      return;
+    }
+    
+    // Fallback
     const topDuty = result.sortedByDuty.slice(0, 3);
     const topOT = result.sortedByOT.slice(0, 3);
     const topEarned = result.sortedByEarned.slice(0, 3);
@@ -2308,7 +2411,16 @@ function updateMyRankNotes() {
     const posSpan = document.getElementById(`myRank${suffix}Pos`);
     if (!idSpan || !posSpan) return;
     if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
-    const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+    
+    // Use filtered if available
+    const filtered = currentLeaderboardResult.filtered;
+    let sorted;
+    if (filtered) {
+      sorted = type === 'duty' ? filtered.sortedByDuty : type === 'ot' ? filtered.sortedByOT : filtered.sortedByEarned;
+    } else {
+      sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+    }
+    
     if (!sorted) { idSpan.textContent = myId; posSpan.textContent = "—"; return; }
     const idx = sorted.findIndex(e => e.id === myId);
     idSpan.textContent = myId;
@@ -2321,7 +2433,7 @@ function updateMyRankNotes() {
   });
 }
 
-/* ===== AREA FILTER ===== */
+/* ===== AREA FILTER (Universal) ===== */
 function applyAreaFilter() {
   if (!currentLeaderboardResult) return;
   const area = document.getElementById('areaFilter').value;
@@ -2338,7 +2450,9 @@ function applyAreaFilter() {
   renderTop3('lbTopEarned', sortedByEarned.slice(0, 3), 'earned');
 
   currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, area };
+  updateMyRankNotes();
   updateAreaFilterCount();
+  updateAreaHint();
 }
 
 function updateAreaFilterCount() {
@@ -2348,6 +2462,26 @@ function updateAreaFilterCount() {
   const allEmps = currentLeaderboardResult.allEmployees || [];
   const count = area === 'all' ? allEmps.length : allEmps.filter(e => e.area === area).length;
   el.textContent = bn(count) + ' জন';
+}
+
+function updateAreaHint() {
+  const hint = document.getElementById('areaFilterHint');
+  const heroLabel = document.getElementById('lbHeroAreaLabel');
+  if (!hint || !currentLeaderboardResult) return;
+  
+  const area = document.getElementById('areaFilter')?.value || 'all';
+  const myArea = currentSearchId ? getAreaForId(currentSearchId) : null;
+  
+  if (area === 'all') {
+    if (hint) hint.innerHTML = `টিপস: উপরে এরিয়া বদলে অন্য সেকশনের সাথে <strong>তুলনা করুন</strong>`;
+    if (heroLabel) heroLabel.textContent = 'সব এরিয়া — সর্বোচ্চ Duty Hours';
+  } else if (area === myArea) {
+    if (hint) hint.innerHTML = `⭐ এটা <strong>আপনার এরিয়া</strong> — ${area}`;
+    if (heroLabel) heroLabel.textContent = `সর্বোচ্চ Duty Hours — ${area}`;
+  } else {
+    if (hint) hint.innerHTML = `আপনি এখন <strong>${area}</strong>-এর সাথে তুলনা করছেন`;
+    if (heroLabel) heroLabel.textContent = `সর্বোচ্চ Duty Hours — ${area}`;
+  }
 }
 
 /* ===== FULL-LIST MODAL ===== */
@@ -2544,6 +2678,7 @@ initLbTabs();
 
 loadAreaMap().then(() => {
   updateSettingsAreaCount();
+  populateAreaDropdown();
   console.log('[Init] Area map ready:', Object.keys(AREA_MAP).length, 'IDs');
 });
 
