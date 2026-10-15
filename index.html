@@ -43,7 +43,6 @@
    1) Tokens (light + dark)   2) Base   3) Components
    4) Navigation              5) Pages  6) Leaderboard
    7) Modals                  8) Desktop
-   To change brand colour: edit --brand / --brand-strong below.
    ===================================================== */
 
 /* ---------- 1) TOKENS ---------- */
@@ -82,7 +81,6 @@
   --radius-lg: 16px;
   --nav-h: 64px;
 
-  /* legacy names still used by the JavaScript */
   --primary: var(--text);
   --primary-blue: var(--brand);
   --primary-blue-hover: var(--brand-strong);
@@ -528,7 +526,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   #page-notices .card, #page-history .card, #page-settings .card, #page-team .card { max-width: 800px; margin-left: auto; margin-right: auto; }
   #page-leaderboard #lbResultCard { padding: 24px 28px; }
 }
-
 </style>
 </head>
 <body>
@@ -969,7 +966,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     </button>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.2.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.3.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
@@ -1007,7 +1004,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v29 — Modern UI, Bottom Nav, Themes)
+   RENATA PLC - Overtime Report (v30 — Smart Duplicate Resolution)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1020,13 +1017,13 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-const CACHE_PREFIX = "renata_cache_v28_";
+const CACHE_PREFIX = "renata_cache_v30_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v28_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v30_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v28";
+const HISTORY_KEY = "renata_history_v30";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v28_";
+const LEADERBOARD_PREFIX = "renata_lb_v30_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
@@ -1059,7 +1056,43 @@ let AREA_MAP_LOADED = false;
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ============================================================
-   THEME (Auto / Light / Dark) — saved on this device
+   Smart Duplicate Resolution (Data Quality Priority)
+   Priority: Punch OK > Higher Duty > Higher OT > Higher Night > Higher Holiday
+   ============================================================ */
+function pickBestEmployee(a, b) {
+  // ১. Punch problem কম = better (punch ঠিক আছে এমনটা priority)
+  const aPunch = a.punchProblems || 0;
+  const bPunch = b.punchProblems || 0;
+  if (aPunch !== bPunch) {
+    return aPunch < bPunch ? a : b;
+  }
+  
+  // ২. Duty বেশি = better
+  if (a.totalDuty !== b.totalDuty) {
+    return a.totalDuty > b.totalDuty ? a : b;
+  }
+  
+  // ৩. OT বেশি = better
+  if (a.otHours !== b.otHours) {
+    return a.otHours > b.otHours ? a : b;
+  }
+  
+  // ৪. Night বেশি = better
+  if (a.nightCount !== b.nightCount) {
+    return a.nightCount > b.nightCount ? a : b;
+  }
+  
+  // ৫. Holiday বেশি = better
+  if (a.holidayCount !== b.holidayCount) {
+    return a.holidayCount > b.holidayCount ? a : b;
+  }
+  
+  // ৬. সব সমান → first (a)
+  return a;
+}
+
+/* ============================================================
+   THEME (Auto / Light / Dark)
    ============================================================ */
 const THEME_KEY = 'renata_theme_v1';
 function getThemePref() { try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; } }
@@ -1342,8 +1375,8 @@ async function loadTeamData() {
   }
 }
 
-function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v28"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v28", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
+function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v30"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v30", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
@@ -1861,6 +1894,7 @@ async function startLeaderboardScan(forceRescan = false) {
     let totalPages = 0; loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
     const employees = []; const skipped = [];
     let processedPages = 0;
+    let duplicateResolved = 0;
     for (const { file, pdf } of loadedPdfs) {
       const numPages = pdf.numPages;
       const CONCURRENCY = 4;
@@ -1870,7 +1904,29 @@ async function startLeaderboardScan(forceRescan = false) {
         for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
         nextPage += batch.length;
         const results = await Promise.all(batch);
-        for (const r of results) { if (r.valid) employees.push(r); else if (r.id) skipped.push(r.id); }
+        
+        // ⬇️ Smart Duplicate Resolution
+        for (const r of results) { 
+          if (r.valid) {
+            const existingIdx = employees.findIndex(e => e.id === r.id);
+            if (existingIdx === -1) {
+              employees.push(r);
+            } else {
+              const existing = employees[existingIdx];
+              const winner = pickBestEmployee(existing, r);
+              duplicateResolved++;
+              if (winner === r) {
+                employees[existingIdx] = r;
+                console.log(`[Dup → NEW wins] ${r.id}: punch ${existing.punchProblems || 0}→${r.punchProblems || 0}, duty ${existing.totalDuty}→${r.totalDuty}`);
+              } else {
+                console.log(`[Dup → OLD kept] ${r.id}: punch ${existing.punchProblems || 0}, duty ${existing.totalDuty}`);
+              }
+            }
+          } else if (r.id) {
+            skipped.push(r.id);
+          }
+        }
+        
         processedPages += results.length;
         const percent = Math.floor((processedPages / totalPages) * 100);
         fill.style.width = percent + "%";
@@ -1883,10 +1939,11 @@ async function startLeaderboardScan(forceRescan = false) {
     const sortedByDuty = [...validEmps].sort((a,b) => b.totalDuty - a.totalDuty);
     const sortedByOT = [...validEmps].sort((a,b) => b.otHours - a.otHours);
     const sortedByEarned = [...validEmps].sort((a,b) => b.totalEarned - a.totalEarned);
-    const result = { month, allEmployees: validEmps, sortedByDuty, sortedByOT, sortedByEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages };
+    const result = { month, allEmployees: validEmps, sortedByDuty, sortedByOT, sortedByEarned, skippedCount: skipped.length, skippedIds: skipped, totalScanned: processedPages, duplicatesResolved: duplicateResolved };
     setLeaderboardCache(month, result);
     currentLeaderboardResult = result;
     fill.style.width = "100%"; hint.innerText = "সম্পন্ন!";
+    console.log(`[Scan Complete] ${validEmps.length} unique employees, ${duplicateResolved} duplicates resolved`);
     setTimeout(() => { renderLeaderboardResult(result); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 400);
   } catch (e) { console.error(e); hint.innerText = "সমস্যা: " + e.message; isScanning = false; setTimeout(() => { document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbInitialCard').style.display = "block"; }, 2000); }
 }
@@ -1920,14 +1977,19 @@ async function processLeaderboardPage(pdf, pageNum) {
     const totalDuty = regDuty + regExtra + doDuty + doExtra + holDuty + holExtra;
     const otHours = regExtra + doExtra + holExtra;
     let holidayCount = 0;
+    let punchProblems = 0;
+    let totalRows = 0;
     const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
     let rm; const seen = new Set();
     while ((rm = rowRegex.exec(cleanText)) !== null) {
       if (seen.has(rm[1])) continue;
       seen.add(rm[1]);
+      totalRows++;
       const dd = parseFloat(rm[4]) || 0, de = parseFloat(rm[5]) || 0;
       const hd = parseFloat(rm[6]) || 0, he = parseFloat(rm[7]) || 0;
       if (dd > 0 || de > 0 || hd > 0 || he > 0) holidayCount++;
+      const inT = rm[9], outT = rm[10];
+      if (inT === "00:00:00" || outT === "00:00:00") punchProblems++;
     }
     const r = RATE_TABLE[detection.category];
     const otAmount = otHours * r.otRate;
@@ -1939,7 +2001,21 @@ async function processLeaderboardPage(pdf, pageNum) {
 
     const area = getAreaForId(id);
 
-    return { valid: true, id, name, grade: gradeText, category: detection.category, area, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
+    return { 
+      valid: true, 
+      id, 
+      name, 
+      grade: gradeText, 
+      category: detection.category, 
+      area, 
+      totalDuty: Number(totalDuty.toFixed(2)), 
+      otHours: Number(otHours.toFixed(2)), 
+      nightCount, 
+      holidayCount, 
+      totalEarned: Number(totalEarned.toFixed(2)),
+      punchProblems: punchProblems,
+      totalRows: totalRows
+    };
   } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
 }
 
@@ -1987,16 +2063,14 @@ function renderLeaderboardResult(result) {
   try {
     currentLeaderboardResult = result;
     
-    // Auto-select "my area"
     const areaFilter = document.getElementById('areaFilter');
     if (areaFilter) {
       const myArea = currentSearchId ? getAreaForId(currentSearchId) : 'all';
-      populateAreaDropdown();  // dropdown refresh (my area highlight)
+      populateAreaDropdown();
       
       const hasMyArea = [...areaFilter.options].some(o => o.value === myArea);
       areaFilter.value = hasMyArea ? myArea : 'all';
       
-      // Filter apply
       const area = areaFilter.value;
       const allEmps = result.allEmployees || [];
       const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
@@ -2025,7 +2099,6 @@ function renderLeaderboardResult(result) {
       return;
     }
     
-    // Fallback
     const topDuty = result.sortedByDuty.slice(0, 3);
     const topOT = result.sortedByOT.slice(0, 3);
     const topEarned = result.sortedByEarned.slice(0, 3);
@@ -2057,7 +2130,6 @@ function updateMyRankNotes() {
     if (!idSpan || !posSpan) return;
     if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
     
-    // Use filtered if available
     const filtered = currentLeaderboardResult.filtered;
     let sorted;
     if (filtered) {
@@ -2078,7 +2150,6 @@ function updateMyRankNotes() {
   });
 }
 
-/* ===== AREA FILTER (Universal) ===== */
 function applyAreaFilter() {
   if (!currentLeaderboardResult) return;
   const area = document.getElementById('areaFilter').value;
@@ -2129,7 +2200,6 @@ function updateAreaHint() {
   }
 }
 
-/* ===== FULL-LIST MODAL ===== */
 function openLbFullList(type) {
   const modal = document.getElementById('lbFullListModal');
   const titleEl = document.getElementById('lbFullListTitle');
