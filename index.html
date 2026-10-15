@@ -28,7 +28,7 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
 
 <script>
-/* Apply saved theme before first paint (prevents a light flash in dark mode) */
+/* Apply saved theme before first paint */
 (function () {
   try {
     var p = localStorage.getItem('renata_theme_v1') || 'auto';
@@ -40,9 +40,6 @@
 <style>
 /* =====================================================
    RENATA PLC — Design System
-   1) Tokens (light + dark)   2) Base   3) Components
-   4) Navigation              5) Pages  6) Leaderboard
-   7) Modals                  8) Desktop
    ===================================================== */
 
 /* ---------- 1) TOKENS ---------- */
@@ -413,7 +410,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .lb-rescan-btn { margin-top: 14px; }
 .bad-data-note { font-size: 12px; color: var(--warning); background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); padding: 9px 12px; margin-top: 12px; font-weight: 500; }
 
-/* ranking row — one design used everywhere */
+/* ranking row */
 .rank-item {
   display: flex; align-items: center; gap: 12px;
   background: var(--surface); border: 1px solid var(--border);
@@ -652,22 +649,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       </div>
 
       <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
-        <div class="ds-cell">
-          <span class="ds-label">Regular Days</span>
-          <span class="ds-value" id="dsRegularDays">—</span>
-        </div>
-        <div class="ds-cell">
-          <span class="ds-label">Holiday Days</span>
-          <span class="ds-value" id="dsHolidayDays">—</span>
-        </div>
-        <div class="ds-cell">
-          <span class="ds-label">Night Days</span>
-          <span class="ds-value" id="dsNightDays">—</span>
-        </div>
-        <div class="ds-cell plain">
-          <span class="ds-label">04:30 PM</span>
-          <span class="ds-value" id="dsPlainDays">—</span>
-        </div>
+        <div class="ds-cell"><span class="ds-label">Regular Days</span><span class="ds-value" id="dsRegularDays">—</span></div>
+        <div class="ds-cell"><span class="ds-label">Holiday Days</span><span class="ds-value" id="dsHolidayDays">—</span></div>
+        <div class="ds-cell"><span class="ds-label">Night Days</span><span class="ds-value" id="dsNightDays">—</span></div>
+        <div class="ds-cell plain"><span class="ds-label">04:30 PM</span><span class="ds-value" id="dsPlainDays">—</span></div>
       </div>
 
       <div class="calc-adjust">
@@ -774,7 +759,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 
   <div class="card lb-wrapper" id="lbResultCard" style="display:none;">
-
     <div class="area-filter-card">
       <div class="area-filter-head">
         <h3 class="area-filter-title">🏭 এরিয়া অনুযায়ী দেখুন</h3>
@@ -966,7 +950,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     </button>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.3.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.4.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
@@ -1004,7 +988,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v30 — Smart Duplicate Resolution)
+   RENATA PLC - Overtime Report (v31 — Report Best-PDF Selection)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1017,13 +1001,13 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-const CACHE_PREFIX = "renata_cache_v30_";
+const CACHE_PREFIX = "renata_cache_v31_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v30_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v31_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v30";
+const HISTORY_KEY = "renata_history_v31";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v30_";
+const LEADERBOARD_PREFIX = "renata_lb_v31_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
@@ -1056,43 +1040,40 @@ let AREA_MAP_LOADED = false;
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ============================================================
+   Count punch problems from a text block
+   ============================================================ */
+function countPunchProblems(text) {
+  let punchProblems = 0;
+  try {
+    const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
+    let rm; const seen = new Set();
+    while ((rm = rowRegex.exec(text)) !== null) {
+      if (seen.has(rm[1])) continue;
+      seen.add(rm[1]);
+      const inT = rm[9], outT = rm[10];
+      if (inT === "00:00:00" || outT === "00:00:00") punchProblems++;
+    }
+  } catch (e) {}
+  return punchProblems;
+}
+
+/* ============================================================
    Smart Duplicate Resolution (Data Quality Priority)
    Priority: Punch OK > Higher Duty > Higher OT > Higher Night > Higher Holiday
    ============================================================ */
 function pickBestEmployee(a, b) {
-  // ১. Punch problem কম = better (punch ঠিক আছে এমনটা priority)
   const aPunch = a.punchProblems || 0;
   const bPunch = b.punchProblems || 0;
-  if (aPunch !== bPunch) {
-    return aPunch < bPunch ? a : b;
-  }
-  
-  // ২. Duty বেশি = better
-  if (a.totalDuty !== b.totalDuty) {
-    return a.totalDuty > b.totalDuty ? a : b;
-  }
-  
-  // ৩. OT বেশি = better
-  if (a.otHours !== b.otHours) {
-    return a.otHours > b.otHours ? a : b;
-  }
-  
-  // ৪. Night বেশি = better
-  if (a.nightCount !== b.nightCount) {
-    return a.nightCount > b.nightCount ? a : b;
-  }
-  
-  // ৫. Holiday বেশি = better
-  if (a.holidayCount !== b.holidayCount) {
-    return a.holidayCount > b.holidayCount ? a : b;
-  }
-  
-  // ৬. সব সমান → first (a)
+  if (aPunch !== bPunch) return aPunch < bPunch ? a : b;
+  if (a.totalDuty !== b.totalDuty) return a.totalDuty > b.totalDuty ? a : b;
+  if (a.otHours !== b.otHours) return a.otHours > b.otHours ? a : b;
+  if (a.nightCount !== b.nightCount) return a.nightCount > b.nightCount ? a : b;
+  if (a.holidayCount !== b.holidayCount) return a.holidayCount > b.holidayCount ? a : b;
   return a;
 }
 
 /* ============================================================
-   THEME (Auto / Light / Dark)
+   THEME
    ============================================================ */
 const THEME_KEY = 'renata_theme_v1';
 function getThemePref() { try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) { return 'auto'; } }
@@ -1126,7 +1107,6 @@ function initTheme() {
 
 function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
 
-/* ===== DESIGNATION HELPER ===== */
 function getDesignation(emp) {
   if (!emp || !emp.id) return '';
   const id = String(emp.id).toUpperCase();
@@ -1139,30 +1119,24 @@ function getDesignation(emp) {
 }
 
 /* ============================================================
-   AREA MAP — LOAD / GET
+   AREA MAP
    ============================================================ */
 async function loadAreaMap() {
   if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
-
   try {
     const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
     if (cachedRaw) {
       const parsed = JSON.parse(cachedRaw);
-      if (parsed && parsed.data && typeof parsed.data === 'object') {
-        AREA_MAP = parsed.data;
-      }
+      if (parsed && parsed.data && typeof parsed.data === 'object') AREA_MAP = parsed.data;
     }
   } catch (e) {}
-
   try {
     const resp = await fetch('areas.json', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
     AREA_MAP = (data && data.areas && typeof data.areas === 'object') ? data.areas : {};
     AREA_MAP_LOADED = true;
-    try {
-      localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP }));
-    } catch (e) {}
+    try { localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP })); } catch (e) {}
     updateSettingsAreaCount();
     console.log('[AreaMap] Loaded:', Object.keys(AREA_MAP).length, 'IDs');
     return AREA_MAP;
@@ -1183,21 +1157,16 @@ function getAreaForId(id) {
 function populateAreaDropdown() {
   const sel = document.getElementById('areaFilter');
   if (!sel) return;
-
   const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
   const allAreas = [...new Set([...jsonAreas, DEFAULT_AREA])].sort((a, b) => a.localeCompare(b));
-
   const myArea = currentSearchId ? getAreaForId(currentSearchId) : null;
-
   let html = '<option value="all">🌐 সব এরিয়া</option>';
   allAreas.forEach(a => {
     const isMine = (a === myArea);
     html += `<option value="${esc(a)}">${isMine ? '⭐ ' : ''}${esc(a)}${isMine ? ' (আমার)' : ''}</option>`;
   });
-
   const currentVal = sel.value || 'all';
   sel.innerHTML = html;
-
   if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
 }
 
@@ -1235,13 +1204,8 @@ function initLbTabs() {
     tab.addEventListener('click', () => {
       const target = tab.getAttribute('data-lb-tab');
       if (!target) return;
-      tabs.forEach(t => {
-        t.classList.toggle('active', t === tab);
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-      });
-      panels.forEach(p => {
-        p.classList.toggle('active', p.getAttribute('data-lb-panel') === target);
-      });
+      tabs.forEach(t => { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(p => { p.classList.toggle('active', p.getAttribute('data-lb-panel') === target); });
     });
   });
 }
@@ -1257,8 +1221,8 @@ function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); ret
 function addToHistory(id, month, name) { try { let list = getHistory(); list = list.filter(x => !(x.id === id && x.month === month)); list.unshift({ id, month, name: name || "", ts: Date.now() }); if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX); localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); } catch (e) {} }
 function clearHistory() { try { localStorage.removeItem(HISTORY_KEY); renderHistory(); } catch (e) {} }
 
-function openDrawer() { /* drawer replaced by bottom navigation */ }
-function closeDrawer() { /* drawer replaced by bottom navigation */ }
+function openDrawer() { }
+function closeDrawer() { }
 
 const MORE_PAGES = ['history', 'team', 'settings'];
 function switchPage(pageName) {
@@ -1375,8 +1339,8 @@ async function loadTeamData() {
   }
 }
 
-function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v30"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v30", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
+function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v31"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v31", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
@@ -1454,6 +1418,62 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ============================================================
+   REPORT SEARCH
+   ============================================================ */
+
+/* Find ALL matches in all PDFs (so we can pick the best) */
+async function findAllMatches(pdfFiles, searchId, myToken, progressDiv) {
+  const matches = [];
+  const total = pdfFiles.length;
+  let scanned = 0;
+  for (const file of pdfFiles) {
+    if (myToken !== currentToken) break;
+    try {
+      const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
+      for (let p = 1; p <= pdf.numPages; p++) {
+        if (myToken !== currentToken) { try { await pdf.destroy(); } catch (e) {} return matches; }
+        const page = await pdf.getPage(p);
+        const tc = await page.getTextContent();
+        const text = tc.items.map(i => i.str).join(" ").toUpperCase();
+        if (text.includes(searchId)) {
+          matches.push({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf, text });
+          break;
+        }
+      }
+      scanned++;
+      if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
+    } catch (e) { console.log("PDF error:", file.name, e.message); }
+  }
+  return matches;
+}
+
+/* Pick best match: fewer punch problems first, then higher OT hours */
+async function pickBestMatch(matches) {
+  if (matches.length === 1) return matches[0];
+  const scored = [];
+  for (const m of matches) {
+    let punchProblems = countPunchProblems(m.text);
+    let otHours = 0;
+    try { const parsed = parseText(m.text); otHours = parsed.otHours || 0; } catch (e) {}
+    scored.push({ match: m, punchProblems, otHours });
+    console.log(`  ${m.fileName}: punch errors=${punchProblems}, OT=${otHours}`);
+  }
+  scored.sort((a, b) => {
+    if (a.punchProblems !== b.punchProblems) return a.punchProblems - b.punchProblems;
+    return b.otHours - a.otHours;
+  });
+  const winner = scored[0];
+  console.log(`[Report] ${matches.length} matches. Winner: ${winner.match.fileName} (punch=${winner.punchProblems}, OT=${winner.otHours})`);
+  // Destroy unused PDFs
+  for (const s of scored) {
+    if (s.match !== winner.match && s.match.pdf) {
+      try { await s.match.pdf.destroy(); } catch (e) {}
+    }
+  }
+  return winner.match;
+}
+
 async function findReport() {
   const year = document.getElementById('yearSelect').value;
   const mon = document.getElementById('monthSelect').value;
@@ -1501,9 +1521,23 @@ async function findReport() {
     const filesData = await resp.json();
     const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
     if (pdfFiles.length === 0) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `এই মাসে কোনো PDF নেই`; return; }
+    
     progressDiv.innerText = `${pdfFiles.length}টি PDF স্ক্যান হচ্ছে...`;
-    const match = await parallelSearch(pdfFiles, searchId, myToken, progressDiv);
+    // ⬇️ Step 1: সব match collect
+    const allMatches = await findAllMatches(pdfFiles, searchId, myToken, progressDiv);
     if (myToken !== currentToken) return;
+    
+    if (!allMatches || allMatches.length === 0) {
+      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+      statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `আইডি "${rawId}"-এর রেকর্ড পাওয়া যায়নি`;
+      return;
+    }
+    
+    // ⬇️ Step 2: Best match বেছে নিই
+    progressDiv.innerText = `${allMatches.length}টি match — best বেছে নিচ্ছি...`;
+    const match = await pickBestMatch(allMatches);
+    if (myToken !== currentToken) return;
+    
     if (match) {
       setCache(month, searchId, { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName });
       await showResult(match.fileUrl, match.pageNum, match.fileName);
@@ -1519,6 +1553,7 @@ async function findReport() {
   } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
 }
 
+/* Keep parallelSearch for comparison feature (single match sufficient) */
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   const total = pdfFiles.length; let scanned = 0;
   return new Promise((resolve) => {
@@ -1674,7 +1709,6 @@ function parseText(rawText) {
     const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
     if (allNums.length >= 7) { const n = allNums.slice(-7).map(parseFloat); if (Number.isInteger(n[6]) && n[6] < 200) { otHours = n[1] + n[3] + n[5]; nightCount = n[6]; totalHourLine = true; } }
   }
-
   const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
   let rm;
   const seenDates = new Set();
@@ -1682,52 +1716,26 @@ function parseText(rawText) {
     const date = rm[1];
     if (seenDates.has(date)) continue;
     seenDates.add(date);
-
-    const regDuty  = parseFloat(rm[2]) || 0;
+    const regDuty = parseFloat(rm[2]) || 0;
     const regExtra = parseFloat(rm[3]) || 0;
-    const doDuty   = parseFloat(rm[4]) || 0;
-    const doExtra  = parseFloat(rm[5]) || 0;
-    const holDuty  = parseFloat(rm[6]) || 0;
+    const doDuty = parseFloat(rm[4]) || 0;
+    const doExtra = parseFloat(rm[5]) || 0;
+    const holDuty = parseFloat(rm[6]) || 0;
     const holExtra = parseFloat(rm[7]) || 0;
-    const isNight  = rm[8].toUpperCase() === "YES";
-    const inTime   = rm[9], outTime = rm[10];
-
+    const isNight = rm[8].toUpperCase() === "YES";
+    const inTime = rm[9], outTime = rm[10];
     if (regDuty > 0) regularDays.push(date);
-
-    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
-      holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
-    }
-
+    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     if (isNight) nightDays.push(date);
-
     if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
-
     const hasAnyDuty = (regDuty + doDuty + holDuty) > 0;
     const hasAnyExtra = (regExtra + doExtra + holExtra) > 0;
     const hasValidPunch = inTime !== "00:00:00" && outTime !== "00:00:00";
-
     if (hasAnyDuty && !isNight && !hasAnyExtra && hasValidPunch) {
-      plainDays.push({
-        date,
-        dutyType: regDuty > 0 ? 'Regular' : (doDuty > 0 ? 'DO' : 'Holiday'),
-        hours: regDuty > 0 ? regDuty : (doDuty > 0 ? doDuty : holDuty)
-      });
+      plainDays.push({ date, dutyType: regDuty > 0 ? 'Regular' : (doDuty > 0 ? 'DO' : 'Holiday'), hours: regDuty > 0 ? regDuty : (doDuty > 0 ? doDuty : holDuty) });
     }
   }
-
-  return {
-    otHours: Number(otHours.toFixed(2)),
-    nightCount,
-    holidayCount: holidayDays.length,
-    holidayDays,
-    nightDays,
-    punchProblems,
-    totalHourLine,
-    regularDaysCount: regularDays.length,
-    regularDays,
-    plainDaysCount: plainDays.length,
-    plainDays
-  };
+  return { otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine, regularDaysCount: regularDays.length, regularDays, plainDaysCount: plainDays.length, plainDays };
 }
 
 function showHolidayList(list) {
@@ -1904,14 +1912,11 @@ async function startLeaderboardScan(forceRescan = false) {
         for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) batch.push(processLeaderboardPage(pdf, nextPage + i));
         nextPage += batch.length;
         const results = await Promise.all(batch);
-        
-        // ⬇️ Smart Duplicate Resolution
         for (const r of results) { 
           if (r.valid) {
             const existingIdx = employees.findIndex(e => e.id === r.id);
-            if (existingIdx === -1) {
-              employees.push(r);
-            } else {
+            if (existingIdx === -1) { employees.push(r); }
+            else {
               const existing = employees[existingIdx];
               const winner = pickBestEmployee(existing, r);
               duplicateResolved++;
@@ -1922,11 +1927,8 @@ async function startLeaderboardScan(forceRescan = false) {
                 console.log(`[Dup → OLD kept] ${r.id}: punch ${existing.punchProblems || 0}, duty ${existing.totalDuty}`);
               }
             }
-          } else if (r.id) {
-            skipped.push(r.id);
-          }
+          } else if (r.id) { skipped.push(r.id); }
         }
-        
         processedPages += results.length;
         const percent = Math.floor((processedPages / totalPages) * 100);
         fill.style.width = percent + "%";
@@ -1998,50 +2000,20 @@ async function processLeaderboardPage(pdf, pageNum) {
     else holidayAmount = holidayCount * r.holidayFlat;
     const nightAmount = nightCount * r.nightRate;
     const totalEarned = otAmount + holidayAmount + nightAmount;
-
     const area = getAreaForId(id);
-
-    return { 
-      valid: true, 
-      id, 
-      name, 
-      grade: gradeText, 
-      category: detection.category, 
-      area, 
-      totalDuty: Number(totalDuty.toFixed(2)), 
-      otHours: Number(otHours.toFixed(2)), 
-      nightCount, 
-      holidayCount, 
-      totalEarned: Number(totalEarned.toFixed(2)),
-      punchProblems: punchProblems,
-      totalRows: totalRows
-    };
+    return { valid: true, id, name, grade: gradeText, category: detection.category, area, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)), punchProblems, totalRows };
   } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
 }
 
-/* ===== BUILD RANK ITEM HTML ===== */
 function buildRankItemHTML(e, index, type, isMine) {
   let valueStr = "", metaStr = "";
   const commonMeta = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`;
-  
-  if (type === 'duty') { 
-    valueStr = `${e.totalDuty} ঘণ্টা`; 
-    metaStr = commonMeta;
-  }
-  else if (type === 'ot') { 
-    valueStr = `${e.otHours} ঘণ্টা`; 
-    metaStr = commonMeta;
-  }
-  else if (type === 'earned') { 
-    valueStr = `৳ ${e.totalEarned.toFixed(2)}`; 
-    metaStr = commonMeta;
-  }
-
+  if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = commonMeta; }
+  else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = commonMeta; }
+  else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = commonMeta; }
   const desig = getDesignation(e);
   const desigClass = desig === 'Contractual' ? 'rank-desig cf' : 'rank-desig';
-
   const areaBadge = e.area ? `<span class="rank-area">${esc(e.area)}</span>` : '';
-
   return `<div class="rank-item ${index < 3 ? 'rank-' + (index + 1) : ''} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
     <div class="rank-number">${bn(index + 1)}</div>
     <div class="rank-info">
@@ -2062,43 +2034,30 @@ function buildRankItemHTML(e, index, type, isMine) {
 function renderLeaderboardResult(result) {
   try {
     currentLeaderboardResult = result;
-    
     const areaFilter = document.getElementById('areaFilter');
     if (areaFilter) {
       const myArea = currentSearchId ? getAreaForId(currentSearchId) : 'all';
       populateAreaDropdown();
-      
       const hasMyArea = [...areaFilter.options].some(o => o.value === myArea);
       areaFilter.value = hasMyArea ? myArea : 'all';
-      
       const area = areaFilter.value;
       const allEmps = result.allEmployees || [];
       const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
-      
       const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
       const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
       const sortedByEarned = [...filtered].sort((a,b) => b.totalEarned - a.totalEarned);
-      
       currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, area };
-      
       renderTop3('lbTopDuty', sortedByDuty.slice(0, 3), 'duty');
       renderTop3('lbTopOT', sortedByOT.slice(0, 3), 'ot');
       renderTop3('lbTopEarned', sortedByEarned.slice(0, 3), 'earned');
-      
       updateMyRankNotes();
       updateAreaFilterCount();
       updateAreaHint();
-      
       const badDiv = document.getElementById('lbBadData');
-      if (result.skippedCount > 0) {
-        badDiv.style.display = "block";
-        badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`;
-      } else {
-        badDiv.style.display = "none";
-      }
+      if (result.skippedCount > 0) { badDiv.style.display = "block"; badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`; }
+      else badDiv.style.display = "none";
       return;
     }
-    
     const topDuty = result.sortedByDuty.slice(0, 3);
     const topOT = result.sortedByOT.slice(0, 3);
     const topEarned = result.sortedByEarned.slice(0, 3);
@@ -2129,15 +2088,10 @@ function updateMyRankNotes() {
     const posSpan = document.getElementById(`myRank${suffix}Pos`);
     if (!idSpan || !posSpan) return;
     if (!currentLeaderboardResult || !myId) { idSpan.textContent = "ID নেই"; posSpan.textContent = "—"; return; }
-    
     const filtered = currentLeaderboardResult.filtered;
     let sorted;
-    if (filtered) {
-      sorted = type === 'duty' ? filtered.sortedByDuty : type === 'ot' ? filtered.sortedByOT : filtered.sortedByEarned;
-    } else {
-      sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
-    }
-    
+    if (filtered) { sorted = type === 'duty' ? filtered.sortedByDuty : type === 'ot' ? filtered.sortedByOT : filtered.sortedByEarned; }
+    else { sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned; }
     if (!sorted) { idSpan.textContent = myId; posSpan.textContent = "—"; return; }
     const idx = sorted.findIndex(e => e.id === myId);
     idSpan.textContent = myId;
@@ -2154,17 +2108,13 @@ function applyAreaFilter() {
   if (!currentLeaderboardResult) return;
   const area = document.getElementById('areaFilter').value;
   const allEmps = currentLeaderboardResult.allEmployees || [];
-
   const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
-
   const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
   const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
   const sortedByEarned = [...filtered].sort((a,b) => b.totalEarned - a.totalEarned);
-
   renderTop3('lbTopDuty', sortedByDuty.slice(0, 3), 'duty');
   renderTop3('lbTopOT', sortedByOT.slice(0, 3), 'ot');
   renderTop3('lbTopEarned', sortedByEarned.slice(0, 3), 'earned');
-
   currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, area };
   updateMyRankNotes();
   updateAreaFilterCount();
@@ -2184,10 +2134,8 @@ function updateAreaHint() {
   const hint = document.getElementById('areaFilterHint');
   const heroLabel = document.getElementById('lbHeroAreaLabel');
   if (!hint || !currentLeaderboardResult) return;
-  
   const area = document.getElementById('areaFilter')?.value || 'all';
   const myArea = currentSearchId ? getAreaForId(currentSearchId) : null;
-  
   if (area === 'all') {
     if (hint) hint.innerHTML = `টিপস: উপরে এরিয়া বদলে অন্য সেকশনের সাথে <strong>তুলনা করুন</strong>`;
     if (heroLabel) heroLabel.textContent = 'সব এরিয়া — সর্বোচ্চ Duty Hours';
@@ -2205,7 +2153,6 @@ function openLbFullList(type) {
   const titleEl = document.getElementById('lbFullListTitle');
   const subEl = document.getElementById('lbFullListSubtitle');
   const body = document.getElementById('lbFullListBody');
-
   if (!currentLeaderboardResult) {
     body.innerHTML = '<div class="lb-modal-empty">প্রথমে Scan করুন।</div>';
     titleEl.textContent = 'সম্পূর্ণ তালিকা';
@@ -2214,21 +2161,14 @@ function openLbFullList(type) {
     document.body.style.overflow = 'hidden';
     return;
   }
-
   const areaFilter = document.getElementById('areaFilter')?.value || 'all';
   const useFiltered = (areaFilter !== 'all' && currentLeaderboardResult.filtered);
-
   let sorted;
   if (useFiltered) {
-    sorted = type === 'duty' ? currentLeaderboardResult.filtered.sortedByDuty
-           : type === 'ot'   ? currentLeaderboardResult.filtered.sortedByOT
-           :                   currentLeaderboardResult.filtered.sortedByEarned;
+    sorted = type === 'duty' ? currentLeaderboardResult.filtered.sortedByDuty : type === 'ot' ? currentLeaderboardResult.filtered.sortedByOT : currentLeaderboardResult.filtered.sortedByEarned;
   } else {
-    sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty
-           : type === 'ot'   ? currentLeaderboardResult.sortedByOT
-           :                   currentLeaderboardResult.sortedByEarned;
+    sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
   }
-
   const typeLabels = {
     duty: { title: 'Duty Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ Duty Hours' },
     ot:   { title: 'OT Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ OT করা' },
@@ -2238,17 +2178,14 @@ function openLbFullList(type) {
   titleEl.textContent = meta.title;
   const areaLabel = areaFilter === 'all' ? 'সব এরিয়া' : areaFilter;
   subEl.textContent = `${meta.sub} • ${areaLabel} • ${currentLeaderboardResult.month || ''}`;
-
   if (!sorted || sorted.length === 0) {
     body.innerHTML = '<div class="lb-modal-empty">এই এরিয়ায় কোনো data পাওয়া যায়নি।</div>';
   } else {
     body.innerHTML = sorted.map((e, i) => buildRankItemHTML(e, i, type, e.id === currentSearchId)).join('');
   }
-
   currentLbListType = type;
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
-
   setTimeout(() => {
     const myRow = body.querySelector('.rank-item.mine');
     if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2267,9 +2204,7 @@ function lbModalBackdropClick(e) {
 }
 
 async function viewEmployeeFromLeaderboard(empId) {
-  if (document.getElementById('lbFullListModal').classList.contains('open')) {
-    closeLbFullList();
-  }
+  if (document.getElementById('lbFullListModal').classList.contains('open')) { closeLbFullList(); }
   const month = getCurrentMonth();
   const [year, mon] = month.split('-');
   document.getElementById('yearSelect').value = year;
