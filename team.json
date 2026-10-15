@@ -20,6 +20,20 @@
       "designation": "Contractual",
       "whatsapp": "8801871370703",
       "photo": "team/johirul.png"
+    },
+    {
+      "id": "RF21561",
+      "name": "Mr. MD. Rahid Hossain",
+      "designation": "Junior Officer D",
+      "whatsapp": "8801648939558",
+      "photo": "team/rahid.png"
+    },
+    {
+      "id": "RF22849",
+      "name": "Mr. Md. Ashraful Alam",
+      "designation": "Junior Officer D",
+      "whatsapp": "8801883716637",
+      "photo": "team/ashraful.png"
     }
   ]
 }
