@@ -1182,7 +1182,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <span class="lb-expand-arrow">→</span>
     </button>
 
-    <!-- NEW: Area Filter -->
+    <!-- Area Filter -->
     <div class="area-filter-card">
       <div class="area-filter-head">
         <h3 class="area-filter-title">🏭 এরিয়া অনুযায়ী দেখুন</h3>
@@ -1341,7 +1341,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v26 — Area Filter)
+   RENATA PLC - Overtime Report (v27 — Area Filter + Clean Rank Meta)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1354,13 +1354,13 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-const CACHE_PREFIX = "renata_cache_v26_";
+const CACHE_PREFIX = "renata_cache_v27_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v26_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v27_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v26";
+const HISTORY_KEY = "renata_history_v27";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v26_";
+const LEADERBOARD_PREFIX = "renata_lb_v27_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
@@ -1387,7 +1387,7 @@ let currentLeaderboardResult = null;
 let teamData = null;
 let noticesData = null;
 let currentLbListType = null;
-let AREA_MAP = {};             // ID → Area mapping
+let AREA_MAP = {};
 let AREA_MAP_LOADED = false;
 
 function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
@@ -1408,10 +1408,8 @@ function getDesignation(emp) {
    AREA MAP — LOAD / GET
    ============================================================ */
 async function loadAreaMap() {
-  // Fast path: memory
   if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
 
-  // Try cache first for instant response
   try {
     const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
     if (cachedRaw) {
@@ -1423,7 +1421,6 @@ async function loadAreaMap() {
     }
   } catch (e) {}
 
-  // Fetch fresh from server
   try {
     const resp = await fetch('areas.json', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -1446,27 +1443,23 @@ async function loadAreaMap() {
   }
 }
 
-/* ID থেকে Area বের করার helper — JSON-এ না থাকলে default = Packing Hall */
 function getAreaForId(id) {
   if (!id) return DEFAULT_AREA;
   const upperId = String(id).toUpperCase().trim();
   return AREA_MAP[upperId] || DEFAULT_AREA;
 }
 
-/* Area dropdown populate (JSON + auto "Packing Hall") */
 function populateAreaDropdown() {
   const sel = document.getElementById('areaFilter');
   if (!sel) return;
 
   const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
-  // সবসময় Packing Hall যোগ করুন (default)
   const allAreas = [...new Set([...jsonAreas, DEFAULT_AREA])].sort((a, b) => a.localeCompare(b));
 
   const currentVal = sel.value || 'all';
   sel.innerHTML = '<option value="all">সব এরিয়া</option>' +
     allAreas.map(a => `<option value="${a}">${a}</option>`).join('');
 
-  // Restore selection if still exists
   if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
 }
 
@@ -1643,8 +1636,8 @@ async function loadTeamData() {
   }
 }
 
-function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v26"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v26", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
+function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v27"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v27", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
@@ -2144,7 +2137,6 @@ async function startLeaderboardScan(forceRescan = false) {
   counter.innerText = "০ / ০ employee scan হয়েছে";
   fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
   try {
-    // Ensure area map loaded before scan
     await loadAreaMap();
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
@@ -2237,7 +2229,6 @@ async function processLeaderboardPage(pdf, pageNum) {
     const nightAmount = nightCount * r.nightRate;
     const totalEarned = otAmount + holidayAmount + nightAmount;
 
-    // ⬇️ AREA (JSON-এ থাকলে সেটা, না থাকলে default = Packing Hall)
     const area = getAreaForId(id);
 
     return { valid: true, id, name, grade: gradeText, category: detection.category, area, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
@@ -2247,9 +2238,18 @@ async function processLeaderboardPage(pdf, pageNum) {
 /* ===== BUILD RANK ITEM HTML ===== */
 function buildRankItemHTML(e, index, type, isMine) {
   let valueStr = "", metaStr = "";
-  if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
-  else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = e.grade || ''; }
-  else if (type === 'earned') { valueStr = `৳ ${e.totalEarned.toFixed(2)}`; metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; }
+  if (type === 'duty') { 
+    valueStr = `${e.totalDuty} ঘণ্টা`; 
+    metaStr = `OT: ${e.otHours} | N: ${e.nightCount}`;
+  }
+  else if (type === 'ot') { 
+    valueStr = `${e.otHours} ঘণ্টা`; 
+    metaStr = '';                                    // ⬅️ Grade সরানো হয়েছে
+  }
+  else if (type === 'earned') { 
+    valueStr = `৳ ${e.totalEarned.toFixed(2)}`; 
+    metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; 
+  }
 
   const desig = getDesignation(e);
   const desigClass = desig === 'Contractual' ? 'rank-desig cf' : 'rank-desig';
@@ -2540,7 +2540,6 @@ initYearDropdown();
 setDefaultMonth();
 initLbTabs();
 
-/* Area map লোড (background) */
 loadAreaMap().then(() => {
   updateSettingsAreaCount();
   console.log('[Init] Area map ready:', Object.keys(AREA_MAP).length, 'IDs');
