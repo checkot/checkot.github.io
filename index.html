@@ -2238,17 +2238,19 @@ async function processLeaderboardPage(pdf, pageNum) {
 /* ===== BUILD RANK ITEM HTML ===== */
 function buildRankItemHTML(e, index, type, isMine) {
   let valueStr = "", metaStr = "";
+  const commonMeta = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`;
+  
   if (type === 'duty') { 
     valueStr = `${e.totalDuty} ঘণ্টা`; 
-    metaStr = `OT: ${e.otHours} | N: ${e.nightCount}`;
+    metaStr = commonMeta;
   }
   else if (type === 'ot') { 
     valueStr = `${e.otHours} ঘণ্টা`; 
-    metaStr = '';                                    // ⬅️ Grade সরানো হয়েছে
+    metaStr = commonMeta;
   }
   else if (type === 'earned') { 
     valueStr = `৳ ${e.totalEarned.toFixed(2)}`; 
-    metaStr = `OT: ${e.otHours} | Hol: ${e.holidayCount} | N: ${e.nightCount}`; 
+    metaStr = commonMeta;
   }
 
   const desig = getDesignation(e);
