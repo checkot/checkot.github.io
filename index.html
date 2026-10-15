@@ -415,6 +415,18 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   background: #FCE7F3;
   color: #9D174D;
 }
+.rank-id-line .rank-area {
+  display: inline-block;
+  background: rgba(20, 184, 196, 0.15);
+  color: #0E7490;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1px solid rgba(20, 184, 196, 0.3);
+}
 .rank-value { font-weight: 800; color: var(--success); font-size: 13.5px; text-align: right; flex-shrink: 0; }
 .rank-meta { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; }
 .bad-data-note { font-size: 11.5px; color: var(--warning); background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); padding: 9px 12px; margin-top: 10px; font-weight: 500; }
@@ -426,6 +438,52 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .scan-counter { text-align: center; font-size: 13px; color: var(--text-2); font-weight: 600; margin: 12px 0; }
 .scan-hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 500; }
 .tap-hint { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 500; }
+
+/* ============ AREA FILTER ============ */
+.area-filter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.area-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.area-filter-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.area-filter-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  background: var(--info-bg);
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--info-border);
+}
+.area-filter-select {
+  width: 100%;
+  padding: 12px 34px 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+}
 
 @media (min-width: 600px) { .lb-hero { padding: 16px; } .lb-tabs-card { padding: 16px; } }
 @media (min-width: 900px) { .lb-hero { padding: 18px 20px 16px 20px; } .lb-tabs-card { padding: 18px 20px; } }
@@ -687,6 +745,11 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   color: var(--lb-amber);
   border-color: rgba(245,181,10,.5);
 }
+#page-leaderboard .rank-id-line .rank-area {
+  background: rgba(20,184,196,.22);
+  color: var(--lb-teal);
+  border: 1px solid rgba(20,184,196,.5);
+}
 
 #page-leaderboard .rank-item > div:last-child,
 #page-leaderboard .lb-podium .rank-item > div:last-child {
@@ -759,6 +822,23 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 #page-leaderboard .tap-hint { color: var(--lb-dim); }
 #page-leaderboard .bad-data-note {
   background: rgba(245,181,10,.12); border-color: rgba(245,181,10,.45); color: var(--lb-amber);
+}
+
+/* Area filter dark theme (leaderboard) */
+#page-leaderboard .area-filter-card {
+  background: rgba(26,11,46,.6);
+  border: 1px solid rgba(20,184,196,.4);
+}
+#page-leaderboard .area-filter-title { color: var(--lb-amber); }
+#page-leaderboard .area-filter-count {
+  background: rgba(20,184,196,.18);
+  color: var(--lb-teal);
+  border-color: rgba(20,184,196,.45);
+}
+#page-leaderboard .area-filter-select {
+  background-color: rgba(11,6,24,.7);
+  color: #fff;
+  border-color: rgba(20,184,196,.5);
 }
 
 @media (max-width: 380px) {
@@ -973,7 +1053,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="result-block accent-night"><span class="rb-label">নাইট বিল</span><span class="rb-value" id="lblNightAmount">৳ 0</span></div>
       </div>
 
-      <!-- NEW: Day Summary -->
       <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
         <div class="ds-cell">
           <span class="ds-label">Regular Days</span>
@@ -1103,6 +1182,17 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <span class="lb-expand-arrow">→</span>
     </button>
 
+    <!-- NEW: Area Filter -->
+    <div class="area-filter-card">
+      <div class="area-filter-head">
+        <h3 class="area-filter-title">🏭 এরিয়া অনুযায়ী দেখুন</h3>
+        <span class="area-filter-count" id="areaFilterCount">—</span>
+      </div>
+      <select class="area-filter-select" id="areaFilter" onchange="applyAreaFilter()">
+        <option value="all">সব এরিয়া</option>
+      </select>
+    </div>
+
     <div class="lb-tabs-card">
       <div class="lb-tabs-head">
         <h3 class="lb-tabs-title">সর্বোচ্চ পারফরমার</h3>
@@ -1214,9 +1304,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     <div class="header"><h2>সেটিংস</h2><p>Information</p></div>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.0.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.1.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
+    <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
     <div class="settings-footer">© 2026 RENATA PLC</div>
   </div>
 </div>
@@ -1227,7 +1318,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   <div class="modal-bottom"><button class="close-btn" onclick="closeModal()">বন্ধ করুন</button></div>
 </div>
 
-<!-- Leaderboard Full-List Modal (NEW) -->
+<!-- Leaderboard Full-List Modal -->
 <div id="lbFullListModal" class="lb-modal" onclick="lbModalBackdropClick(event)">
   <div class="lb-modal-content" onclick="event.stopPropagation()">
     <div class="lb-modal-header">
@@ -1250,7 +1341,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v25 — Esports + Plain Days)
+   RENATA PLC - Overtime Report (v26 — Area Filter)
    ============================================================ */
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1263,18 +1354,21 @@ const RATE_TABLE = {
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
 };
 
-const CACHE_PREFIX = "renata_cache_v24_";
+const CACHE_PREFIX = "renata_cache_v26_";
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
-const COMPARE_CACHE_PREFIX = "renata_cmp_v24_";
+const COMPARE_CACHE_PREFIX = "renata_cmp_v26_";
 const COMPARE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const HISTORY_KEY = "renata_history_v24";
+const HISTORY_KEY = "renata_history_v26";
 const HISTORY_MAX = 5;
-const LEADERBOARD_PREFIX = "renata_lb_v24_";
+const LEADERBOARD_PREFIX = "renata_lb_v26_";
 const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
 const TEAM_CACHE_KEY = 'renata_team_cache_v2';
+const AREA_MAP_CACHE_KEY = 'renata_area_map_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+const DEFAULT_AREA = "Packing Hall";
 
 let singlePageBlobUrl = null;
 let matchedPdfPage = null;
@@ -1293,6 +1387,8 @@ let currentLeaderboardResult = null;
 let teamData = null;
 let noticesData = null;
 let currentLbListType = null;
+let AREA_MAP = {};             // ID → Area mapping
+let AREA_MAP_LOADED = false;
 
 function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'}; return String(str).replace(/[0-9]/g, d => map[d]); }
 
@@ -1302,12 +1398,84 @@ function getDesignation(emp) {
   const id = String(emp.id).toUpperCase();
   if (id.startsWith('CF')) return 'Contractual';
   if (id.startsWith('RF')) return 'Junior Officer';
-  // fallback based on category
+  if (id.startsWith('CL')) return 'Casual';
   if (emp.category === 'CF') return 'Contractual';
   if (emp.category === 'JO' || emp.category === 'JO_B') return 'Junior Officer';
   return '';
 }
 
+/* ============================================================
+   AREA MAP — LOAD / GET
+   ============================================================ */
+async function loadAreaMap() {
+  // Fast path: memory
+  if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
+
+  // Try cache first for instant response
+  try {
+    const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
+    if (cachedRaw) {
+      const parsed = JSON.parse(cachedRaw);
+      if (parsed && parsed.data && typeof parsed.data === 'object') {
+        AREA_MAP = parsed.data;
+        populateAreaDropdown();
+      }
+    }
+  } catch (e) {}
+
+  // Fetch fresh from server
+  try {
+    const resp = await fetch('areas.json', { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    AREA_MAP = (data && data.areas && typeof data.areas === 'object') ? data.areas : {};
+    AREA_MAP_LOADED = true;
+    try {
+      localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP }));
+    } catch (e) {}
+    populateAreaDropdown();
+    updateSettingsAreaCount();
+    console.log('[AreaMap] Loaded:', Object.keys(AREA_MAP).length, 'IDs');
+    return AREA_MAP;
+  } catch (e) {
+    console.warn('[AreaMap] Fetch failed, using cache:', e.message);
+    AREA_MAP_LOADED = true;
+    populateAreaDropdown();
+    updateSettingsAreaCount();
+    return AREA_MAP;
+  }
+}
+
+/* ID থেকে Area বের করার helper — JSON-এ না থাকলে default = Packing Hall */
+function getAreaForId(id) {
+  if (!id) return DEFAULT_AREA;
+  const upperId = String(id).toUpperCase().trim();
+  return AREA_MAP[upperId] || DEFAULT_AREA;
+}
+
+/* Area dropdown populate (JSON + auto "Packing Hall") */
+function populateAreaDropdown() {
+  const sel = document.getElementById('areaFilter');
+  if (!sel) return;
+
+  const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
+  // সবসময় Packing Hall যোগ করুন (default)
+  const allAreas = [...new Set([...jsonAreas, DEFAULT_AREA])].sort((a, b) => a.localeCompare(b));
+
+  const currentVal = sel.value || 'all';
+  sel.innerHTML = '<option value="all">সব এরিয়া</option>' +
+    allAreas.map(a => `<option value="${a}">${a}</option>`).join('');
+
+  // Restore selection if still exists
+  if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
+}
+
+function updateSettingsAreaCount() {
+  const el = document.getElementById('settingsAreaCount');
+  if (el) el.textContent = Object.keys(AREA_MAP).length + ' IDs mapped';
+}
+
+/* ===== YEAR / MONTH ===== */
 function initYearDropdown() {
   const ySel = document.getElementById('yearSelect');
   const now = new Date(); const currYear = now.getFullYear();
@@ -1374,6 +1542,7 @@ function switchPage(pageName) {
   if (pageName === 'leaderboard') initLeaderboardPage();
   if (pageName === 'team') renderTeamPage();
   if (pageName === 'notices') renderNoticesPage();
+  if (pageName === 'settings') updateSettingsAreaCount();
   closeDrawer();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1474,8 +1643,8 @@ async function loadTeamData() {
   }
 }
 
-function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v24"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
-function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v24", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
+function getReadNotices() { try { const raw = localStorage.getItem("renata_notices_read_v26"); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+function markAllNoticesRead() { try { localStorage.setItem("renata_notices_read_v26", JSON.stringify((noticesData || []).map(n => n.id))); } catch (e) {} updateNoticesBadge(); }
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
@@ -1726,7 +1895,6 @@ function applyExtraction(parsed, detection) {
   showRemarks(parsed.punchProblems, detection);
 }
 
-/* ===== DAY SUMMARY ===== */
 function showDaySummary(parsed) {
   const grid = document.getElementById('daySummaryGrid');
   if (!grid) return;
@@ -1754,7 +1922,6 @@ function detectCategory(gradeText, empId) {
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
 
-/* ===== PARSE TEXT (v25 — with plainDays & regularDays) ===== */
 function parseText(rawText) {
   const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
   let otHours = 0, nightCount = 0;
@@ -1784,8 +1951,8 @@ function parseText(rawText) {
     if (seenDates.has(date)) continue;
     seenDates.add(date);
 
-    const regDuty  = parseFloat(rm[2]) || 0;   // Regular duty hours
-    const regExtra = parseFloat(rm[3]) || 0;   // Regular OT hours
+    const regDuty  = parseFloat(rm[2]) || 0;
+    const regExtra = parseFloat(rm[3]) || 0;
     const doDuty   = parseFloat(rm[4]) || 0;
     const doExtra  = parseFloat(rm[5]) || 0;
     const holDuty  = parseFloat(rm[6]) || 0;
@@ -1793,26 +1960,16 @@ function parseText(rawText) {
     const isNight  = rm[8].toUpperCase() === "YES";
     const inTime   = rm[9], outTime = rm[10];
 
-    // Track regular duty days (regDuty > 0)
     if (regDuty > 0) regularDays.push(date);
 
-    // Holiday/DO day: doDuty > 0 OR holDuty > 0 (regardless of extra)
     if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) {
       holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
     }
 
-    // Night tracking
     if (isNight) nightDays.push(date);
 
-    // Punch problems
     if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
 
-    // ============ PLAIN DAY DETECTION ============
-    // Conditions:
-    // - Has any duty (regular / DO / holiday)
-    // - No night
-    // - No OT (no extra hours in ANY category)
-    // - Valid punch (in/out not 00:00:00)
     const hasAnyDuty = (regDuty + doDuty + holDuty) > 0;
     const hasAnyExtra = (regExtra + doExtra + holExtra) > 0;
     const hasValidPunch = inTime !== "00:00:00" && outTime !== "00:00:00";
@@ -1987,6 +2144,8 @@ async function startLeaderboardScan(forceRescan = false) {
   counter.innerText = "০ / ০ employee scan হয়েছে";
   fill.style.width = "0%"; hint.innerText = "PDF load হচ্ছে...";
   try {
+    // Ensure area map loaded before scan
+    await loadAreaMap();
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
       if (cached) { hint.innerText = "ক্যাশ থেকে লোড হয়েছে"; fill.style.width = "100%"; setTimeout(() => { currentLeaderboardResult = cached; renderLeaderboardResult(cached); document.getElementById('lbScanCard').style.display = "none"; document.getElementById('lbResultCard').style.display = "block"; isScanning = false; }, 300); return; }
@@ -2039,7 +2198,7 @@ async function processLeaderboardPage(pdf, pageNum) {
     const items = tc.items.map(i => i.str);
     const text = items.join(" ");
     const upper = text.toUpperCase();
-    const idMatch = upper.match(/\b(CF|RF)\d{3,5}\b/);
+    const idMatch = upper.match(/\b(CF|RF|CL)\d{3,5}\b/);
     if (!idMatch) return { valid: false, id: null };
     const id = idMatch[0];
     const cleanText = upper.replace(/\s+/g, " ");
@@ -2077,11 +2236,15 @@ async function processLeaderboardPage(pdf, pageNum) {
     else holidayAmount = holidayCount * r.holidayFlat;
     const nightAmount = nightCount * r.nightRate;
     const totalEarned = otAmount + holidayAmount + nightAmount;
-    return { valid: true, id, name, grade: gradeText, category: detection.category, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
+
+    // ⬇️ AREA (JSON-এ থাকলে সেটা, না থাকলে default = Packing Hall)
+    const area = getAreaForId(id);
+
+    return { valid: true, id, name, grade: gradeText, category: detection.category, area, totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount, totalEarned: Number(totalEarned.toFixed(2)) };
   } catch (e) { console.log("Page error:", e.message); return { valid: false, id: null }; }
 }
 
-/* ===== BUILD RANK ITEM HTML (shared) ===== */
+/* ===== BUILD RANK ITEM HTML ===== */
 function buildRankItemHTML(e, index, type, isMine) {
   let valueStr = "", metaStr = "";
   if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = e.grade || ''; }
@@ -2091,6 +2254,8 @@ function buildRankItemHTML(e, index, type, isMine) {
   const desig = getDesignation(e);
   const desigClass = desig === 'Contractual' ? 'rank-desig cf' : 'rank-desig';
 
+  const areaBadge = e.area ? `<span class="rank-area">${e.area}</span>` : '';
+
   return `<div class="rank-item ${index < 3 ? 'rank-' + (index + 1) : ''} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${e.id}')">
     <div class="rank-number">${bn(index + 1)}</div>
     <div class="rank-info">
@@ -2098,6 +2263,7 @@ function buildRankItemHTML(e, index, type, isMine) {
       <div class="rank-id-line">
         <span class="rank-id">${e.id}</span>
         ${desig ? `<span class="${desigClass}">${desig}</span>` : ''}
+        ${areaBadge}
       </div>
     </div>
     <div>
@@ -2117,6 +2283,7 @@ function renderLeaderboardResult(result) {
     renderTop3('lbTopOT', topOT, 'ot');
     renderTop3('lbTopEarned', topEarned, 'earned');
     updateMyRankNotes();
+    updateAreaFilterCount();
     const badDiv = document.getElementById('lbBadData');
     if (result.skippedCount > 0) { badDiv.style.display = "block"; badDiv.innerText = `${bn(result.skippedCount)} জন employee-এর data পাওয়া যায়নি বা বাইরে।`; }
     else badDiv.style.display = "none";
@@ -2152,6 +2319,35 @@ function updateMyRankNotes() {
   });
 }
 
+/* ===== AREA FILTER ===== */
+function applyAreaFilter() {
+  if (!currentLeaderboardResult) return;
+  const area = document.getElementById('areaFilter').value;
+  const allEmps = currentLeaderboardResult.allEmployees || [];
+
+  const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
+
+  const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
+  const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
+  const sortedByEarned = [...filtered].sort((a,b) => b.totalEarned - a.totalEarned);
+
+  renderTop3('lbTopDuty', sortedByDuty.slice(0, 3), 'duty');
+  renderTop3('lbTopOT', sortedByOT.slice(0, 3), 'ot');
+  renderTop3('lbTopEarned', sortedByEarned.slice(0, 3), 'earned');
+
+  currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, area };
+  updateAreaFilterCount();
+}
+
+function updateAreaFilterCount() {
+  const el = document.getElementById('areaFilterCount');
+  if (!el || !currentLeaderboardResult) { if (el) el.textContent = '—'; return; }
+  const area = document.getElementById('areaFilter')?.value || 'all';
+  const allEmps = currentLeaderboardResult.allEmployees || [];
+  const count = area === 'all' ? allEmps.length : allEmps.filter(e => e.area === area).length;
+  el.textContent = bn(count) + ' জন';
+}
+
 /* ===== FULL-LIST MODAL ===== */
 function openLbFullList(type) {
   const modal = document.getElementById('lbFullListModal');
@@ -2168,6 +2364,20 @@ function openLbFullList(type) {
     return;
   }
 
+  const areaFilter = document.getElementById('areaFilter')?.value || 'all';
+  const useFiltered = (areaFilter !== 'all' && currentLeaderboardResult.filtered);
+
+  let sorted;
+  if (useFiltered) {
+    sorted = type === 'duty' ? currentLeaderboardResult.filtered.sortedByDuty
+           : type === 'ot'   ? currentLeaderboardResult.filtered.sortedByOT
+           :                   currentLeaderboardResult.filtered.sortedByEarned;
+  } else {
+    sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty
+           : type === 'ot'   ? currentLeaderboardResult.sortedByOT
+           :                   currentLeaderboardResult.sortedByEarned;
+  }
+
   const typeLabels = {
     duty: { title: 'Duty Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ Duty Hours' },
     ot:   { title: 'OT Hours — সম্পূর্ণ তালিকা', sub: 'সর্বোচ্চ OT করা' },
@@ -2175,12 +2385,11 @@ function openLbFullList(type) {
   };
   const meta = typeLabels[type] || { title: 'সম্পূর্ণ তালিকা', sub: '—' };
   titleEl.textContent = meta.title;
-  subEl.textContent = `${meta.sub} • ${currentLeaderboardResult.month || ''}`;
-
-  const sorted = type === 'duty' ? currentLeaderboardResult.sortedByDuty : type === 'ot' ? currentLeaderboardResult.sortedByOT : currentLeaderboardResult.sortedByEarned;
+  const areaLabel = areaFilter === 'all' ? 'সব এরিয়া' : areaFilter;
+  subEl.textContent = `${meta.sub} • ${areaLabel} • ${currentLeaderboardResult.month || ''}`;
 
   if (!sorted || sorted.length === 0) {
-    body.innerHTML = '<div class="lb-modal-empty">কোনো data পাওয়া যায়নি।</div>';
+    body.innerHTML = '<div class="lb-modal-empty">এই এরিয়ায় কোনো data পাওয়া যায়নি।</div>';
   } else {
     body.innerHTML = sorted.map((e, i) => buildRankItemHTML(e, i, type, e.id === currentSearchId)).join('');
   }
@@ -2189,7 +2398,6 @@ function openLbFullList(type) {
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Auto-scroll to "my" row
   setTimeout(() => {
     const myRow = body.querySelector('.rank-item.mine');
     if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2208,7 +2416,6 @@ function lbModalBackdropClick(e) {
 }
 
 async function viewEmployeeFromLeaderboard(empId) {
-  // Close any open modal first
   if (document.getElementById('lbFullListModal').classList.contains('open')) {
     closeLbFullList();
   }
@@ -2328,9 +2535,17 @@ function startNoticePolling() {
 
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { renderNoticesHome(); } });
 
+/* ===== INIT ===== */
 initYearDropdown();
 setDefaultMonth();
 initLbTabs();
+
+/* Area map লোড (background) */
+loadAreaMap().then(() => {
+  updateSettingsAreaCount();
+  console.log('[Init] Area map ready:', Object.keys(AREA_MAP).length, 'IDs');
+});
+
 renderNoticesHome();
 loadTeamData();
 setTimeout(startNoticePolling, 2000);
