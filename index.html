@@ -536,6 +536,33 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .badge.warn { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
 .grade-info { font-size: 12px; color: var(--text-2); margin-bottom: 12px; padding: 9px 12px; background: var(--surface-2); border-radius: var(--radius-sm); border-left: 3px solid var(--brand); font-weight: 500; }
 
+/* Greeting Banner */
+.greeting-banner {
+  background: linear-gradient(135deg, #ECFDF3 0%, #D1FAE5 100%);
+  border: 1px solid #A7E3BF;
+  border-left: 4px solid var(--success);
+  border-radius: var(--radius);
+  padding: 12px 15px;
+  margin-bottom: 14px;
+  display: none;
+}
+:root[data-theme="dark"] .greeting-banner {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.15) 100%);
+  border-color: rgba(74, 222, 128, 0.32);
+  border-left-color: var(--success);
+}
+.greeting-banner .greet-text {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--success);
+  margin-bottom: 3px;
+}
+.greeting-banner .greet-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
 .grand-total-block {
   background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%);
   border-radius: var(--radius); padding: 16px 18px; margin: 0 0 12px 0;
@@ -1018,7 +1045,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ws-content">
           <span class="ws-badge">✨ RPPF Production • Official PWA</span>
           <h3 class="ws-title">মাসিক ওভারটাইম রিপোর্ট ও অটো ক্যালকুলেটর</h3>
-          <p class="ws-desc">আপনার Employee ID দিয়ে মুহূর্তেই অফিসিয়াল PDF পেজ দেখুন এবং ওটি ঘণ্টা, হলিডে ও নাইট বিল স্বয়ংক্রিয়ভাবে হিসাব করুন।</p>
+          <p class="ws-desc">আপনার Employee ID দিয়ে মুহূর্তেই অফিসিয়াল PDF পেজ দেখুন এবং ওটি ঘণ্টা, হলিডে ও নাইট বিল স্বয়ংক্রিয়ভাবে হিসাব করুন।</p>
           <button type="button" class="ws-cta" onclick="focusSearchInput()">🔍 এখনই সার্চ করুন</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -1044,7 +1071,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ws-content">
           <span class="ws-badge">💰 অটো গ্রেড ডিটেকশন ও রেট চার্ট</span>
           <h3 class="ws-title">CF, JO এবং JO (A/B) — নির্ভুল বিল হিসাব</h3>
-          <p class="ws-desc">CF: ৳৩৮/hr (নাইট ৳৩০০) • JO: ৳৪০/hr (নাইট ৳৪০০) • JO A/B: ৳৪৫/hr (নাইট ৳৫০০)—সাথে ম্যানুয়াল ক্যালকুলেটর।</p>
+          <p class="ws-desc">CF: ৳৩৮/hr (নাইট ৳৩০০) • JO: ৳৪০/hr (নাইট ৳৪০০) • JO A/B: ৳৪৫/hr (নাইট ৳৫০০)—সাথে ম্যানুয়াল ক্যালকুলেটর।</p>
           <button type="button" class="ws-cta" onclick="openRateChartModal()">📋 রেট চার্ট ও ক্যালকুলেটর</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -1057,7 +1084,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ws-content">
           <span class="ws-badge">🛡️ অটো পাঞ্চ চেক ও ERP সাপোর্ট</span>
           <h3 class="ws-title">In/Out Punch সমস্যা? সাথে সাথে সমাধান</h3>
-          <p class="ws-desc">রিপোর্টে 00:00:00 মিসিং পাঞ্চ অটোমেটিক শনাক্ত হয়। যেকোনো সমস্যায় এক ট্যাপে ERP টিমের সাথে WhatsApp-এ কথা বলুন।</p>
+          <p class="ws-desc">রিপোর্টে 00:00:00 মিসিং পাঞ্চ অটোমেটিক শনাক্ত হয়। যেকোনো সমস্যায় এক ট্যাপে ERP টিমের সাথে WhatsApp-এ কথা বলুন।</p>
           <button type="button" class="ws-cta" onclick="switchPage('team')">💬 ERP টিম সাপোর্ট</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -1155,6 +1182,13 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <h3 style="margin:0;">ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
       <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">ℹ️ রেট চার্ট</button>
     </div>
+    
+    <!-- Greeting Banner Added Here -->
+    <div id="userGreeting" class="greeting-banner">
+      <div class="greet-text">👋 হ্যালো, <span id="greetName">ইউজার</span>!</div>
+      <div class="greet-sub">আপনার এই মাসের OT হিসাব রেডি। মিলিয়ে নিন।</div>
+    </div>
+
     <div id="gradeInfo" class="grade-info" style="display:none;"></div>
     <div id="calcInputs">
       <div class="grand-total-block">
@@ -1670,7 +1704,7 @@ const DEFAULT_FALLBACK_NOTICES = [
   {
     id: "n001",
     title: "মাসিক ওভারটাইম রিপোর্ট ও অটো ক্যালকুলেটর",
-    body: "আপনার Employee ID দিয়ে মাসিক ওভারটাইম রিপোর্ট সার্চ করুন। In/Out Punch বা Grade সংক্রান্ত যেকোনো অসঙ্গতি থাকলে ERP টিমের সাথে যোগাযোগ করুন।",
+    body: "আপনার Employee ID দিয়ে মাসিক ওভারটাইম রিপোর্ট সার্চ করুন। In/Out Punch বা Grade সংক্রান্ত যেকোনো অসঙ্গতি থাকলে ERP টিমের সাথে যোগাযোগ করুন।",
     date: "2026-10-15",
     priority: "normal"
   }
@@ -1845,7 +1879,7 @@ function nextBannerSlide() {
 }
 
 function prevBannerSlide() {
-  goBannerSlide(bannerCurrentIndex - 1);
+  goToBannerSlide(bannerCurrentIndex - 1);
 }
 
 function resetBannerAutoPlay() {
@@ -2593,6 +2627,12 @@ async function runExtraction() {
   try {
     let rawText = "", parsed = null;
     try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
+    
+    // Attempt Name Extraction
+    let empName = "";
+    const nm = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
+    if (nm && nm[1]) empName = nm[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
+
     if (!parsed || !parsed.totalHourLine) {
       statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "OCR চলছে (৫-১০ সেকেন্ড)...";
       if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
@@ -2601,6 +2641,10 @@ async function runExtraction() {
       const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
       const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
+      
+      // OCR Name Extraction fallback
+      const nmOcr = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
+      if (!empName && nmOcr && nmOcr[1]) empName = nmOcr[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
     }
     let gradeText = "";
     const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
@@ -2612,7 +2656,7 @@ async function runExtraction() {
     if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
     else holidayAmount = parsed.holidayCount * r.holidayFlat;
     const nightAmount = parsed.nightCount * r.nightRate;
-    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, plainDays: parsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid };
+    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, plainDays: parsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid, name: empName };
     applyExtraction(parsed, detection);
     const myAmountDiv = document.getElementById('compareMyAmount');
     myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
@@ -2629,6 +2673,20 @@ function applyExtraction(parsed, detection) {
   const calcInputs = document.getElementById('calcInputs');
   const categoryBadge = document.getElementById('categoryBadge');
   const areaName = getAreaForId(currentSearchId);
+  
+  // Show Greeting
+  const greetBox = document.getElementById('userGreeting');
+  const greetNameEl = document.getElementById('greetName');
+  if (greetBox && greetNameEl) {
+    if (currentResult && currentResult.name) {
+      greetNameEl.textContent = currentResult.name;
+      greetBox.style.display = "block";
+    } else {
+      greetNameEl.textContent = "ইউজার";
+      greetBox.style.display = "block";
+    }
+  }
+
   if (detection.gradeText || detection.reason) {
     gradeInfo.style.display = "block";
     gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason} | Area: ${areaName}`;
@@ -3372,6 +3430,11 @@ function resetAll() {
   document.getElementById('compareStatus').innerText = "";
   document.getElementById('daySummaryGrid').style.display = "none";
   document.getElementById('backToLbBtn').style.display = "none";
+  
+  // Hide Greeting
+  const greetBox = document.getElementById('userGreeting');
+  if (greetBox) greetBox.style.display = "none";
+
   currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
   document.getElementById('searchFormCard').style.display = "block";
   document.getElementById('welcomeBanner')?.classList.remove('hidden-compact');
