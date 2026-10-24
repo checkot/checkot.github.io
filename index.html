@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -882,6 +881,68 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   #page-notices .card, #page-history .card, #page-settings .card, #page-team .card { max-width: 800px; margin-left: auto; margin-right: auto; }
   #page-leaderboard #lbResultCard { padding: 24px 28px; }
 }
+
+/* ---------- 10) WELCOME BACK MODAL ---------- */
+.wb-modal-content {
+  max-width: 400px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+.wb-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto 12px auto;
+  font-size: 28px;
+}
+.wb-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.wb-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+.wb-id-badge {
+  display: inline-block;
+  background: var(--surface-2);
+  color: var(--brand-text);
+  border: 1px dashed var(--brand-soft-border);
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+.wb-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px;
+}
+.wb-btn-primary {
+  background: var(--brand);
+  color: white;
+}
+.wb-btn-secondary {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+}
+.wb-btn-secondary:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
 </style>
 </head>
 <body>
@@ -949,7 +1010,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     </button>
   </div>
 
-  <!-- Welcome Banner Slider (Landing Page Hero) -->
+  <!-- Welcome Banner Slider -->
   <section class="welcome-slider" id="welcomeBanner" aria-label="Welcome Highlights">
     <div class="ws-track" id="wsTrack">
       <!-- Slide 1: Welcome & Instant OT Search -->
@@ -1020,7 +1081,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     <div class="ws-progress"><div class="ws-progress-fill" id="bannerProgressFill"></div></div>
   </section>
 
-  <!-- Quick Action Bar (Landing Page shortcuts) -->
+  <!-- Quick Action Bar -->
   <div class="quick-actions-grid" id="quickActionsGrid">
     <button type="button" class="qa-tile" onclick="switchPage('leaderboard')">
       <span class="qa-icon">🏆</span>
@@ -1128,7 +1189,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ds-cell"><span class="ds-label">Regular Days</span><span class="ds-value" id="dsRegularDays">—</span></div>
         <div class="ds-cell"><span class="ds-label">Holiday Days</span><span class="ds-value" id="dsHolidayDays">—</span></div>
         <div class="ds-cell"><span class="ds-label">Night Days</span><span class="ds-value" id="dsNightDays">—</span></div>
-        <div class="ds-cell plain"><span class="ds-label">04:30 PM</span><span class="ds-value" id="dsPlainDays">—</span></div>
+        <div class="ds-cell plain"><span class="ds-label">Plain Days</span><span class="ds-value" id="dsPlainDays">—</span></div>
       </div>
 
       <div class="calc-adjust">
@@ -1452,7 +1513,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     </button>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.5.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.6.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
@@ -1477,7 +1538,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <button class="lb-modal-close" onclick="closeLbFullList()" aria-label="Close">✕</button>
     </div>
     <div class="lb-modal-search-bar">
-      <input type="text" id="lbModalSearchInput" placeholder="🔍 নাম বা Employee ID দিয়ে খুঁজুন..." oninput="filterLbModalList()">
+      <input type="text" id="lbModalSearchInput" placeholder="🔍 নাম বা Employee ID দিয়ে খুঁজুন..." oninput="filterLbModalList()">
     </div>
     <div class="lb-modal-body" id="lbFullListBody">
       <div class="lb-modal-empty">লোড হচ্ছে...</div>
@@ -1560,15 +1621,28 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 </div>
 
+<!-- Welcome Back Modal (NEW) -->
+<div id="welcomeBackModal" class="lb-modal" onclick="wbBackdropClick(event)">
+  <div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true">
+    <div class="wb-icon">👋</div>
+    <div class="wb-title">স্বাগতম!</div>
+    <div class="wb-sub">আপনার পূর্বের সেভ করা আইডি দিয়ে কি আবার সার্চ করতে চান?</div>
+    <div class="wb-id-badge" id="wbSavedId">—</div>
+    <div class="wb-actions">
+      <button class="wb-btn-primary" onclick="handleWelcomeBackSearch()">হ্যাঁ, সার্চ করুন</button>
+      <button class="wb-btn-secondary" onclick="handleWelcomeBackChange()">না, আইডি পরিবর্তন করুন</button>
+    </div>
+  </div>
+</div>
+
 <!-- WhatsApp Float -->
 <a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help" aria-label="WhatsApp Help">
   <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 </a>
 
-
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v32 — Welcome Slider & Enhanced UX)
+   RENATA PLC - Overtime Report (v34 — Welcome Back Auto-ID)
    ============================================================ */
 
 const FALLBACK_LOGO_URI = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -1623,6 +1697,7 @@ const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
 const TEAM_CACHE_KEY = 'renata_team_cache_v2';
 const AREA_MAP_CACHE_KEY = 'renata_area_map_v1';
+const PREFERRED_ID_KEY = 'renata_preferred_id_v1'; // <-- নতুন কী
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_AREA = "Packing Hall";
@@ -1651,7 +1726,7 @@ let AREA_MAP_LOADED = false;
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ============================================================
-   TOAST NOTIFICATION (Replaces blocking browser alerts)
+   TOAST NOTIFICATION
    ============================================================ */
 function showToast(msg, type = 'info') {
   const box = document.getElementById('toastContainer');
@@ -1667,6 +1742,76 @@ function showToast(msg, type = 'info') {
     setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 260);
   }, 3200);
 }
+
+/* ============================================================
+   WELCOME BACK MODAL (AUTO-ID)
+   ============================================================ */
+function getPreferredId() {
+  try { return localStorage.getItem(PREFERRED_ID_KEY); } catch(e) { return null; }
+}
+function setPreferredId(id) {
+  try {
+    if(id) localStorage.setItem(PREFERRED_ID_KEY, id);
+    else localStorage.removeItem(PREFERRED_ID_KEY);
+  } catch(e) {}
+}
+
+function checkAndShowWelcomeBack() {
+  const savedId = getPreferredId();
+  if (savedId) {
+    const modal = document.getElementById('welcomeBackModal');
+    const idBadge = document.getElementById('wbSavedId');
+    if (modal && idBadge) {
+      idBadge.textContent = savedId;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    }
+  }
+}
+
+function closeWelcomeBackModal() {
+  const modal = document.getElementById('welcomeBackModal');
+  if (modal) {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+  }
+}
+
+function wbBackdropClick(e) {
+  if (e.target.id === 'welcomeBackModal') closeWelcomeBackModal();
+}
+
+function handleWelcomeBackSearch() {
+  closeWelcomeBackModal();
+  const savedId = getPreferredId();
+  if (savedId) {
+    const input = document.getElementById('employeeId');
+    if (input) {
+      input.value = savedId;
+      toggleClearIdBtn();
+    }
+    findReport();
+  }
+}
+
+function handleWelcomeBackChange() {
+  closeWelcomeBackModal();
+  expandSearchForm();
+  setTimeout(() => {
+    const input = document.getElementById('employeeId');
+    if (input) {
+      input.value = '';
+      toggleClearIdBtn();
+      input.focus();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 300);
+}
+
 
 /* ============================================================
    WELCOME BANNER SLIDER
@@ -1700,7 +1845,7 @@ function nextBannerSlide() {
 }
 
 function prevBannerSlide() {
-  goToBannerSlide(bannerCurrentIndex - 1);
+  goBannerSlide(bannerCurrentIndex - 1);
 }
 
 function resetBannerAutoPlay() {
@@ -1767,13 +1912,17 @@ function openRateChartModal() {
   runQuickModalCalc();
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
 }
 
 function closeRateChartModal() {
   const modal = document.getElementById('rateChartModal');
   if (!modal) return;
   modal.classList.remove('open');
-  document.body.style.overflow = 'auto';
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
 }
 
 function rateModalBackdropClick(e) {
@@ -1792,12 +1941,12 @@ function runQuickModalCalc() {
   const total = otAmount + holidayAmount + nightAmount;
   const bdEl = document.getElementById('qcBreakdownText');
   const totEl = document.getElementById('qcTotalValue');
-  if (bdEl) bdEl.textContent = `ওটি ৳${Math.round(otAmount)} + হলিডে ৳${Math.round(holidayAmount)} + নাইট ৳${Math.round(nightAmount)}`;
+  if (bdEl) bdEl.textContent = `ওটি ৳${otAmount.toFixed(2)} + হলিডে ৳${holidayAmount.toFixed(2)} + নাইট ৳${nightAmount.toFixed(2)}`;
   if (totEl) totEl.textContent = `৳ ${total.toFixed(2)}`;
 }
 
 /* ============================================================
-   FETCH HELPER (Works on checkot.github.io & Canvas preview)
+   FETCH HELPER
    ============================================================ */
 async function fetchJsonResource(filename) {
   const urls = [];
@@ -1836,10 +1985,6 @@ function countPunchProblems(text) {
   return punchProblems;
 }
 
-/* ============================================================
-   Smart Duplicate Resolution (Data Quality Priority)
-   Priority: Punch OK > Higher Duty > Higher OT > Higher Night > Higher Holiday
-   ============================================================ */
 function pickBestEmployee(a, b) {
   const aPunch = a.punchProblems || 0;
   const bPunch = b.punchProblems || 0;
@@ -2246,6 +2391,7 @@ document.getElementById('employeeId').addEventListener('keydown', e => { if (e.k
 document.getElementById('compareId').addEventListener('keydown', e => { if (e.key === 'Enter') runComparison(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
+    if (document.getElementById('welcomeBackModal')?.classList.contains('open')) { closeWelcomeBackModal(); return; }
     if (document.getElementById('rateChartModal')?.classList.contains('open')) { closeRateChartModal(); return; }
     if (document.getElementById('lbFullListModal').classList.contains('open')) { closeLbFullList(); return; }
     closeModal();
@@ -2257,17 +2403,17 @@ document.addEventListener('keydown', e => {
    REPORT SEARCH
    ============================================================ */
 
-/* Find ALL matches in all PDFs (so we can pick the best) */
 async function findAllMatches(pdfFiles, searchId, myToken, progressDiv) {
   const matches = [];
   const total = pdfFiles.length;
   let scanned = 0;
   for (const file of pdfFiles) {
     if (myToken !== currentToken) break;
+    let pdf = null;
     try {
-      const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
+      pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
       for (let p = 1; p <= pdf.numPages; p++) {
-        if (myToken !== currentToken) { try { await pdf.destroy(); } catch (e) {} return matches; }
+        if (myToken !== currentToken) break;
         const page = await pdf.getPage(p);
         const tc = await page.getTextContent();
         const text = tc.items.map(i => i.str).join(" ").toUpperCase();
@@ -2278,12 +2424,17 @@ async function findAllMatches(pdfFiles, searchId, myToken, progressDiv) {
       }
       scanned++;
       if (progressDiv) progressDiv.innerText = `${scanned}/${total}টি ফাইল স্ক্যান হয়েছে...`;
-    } catch (e) { console.log("PDF error:", file.name, e.message); }
+    } catch (e) { 
+      console.log("PDF error:", file.name, e.message); 
+    } finally {
+      if (pdf && (!matches.length || matches[matches.length - 1].fileName !== file.name)) {
+        try { await pdf.destroy(); } catch (err) {}
+      }
+    }
   }
   return matches;
 }
 
-/* Pick best match: fewer punch problems first, then higher OT hours */
 async function pickBestMatch(matches) {
   if (matches.length === 1) return matches[0];
   const scored = [];
@@ -2321,6 +2472,10 @@ async function findReport() {
     return;
   }
   const searchId = rawId.toUpperCase();
+  
+  // Save the searched ID as preferred
+  setPreferredId(searchId);
+  
   currentSearchId = searchId; currentMonth = month;
   ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
   document.getElementById('downloadBtn').style.display = "none";
@@ -2387,7 +2542,6 @@ async function findReport() {
   } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "সমস্যা হয়েছে! ইন্টারনেট চেক করুন।"; }
 }
 
-/* Keep parallelSearch for comparison feature (single match sufficient) */
 async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
   const total = pdfFiles.length; let scanned = 0;
   return new Promise((resolve) => {
@@ -3074,6 +3228,8 @@ function openLbFullList(type) {
     subEl.textContent = '—';
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
     return;
   }
   const areaFilter = document.getElementById('areaFilter')?.value || 'all';
@@ -3098,6 +3254,8 @@ function openLbFullList(type) {
   renderLbModalItems(currentLbModalList);
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
   setTimeout(() => {
     const myRow = body.querySelector('.rank-item.mine');
     if (myRow) myRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -3131,7 +3289,9 @@ function filterLbModalList() {
 function closeLbFullList() {
   const modal = document.getElementById('lbFullListModal');
   modal.classList.remove('open');
-  document.body.style.overflow = 'auto';
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
   currentLbListType = null;
 }
 
@@ -3181,13 +3341,18 @@ function openModal() {
   const mc = document.getElementById('modal-canvas');
   mc.width = 0; mc.height = 0;
   modal.style.display = "block"; document.body.style.overflow = "hidden";
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
   const divider = window.innerWidth < 768 ? 1.15 : 1.0;
   renderPageHD(matchedPdfPage, mc, divider);
 }
 function closeModal() {
   const modal = document.getElementById('pdfModal');
   if (modal.style.display === "block") {
-    modal.style.display = "none"; document.body.style.overflow = "auto";
+    modal.style.display = "none"; 
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
     const mc = document.getElementById('modal-canvas'); mc.width = 0; mc.height = 0;
   }
 }
@@ -3277,6 +3442,9 @@ loadAreaMap().then(() => {
 renderNoticesHome();
 loadTeamData();
 setTimeout(startNoticePolling, 2000);
+
+/* Show the Welcome Back Modal shortly after load */
+setTimeout(checkAndShowWelcomeBack, 800);
 </script>
 </body>
 </html>
