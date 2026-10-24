@@ -517,7 +517,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .card-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .section-label { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 10px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 
-#pdf-viewer { margin: 12px auto 0 auto; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+#pdf-viewer { margin: 0 auto; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; background: #fff; }
 .btn-group { display: flex; gap: 8px; margin-top: 12px; }
 .btn-action {
@@ -893,7 +893,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   #page-search.active #quickActionsGrid,
   #page-search.active #searchFormCard,
   #page-search.active #searchSummary { grid-column: 1 / -1; }
-  #page-search.active #step2 { grid-column: 1; grid-row: span 4; position: sticky; top: 84px; max-height: calc(100vh - 104px); overflow-y: auto; }
+  #page-search.active #step2 { grid-column: 1; position: sticky; top: 84px; max-height: calc(100vh - 104px); overflow-y: auto; }
   #page-search.active #step3, #page-search.active #step4,
   #page-search.active #step5, #page-search.active #step6 { grid-column: 2; }
   #page-search.active #step7, #page-search.active #noticesCard { grid-column: 1 / -1; }
@@ -1045,7 +1045,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ws-content">
           <span class="ws-badge">✨ RPPF Production • Official PWA</span>
           <h3 class="ws-title">মাসিক ওভারটাইম রিপোর্ট ও অটো ক্যালকুলেটর</h3>
-          <p class="ws-desc">আপনার Employee ID দিয়ে মুহূর্তেই অফিসিয়াল PDF পেজ দেখুন এবং ওটি ঘণ্টা, হলিডে ও নাইট বিল স্বয়ংক্রিয়ভাবে হিসাব করুন।</p>
+          <p class="ws-desc">আপনার Employee ID দিয়ে মুহূর্তেই অফিসিয়াল PDF পেজ দেখুন এবং ওটি ঘণ্টা, হলিডে ও নাইট বিল স্বয়ংক্রিয়ভাবে হিসাব করুন।</p>
           <button type="button" class="ws-cta" onclick="focusSearchInput()">🔍 এখনই সার্চ করুন</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -1058,7 +1058,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
         <div class="ws-content">
           <span class="ws-badge">🏆 মাসিক লিডারবোর্ড • ৩টি এরিয়া</span>
           <h3 class="ws-title">সেরা কে এই মাসে? নিজের অবস্থান যাচাই করুন</h3>
-          <p class="ws-desc">Solid, Softgel ও Packing Hall—সর্বোচ্চ Duty Hours, OT Hours এবং Total Earning তালিকায় কে এগিয়ে দেখুন।</p>
+          <p class="ws-desc">Solid, Softgel ও Packing Hall—সর্বোচ্চ Duty Hours, OT Hours এবং Total Earning তালিকায় কে এগিয়ে দেখুন।</p>
           <button type="button" class="ws-cta" onclick="switchPage('leaderboard')">🏆 লিডারবোর্ড দেখুন</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -1165,15 +1165,21 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     <div class="edit-icon">✏️</div>
   </div>
 
-  <div class="card" id="step2" style="display:none;">
-    <div style="min-width: 0;">
-      <div class="card-title">রিপোর্ট</div>
-      <div class="card-sub" id="viewerTitle">—</div>
+  <!-- NEW Minimal Collapsible PDF Viewer -->
+  <div class="collapse-card" id="step2" style="display:none;">
+    <div class="collapse-header" onclick="toggleCollapse('step2Body', this)">
+      <span class="title">📄 অফিসিয়াল PDF রিপোর্ট</span>
+      <span class="count" style="background: var(--surface-2); color: var(--text-2); border-color: var(--border);">প্রিভিউ</span>
+      <span class="arrow">▼</span>
     </div>
-    <div id="pdf-viewer"><canvas id="pdf-canvas"></canvas></div>
-    <div class="btn-group">
-      <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
-      <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
+    <div class="collapse-body" id="step2Body">
+      <div id="pdf-viewer">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+      <div class="btn-group" style="margin-top: 10px;">
+        <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
+        <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
+      </div>
     </div>
   </div>
 
@@ -1183,7 +1189,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">ℹ️ রেট চার্ট</button>
     </div>
     
-    <!-- Greeting Banner Added Here -->
+    <!-- Greeting Banner -->
     <div id="userGreeting" class="greeting-banner">
       <div class="greet-text">👋 হ্যালো, <span id="greetName">ইউজার</span>!</div>
       <div class="greet-sub">আপনার এই মাসের OT হিসাব রেডি। মিলিয়ে নিন।</div>
@@ -1623,7 +1629,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
       </table>
 
       <div class="card" style="background:var(--surface-2); margin-bottom:0;">
-        <div class="card-title" style="margin-bottom:8px;">🧮 কুইক ওভারটাইম ক্যালকুলেটর (PDF ছাড়াই হিসাব)</div>
+        <div class="card-title" style="margin-bottom:8px;">🧮 কুইক ওভারটাইম ক্যালকুলেটর (PDF ছাড়াই হিসাব)</div>
         <div class="calc-compact">
           <div class="field">
             <label for="qcCategory">ক্যাটাগরি</label>
@@ -1731,7 +1737,7 @@ const LEADERBOARD_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
 const TEAM_CACHE_KEY = 'renata_team_cache_v2';
 const AREA_MAP_CACHE_KEY = 'renata_area_map_v1';
-const PREFERRED_ID_KEY = 'renata_preferred_id_v1'; // <-- নতুন কী
+const PREFERRED_ID_KEY = 'renata_preferred_id_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_AREA = "Packing Hall";
@@ -2611,7 +2617,7 @@ async function showResult(fileUrl, pageNum, fileName) {
   const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
   renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
   document.getElementById('step2').style.display = "block";
-  document.getElementById('viewerTitle').innerText = `${currentSearchId} — ${currentMonth} • ${getAreaForId(currentSearchId)}`;
+  // viewerTitle removed as we made the PDF card minimal
   singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
   const downloadBtn = document.getElementById('downloadBtn');
   downloadBtn.href = singlePageBlobUrl;
@@ -3418,7 +3424,7 @@ function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
 
 function resetAll() {
   ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
-  ['step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
+  ['step2Body','step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
   document.getElementById('employeeId').value = "";
