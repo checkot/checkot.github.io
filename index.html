@@ -213,270 +213,49 @@ button:disabled { opacity: .55; cursor: not-allowed; }
   gap: 14px;
   min-height: 158px;
 }
-.ws-slide--blue {
-  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 58%, #3B82F6 100%);
-}
-.ws-slide--gold {
-  background: linear-gradient(135deg, #78350F 0%, #B45309 55%, #D97706 100%);
-}
-.ws-slide--teal {
-  background: linear-gradient(135deg, #115E59 0%, #0D9488 58%, #14B8A6 100%);
-}
-.ws-slide--indigo {
-  background: linear-gradient(135deg, #312E81 0%, #4F46E5 55%, #6366F1 100%);
-}
-.ws-slide::before {
-  content: "";
-  position: absolute;
-  right: -36px;
-  top: -36px;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .08);
-  pointer-events: none;
-}
-.ws-slide::after {
-  content: "";
-  position: absolute;
-  right: 45px;
-  bottom: -45px;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .06);
-  pointer-events: none;
-}
-.ws-content {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  z-index: 2;
-}
-.ws-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255, 255, 255, .18);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, .28);
-  color: #FFFFFF;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
-  letter-spacing: .02em;
-  margin-bottom: 7px;
-}
-.ws-title {
-  margin: 0 0 5px 0;
-  font-size: 16.5px;
-  font-weight: 800;
-  line-height: 1.3;
-  color: #FFFFFF;
-  letter-spacing: -.01em;
-}
-.ws-desc {
-  margin: 0 0 11px 0;
-  font-size: 12.2px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, .9);
-  max-width: 440px;
-}
-.ws-cta {
-  width: auto !important;
-  min-height: 34px !important;
-  padding: 6px 13px !important;
-  font-size: 12.5px !important;
-  font-weight: 800 !important;
-  border-radius: 999px !important;
-  background: #FFFFFF !important;
-  color: #0F172A !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .18);
-  display: inline-flex !important;
-  align-items: center;
-  gap: 5px;
-}
-.ws-cta:hover {
-  background: #F1F5F9 !important;
-  transform: translateY(-1px);
-}
-.ws-art {
-  width: 74px;
-  height: 74px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, .14);
-  border: 1px solid rgba(255, 255, 255, .24);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-  box-shadow: inset 0 1px 1px rgba(255,255,255,.25);
-}
-.ws-art svg {
-  width: 40px;
-  height: 40px;
-  stroke: #FFFFFF;
-  fill: none;
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.ws-controls {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 7px;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  pointer-events: none;
-}
-.ws-dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  pointer-events: auto;
-}
-.ws-dot {
-  width: 7px !important;
-  min-width: 7px !important;
-  height: 7px !important;
-  min-height: 7px !important;
-  padding: 0 !important;
-  border-radius: 999px !important;
-  background: rgba(255, 255, 255, .42) !important;
-  border: none !important;
-  transition: width .25s ease, background .25s ease !important;
-}
-.ws-dot.active {
-  width: 22px !important;
-  background: #FFFFFF !important;
-}
-.ws-arrows {
-  display: flex;
-  gap: 5px;
-  pointer-events: auto;
-}
-.ws-arrow {
-  width: 24px !important;
-  min-width: 24px !important;
-  height: 24px !important;
-  min-height: 24px !important;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, .2) !important;
-  color: #FFFFFF !important;
-  font-size: 13px !important;
-  line-height: 1 !important;
-  border: 1px solid rgba(255, 255, 255, .28) !important;
-}
-.ws-arrow:hover {
-  background: rgba(255, 255, 255, .34) !important;
-}
-.ws-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, .15);
-  z-index: 3;
-}
-.ws-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: rgba(255, 255, 255, .85);
-  transition: width .1s linear;
-}
+.ws-slide--blue { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 58%, #3B82F6 100%); }
+.ws-slide--gold { background: linear-gradient(135deg, #78350F 0%, #B45309 55%, #D97706 100%); }
+.ws-slide--teal { background: linear-gradient(135deg, #115E59 0%, #0D9488 58%, #14B8A6 100%); }
+.ws-slide--indigo { background: linear-gradient(135deg, #312E81 0%, #4F46E5 55%, #6366F1 100%); }
+.ws-slide::before { content: ""; position: absolute; right: -36px; top: -36px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255, 255, 255, .08); pointer-events: none; }
+.ws-slide::after { content: ""; position: absolute; right: 45px; bottom: -45px; width: 110px; height: 110px; border-radius: 50%; background: rgba(255, 255, 255, .06); pointer-events: none; }
+.ws-content { flex: 1; min-width: 0; position: relative; z-index: 2; }
+.ws-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(255, 255, 255, .18); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, .28); color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: .02em; margin-bottom: 7px; }
+.ws-title { margin: 0 0 5px 0; font-size: 16.5px; font-weight: 800; line-height: 1.3; color: #FFFFFF; letter-spacing: -.01em; }
+.ws-desc { margin: 0 0 11px 0; font-size: 12.2px; line-height: 1.5; color: rgba(255, 255, 255, .9); max-width: 440px; }
+.ws-cta { width: auto !important; min-height: 34px !important; padding: 6px 13px !important; font-size: 12.5px !important; font-weight: 800 !important; border-radius: 999px !important; background: #FFFFFF !important; color: #0F172A !important; box-shadow: 0 4px 10px rgba(0, 0, 0, .18); display: inline-flex !important; align-items: center; gap: 5px; }
+.ws-cta:hover { background: #F1F5F9 !important; transform: translateY(-1px); }
+.ws-art { width: 74px; height: 74px; border-radius: 18px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .24); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 2; box-shadow: inset 0 1px 1px rgba(255,255,255,.25); }
+.ws-art svg { width: 40px; height: 40px; stroke: #FFFFFF; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.ws-controls { position: absolute; left: 14px; right: 14px; bottom: 7px; z-index: 3; display: flex; align-items: center; justify-content: space-between; pointer-events: none; }
+.ws-dots { display: flex; align-items: center; gap: 6px; pointer-events: auto; }
+.ws-dot { width: 7px !important; min-width: 7px !important; height: 7px !important; min-height: 7px !important; padding: 0 !important; border-radius: 999px !important; background: rgba(255, 255, 255, .42) !important; border: none !important; transition: width .25s ease, background .25s ease !important; }
+.ws-dot.active { width: 22px !important; background: #FFFFFF !important; }
+.ws-arrows { display: flex; gap: 5px; pointer-events: auto; }
+.ws-arrow { width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; padding: 0 !important; border-radius: 50% !important; background: rgba(255, 255, 255, .2) !important; color: #FFFFFF !important; font-size: 13px !important; line-height: 1 !important; border: 1px solid rgba(255, 255, 255, .28) !important; }
+.ws-arrow:hover { background: rgba(255, 255, 255, .34) !important; }
+.ws-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .15); z-index: 3; }
+.ws-progress-fill { height: 100%; width: 0%; background: rgba(255, 255, 255, .85); transition: width .1s linear; }
 
 /* ---------- 4) QUICK ACTION PILLS & RECENT CHIPS ---------- */
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin: 0 0 12px 0;
-}
+.quick-actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 12px 0; }
 .quick-actions-grid.hidden-compact { display: none !important; }
-.qa-tile {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px 6px;
-  min-height: 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  box-shadow: var(--shadow-sm);
-  font-size: 11.5px;
-  font-weight: 700;
-  text-align: center;
-}
-.qa-tile:hover {
-  background: var(--surface-2);
-  border-color: var(--brand-soft-border);
-  color: var(--brand-text);
-}
-.qa-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--brand-soft);
-  color: var(--brand-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-}
+.qa-tile { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 6px; min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; box-shadow: var(--shadow-sm); font-size: 11.5px; font-weight: 700; text-align: center; }
+.qa-tile:hover { background: var(--surface-2); border-color: var(--brand-soft-border); color: var(--brand-text); }
+.qa-icon { width: 30px; height: 30px; border-radius: 9px; background: var(--brand-soft); color: var(--brand-text); display: flex; align-items: center; justify-content: center; font-size: 15px; }
 
-.recent-chips-wrap {
-  display: none;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
+.recent-chips-wrap { display: none; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .recent-chips-wrap.show { display: flex; }
-.recent-chips-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-}
-.id-chip {
-  width: auto !important;
-  min-height: 28px !important;
-  padding: 3px 10px !important;
-  border-radius: 999px !important;
-  background: var(--surface-2) !important;
-  color: var(--text-2) !important;
-  border: 1px solid var(--border-strong) !important;
-  font-size: 11.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: .02em;
-}
-.id-chip:hover {
-  background: var(--brand-soft) !important;
-  color: var(--brand-text) !important;
-  border-color: var(--brand-soft-border) !important;
-}
+.recent-chips-label { font-size: 11px; font-weight: 700; color: var(--muted); }
+.id-chip { width: auto !important; min-height: 28px !important; padding: 3px 10px !important; border-radius: 999px !important; background: var(--surface-2) !important; color: var(--text-2) !important; border: 1px solid var(--border-strong) !important; font-size: 11.5px !important; font-weight: 700 !important; letter-spacing: .02em; }
+.id-chip:hover { background: var(--brand-soft) !important; color: var(--brand-text) !important; border-color: var(--brand-soft-border) !important; }
 
 /* ---------- 5) COMPONENTS ---------- */
 .page { display: none; max-width: 560px; margin: 0 auto; }
 .page.active { display: block; animation: pageIn .22s ease; }
 @keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-.card, .collapse-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow);
-  margin: 0 0 12px 0;
-}
+.card, .collapse-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); margin: 0 0 12px 0; }
 .card { padding: 16px; }
 .collapse-card { overflow: hidden; }
 
@@ -486,11 +265,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .header h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; color: var(--text); }
 .header p { margin: 1px 0 0 0; font-size: 12px; color: var(--muted); font-weight: 500; }
 .header.compact p { display: none; }
-.icon-btn {
-  width: 42px; min-width: 42px; height: 42px; min-height: 42px; padding: 0;
-  background: var(--surface); color: var(--text-2); border: 1px solid var(--border);
-  border-radius: 12px; box-shadow: var(--shadow-sm); flex-shrink: 0;
-}
+.icon-btn { width: 42px; min-width: 42px; height: 42px; min-height: 42px; padding: 0; background: var(--surface); color: var(--text-2); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm); flex-shrink: 0; }
 .icon-btn:hover { background: var(--surface-2); color: var(--text); }
 .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .theme-toggle .i-sun { display: none; }
@@ -503,11 +278,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 #status { margin-top: 10px; text-align: center; font-weight: 600; font-size: 13px; color: var(--text-2); }
 #progress { margin-top: 4px; text-align: center; font-size: 12px; color: var(--muted); display: none; }
 
-.search-summary {
-  display: none; align-items: center; gap: 12px; cursor: pointer;
-  background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--brand);
-  border-radius: var(--radius-lg); padding: 12px 14px; margin: 0 0 12px 0; box-shadow: var(--shadow);
-}
+.search-summary { display: none; align-items: center; gap: 12px; cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--brand); border-radius: var(--radius-lg); padding: 12px 14px; margin: 0 0 12px 0; box-shadow: var(--shadow); }
 .search-summary.show { display: flex; }
 .search-summary .id-badge { background: var(--brand); color: var(--on-brand); padding: 6px 11px; border-radius: 8px; font-size: 13px; font-weight: 800; letter-spacing: .03em; }
 .search-summary .month-info { flex: 1; font-size: 13.5px; color: var(--text-2); font-weight: 600; }
@@ -520,12 +291,7 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 #pdf-viewer { margin: 0 auto; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; background: #fff; }
 .btn-group { display: flex; gap: 8px; margin-top: 12px; }
-.btn-action {
-  background: var(--brand) !important; color: var(--on-brand) !important;
-  display: none; align-items: center; justify-content: center; text-align: center; text-decoration: none;
-  min-height: 46px; padding: 0 12px; border-radius: var(--radius); font-weight: 700; flex: 1; font-size: 14px;
-  cursor: pointer; border: none !important; font-family: inherit; margin: 0; line-height: 1.2;
-}
+.btn-action { background: var(--brand) !important; color: var(--on-brand) !important; display: none; align-items: center; justify-content: center; text-align: center; text-decoration: none; min-height: 46px; padding: 0 12px; border-radius: var(--radius); font-weight: 700; flex: 1; font-size: 14px; cursor: pointer; border: none !important; font-family: inherit; margin: 0; line-height: 1.2; }
 .btn-action:hover { background: var(--brand-strong) !important; }
 
 /* calculator */
@@ -537,38 +303,12 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .grade-info { font-size: 12px; color: var(--text-2); margin-bottom: 12px; padding: 9px 12px; background: var(--surface-2); border-radius: var(--radius-sm); border-left: 3px solid var(--brand); font-weight: 500; }
 
 /* Greeting Banner */
-.greeting-banner {
-  background: linear-gradient(135deg, #ECFDF3 0%, #D1FAE5 100%);
-  border: 1px solid #A7E3BF;
-  border-left: 4px solid var(--success);
-  border-radius: var(--radius);
-  padding: 12px 15px;
-  margin-bottom: 14px;
-  display: none;
-}
-:root[data-theme="dark"] .greeting-banner {
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.15) 100%);
-  border-color: rgba(74, 222, 128, 0.32);
-  border-left-color: var(--success);
-}
-.greeting-banner .greet-text {
-  font-size: 14.5px;
-  font-weight: 800;
-  color: var(--success);
-  margin-bottom: 3px;
-}
-.greeting-banner .greet-sub {
-  font-size: 12px;
-  color: var(--text-2);
-  font-weight: 600;
-}
+.greeting-banner { background: linear-gradient(135deg, #ECFDF3 0%, #D1FAE5 100%); border: 1px solid #A7E3BF; border-left: 4px solid var(--success); border-radius: var(--radius); padding: 12px 15px; margin-bottom: 14px; display: none; }
+:root[data-theme="dark"] .greeting-banner { background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(74, 222, 128, 0.15) 100%); border-color: rgba(74, 222, 128, 0.32); border-left-color: var(--success); }
+.greeting-banner .greet-text { font-size: 14.5px; font-weight: 800; color: var(--success); margin-bottom: 3px; }
+.greeting-banner .greet-sub { font-size: 12px; color: var(--text-2); font-weight: 600; }
 
-.grand-total-block {
-  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%);
-  border-radius: var(--radius); padding: 16px 18px; margin: 0 0 12px 0;
-  display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #fff;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, .28);
-}
+.grand-total-block { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%); border-radius: var(--radius); padding: 16px 18px; margin: 0 0 12px 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #fff; box-shadow: 0 6px 18px rgba(37, 99, 235, .28); }
 :root[data-theme="dark"] .grand-total-block { background: linear-gradient(135deg, #2F66D8 0%, #3B76F0 100%); box-shadow: none; }
 .grand-total-block .gt-label { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; opacity: .92; }
 .grand-total-block .gt-value { font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
@@ -594,12 +334,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .calc-adjust-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
 .calc-adjust-title { font-size: 11.5px; font-weight: 700; color: var(--muted); margin: 0; }
 .calc-mini-actions { display: flex; gap: 6px; }
-.calc-mini-btn {
-  width: auto !important; min-height: 28px !important; padding: 4px 9px !important;
-  font-size: 11px !important; font-weight: 700 !important; border-radius: 7px !important;
-  background: var(--surface-2) !important; color: var(--text-2) !important;
-  border: 1px solid var(--border-strong) !important; box-shadow: none !important;
-}
+.calc-mini-btn { width: auto !important; min-height: 28px !important; padding: 4px 9px !important; font-size: 11px !important; font-weight: 700 !important; border-radius: 7px !important; background: var(--surface-2) !important; color: var(--text-2) !important; border: 1px solid var(--border-strong) !important; box-shadow: none !important; }
 .calc-mini-btn:hover { background: var(--brand-soft) !important; color: var(--brand-text) !important; }
 .calc-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .calc-compact .field { display: flex; flex-direction: column; }
@@ -685,20 +420,9 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 /* ---------- 6) NAVIGATION ---------- */
 .topnav { display: none; }
-.bottom-nav {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
-  display: flex; justify-content: space-around; align-items: stretch;
-  background: var(--surface); border-top: 1px solid var(--border);
-  box-shadow: 0 -4px 18px rgba(11, 27, 51, .08);
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px;
-}
+.bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; display: flex; justify-content: space-around; align-items: stretch; background: var(--surface); border-top: 1px solid var(--border); box-shadow: 0 -4px 18px rgba(11, 27, 51, .08); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px; }
 :root[data-theme="dark"] .bottom-nav { box-shadow: 0 -4px 18px rgba(0, 0, 0, .45); }
-.bn-item {
-  position: relative; flex: 1; max-width: 120px; min-height: 52px; padding: 6px 4px;
-  background: transparent; color: var(--muted); border-radius: 14px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  font-size: 11.5px; font-weight: 700; letter-spacing: .01em;
-}
+.bn-item { position: relative; flex: 1; max-width: 120px; min-height: 52px; padding: 6px 4px; background: transparent; color: var(--muted); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; font-weight: 700; letter-spacing: .01em; }
 .bn-item:hover { background: transparent; color: var(--text-2); }
 .bn-item svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .18s; }
 .bn-item.active { color: var(--brand-text); background: var(--brand-soft); }
@@ -715,19 +439,8 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .area-filter-hint { font-size: 11.5px; color: var(--muted); margin-top: 8px; text-align: center; }
 .area-filter-hint strong { color: var(--brand-text); }
 
-.lb-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.lb-kpi-box {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  text-align: center;
-}
+.lb-kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.lb-kpi-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; text-align: center; }
 .lb-kpi-label { font-size: 10.5px; color: var(--muted); font-weight: 700; display: block; }
 .lb-kpi-val { font-size: 13.5px; color: var(--text); font-weight: 800; margin-top: 2px; display: block; font-variant-numeric: tabular-nums; }
 
@@ -760,20 +473,10 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .bad-data-note { font-size: 12px; color: var(--warning); background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); padding: 9px 12px; margin-top: 12px; font-weight: 500; }
 
 /* ranking row */
-.rank-item {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px;
-  cursor: pointer; min-height: 62px; box-shadow: var(--shadow-sm);
-  transition: background .15s, border-color .15s, transform .06s;
-}
+.rank-item { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px; cursor: pointer; min-height: 62px; box-shadow: var(--shadow-sm); transition: background .15s, border-color .15s, transform .06s; }
 .rank-item:hover { background: var(--surface-2); }
 .rank-item:active { transform: scale(.992); }
-.rank-number {
-  width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
-  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border-strong);
-  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0;
-}
+.rank-number { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0; }
 .rank-item.rank-1 { border-color: var(--gold); background: linear-gradient(90deg, var(--gold-soft), var(--surface) 70%); }
 .rank-item.rank-1 .rank-number { background: var(--gold); border-color: var(--gold); color: #3a2800; }
 .rank-item.rank-2 .rank-number { background: var(--silver); border-color: var(--silver); color: #0d1a2e; }
@@ -820,18 +523,8 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 .rate-table td strong { color: var(--brand-text); }
 
 /* Toast notification */
-.toast-container {
-  position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-  z-index: 12000; display: flex; flex-direction: column; gap: 8px;
-  width: calc(100% - 28px); max-width: 400px; pointer-events: none;
-}
-.toast-msg {
-  background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
-  border-left: 4px solid var(--brand); border-radius: var(--radius);
-  padding: 12px 14px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg);
-  display: flex; align-items: center; gap: 10px; pointer-events: auto;
-  animation: pageIn .2s ease;
-}
+.toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 12000; display: flex; flex-direction: column; gap: 8px; width: calc(100% - 28px); max-width: 400px; pointer-events: none; }
+.toast-msg { background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); border-left: 4px solid var(--brand); border-radius: var(--radius); padding: 12px 14px; font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; pointer-events: auto; animation: pageIn .2s ease; }
 .toast-msg.warn { border-left-color: var(--warning); }
 .toast-msg.error { border-left-color: var(--danger); }
 .toast-msg.success { border-left-color: var(--success); }
@@ -851,6 +544,9 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 }
 @media (min-width: 600px) and (max-width: 899px) { .page { max-width: 680px; } }
 
+/* Desktop Layout Wrappers */
+#left-col-wrap, #right-col-wrap { display: contents; }
+
 /* ---------- 9) DESKTOP (900px+) ---------- */
 @media (min-width: 900px) {
   body { padding: 0 24px 40px 24px; }
@@ -861,12 +557,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   .app-header .logo, .app-header .theme-toggle { display: none; }
   .header h2 { font-size: 22px; }
 
-  .topnav {
-    display: flex; align-items: center; gap: 16px;
-    position: sticky; top: 0; z-index: 100;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 12px 24px; margin: 0 -24px 18px -24px;
-  }
+  .topnav { display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; margin: 0 -24px 18px -24px; }
   .topnav-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; flex-shrink: 0; }
   .topnav-brand img { width: 34px; height: 34px; border-radius: 8px; }
   .topnav-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
@@ -884,22 +575,29 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   .ws-art { width: 88px; height: 88px; border-radius: 22px; }
   .ws-art svg { width: 46px; height: 46px; }
 
-  #page-search.active {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0 20px; align-items: start;
-  }
+  #page-search.active { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 20px; align-items: start; }
+  
   #page-search.active > .app-header,
   #page-search.active #welcomeBanner,
   #page-search.active #quickActionsGrid,
   #page-search.active #searchFormCard,
-  #page-search.active #searchSummary { grid-column: 1 / -1; }
-  #page-search.active #step2 { grid-column: 1; position: sticky; top: 84px; max-height: calc(100vh - 104px); overflow-y: auto; }
-  #page-search.active #step3, #page-search.active #step4,
-  #page-search.active #step5, #page-search.active #step6 { grid-column: 2; }
-  #page-search.active #step7, #page-search.active #noticesCard { grid-column: 1 / -1; }
+  #page-search.active #searchSummary,
+  #page-search.active #step7, 
+  #page-search.active #noticesCard { grid-column: 1 / -1; }
+
+  #page-search.active #left-col-wrap { grid-column: 1; display: flex; flex-direction: column; gap: 12px; }
+  #page-search.active #right-col-wrap { grid-column: 2; display: flex; flex-direction: column; gap: 12px; }
+  
+  #page-search.active #left-col-wrap > *,
+  #page-search.active #right-col-wrap > * { margin-bottom: 0 !important; }
+  
+  /* PDF Viewer fixed height handling inside flex column */
+  #page-search.active #step2 { position: static; max-height: none; overflow-y: visible; }
+
+  #page-search.active #pdf-viewer canvas { max-height: 70vh; width: auto; max-width: 100%; }
+
   #page-search.active #noticesHomeList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   #page-search.active #noticesHomeList .notice-item { margin-bottom: 0; }
-  #page-search.active #pdf-viewer canvas { max-height: 70vh; width: auto; max-width: 100%; }
 
   #page-leaderboard .lb-podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   #page-leaderboard .lb-podium .rank-item { margin-bottom: 0; }
@@ -910,66 +608,22 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 }
 
 /* ---------- 10) WELCOME BACK MODAL ---------- */
-.wb-modal-content {
-  max-width: 400px;
-  text-align: center;
-  padding-bottom: 20px;
-}
-.wb-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--brand-soft);
-  color: var(--brand-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 20px auto 12px auto;
-  font-size: 28px;
-}
-.wb-title {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.wb-sub {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 16px;
-  padding: 0 16px;
-}
-.wb-id-badge {
-  display: inline-block;
-  background: var(--surface-2);
-  color: var(--brand-text);
-  border: 1px dashed var(--brand-soft-border);
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  margin-bottom: 20px;
-}
-.wb-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 20px;
-}
-.wb-btn-primary {
-  background: var(--brand);
-  color: white;
-}
-.wb-btn-secondary {
-  background: transparent;
-  color: var(--text-2);
-  border: 1px solid var(--border-strong);
-}
-.wb-btn-secondary:hover {
-  background: var(--surface-2);
-  color: var(--text);
-}
+.wb-modal-content { max-width: 400px; text-align: center; padding-bottom: 20px; }
+.wb-icon { width: 60px; height: 60px; border-radius: 50%; background: var(--brand-soft); color: var(--brand-text); display: flex; align-items: center; justify-content: center; margin: 20px auto 12px auto; font-size: 28px; }
+.wb-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.wb-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; padding: 0 16px; }
+.wb-id-badge { display: inline-block; background: var(--surface-2); color: var(--brand-text); border: 1px dashed var(--brand-soft-border); padding: 6px 16px; border-radius: 8px; font-size: 20px; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 20px; }
+.wb-actions { display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
+.wb-btn-primary { background: var(--brand); color: white; }
+.wb-btn-secondary { background: transparent; color: var(--text-2); border: 1px solid var(--border-strong); }
+.wb-btn-secondary:hover { background: var(--surface-2); color: var(--text); }
+
+/* ---------- 11) PAYSLIP CARD ---------- */
+.payslip-preview-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin: 12px 0; }
+.payslip-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.payslip-row span:last-child { font-weight: 700; color: var(--text); }
+.payslip-row.total { border-top: 1px dashed var(--border-strong); padding-top: 8px; margin-top: 8px; font-size: 16px; font-weight: 800; color: var(--brand-text); }
+.payslip-row.total span:last-child { color: var(--brand-text); }
 </style>
 </head>
 <body>
@@ -1165,135 +819,159 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     <div class="edit-icon">✏️</div>
   </div>
 
-  <!-- NEW Minimal Collapsible PDF Viewer -->
-  <div class="collapse-card" id="step2" style="display:none;">
-    <div class="collapse-header" onclick="toggleCollapse('step2Body', this)">
-      <span class="title">📄 অফিসিয়াল PDF রিপোর্ট</span>
-      <span class="count" style="background: var(--surface-2); color: var(--text-2); border-color: var(--border);">প্রিভিউ</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div class="collapse-body" id="step2Body">
-      <div id="pdf-viewer">
-        <canvas id="pdf-canvas"></canvas>
+  <!-- LEFT COLUMN WRAPPER (Desktop) -->
+  <div id="left-col-wrap">
+    <!-- Minimal Collapsible PDF Viewer -->
+    <div class="collapse-card" id="step2" style="display:none;">
+      <div class="collapse-header" onclick="toggleCollapse('step2Body', this)">
+        <span class="title">📄 অফিসিয়াল PDF রিপোর্ট</span>
+        <span class="count" style="background: var(--surface-2); color: var(--text-2); border-color: var(--border);">প্রিভিউ</span>
+        <span class="arrow">▼</span>
       </div>
-      <div class="btn-group" style="margin-top: 10px;">
-        <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
-        <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
+      <div class="collapse-body" id="step2Body">
+        <div id="pdf-viewer">
+          <canvas id="pdf-canvas"></canvas>
+        </div>
+        <div class="btn-group" style="margin-top: 10px;">
+          <a id="downloadBtn" class="btn-action" target="_blank">ডাউনলোড</a>
+          <button id="openBtn" class="btn-action" onclick="openModal()">ফুল ভিউ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW PAYSLIP CARD -->
+    <div class="card" id="payslipCard" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:15px; font-weight:800; color:var(--text);">💰 আগামী মাসে কত টাকা পাবেন?</h3>
+      </div>
+      <label for="inpSalary">আপনার Take Home Salary দিন (ঐচ্ছিক):</label>
+      <input type="number" id="inpSalary" placeholder="যেমন: 25000" oninput="handleSalaryInput(this.value)">
+      
+      <div class="payslip-preview-box" id="payslipPreview" style="display:none;">
+         <!-- dynamically filled -->
+      </div>
+      
+      <div class="btn-group" id="payslipActions" style="display:none; margin-top:12px;">
+         <button class="btn-action" style="display:flex !important; background:var(--success) !important;" onclick="downloadPayslipJPG()">🖼️ JPG</button>
+         <button class="btn-action" style="display:flex !important; background:var(--brand) !important;" onclick="sharePayslip()">📤 শেয়ার</button>
       </div>
     </div>
   </div>
 
-  <div class="card calc-card" id="step3">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
-      <h3 style="margin:0;">ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
-      <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">ℹ️ রেট চার্ট</button>
-    </div>
-    
-    <!-- Greeting Banner -->
-    <div id="userGreeting" class="greeting-banner">
-      <div class="greet-text">👋 হ্যালো, <span id="greetName">ইউজার</span>!</div>
-      <div class="greet-sub">আপনার এই মাসের OT হিসাব রেডি। মিলিয়ে নিন।</div>
-    </div>
-
-    <div id="gradeInfo" class="grade-info" style="display:none;"></div>
-    <div id="calcInputs">
-      <div class="grand-total-block">
-        <span class="gt-label">সর্বমোট প্রাপ্য</span>
-        <span class="gt-value" id="lblGrandTotal">৳ 0</span>
+  <!-- RIGHT COLUMN WRAPPER (Desktop) -->
+  <div id="right-col-wrap">
+    <div class="card calc-card" id="step3">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px;">
+        <h3 style="margin:0;">ওভারটাইম হিসাব <span id="categoryBadge" class="badge">—</span></h3>
+        <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">ℹ️ রেট চার্ট</button>
+      </div>
+      
+      <!-- Greeting Banner -->
+      <div id="userGreeting" class="greeting-banner">
+        <div class="greet-text">👋 হ্যালো, <span id="greetName">ইউজার</span>!</div>
+        <div class="greet-sub">আপনার এই মাসের OT হিসাব রেডি। মিলিয়ে নিন।</div>
       </div>
 
-      <div class="result-blocks">
-        <div class="result-block accent-rate">
-          <span class="rb-label">রেট</span>
-          <span class="rb-value" id="lblRate">৳ 0/hr</span>
-          <span class="rb-sub" id="lblRateSub">—</span>
+      <div id="gradeInfo" class="grade-info" style="display:none;"></div>
+      <div id="calcInputs">
+        <div class="grand-total-block">
+          <span class="gt-label">সর্বমোট প্রাপ্য</span>
+          <span class="gt-value" id="lblGrandTotal">৳ 0</span>
         </div>
-        <div class="result-block accent-ot">
-          <span class="rb-label">ওটি বিল</span>
-          <span class="rb-value" id="lblOtAmount">৳ 0</span>
-          <span class="rb-sub" id="lblOtFormula">0 hr × ৳0</span>
-        </div>
-        <div class="result-block accent-holiday">
-          <span class="rb-label">হলিডে বিল</span>
-          <span class="rb-value" id="lblHolidayAmount">৳ 0</span>
-          <span class="rb-sub" id="lblHolidayFormula">0 দিন</span>
-        </div>
-        <div class="result-block accent-night">
-          <span class="rb-label">নাইট বিল</span>
-          <span class="rb-value" id="lblNightAmount">৳ 0</span>
-          <span class="rb-sub" id="lblNightFormula">0 নাইট</span>
-        </div>
-      </div>
 
-      <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
-        <div class="ds-cell"><span class="ds-label">Regular Days</span><span class="ds-value" id="dsRegularDays">—</span></div>
-        <div class="ds-cell"><span class="ds-label">Holiday Days</span><span class="ds-value" id="dsHolidayDays">—</span></div>
-        <div class="ds-cell"><span class="ds-label">Night Days</span><span class="ds-value" id="dsNightDays">—</span></div>
-        <div class="ds-cell plain"><span class="ds-label">Plain Days</span><span class="ds-value" id="dsPlainDays">—</span></div>
-      </div>
-
-      <div class="calc-adjust">
-        <div class="calc-adjust-head">
-          <div class="calc-adjust-title">মান বদলে হিসাব দেখুন (Adjust values)</div>
-          <div class="calc-mini-actions">
-            <button type="button" class="calc-mini-btn" onclick="resetCalcToOriginal()" title="রিপোর্টের মূল মানে ফিরুন">↺ মূল মান</button>
-            <button type="button" class="calc-mini-btn" onclick="copyCalcSummary()" title="হিসাব কপি করুন">📋 কপি</button>
+        <div class="result-blocks">
+          <div class="result-block accent-rate">
+            <span class="rb-label">রেট</span>
+            <span class="rb-value" id="lblRate">৳ 0/hr</span>
+            <span class="rb-sub" id="lblRateSub">—</span>
+          </div>
+          <div class="result-block accent-ot">
+            <span class="rb-label">ওটি বিল</span>
+            <span class="rb-value" id="lblOtAmount">৳ 0</span>
+            <span class="rb-sub" id="lblOtFormula">0 hr × ৳0</span>
+          </div>
+          <div class="result-block accent-holiday">
+            <span class="rb-label">হলিডে বিল</span>
+            <span class="rb-value" id="lblHolidayAmount">৳ 0</span>
+            <span class="rb-sub" id="lblHolidayFormula">0 দিন</span>
+          </div>
+          <div class="result-block accent-night">
+            <span class="rb-label">নাইট বিল</span>
+            <span class="rb-value" id="lblNightAmount">৳ 0</span>
+            <span class="rb-sub" id="lblNightFormula">0 নাইট</span>
           </div>
         </div>
-        <div class="calc-compact">
-          <div class="field">
-            <label for="inpCategory">ক্যাটাগরি</label>
-            <select id="inpCategory" onchange="recalculate()">
-              <option value="CF">CF - Contractual</option>
-              <option value="JO">JO - Junior Officer</option>
-              <option value="JO_B">JO_B - Jr. Officer A/B</option>
-            </select>
+
+        <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
+          <div class="ds-cell"><span class="ds-label">Regular Days</span><span class="ds-value" id="dsRegularDays">—</span></div>
+          <div class="ds-cell"><span class="ds-label">Holiday Days</span><span class="ds-value" id="dsHolidayDays">—</span></div>
+          <div class="ds-cell"><span class="ds-label">Night Days</span><span class="ds-value" id="dsNightDays">—</span></div>
+          <div class="ds-cell plain"><span class="ds-label">Plain Days</span><span class="ds-value" id="dsPlainDays">—</span></div>
+        </div>
+
+        <div class="calc-adjust">
+          <div class="calc-adjust-head">
+            <div class="calc-adjust-title">মান বদলে হিসাব দেখুন (Adjust values)</div>
+            <div class="calc-mini-actions">
+              <button type="button" class="calc-mini-btn" onclick="resetCalcToOriginal()" title="রিপোর্টের মূল মানে ফিরুন">↺ মূল মান</button>
+              <button type="button" class="calc-mini-btn" onclick="copyCalcSummary()" title="হিসাব কপি করুন">📋 কপি</button>
+            </div>
           </div>
-          <div class="field"><label for="inpOtHours">ওটি ঘণ্টা</label><input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()"></div>
-          <div class="field"><label for="inpHoliday">হলিডে/DO দিন</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
-          <div class="field"><label for="inpNight">নাইট সংখ্যা</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
+          <div class="calc-compact">
+            <div class="field">
+              <label for="inpCategory">ক্যাটাগরি</label>
+              <select id="inpCategory" onchange="recalculate()">
+                <option value="CF">CF - Contractual</option>
+                <option value="JO">JO - Junior Officer</option>
+                <option value="JO_B">JO_B - Jr. Officer A/B</option>
+              </select>
+            </div>
+            <div class="field"><label for="inpOtHours">ওটি ঘণ্টা</label><input type="number" id="inpOtHours" value="0" step="0.01" oninput="recalculate()"></div>
+            <div class="field"><label for="inpHoliday">হলিডে/DO দিন</label><input type="number" id="inpHoliday" value="0" step="1" oninput="recalculate()"></div>
+            <div class="field"><label for="inpNight">নাইট সংখ্যা</label><input type="number" id="inpNight" value="0" step="1" oninput="recalculate()"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="collapse-card calc-card" id="step4">
-    <div class="collapse-header" onclick="toggleCollapse('step4Body', this)">
-      <span class="title">অন্য সহকর্মীর সাথে তুলনা</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div class="collapse-body" id="step4Body">
-      <div id="compareInputArea">
-        <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
-        <label for="compareId">অন্য Employee ID:</label>
-        <input type="text" id="compareId" placeholder="উদাহরণ: CF8355" autocomplete="off" inputmode="text">
-        <button id="compareBtn" onclick="runComparison()" style="margin-top:12px;">তুলনা করুন</button>
-        <div class="compare-hint">একটু সময় লাগবে, ধৈর্য ধরুন।</div>
-        <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:12.5px;color:var(--muted);"></div>
+    <div class="collapse-card calc-card" id="step4">
+      <div class="collapse-header" onclick="toggleCollapse('step4Body', this)">
+        <span class="title">অন্য সহকর্মীর সাথে তুলনা</span>
+        <span class="arrow">▼</span>
       </div>
-      <div id="compareResult" style="display:none;"></div>
+      <div class="collapse-body" id="step4Body">
+        <div id="compareInputArea">
+          <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
+          <label for="compareId">অন্য Employee ID:</label>
+          <input type="text" id="compareId" placeholder="উদাহরণ: CF8355" autocomplete="off" inputmode="text">
+          <button id="compareBtn" onclick="runComparison()" style="margin-top:12px;">তুলনা করুন</button>
+          <div class="compare-hint">একটু সময় লাগবে, ধৈর্য ধরুন।</div>
+          <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:12.5px;color:var(--muted);"></div>
+        </div>
+        <div id="compareResult" style="display:none;"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="collapse-card calc-card" id="step5">
-    <div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
-      <span class="title">হলিডে / DO ডিউটির দিন</span>
-      <span class="count" id="holidayCount">০</span>
-      <span class="arrow">▼</span>
+    <div class="collapse-card calc-card" id="step5">
+      <div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
+        <span class="title">হলিডে / DO ডিউটির দিন</span>
+        <span class="count" id="holidayCount">০</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="collapse-body" id="step5Body">
+        <div id="holidayList" class="info-list">—</div>
+      </div>
     </div>
-    <div class="collapse-body" id="step5Body">
-      <div id="holidayList" class="info-list">—</div>
-    </div>
-  </div>
 
-  <div class="collapse-card calc-card" id="step6">
-    <div class="collapse-header" onclick="toggleCollapse('step6Body', this)">
-      <span class="title">নাইট ডিউটির দিন</span>
-      <span class="count" id="nightCount">০</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div class="collapse-body" id="step6Body">
-      <div id="nightList" class="info-list">—</div>
+    <div class="collapse-card calc-card" id="step6">
+      <div class="collapse-header" onclick="toggleCollapse('step6Body', this)">
+        <span class="title">নাইট ডিউটির দিন</span>
+        <span class="count" id="nightCount">০</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="collapse-body" id="step6Body">
+        <div id="nightList" class="info-list">—</div>
+      </div>
     </div>
   </div>
 
@@ -1553,7 +1231,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
     </button>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">1.6.0</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">1.7.0</span></div>
     <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
     <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
     <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
@@ -1661,7 +1339,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   </div>
 </div>
 
-<!-- Welcome Back Modal (NEW) -->
+<!-- Welcome Back Modal -->
 <div id="welcomeBackModal" class="lb-modal" onclick="wbBackdropClick(event)">
   <div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true">
     <div class="wb-icon">👋</div>
@@ -1682,7 +1360,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 
 <script>
 /* ============================================================
-   RENATA PLC - Overtime Report (v34 — Welcome Back Auto-ID)
+   RENATA PLC - Overtime Report (v35 — Payslip & Desktop Fix)
    ============================================================ */
 
 const FALLBACK_LOGO_URI = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -1738,6 +1416,7 @@ const NOTICES_CACHE_KEY = 'renata_notices_cache_v2';
 const TEAM_CACHE_KEY = 'renata_team_cache_v2';
 const AREA_MAP_CACHE_KEY = 'renata_area_map_v1';
 const PREFERRED_ID_KEY = 'renata_preferred_id_v1';
+const SALARY_KEY = 'renata_salary_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_AREA = "Packing Hall";
@@ -1852,6 +1531,178 @@ function handleWelcomeBackChange() {
   }, 300);
 }
 
+/* ============================================================
+   PAYSLIP LOGIC
+   ============================================================ */
+function handleSalaryInput(val) {
+  const cleanVal = val.replace(/[^0-9.]/g, '');
+  if (val !== cleanVal) document.getElementById('inpSalary').value = cleanVal;
+  localStorage.setItem(SALARY_KEY, cleanVal);
+  updatePayslipPreview();
+}
+
+function loadSavedSalary() {
+  const saved = localStorage.getItem(SALARY_KEY);
+  if (saved && document.getElementById('inpSalary')) {
+    document.getElementById('inpSalary').value = saved;
+  }
+}
+
+function updatePayslipPreview() {
+  const payslipCard = document.getElementById('payslipCard');
+  if (!payslipCard || !currentResult) return;
+  
+  const salVal = document.getElementById('inpSalary').value;
+  const salary = parseFloat(salVal) || 0;
+  
+  const otTot = currentResult.totalEarned || 0;
+  const grandTotal = salary + otTot;
+  
+  const preview = document.getElementById('payslipPreview');
+  const actions = document.getElementById('payslipActions');
+  
+  if (salary <= 0) {
+     preview.style.display = 'none';
+     actions.style.display = 'none';
+     return;
+  }
+  
+  preview.style.display = 'block';
+  actions.style.display = 'flex';
+  
+  preview.innerHTML = `
+    <div class="payslip-row"><span>Take Home Salary</span><span>৳ ${salary.toFixed(2)}</span></div>
+    <div class="payslip-row"><span>ওটি + হলিডে + নাইট বিল</span><span>৳ ${otTot.toFixed(2)}</span></div>
+    <div class="payslip-row total"><span>সর্বমোট (আগামী মাসে)</span><span>৳ ${grandTotal.toFixed(2)}</span></div>
+  `;
+}
+
+function generatePayslipCanvas() {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const width = 800, height = 1100;
+  canvas.width = width;
+  canvas.height = height;
+  
+  // Background
+  ctx.fillStyle = '#F3F6FB';
+  ctx.fillRect(0, 0, width, height);
+  
+  // Card Background
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = 'rgba(11, 27, 51, .1)';
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetY = 10;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(40, 40, width - 80, height - 80, 24); else ctx.rect(40, 40, width - 80, height - 80);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+
+  // Header Gradient
+  const grad = ctx.createLinearGradient(40, 40, width - 40, 200);
+  grad.addColorStop(0, '#1E3A8A');
+  grad.addColorStop(1, '#2563EB');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(40, 40, width - 80, 160, [24, 24, 0, 0]); else ctx.rect(40, 40, width - 80, 160);
+  ctx.fill();
+
+  // Header Text
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 36px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText('RENATA PLC', 80, 110);
+  ctx.font = '18px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fillText('Overtime & Potential Payslip', 80, 145);
+
+  // Employee Info
+  ctx.fillStyle = '#0B1B33';
+  ctx.font = 'bold 24px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText(currentResult.name || 'Employee Name', 80, 260);
+  ctx.font = '18px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillStyle = '#566783';
+  ctx.fillText(`ID: ${currentSearchId} | Area: ${getAreaForId(currentSearchId)}`, 80, 295);
+  ctx.fillText(`Month: ${currentMonth} | Category: ${RATE_TABLE[currentResult.category]?.name || currentResult.category}`, 80, 325);
+
+  // Separator Line
+  ctx.beginPath();
+  ctx.moveTo(80, 360);
+  ctx.lineTo(width - 80, 360);
+  ctx.strokeStyle = '#DCE4F0';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Data rows
+  const salary = parseFloat(document.getElementById('inpSalary').value) || 0;
+  const otTot = currentResult.totalEarned || 0;
+  const total = salary + otTot;
+
+  ctx.font = '20px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillStyle = '#33445F';
+  ctx.fillText('Take Home Salary:', 80, 420);
+  ctx.fillText('Overtime (OT + Hol + Night):', 80, 470);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#0B1B33';
+  ctx.font = 'bold 20px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText(`৳ ${salary.toFixed(2)}`, width - 80, 420);
+  ctx.fillText(`৳ ${otTot.toFixed(2)}`, width - 80, 470);
+
+  ctx.textAlign = 'left';
+
+  // Grand Total Box
+  ctx.fillStyle = '#E8F0FF';
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(60, 530, width - 120, 120, 16); else ctx.rect(60, 530, width - 120, 120);
+  ctx.fill();
+
+  ctx.fillStyle = '#1D4ED8';
+  ctx.font = 'bold 22px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText('Total Payable Next Month', 90, 585);
+
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 42px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText(`৳ ${total.toFixed(2)}`, width - 90, 600);
+
+  ctx.textAlign = 'left';
+
+  // Footer
+  ctx.fillStyle = '#566783';
+  ctx.font = '16px "Hind Siliguri", "Inter", sans-serif';
+  ctx.fillText(`Generated on ${new Date().toLocaleDateString('en-GB')} • RENATA PLC App`, 80, height - 80);
+
+  return canvas;
+}
+
+function downloadPayslipJPG() {
+  const canvas = generatePayslipCanvas();
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = `Payslip_${currentSearchId}_${currentMonth}.jpg`;
+  a.click();
+}
+
+function sharePayslip() {
+  const canvas = generatePayslipCanvas();
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], `Payslip_${currentSearchId}.jpg`, { type: 'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'RENATA PLC Payslip',
+          text: `আমার আগামী মাসের সম্ভাব্য বেতন: ৳ ${document.getElementById('lblGrandTotal').innerText}`
+        });
+      } catch (err) {
+        console.log('Share failed', err);
+      }
+    } else {
+      downloadPayslipJPG();
+      showToast("শেয়ার সাপোর্ট নেই। JPG ডাউনলোড হয়েছে।", "info");
+    }
+  }, 'image/jpeg', 0.95);
+}
 
 /* ============================================================
    WELCOME BANNER SLIDER
@@ -2517,7 +2368,7 @@ async function findReport() {
   setPreferredId(searchId);
   
   currentSearchId = searchId; currentMonth = month;
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
+  ['step2','step3','step4','step5','step6','step7','payslipCard'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
   document.getElementById('downloadBtn').style.display = "none";
   document.getElementById('openBtn').style.display = "none";
   document.getElementById('compareResult').style.display = "none";
@@ -2617,7 +2468,6 @@ async function showResult(fileUrl, pageNum, fileName) {
   const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
   renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
   document.getElementById('step2').style.display = "block";
-  // viewerTitle removed as we made the PDF card minimal
   singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
   const downloadBtn = document.getElementById('downloadBtn');
   downloadBtn.href = singlePageBlobUrl;
@@ -2634,7 +2484,6 @@ async function runExtraction() {
     let rawText = "", parsed = null;
     try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
     
-    // Attempt Name Extraction
     let empName = "";
     const nm = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
     if (nm && nm[1]) empName = nm[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
@@ -2648,7 +2497,6 @@ async function runExtraction() {
       await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
       const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
       
-      // OCR Name Extraction fallback
       const nmOcr = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
       if (!empName && nmOcr && nmOcr[1]) empName = nmOcr[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
     }
@@ -2667,9 +2515,14 @@ async function runExtraction() {
     const myAmountDiv = document.getElementById('compareMyAmount');
     myAmountDiv.style.display = "block"; myAmountDiv.innerText = `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
     statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট তৈরি হয়েছে";
-    ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
+    
+    ['step3','step4','step5','step6','step7','payslipCard'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
     const nc = document.getElementById('noticesCard');
     if (nc) { nc.style.display = 'block'; }
+
+    loadSavedSalary();
+    updatePayslipPreview();
+
     setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
   } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Extraction সমস্যা: " + e.message; throw e; }
 }
@@ -2680,7 +2533,6 @@ function applyExtraction(parsed, detection) {
   const categoryBadge = document.getElementById('categoryBadge');
   const areaName = getAreaForId(currentSearchId);
   
-  // Show Greeting
   const greetBox = document.getElementById('userGreeting');
   const greetNameEl = document.getElementById('greetName');
   if (greetBox && greetNameEl) {
@@ -2892,6 +2744,8 @@ function recalculate() {
   if (otSub) otSub.innerText = `${otHours} hr × ৳${r.otRate}`;
   if (holSub) holSub.innerText = r.holidayType === "hourly" ? `${holiday} দিন × ৮ hr × ৳${r.otRate}` : `${holiday} দিন × ৳${r.holidayFlat}`;
   if (nightSub) nightSub.innerText = `${night} নাইট × ৳${r.nightRate}`;
+
+  updatePayslipPreview();
 }
 
 async function runComparison() {
@@ -3423,7 +3277,7 @@ function closeModal() {
 function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
 
 function resetAll() {
-  ['step2','step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
+  ['step2','step3','step4','step5','step6','step7','payslipCard'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
   ['step2Body','step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
   document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
@@ -3437,7 +3291,6 @@ function resetAll() {
   document.getElementById('daySummaryGrid').style.display = "none";
   document.getElementById('backToLbBtn').style.display = "none";
   
-  // Hide Greeting
   const greetBox = document.getElementById('userGreeting');
   if (greetBox) greetBox.style.display = "none";
 
@@ -3502,6 +3355,7 @@ initLbTabs();
 initTheme();
 initWelcomeBanner();
 renderRecentSearchChips();
+loadSavedSalary();
 
 loadAreaMap().then(() => {
   updateSettingsAreaCount();
