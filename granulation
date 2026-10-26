@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Granulation Campaign — Interactive Timeline</title>
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#f5f6f8;color:#1f2430;font:15px/1.45 'Public Sans',system-ui,Arial,sans-serif;padding:20px}
+.card{background:#fff;border-radius:20px;box-shadow:0 2px 14px rgba(20,30,50,.08);padding:20px 22px;max-width:1500px;margin:0 auto}
+h1{font:700 26px/1.2 Poppins,system-ui,sans-serif;margin:0 0 4px}.sub{color:#5b6475;margin:0 0 14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}.stat{background:#eef0f4;border-radius:14px;padding:8px 14px;font-size:13px;color:#5b6475}.stat b{display:block;font:600 18px Poppins,system-ui,sans-serif;color:#1f2430}
+.bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 0 12px;font-size:13px;color:#5b6475}
+.bar input,.bar select{font:inherit;padding:5px 8px;border:1px solid #e3e6ec;border-radius:8px;background:#eef0f4;color:#1f2430}.bar input{width:60px}
+.tab{font:600 14px system-ui,sans-serif;border:1px solid #e3e6ec;background:#eef0f4;padding:8px 18px;border-radius:99px;cursor:pointer}.tab.on{background:#e0f0f1;border-color:#1c7c7d;color:#1c7c7d}
+.lg{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:#5b6475;margin:0 0 12px}.lg i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1.5px solid}
+.cw{display:flex;border:1px solid #e3e6ec;border-radius:16px;overflow:hidden}.lc{flex:none;width:190px;border-right:1px solid #e3e6ec;background:#fff}.sc{flex:1;min-width:0;overflow-x:auto}
+svg text{font-family:'Public Sans',system-ui,Arial,sans-serif}.tick{font:500 11px ui-monospace,monospace;fill:#5b6475}.dayh{font:600 14px Poppins,system-ui,sans-serif;fill:#1f2430}
+.bt{font:600 12px system-ui,sans-serif;fill:#1f2430;pointer-events:none}.bs{font:500 11px ui-monospace,monospace;fill:#3b4252;pointer-events:none}.ln{font:600 14px system-ui,sans-serif;fill:#1f2430}.ls{font:400 11px system-ui,sans-serif;fill:#5b6475}
+.blk{cursor:pointer;outline:none}.blk:hover rect,.blk:focus rect{stroke:#1c7c7d;stroke-width:3}
+.note{color:#5b6475;font-size:13.5px;margin:12px 2px 0}
+.gw{overflow:auto;max-height:74vh;border:1px solid #e3e6ec;border-radius:16px}
+table.hg{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:1500px;width:100%}.hg th,.hg td{border-bottom:1px solid #e3e6ec;border-right:1px solid #e3e6ec;padding:3px;vertical-align:top;background:#fff}
+.hg thead th{position:sticky;top:0;background:#eef0f4;text-align:left;padding:8px;z-index:2}.hg th.rh{position:sticky;left:0;background:#eef0f4;font:500 12.5px ui-monospace,monospace;white-space:nowrap;padding:6px 8px;z-index:1}.hg tr.ds td,.hg tr.ds th{border-top:2px solid #1c7c7d}
+.ent{display:block;width:100%;text-align:left;border:1px solid;border-radius:7px;padding:3px 7px;margin:0 0 3px;font:500 12px/1.3 system-ui,sans-serif;color:#1f2430;cursor:pointer}
+#panel{position:fixed;top:0;right:0;bottom:0;width:min(460px,100vw);background:#fff;border-left:1px solid #e3e6ec;box-shadow:-8px 0 30px rgba(20,30,50,.18);transform:translateX(105%);transition:transform .2s;z-index:50;overflow:auto}#panel.open{transform:none}
+.ph{display:flex;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid #e3e6ec}.ph h2{font:600 19px/1.3 Poppins,system-ui,sans-serif;margin:0}.xb{border:1px solid #e3e6ec;background:#eef0f4;width:38px;height:38px;border-radius:10px;font-size:20px;cursor:pointer}
+.pb{padding:14px 18px}.tag{display:inline-block;border:1px solid #e3e6ec;background:#eef0f4;border-radius:99px;padding:2px 11px;font-size:12.5px;font-weight:600;margin:0 6px 6px 0}
+dl{display:grid;grid-template-columns:100px 1fr;gap:7px 10px;margin:8px 0}dt{color:#5b6475}dd{margin:0}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>GRANULATION — FULL CAMPAIGN INTERACTIVE TIMELINE</h1>
+<p class="sub">Blank + API lots · RMG → FBP · 6 batches × 2 lots = 12 lots · T+00 = Day 1, 08:00 · every hour has its own gridline</p>
+<div class="stats" id="st"></div>
+<div class="bar">
+  <label>Startup (min) <input id="su" type="number" value="30" readonly></label>
+  <label>Line clearance (min) <input id="lc" type="number" value="60" readonly></label>
+  <label>Partial clean (min) <input id="pc" type="number" value="120"></label>
+  <label>Full clean (min) <input id="fc" type="number" value="480" readonly></label>
+  <label>Timing <select id="cs"><option value="mid">Mid of ranges</option><option value="lo">Fastest</option><option value="hi">Slowest</option></select></label>
+  <label>Scale <select id="px"><option value="100">1 h = 100 px</option><option value="200" selected>1 h = 200 px</option><option value="400">1 h = 400 px</option></select></label>
+</div>
+<div class="bar"><button class="tab on" id="t1">Timeline</button><button class="tab" id="t2">By hour</button></div>
+<div class="lg" id="lg"></div>
+<div id="v1"><div class="cw"><div class="lc" id="lb"></div><div class="sc" id="ch"></div></div>
+<p class="note">Startup (30 min) and Line clearance (60 min) run in parallel at the start of each batch. After Batch 6 Lot B API, a full clean (8 h) is performed. Partial clean (2 h) occurs after Lot B API for batches 1–5. Click any block for details.</p></div>
+<div id="v2" hidden><div class="bar"><label>Show <select id="df"></select></label></div><div class="gw"><table class="hg" id="hg"></table></div>
+<p class="note">One row per hour, one column per lane; each entry shows the minutes it uses in that hour.</p></div>
+</div>
+<aside id="panel"><div class="ph"><h2 id="pt"></h2><button class="xb" id="px2" aria-label="Close">×</button></div><div class="pb" id="pb"></div></aside>
+<script>
+(function(){
+var LN=[['Batch · Lot','Campaign sequence'],['Line · Startup · Clean','Startup, clearance, partial clean'],['Material &amp; Solution','Transfers, solution prep'],['RMG · Mixing','Dry / wet mix, bowl'],['FBP · Transfer &amp; Dry','RMG → FBP, drying'],['Crushing','Crushing'],['QC · LOD · Checks','QC, LOD, bin checks'],['Blending · Bin','Lubrication, blending, staging']];
+var CK={
+  t:['#b5d8f7','#6fa5d6','Transfer'],
+  s:['#ffd6a5','#d3a063','Solution prep'],
+  m:['#b6e5d8','#6fb6a3','Mixing / blending'],
+  c:['#dcdfe3','#a3aab5','Cleaning / line cleared'],
+  d:['#ffbdb7','#d9857d','Drying'],
+  k:['#ffe07a','#cdb24e','Crushing'],
+  q:['#d2c5f4','#a593d6','QC · LOD · checks'],
+  p:['#fff7df','#c8a84a','Startup + Line clearance'],
+  su:['#e9ebef','#9099a5','Startup (lot → lot)'],
+  x:['#aeb8c4','#6f7a89','Partial clean'],
+  fc:['#c0c8d4','#5a6a7a','Full clean'],
+  bl:['#b6e5d8','#4fa58e','Blank lot'],
+  ap:['#d2c5f4','#8a76cc','API lot']
+};
+var B=[['Material transfer',20,20,'t',2,''],['Solution preparation',30,30,'s',2,'20 min stirring + 10 min stirrer setting and dismantle'],['Dry mix',15,15,'m',3,''],['Cartridge filter clean (manual)',5,5,'c',3,'Manual clean of the cartridge filter'],['Wet mix',15,15,'m',3,'10 min + 5 min'],['QC check &amp; scoop',10,10,'q',6,'Quality check and scope of blank after each mix (5 + 5 min)'],['Transfer RMG → FBP',35,45,'t',4,'Total material transfer, approx.'],['Drying in FBP',75,85,'d',4,'Total drying, approx.'],['PR LOD check',10,10,'q',6,''],['Crushing',70,75,'k',5,'Approx.'],['PR LOD sample &amp; check',20,20,'q',6,''],['Bin no., BMR close, mesh check',20,20,'q',6,'Bin no. check, BMR close, mesh check']];
+var A=[['Material transfer',20,20,'t',2,''],['Blank adjustment',10,10,'m',3,''],['API preparation',20,20,'s',2,'(10 + 5) + 5 min'],['Stearic acid preparation',30,30,'s',2,'30 min (sheet showed 3 min; corrected)'],['Final solution mixing (A+B)',10,10,'s',2,''],['Wet mixing',15,15,'m',3,'10 + 5 min'],['Bowl / lid open',15,15,'c',3,''],['Transfer',25,30,'t',4,'20 + 5/10 min'],['Dry',10,10,'d',4,'5 + 5 min'],['LOD (PR)',10,10,'q',6,''],['Crushing',65,75,'k',5,''],['LOD (PR)',20,20,'q',6,''],['Lubrication (#16 &amp; #24)',20,25,'m',7,''],['Blending – line cleared',30,30,'c',7,''],['Blending',15,15,'m',7,''],['LOD (QA)',20,20,'q',6,''],['Bin, weight check, BMR close, mesh check',20,20,'q',6,''],['Bin staging',5,5,'t',7,'']];
+var $=function(i){return document.getElementById(i)},pad=function(n){return String(n).padStart(2,'0')},O=24,ev=[],T=0,P=200;
+var hh=function(m){var r=(Math.round(m)+480)%1440;return pad(Math.floor(r/60))+':'+pad(r%60)},dy=function(m){return Math.floor((Math.round(m)+480)/1440)+1},ck=function(m){return 'Day '+dy(m)+' '+hh(m)};
+var fm=function(m){m=Math.round(m);return ((m>=60?Math.floor(m/60)+' h ':'')+(m%60?m%60+' m':'')).trim()||'0'},tp=function(m){m=Math.round(m);return 'T+'+pad(Math.floor(m/60))+':'+pad(m%60)};
+var du=function(s,c){return c=='lo'?s[1]:c=='hi'?s[2]:(s[1]+s[2])/2},sm=function(L,c){return L.reduce(function(a,s){return a+du(s,c)},0)};
+
+function build(c){
+  var su=+$('su').value, lc=+$('lc').value, pc=+$('pc').value, fc=+$('fc').value;
+  var t=0,e=[];
+
+  function mk(n,d,k,l,b,lot,ty,rg,det,band){
+    e.push({n:n,t0:t,t1:t+d,k:k,l:l,b:b,lot:lot,ty:ty,rg:rg,det:det,band:band});
+  }
+
+  for(var b=1;b<=6;b++){
+    // Startup and line clearance in parallel: both start at t, max duration
+    var startParallel = Math.max(su, lc);
+    // Batch start: we run both in parallel, so the batch begins after max(su, lc)
+    mk('Startup + Line clearance', startParallel, 'p', 1, b, '—', 'Line', null,
+       'Startup ('+su+' min) and line clearance ('+lc+' min) run in parallel. Batch begins after the longer one.', false);
+    t += startParallel;
+
+    ['A','B'].forEach(function(lot){
+      [['Blank',B,'bl'],['API',A,'ap']].forEach(function(x){
+        var ts=t;
+        x[1].forEach(function(s){
+          var d=du(s,c);
+          mk(s[0], d, s[3], s[4], b, lot, x[0], s[1]==s[2]?null:[s[1],s[2]], s[5], false);
+          t+=d;
+        });
+        e.push({n:'B'+b+' · Lot '+lot+' · '+x[0], t0:ts, t1:t, k:x[2], l:0, b:b, lot:lot, ty:x[0], band:true});
+      });
+      if(lot=='A'){
+        mk('Startup', su, 'su', 1, b, 'A→B', 'Line', null, 'Startup only — shift from Lot A to Lot B.', false);
+        t += su;
+      }
+    });
+
+    // After Lot B API
+    if(b < 6){
+      mk('Partial clean', pc, 'x', 1, b, '—', 'Line', null,
+         'Done once per batch, after Lot B API is complete. Line clearance for the next batch follows.', false);
+      t += pc;
+    } else {
+      mk('Full clean', fc, 'fc', 1, b, '—', 'Line', null,
+         'Full clean (8 hours) after final batch Lot B API. End of campaign.', false);
+      t += fc;
+    }
+  }
+  ev=e; T=t;
+  var i=0;
+  ev.forEach(function(x){ if(!x.band) x.i=i++; });
+}
+
+function render(){
+  var c=$('cs').value;
+  P=+$('px').value;
+
+  build('lo'); var lo=T;
+  build('hi'); var hi=T;
+  build(c);
+
+  var W=2*O+T/60*P, H=56+8*60, g='', Hn=Math.ceil(T/60);
+
+  $('st').innerHTML=[
+    ['Full campaign (6 batches)', Math.floor(T/1440)+' d '+Math.round((T%1440)/60)+' h',
+     (T/1440).toFixed(2)+' days · range '+(lo/1440).toFixed(1)+'–'+(hi/1440).toFixed(1)],
+    ['One batch (2 lots)', fm(T/6), ''],
+    ['Blank lot', fm(sm(B,c)), ''],
+    ['API lot', fm(sm(A,c)), ''],
+    ['Blank + API lot', fm(sm(B,c)+sm(A,c)), '']
+  ].map(function(k){return '<div class="stat">'+k[0]+'<b>'+k[1]+'</b>'+k[2]+'</div>'}).join('');
+
+  // Lane backgrounds
+  for(var i=0;i<8;i++) g+='<rect x="0" y="'+(56+i*60)+'" width="'+W+'" height="52" rx="8" fill="#eef0f4"/>';
+
+  // Time grid
+  for(var h=0;h<=Hn;h++){
+    var x=O+h*P, mid=(h*60+480)%1440==0, six=(h+8)%6==0;
+    g+='<line x1="'+x+'" x2="'+x+'" y1="34" y2="'+H+'" stroke="'+(mid?'#1c7c7d':'#c9ced8')+'" stroke-width="'+(six||mid?1.6:1)+'" opacity="'+(six||mid?.8:.35)+'"'+(mid?' stroke-dasharray="3 5"':'')+'/>';
+    g+='<text class="tick" x="'+x+'" y="50" text-anchor="middle">'+hh(h*60)+'</text>';
+    if(mid||h==0) g+='<text class="dayh" x="'+(x+6)+'" y="22">Day '+dy(h*60)+'</text>';
+  }
+
+  // Event blocks
+  ev.forEach(function(e,j){
+    var x=O+e.t0/60*P, w=Math.max(2,(e.t1-e.t0)/60*P-2), y=56+e.l*60+4, k=CK[e.k];
+    g+='<svg class="blk" x="'+x+'" y="'+y+'" width="'+w+'" height="44" data-j="'+j+'" tabindex="0">'+
+       '<title>'+e.n+' · '+fm(e.t1-e.t0)+'</title>'+
+       '<rect x="1" y="1" width="'+(w-2)+'" height="42" rx="7" fill="'+k[0]+'" stroke="'+k[1]+'" stroke-width="1.5"'+(e.k=='p'?' stroke-dasharray="4 3"':'')+'/>'+
+       '<text class="bt" x="7" y="'+(e.band?27:18)+'">'+e.n+'</text>'+
+       (e.band?'':'<text class="bs" x="7" y="34">'+fm(e.t1-e.t0)+'</text>')+
+       '</svg>';
+  });
+
+  $('ch').innerHTML='<svg width="'+W+'" height="'+H+'">'+g+'</svg>';
+
+  $('lb').innerHTML='<svg width="190" height="'+H+'">'+LN.map(function(l,i){
+    return '<text class="ln" x="12" y="'+(56+i*60+22)+'">'+l[0]+'</text><text class="ls" x="12" y="'+(56+i*60+40)+'">'+l[1]+'</text>'
+  }).join('')+'</svg>';
+
+  $('lg').innerHTML=['bl','ap','p','su','x','fc','t','s','m','c','d','k','q'].map(function(k){
+    return '<span><i style="background:'+CK[k][0]+';border-color:'+CK[k][1]+'"></i>'+CK[k][2]+'</span>'
+  }).join('');
+
+  // Hour grid
+  var cells=[];
+  for(var r=0;r<Hn;r++){ cells.push([]); for(var l=0;l<8;l++) cells[r].push([]); }
+  ev.forEach(function(e,j){
+    if(e.band) return;
+    for(var r=Math.floor(e.t0/60); r<Math.ceil(e.t1/60); r++){
+      var m=Math.min(e.t1,(r+1)*60)-Math.max(e.t0,r*60);
+      if(m>0.01) cells[r][e.l].push([j,m]);
+    }
+  });
+
+  var ds=$('df'), cur=ds.value||'0';
+  if(!ds.options.length){
+    ds.innerHTML='<option value="0">All days</option>';
+    for(var d=1; d<=Math.ceil((T+480)/1440); d++) ds.innerHTML+='<option value="'+d+'">Day '+d+'</option>';
+  }
+  ds.value=cur;
+
+  var t='<thead><tr><th class="rh">Hour</th>'+LN.slice(1).map(function(l){return '<th>'+l[0]+'</th>'}).join('')+'</tr></thead><tbody>';
+  for(var r=0;r<Hn;r++){
+    var m0=r*60;
+    if(+cur && dy(m0)!=+cur) continue;
+    t+='<tr'+(hh(m0)=='00:00'?' class="ds"':'')+'><th class="rh">D'+dy(m0)+' '+hh(m0)+'</th>';
+    for(var l=1;l<8;l++){
+      t+='<td>'+cells[r][l].map(function(z){
+        var e=ev[z[0]], k=CK[e.k];
+        return '<button class="ent" data-j="'+z[0]+'" style="background:'+k[0]+';border-color:'+k[1]+'">'+e.n+' · '+fm(z[1])+'</button>';
+      }).join('')+'</td>';
+    }
+    t+='</tr>';
+  }
+  $('hg').innerHTML=t+'</tbody>';
+}
+
+function open(j){
+  var e=ev[j], ns=ev.filter(function(x){return !x.band}), p=ns[e.i-1], n=ns[e.i+1], k=CK[e.k];
+  $('pt').innerHTML=e.n;
+  $('pb').innerHTML='<span class="tag">Batch '+e.b+'</span><span class="tag">Lot '+e.lot+'</span><span class="tag">'+e.ty+'</span>'+
+    '<dl><dt>Start</dt><dd>'+ck(e.t0)+' · '+tp(e.t0)+'</dd>'+
+    '<dt>End</dt><dd>'+ck(e.t1)+' · '+tp(e.t1)+'</dd>'+
+    '<dt>Duration</dt><dd><b>'+fm(e.t1-e.t0)+'</b>'+(e.rg?' (sheet range '+e.rg[0]+'–'+e.rg[1]+' min)':'')+'</dd>'+
+    '<dt>Lane</dt><dd>'+LN[e.l][0]+'</dd>'+
+    (e.det?'<dt>Details</dt><dd>'+e.det+'</dd>':'')+
+    '<dt>Before</dt><dd>'+(p?p.n:'—')+'</dd>'+
+    '<dt>After</dt><dd>'+(n?n.n:'End of campaign')+'</dd></dl>';
+  $('panel').className='open';
+}
+
+document.addEventListener('click',function(ev2){
+  var b=ev2.target.closest&&ev2.target.closest('[data-j]');
+  if(b) open(+b.getAttribute('data-j'));
+});
+$('px2').onclick=function(){$('panel').className=''};
+$('t1').onclick=function(){$('v1').hidden=false;$('v2').hidden=true;$('t1').className='tab on';$('t2').className='tab'};
+$('t2').onclick=function(){$('v1').hidden=true;$('v2').hidden=false;$('t2').className='tab on';$('t1').className='tab'};
+document.querySelectorAll('.bar input,.bar select').forEach(function(x){x.onchange=render});
+render();
+})();
+</script>
+</body>
+</html>
