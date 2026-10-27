@@ -702,6 +702,14 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
 .admin-chip-preview { display: flex; flex-wrap: wrap; gap: 6px; max-height: 180px; overflow-y: auto; padding: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 10px; }
 .admin-id-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); }
 .admin-id-pill button { width: 18px !important; min-width: 18px !important; height: 18px !important; min-height: 18px !important; padding: 0 !important; border-radius: 50% !important; background: var(--danger-bg) !important; color: var(--danger) !important; font-size: 11px !important; border: none !important; box-shadow: none !important; }
+#calcInputs.norate .grand-total-block, #calcInputs.norate .rate-line, #calcInputs.norate .bill-amt, #calcInputs.norate details.adjust { display: none !important; }
+body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compareMyAmount { display: none !important; }
+.xrow { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.xrow:last-child { border-bottom:0; }
+.xrow.on { background: var(--brand-soft); }
+.xrow.locked { opacity:.7; cursor:default; }
+.xbox { width:22px; height:22px; flex:none; border:2px solid var(--border-strong); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; background:var(--surface); }
+.xrow.on .xbox { background: var(--brand); border-color: var(--brand); }
 </style>
 </head>
 <body data-page="search">
@@ -1395,6 +1403,7 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
         <label for="adminTargetAreaSelect">১. কোন এরিয়ায় আইডি যোগ করতে চান?</label>
         <select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
           <option value="Packing Hall">Packing Hall (প্যাকিং হল)</option>
+          <option value="Overall">Overall (ওভারঅল — Executive/Above)</option>
           <option value="Solid Production">Solid Production (সলিড)</option>
           <option value="Softgel Production">Softgel Production (সফটজেল)</option>
         </select>
@@ -1437,7 +1446,9 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
             <button type="button" class="btn-secondary" onclick="adminLoadExtraCandidates(true)" style="width:auto;min-width:96px;margin:0;">রিলোড</button>
           </div>
           <div id="admExtraMonthLbl" style="font-size:12.5px;color:var(--muted);margin-top:8px;">তালিকা লোড হচ্ছে...</div>
-          <div id="admExtraList" style="max-height:300px;overflow:auto;margin-top:8px;border:1px solid var(--border);border-radius:10px;"></div>
+          <div id="admExtraNote" style="font-size:12.5px;color:var(--brand-text);margin-top:8px;font-weight:700;"></div>
+          <div id="admExtraList" style="max-height:320px;overflow:auto;margin-top:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface);"></div>
+          <div id="admExtraCount" style="font-size:12.5px;color:var(--muted);margin-top:6px;"></div>
           <div class="btn-grid-2">
             <button type="button" class="btn-primary" onclick="adminAddExtraSelected()">নির্বাচিতদের এই এরিয়ায় যোগ করুন</button>
             <button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">সব বাছাই / বাতিল</button>
@@ -1640,6 +1651,7 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
         <option value="all">সব এরিয়া (All Areas)</option>
         <option value="Solid Production">Solid Production</option>
         <option value="Softgel Production">Softgel Production</option>
+        <option value="Overall">Overall (ওভারঅল)</option>
         <option value="Packing Hall">Packing Hall</option>
       </select>
       <label for="inchargePinInput">৪ ডিজিটের ইনচার্জ পিন কোড দিন:</label>
@@ -1686,13 +1698,15 @@ const REMOTE_BASE_URL = "https://checkot.github.io/";
 const ERP_WA = "8801845873227";
 function erpWaLink(text) { return `https://wa.me/${ERP_WA}?text=${encodeURIComponent(text)}`; }
 
+const OVERALL_AREA = 'Overall';
+function isNoRateCat(c) { return Boolean(c && RATE_TABLE[c] && RATE_TABLE[c].noRate); }
 const RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
   JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" },
-  /* ---- নতুন ক্যাটাগরি (admin আইডি যুক্ত করলে সক্রিয় হয়) — রেট পরে ঠিক করে নিন ---- */
-  CAS:  { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Casual" },                       // আপাতত CF-এর সমান
-  EXEC: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Executive / Above (In-Charge only)" } // আপাতত JO A/B-এর সমান
+  /* নতুন ক্যাটাগরি: ফিক্সড রেট নেই, তাই টাকার হিসাব হয় না — শুধু ঘণ্টা/দিন দেখানো হয় */
+  CAS:  { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Casual" },
+  EXEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Executive / Above" }
 };
 
 const DEFAULT_FALLBACK_AREAS = {
@@ -2660,7 +2674,7 @@ function populateAreaDropdown() {
   if (!sel) return;
   const standardAreas = ["Solid Production", "Softgel Production", "Packing Hall"];
   const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
-  const allAreas = [...new Set([...standardAreas, ...jsonAreas])].sort((a, b) => a.localeCompare(b));
+  const allAreas = [...new Set([...standardAreas, ...jsonAreas])].filter(a => a !== OVERALL_AREA || getAppMode() === 'incharge').sort((a, b) => a.localeCompare(b));
   let html = '<option value="all">সব এরিয়া</option>';
   allAreas.forEach(a => {
     html += `<option value="${esc(a)}">${esc(a)}</option>`;
@@ -3377,7 +3391,20 @@ function applyExtraction(parsed, detection) {
     gradeInfo.style.display = "block";
     gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason} | Area: ${areaName}`;
   }
-  if (detection.valid && detection.category) {
+  const _nr = Boolean(detection.valid && detection.category && isNoRateCat(detection.category));
+  document.body.classList.toggle('norate-view', _nr);
+  calcInputs.classList.toggle('norate', _nr);
+  if (_nr) {
+    document.getElementById('inpOtHours').value = parsed.otHours;
+    document.getElementById('inpHoliday').value = parsed.holidayCount;
+    document.getElementById('inpNight').value = parsed.nightCount;
+    categoryBadge.className = "badge"; categoryBadge.innerText = RATE_TABLE[detection.category].name;
+    calcInputs.style.display = "block";
+    const gl = document.getElementById('gtLabelText'); if (gl) gl.textContent = 'ঘণ্টার হিসাব';
+    const setT = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
+    setT('lblOtFormula', `${parsed.otHours} ঘণ্টা`); setT('lblHolidayFormula', `${parsed.holidayCount} দিন`); setT('lblNightFormula', `${parsed.nightCount} রাত`);
+    const gi = document.getElementById('gradeInfo'); if (gi) { gi.style.display = 'block'; gi.innerText = `Grade: ${detection.gradeText || '—'} | ফিক্সড রেট নেই — শুধু ঘণ্টা ও দিনের হিসাব | Area: ${areaName}`; }
+  } else if (detection.valid && detection.category) {
     document.getElementById('inpCategory').value = detection.category;
     document.getElementById('inpOtHours').value = parsed.otHours;
     document.getElementById('inpHoliday').value = parsed.holidayCount;
@@ -3941,7 +3968,7 @@ function buildRankItemHTML(e, index, type, isMine) {
   if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = commonMeta; }
   else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = commonMeta; }
   else if (type === 'earned') { valueStr = `৳ ${Number(e.totalEarned || 0).toFixed(2)}`; metaStr = commonMeta; }
-  else if (type === 'punch') { valueStr = `${bn(pCount)} দিন মিসিং`; metaStr = `Duty: ${e.totalDuty}h | OT: ${e.otHours}h | ৳${Math.round(e.totalEarned || 0)}`; }
+  else if (type === 'punch') { valueStr = `${bn(pCount)} দিন মিসিং`; metaStr = `Duty: ${e.totalDuty}h | OT: ${e.otHours}h` + (isNoRateCat(e.category) ? '' : ` | ৳${Math.round(e.totalEarned || 0)}`); }
   const desig = getDesignation(e);
   const desigClass = desig === 'Contractual' ? 'rank-desig cf' : 'rank-desig';
   const areaBadge = e.area ? `<span class="rank-area">${esc(e.area)}</span>` : '';
@@ -4104,7 +4131,7 @@ function refreshTypeFilterOptions() {
   const prev = sel.value;
   sel.innerHTML = '<option value="all">সব ধরন</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option><option value="CAS">Casual</option>' + (inc ? '<option value="EXEC">Executive/Above</option>' : '');
   sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
-  if (_lbTypeModeSeen !== null && _lbTypeModeSeen !== inc && currentLeaderboardResult) { _lbTypeModeSeen = inc; applyAreaFilter(); }
+  if (_lbTypeModeSeen !== null && _lbTypeModeSeen !== inc) { populateAreaDropdown(); _lbTypeModeSeen = inc; if (currentLeaderboardResult) applyAreaFilter(); }
   _lbTypeModeSeen = inc;
 }
 function applyAreaFilter() {
@@ -4121,7 +4148,7 @@ function applyAreaFilter() {
     (st.type === 'all' || e.empType === st.type));
   const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
   const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
-  const sortedByEarned = [...filtered].sort((a,b) => b.totalEarned - a.totalEarned);
+  const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
   const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
   updateLbSummaryMetrics(filtered);
   renderTop3('lbTopDuty', sortedByDuty.slice(0, 3), 'duty');
@@ -4608,38 +4635,57 @@ function adminExtraCandidates() {
   return _admExtraList.filter(e => e.kind === cat && (e.isRppf !== false) && (!q || String(e.id).includes(q) || String(e.name || '').toUpperCase().includes(q)))
     .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
 }
+function adminIsAssignedExtra(e, cat) { return Boolean(AREA_MAP[e.id]) && getEmpMeta(e.id).type === cat; }
+function adminUpdateExtraCount() {
+  const el = document.getElementById('admExtraCount');
+  if (el) el.textContent = _admExtraChecked.size ? `${bn(_admExtraChecked.size)} জন বাছাই করা আছে` : 'কাউকে বাছাই করা হয়নি';
+}
 function adminRenderExtraList() {
-  const box = document.getElementById('admExtraList'); const lbl = document.getElementById('admExtraMonthLbl');
+  const box = document.getElementById('admExtraList'); const lbl = document.getElementById('admExtraMonthLbl'); const note = document.getElementById('admExtraNote');
   if (!box) return;
   const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
+  if (note) note.textContent = cat === 'EXEC' ? 'এঁরা সবাই "Overall" এরিয়ায় যাবেন (উপরে যে এরিয়াই সিলেক্ট থাকুক) এবং শুধু ইন-চার্জ মোডে দেখা যাবে। কোনো টাকার হিসাব হবে না।' : 'এঁরা উপরের "১. এরিয়া"-তে সিলেক্ট করা এরিয়ায় যোগ হবেন। কোনো টাকার হিসাব হবে না, শুধু ঘণ্টা ও দিন দেখাবে।';
   const list = adminExtraCandidates();
   const total = _admExtraList.filter(e => e.kind === cat && e.isRppf !== false).length;
   if (lbl && _admExtraMonth) lbl.innerHTML = `সূত্র: <b>${esc(_admExtraMonth)}</b> মাসের আপলোড • মোট ${bn(total)} জন • দেখাচ্ছে ${bn(list.length)} জন`;
   if (!list.length) {
     box.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px;">${_admExtraMonth ? 'এই ক্যাটাগরিতে কাউকে পাওয়া যায়নি।' + (cat === 'CAS' ? ' (পুরনো আপলোডে Casual ছিল না — Excel আবার আপলোড করুন)' : '') : 'তালিকা নেই।'}</div>`;
-    return;
+    adminUpdateExtraCount(); return;
   }
   box.innerHTML = list.map(e => {
-    const assigned = AREA_MAP[e.id] && getEmpMeta(e.id).type === cat;
-    const checked = assigned || _admExtraChecked.has(e.id);
-    const tag = assigned ? `<span class="admin-tag">${esc(AREA_MAP[e.id])}</span>` : (AREA_MAP[e.id] ? `<span class="admin-tag">অন্য এরিয়া: ${esc(AREA_MAP[e.id])}</span>` : '');
-    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);margin:0;cursor:pointer;font-weight:600;">
-      <input type="checkbox" ${checked ? 'checked' : ''} ${assigned ? 'disabled' : ''} onchange="adminExtraToggle('${esc(e.id)}', this.checked)" style="width:18px;height:18px;margin:0;flex:none;min-height:0;">
-      <span style="flex:1;min-width:0;"><span style="display:block;font-size:13.5px;">${esc(e.name || '—')}</span><span style="display:block;font-size:12px;color:var(--muted);">${esc(e.id)} • ${esc(e.grade || '')}</span></span>${tag}</label>`;
+    const assigned = adminIsAssignedExtra(e, cat);
+    const on = assigned || _admExtraChecked.has(e.id);
+    const tag = AREA_MAP[e.id] ? `<span class="admin-tag">${assigned ? '' : 'অন্য: '}${esc(AREA_MAP[e.id])}</span>` : '';
+    return `<div class="xrow ${on ? 'on' : ''} ${assigned ? 'locked' : ''}" data-id="${esc(e.id)}" data-locked="${assigned ? 1 : 0}" role="checkbox" aria-checked="${on}" tabindex="0">
+      <span class="xbox">${on ? '✓' : ''}</span>
+      <span style="flex:1;min-width:0;"><span style="display:block;font-size:13.5px;font-weight:700;">${esc(e.name || '—')}</span><span style="display:block;font-size:12px;color:var(--muted);">${esc(e.id)} • ${esc(e.grade || '')}</span></span>${tag}</div>`;
   }).join('');
+  adminUpdateExtraCount();
 }
-function adminExtraToggle(id, on) { if (on) _admExtraChecked.add(id); else _admExtraChecked.delete(id); }
+function adminExtraRowToggle(row) {
+  if (!row || row.dataset.locked === '1') return;
+  const id = row.dataset.id;
+  const on = !_admExtraChecked.has(id);
+  if (on) _admExtraChecked.add(id); else _admExtraChecked.delete(id);
+  row.classList.toggle('on', on); row.setAttribute('aria-checked', on);
+  const bx = row.querySelector('.xbox'); if (bx) bx.textContent = on ? '✓' : '';
+  adminUpdateExtraCount();
+}
+document.addEventListener('click', e => { const row = e.target.closest && e.target.closest('#admExtraList .xrow'); if (row) adminExtraRowToggle(row); }, true);
+document.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && e.target.classList && e.target.classList.contains('xrow') && e.target.closest('#admExtraList')) { e.preventDefault(); adminExtraRowToggle(e.target); } });
 function adminToggleExtraAll() {
   const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-  const list = adminExtraCandidates().filter(e => !(AREA_MAP[e.id] && getEmpMeta(e.id).type === cat));
+  const list = adminExtraCandidates().filter(e => !adminIsAssignedExtra(e, cat));
   const allOn = list.length > 0 && list.every(e => _admExtraChecked.has(e.id));
   list.forEach(e => { if (allOn) _admExtraChecked.delete(e.id); else _admExtraChecked.add(e.id); });
   adminRenderExtraList();
 }
 function adminAddExtraSelected() {
   const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-  const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-  const subVal = document.getElementById('adminTargetSubSelect')?.value || '';
+  let targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
+  if (cat === 'EXEC') targetArea = OVERALL_AREA;
+  else if (targetArea === OVERALL_AREA) { showToast('Casual-এর জন্য Solid / Softgel / Packing-এর একটা এরিয়া সিলেক্ট করুন', 'warn'); return; }
+  const subVal = cat === 'EXEC' ? '' : (document.getElementById('adminTargetSubSelect')?.value || '');
   const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
   const ids = _admExtraList.filter(e => e.kind === cat && _admExtraChecked.has(e.id)).map(e => e.id);
   if (!ids.length) { showToast('আগে তালিকা থেকে কর্মী বাছাই করুন', 'warn'); return; }
