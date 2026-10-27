@@ -32,11 +32,12 @@
       "photo": "team/rahid.png"
     },
     {
-      "id": "RF22849",
       "name": "Mr. Md. Ashraful Alam",
       "designation": "Junior Officer D",
+      "id": "RF22849",
+      "area": "Softgel Production",
       "whatsapp": "8801883716637",
-      "photo": "team/ashraful.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
       "id": "RF22846",
