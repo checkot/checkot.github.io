@@ -1424,6 +1424,25 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
           <button type="button" class="btn-primary" onclick="adminAddBulkAreaIds()">এই এরিয়ায় আইডি যোগ করুন</button>
           <button type="button" class="btn-secondary danger-btn" onclick="adminRemoveBulkAreaIds()">আইডি বাদ দিন</button>
         </div>
+        <div class="admin-sub-box" style="margin-top:16px;" id="admExtraCatBox">
+          <div style="font-size:13.5px;font-weight:800;color:var(--text);">অতিরিক্ত ক্যাটাগরি — শেষ আপলোড করা মাসের তালিকা থেকে বাছাই</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;">উপরের "১. এরিয়া" (এবং চাইলে সাব-সেকশন / পুরুষ-মহিলা) যেটা সিলেক্ট আছে, বাছাই করা কর্মীরা সেখানেই যোগ হবে।</div>
+          <label for="admExtraCatSelect" style="font-size:12.5px;">ক্যাটাগরি</label>
+          <select id="admExtraCatSelect" onchange="adminRenderExtraList()">
+            <option value="CAS">Casual (নম্বর আইডি)</option>
+            <option value="EXEC">Executive / Above (RF আইডি, Junior Officer নয়) — শুধু ইন-চার্জ মোডে দেখা যাবে</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input type="text" id="admExtraSearch" placeholder="আইডি বা নাম খুঁজুন..." oninput="adminRenderExtraList()" style="margin:0;flex:1;min-height:38px;">
+            <button type="button" class="btn-secondary" onclick="adminLoadExtraCandidates(true)" style="width:auto;min-width:96px;margin:0;">রিলোড</button>
+          </div>
+          <div id="admExtraMonthLbl" style="font-size:12.5px;color:var(--muted);margin-top:8px;">তালিকা লোড হচ্ছে...</div>
+          <div id="admExtraList" style="max-height:300px;overflow:auto;margin-top:8px;border:1px solid var(--border);border-radius:10px;"></div>
+          <div class="btn-grid-2">
+            <button type="button" class="btn-primary" onclick="adminAddExtraSelected()">নির্বাচিতদের এই এরিয়ায় যোগ করুন</button>
+            <button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">সব বাছাই / বাতিল</button>
+          </div>
+        </div>
         <div style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--border-strong);">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
             <span style="font-size:13px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">নির্বাচিত এরিয়ার বর্তমান আইডি সমূহ:</span>
@@ -1670,7 +1689,10 @@ function erpWaLink(text) { return `https://wa.me/${ERP_WA}?text=${encodeURICompo
 const RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
   JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" }
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" },
+  /* ---- নতুন ক্যাটাগরি (admin আইডি যুক্ত করলে সক্রিয় হয়) — রেট পরে ঠিক করে নিন ---- */
+  CAS:  { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Casual" },                       // আপাতত CF-এর সমান
+  EXEC: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Executive / Above (In-Charge only)" } // আপাতত JO A/B-এর সমান
 };
 
 const DEFAULT_FALLBACK_AREAS = {
@@ -1842,6 +1864,7 @@ function getReportViewContext(searchedId) {
 }
 
 function updateModeUI() {
+  try { refreshTypeFilterOptions(); } catch (e) {}
   const mode = getAppMode() || 'employee';
   const myId = getPreferredId();
   const roleLabel = getInchargeRoleLabel();
@@ -2426,6 +2449,7 @@ async function fetchMonthPreIndexedData(month, forceFresh = false) {
         isRppf: e.isRppf !== false,
         area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'অন্য ফ্যাসিলিটি')
       }));
+      normalized.forEach(applyTypeOverride);
       monthIndexMemoryCache[month] = normalized;
       try {
         localStorage.setItem(MONTH_DATA_CACHE_PREFIX + month, JSON.stringify({ ts: Date.now(), employees: normalized }));
@@ -2438,6 +2462,8 @@ async function fetchMonthPreIndexedData(month, forceFresh = false) {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.employees) && (Date.now() - (parsed.ts || 0) < CACHE_TTL_MS)) {
+          await loadAreaMap();
+          parsed.employees.forEach(applyTypeOverride);
           monthIndexMemoryCache[month] = parsed.employees;
           return parsed.employees;
         }
@@ -2465,6 +2491,41 @@ function getPunchProblemCount(emp) {
   if (!emp) return 0;
   if (Array.isArray(emp.punchProblems)) return emp.punchProblems.length;
   return Number(emp.punchProblems) || 0;
+}
+
+/* ---- Casual / Executive: admin যাকে এরিয়ায় যোগ করেছে তার জন্য হিসাব সক্রিয়, নইলে নিষ্ক্রিয় ---- */
+function deriveEmpKind(e) {
+  if (e.kind) return e.kind;
+  const id = String(e.id || '').toUpperCase();
+  if (/^\d{5,8}$/.test(id) || /^CASUAL/i.test(e.grade || '')) return 'CAS';
+  if (/^RF/.test(id) && e.valid === false) return 'EXEC';
+  return '';
+}
+function applyTypeOverride(e) {
+  if (!e) return e;
+  e.kind = deriveEmpKind(e);
+  if (e.kind !== 'CAS' && e.kind !== 'EXEC') return e;
+  const assigned = Boolean(AREA_MAP && AREA_MAP[e.id]);
+  const type = assigned ? getEmpMeta(e.id).type : '';
+  if (assigned && type === e.kind) {
+    const r = RATE_TABLE[e.kind];
+    const ot = Number(e.otHours) || 0, hc = Number(e.holidayCount) || 0, nc = Number(e.nightCount) || 0;
+    e.category = e.kind; e.valid = true;
+    e.otAmount = Number((ot * r.otRate).toFixed(2));
+    e.holidayAmount = Number((r.holidayType === 'hourly' ? hc * r.holidayHours * r.otRate : hc * r.holidayFlat).toFixed(2));
+    e.nightAmount = Number((nc * r.nightRate).toFixed(2));
+    e.totalEarned = Number((e.otAmount + e.holidayAmount + e.nightAmount).toFixed(2));
+  } else {
+    e.category = null; e.valid = false; e.otAmount = 0; e.holidayAmount = 0; e.nightAmount = 0; e.totalEarned = 0;
+  }
+  return e;
+}
+function reapplyTypeOverrides() {
+  Object.keys(monthIndexMemoryCache).forEach(m => (monthIndexMemoryCache[m] || []).forEach(e => { e.area = getAreaForId(e.id, true); applyTypeOverride(e); }));
+}
+/* Executive/Above শুধু ইন-চার্জ মোডে দেখা যাবে */
+function isExecHiddenFor(e) {
+  return Boolean(e) && getAppMode() !== 'incharge' && e.kind === 'EXEC' && e.valid === true;
 }
 
 function pickBestEmployee(a, b) {
@@ -2513,6 +2574,9 @@ function bn(str) { const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪
 function getDesignation(emp) {
   if (!emp || !emp.id) return '';
   const id = String(emp.id).toUpperCase();
+  const _t = (typeof getEmpMeta === 'function') ? getEmpMeta(id).type : '';
+  if (_t === 'CAS') return 'Casual';
+  if (_t === 'EXEC') return 'Executive/Above';
   if (id.startsWith('CF')) return 'Contractual';
   if (id.startsWith('RF')) return 'Junior Officer';
   if (id.startsWith('CL')) return 'Casual';
@@ -2552,12 +2616,13 @@ function isMappedAreaId(id) {
 function saveAreaCache() {
   try { localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP, details: AREA_DETAILS, subs: AREA_SUBS })); } catch (e) {}
 }
-const EMP_TYPE_LABELS = { CON: 'Contractual', JO: 'Junior Officer' };
+const EMP_TYPE_LABELS = { CON: 'Contractual', JO: 'Junior Officer', CAS: 'Casual', EXEC: 'Executive/Above' };
 const GENDER_LABELS = { M: 'পুরুষ', F: 'মহিলা' };
 function getAutoEmpType(id) {
   const u = String(id || '').toUpperCase();
   if (u.startsWith('CF')) return 'CON';
   if (u.startsWith('RF')) return 'JO';
+  if (/^\d{5,8}$/.test(u)) return 'CAS';
   return '';
 }
 function getEmpMeta(id) {
@@ -3020,7 +3085,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const detectObj = {
     category: valid ? cat : null,
     valid,
-    reason: detection.reason || RATE_TABLE[cat]?.name || cat,
+    reason: (cat === 'CAS' || cat === 'EXEC') ? RATE_TABLE[cat].name : (detection.reason || RATE_TABLE[cat]?.name || cat),
     gradeText: emp.grade || detection.gradeText || cat
   };
 
@@ -3118,6 +3183,11 @@ async function findReport() {
     if (myToken !== currentToken) return;
     if (fastList && Array.isArray(fastList)) {
       const matchedEmp = fastList.find(e => String(e.id || '').toUpperCase() === searchId);
+      if (matchedEmp && isExecHiddenFor(matchedEmp)) {
+        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+        showSearchError('এই আইডির হিসাব শুধু ইন-চার্জ মোডে দেখা যায়।');
+        return;
+      }
       if (matchedEmp) {
         spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
         statusDiv.style.color = "var(--success)"; statusDiv.innerText = "হিসাব প্রস্তুত হয়েছে";
@@ -3376,6 +3446,7 @@ function detectCategory(gradeText, empId) {
   const levelNum = levelMatch ? parseInt(levelMatch[1]) : null;
   if (gradeLetter) { if (gradeLetter === "A" || gradeLetter === "B") return { category: "JO_B", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; if (["C","D","E","F"].includes(gradeLetter)) return { category: "JO", valid: true, reason: `Grade ${gradeLetter}`, gradeText: g }; }
   if (levelNum !== null) { if (levelNum === 16 || levelNum === 17) return { category: "JO_B", valid: true, reason: `M${levelNum}`, gradeText: g }; if (levelNum >= 18 && levelNum <= 20) return { category: "JO", valid: true, reason: `M${levelNum}`, gradeText: g }; return { category: null, valid: false, reason: `M${levelNum} — বাইরে`, gradeText: g }; }
+  if (g && /^(OFFICER|UN-?SKILLED|SKILLED|SEMI)/i.test(g)) return { category: null, valid: false, reason: "গ্রেডের বাইরে (" + g + ")", gradeText: g };
   if (idUpper.startsWith("RF") || idUpper.startsWith("CL")) return { category: "JO", valid: true, reason: "Junior Officer (Assumed)", gradeText: g };
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
@@ -3546,6 +3617,7 @@ async function runComparison() {
     const fastList = await fetchMonthPreIndexedData(currentMonth);
     if (fastList && Array.isArray(fastList)) {
       const otherEmp = fastList.find(e => String(e.id || '').toUpperCase() === otherId);
+      if (otherEmp && isExecHiddenFor(otherEmp)) { showToast('এই আইডির হিসাব শুধু ইন-চার্জ মোডে দেখা যায়', 'warn'); compareBtn.disabled = false; return; }
       if (otherEmp) {
         const cat = otherEmp.category || detectCategory(otherEmp.grade || '', otherId).category || 'JO';
         const r = RATE_TABLE[cat] || RATE_TABLE.JO;
@@ -4024,6 +4096,17 @@ function describeLbFilter() {
   return parts.join(' • ');
 }
 
+let _lbTypeModeSeen = null;
+function refreshTypeFilterOptions() {
+  const sel = document.getElementById('typeFilter');
+  if (!sel) return;
+  const inc = getAppMode() === 'incharge';
+  const prev = sel.value;
+  sel.innerHTML = '<option value="all">সব ধরন</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option><option value="CAS">Casual</option>' + (inc ? '<option value="EXEC">Executive/Above</option>' : '');
+  sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
+  if (_lbTypeModeSeen !== null && _lbTypeModeSeen !== inc && currentLeaderboardResult) { _lbTypeModeSeen = inc; applyAreaFilter(); }
+  _lbTypeModeSeen = inc;
+}
 function applyAreaFilter() {
   if (!currentLeaderboardResult) return;
   const st = getLbFilterState();
@@ -4031,6 +4114,7 @@ function applyAreaFilter() {
   if (getAppMode() === 'incharge') { try { localStorage.setItem(INCHARGE_AREA_KEY, area); } catch (e) {} }
   const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id)));
   const filtered = allEmps.filter(e =>
+    !isExecHiddenFor(e) &&
     (area === 'all' || e.area === area) &&
     (area === 'all' || st.sub === 'all' || e.sub === st.sub) &&
     (st.gender === 'all' || e.gender === st.gender) &&
@@ -4327,7 +4411,7 @@ function initAdminPage() {
   const statusTxt = document.getElementById('adminTokenStatusText');
   if (tokInp) tokInp.value = tok;
   if (statusTxt) statusTxt.innerHTML = tok ? 'RPPF Cloud Server সংযুক্ত আছে — সরাসরি ফাইল আপলোড ও অপ্টিমাইজ করা যাবে।' : 'Server Access Key এখনো সেট করা হয়নি।';
-  loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); });
+  loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); adminLoadExtraCandidates(false); });
   renderAdminNoticesList();
 }
 
@@ -4410,7 +4494,7 @@ function updateAdminAreaStats() {
 }
 function extractEmployeeIdsFromText(rawText) {
   const upper = String(rawText || '').toUpperCase();
-  const regexMatches = upper.match(/\b(?:CF|RF|CL)\d{2,6}\b/g) || [];
+  const regexMatches = upper.match(/\b(?:(?:CF|RF|CL)\d{2,6}|\d{5,8})\b/g) || [];
   if (regexMatches.length > 0) return [...new Set(regexMatches)];
   return [...new Set(upper.split(/[\s,;\n\r\t]+/).map(s => s.replace(/[^A-Z0-9]/g, '')).filter(s => s.length >= 3))];
 }
@@ -4432,7 +4516,7 @@ function adminAddBulkAreaIds() {
     if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
     if (tVal === '__none__') delete d.t; else if (tVal) d.t = tVal;
   });
-  saveAreaCache();
+  saveAreaCache(); reapplyTypeOverrides();
   if (inp) inp.value = '';
   updateAdminAreaStats(); renderAdminAreaPreview();
   showToast(`${targetArea}-এ ${bn(ids.length)}টি আইডি আপডেট হয়েছে (সার্ভারে সেভ করতে ভুলবেন না)`, 'success');
@@ -4443,7 +4527,7 @@ function adminRemoveBulkAreaIds() {
   const ids = extractEmployeeIdsFromText(raw);
   if (ids.length === 0) { showToast('যেসব আইডি মুছতে চান সেগুলো বক্সে লিখুন', 'warn'); return; }
   ids.forEach(id => { if (AREA_MAP[id]) delete AREA_MAP[id]; delete AREA_DETAILS[id]; });
-  saveAreaCache();
+  saveAreaCache(); reapplyTypeOverrides();
   if (inp) inp.value = '';
   updateAdminAreaStats(); renderAdminAreaPreview();
   showToast('আইডি তালিকা থেকে বাদ দেওয়া হয়েছে।', 'info');
@@ -4451,7 +4535,7 @@ function adminRemoveBulkAreaIds() {
 function adminRemoveSingleId(id) {
   if (AREA_MAP && AREA_MAP[id]) {
     delete AREA_MAP[id]; delete AREA_DETAILS[id];
-    saveAreaCache();
+    saveAreaCache(); reapplyTypeOverrides();
     updateAdminAreaStats(); renderAdminAreaPreview();
     showToast(`${id} বাদ দেওয়া হয়েছে`, 'info');
   }
@@ -4493,6 +4577,85 @@ function renderAdminAreaPreview() {
   if (idsInArea.length === 0) { box.innerHTML = `<div style="padding:12px;color:var(--muted);font-size:13px;width:100%;text-align:center;">${targetArea}-এ এখনো কোনো আইডি যোগ করা হয়নি।</div>`; return; }
   box.innerHTML = idsInArea.map(id => { const m = getEmpMeta(id); const tags = [m.sub, GENDER_LABELS[m.gender], EMP_TYPE_LABELS[m.type]].filter(Boolean).map(t => `<span class="admin-tag">${esc(t)}</span>`).join(''); return `<span class="admin-id-pill"><span>${esc(id)}</span>${tags}<button type="button" onclick="adminRemoveSingleId('${esc(id)}')" title="মুছুন">✕</button></span>`; }).join('');
 }
+/* ============================================================
+   ADMIN: Casual / Executive — শেষ আপলোড করা মাসের তালিকা থেকে বাছাই
+   ============================================================ */
+let _admExtraList = [], _admExtraMonth = '', _admExtraChecked = new Set();
+async function adminFindLatestMonthList(forceFresh) {
+  const now = new Date();
+  for (let i = 0; i < 8; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    try {
+      const list = await fetchMonthPreIndexedData(m, forceFresh);
+      if (list && list.length) return { month: m, list };
+    } catch (e) {}
+  }
+  return null;
+}
+async function adminLoadExtraCandidates(forceFresh) {
+  const lbl = document.getElementById('admExtraMonthLbl');
+  if (lbl) lbl.textContent = 'শেষ আপলোড করা মাসের তালিকা খোঁজা হচ্ছে...';
+  await loadAreaMap();
+  const res = await adminFindLatestMonthList(Boolean(forceFresh));
+  if (!res) { _admExtraList = []; _admExtraMonth = ''; if (lbl) lbl.textContent = 'সার্ভারে কোনো মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।'; adminRenderExtraList(); return; }
+  _admExtraList = res.list; _admExtraMonth = res.month;
+  adminRenderExtraList();
+}
+function adminExtraCandidates() {
+  const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
+  const q = (document.getElementById('admExtraSearch')?.value || '').trim().toUpperCase();
+  return _admExtraList.filter(e => e.kind === cat && (e.isRppf !== false) && (!q || String(e.id).includes(q) || String(e.name || '').toUpperCase().includes(q)))
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+}
+function adminRenderExtraList() {
+  const box = document.getElementById('admExtraList'); const lbl = document.getElementById('admExtraMonthLbl');
+  if (!box) return;
+  const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
+  const list = adminExtraCandidates();
+  const total = _admExtraList.filter(e => e.kind === cat && e.isRppf !== false).length;
+  if (lbl && _admExtraMonth) lbl.innerHTML = `সূত্র: <b>${esc(_admExtraMonth)}</b> মাসের আপলোড • মোট ${bn(total)} জন • দেখাচ্ছে ${bn(list.length)} জন`;
+  if (!list.length) {
+    box.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px;">${_admExtraMonth ? 'এই ক্যাটাগরিতে কাউকে পাওয়া যায়নি।' + (cat === 'CAS' ? ' (পুরনো আপলোডে Casual ছিল না — Excel আবার আপলোড করুন)' : '') : 'তালিকা নেই।'}</div>`;
+    return;
+  }
+  box.innerHTML = list.map(e => {
+    const assigned = AREA_MAP[e.id] && getEmpMeta(e.id).type === cat;
+    const checked = assigned || _admExtraChecked.has(e.id);
+    const tag = assigned ? `<span class="admin-tag">${esc(AREA_MAP[e.id])}</span>` : (AREA_MAP[e.id] ? `<span class="admin-tag">অন্য এরিয়া: ${esc(AREA_MAP[e.id])}</span>` : '');
+    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);margin:0;cursor:pointer;font-weight:600;">
+      <input type="checkbox" ${checked ? 'checked' : ''} ${assigned ? 'disabled' : ''} onchange="adminExtraToggle('${esc(e.id)}', this.checked)" style="width:18px;height:18px;margin:0;flex:none;min-height:0;">
+      <span style="flex:1;min-width:0;"><span style="display:block;font-size:13.5px;">${esc(e.name || '—')}</span><span style="display:block;font-size:12px;color:var(--muted);">${esc(e.id)} • ${esc(e.grade || '')}</span></span>${tag}</label>`;
+  }).join('');
+}
+function adminExtraToggle(id, on) { if (on) _admExtraChecked.add(id); else _admExtraChecked.delete(id); }
+function adminToggleExtraAll() {
+  const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
+  const list = adminExtraCandidates().filter(e => !(AREA_MAP[e.id] && getEmpMeta(e.id).type === cat));
+  const allOn = list.length > 0 && list.every(e => _admExtraChecked.has(e.id));
+  list.forEach(e => { if (allOn) _admExtraChecked.delete(e.id); else _admExtraChecked.add(e.id); });
+  adminRenderExtraList();
+}
+function adminAddExtraSelected() {
+  const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
+  const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
+  const subVal = document.getElementById('adminTargetSubSelect')?.value || '';
+  const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
+  const ids = _admExtraList.filter(e => e.kind === cat && _admExtraChecked.has(e.id)).map(e => e.id);
+  if (!ids.length) { showToast('আগে তালিকা থেকে কর্মী বাছাই করুন', 'warn'); return; }
+  ids.forEach(id => {
+    AREA_MAP[id] = targetArea;
+    const d = AREA_DETAILS[id] || (AREA_DETAILS[id] = {});
+    d.t = cat;
+    if (subVal === '__none__') delete d.s; else if (subVal) d.s = subVal;
+    if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
+    _admExtraChecked.delete(id);
+  });
+  saveAreaCache(); reapplyTypeOverrides();
+  updateAdminAreaStats(); renderAdminAreaPreview(); adminRenderExtraList();
+  showToast(`${targetArea}-এ ${bn(ids.length)} জন ${EMP_TYPE_LABELS[cat]} যোগ হয়েছে (সার্ভারে সেভ করতে ভুলবেন না)`, 'success');
+}
+
 function adminDownloadAreasJson() {
   const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS }, null, 2);
   const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -4605,6 +4768,7 @@ function finalizeExcelEmployee(c, sourceName) {
   const detection = detectCategory(c.designation, c.id);
   const valid = Boolean(detection.valid && detection.category);
   const category = valid ? detection.category : null;
+  const kind = /^\d{5,8}$/.test(String(c.id)) || /^CASUAL/i.test(c.designation || '') ? 'CAS' : (!valid && /^RF/i.test(String(c.id)) ? 'EXEC' : '');
   const r = RATE_TABLE[category] || RATE_TABLE.JO;
   const otHours = Number((c.totalRow ? c.totalRow.ot : c.dailyOt).toFixed(2));
   const totalDuty = Number((c.totalRow ? c.totalRow.duty : c.dailyDuty).toFixed(2));
@@ -4618,6 +4782,7 @@ function finalizeExcelEmployee(c, sourceName) {
     id: c.id,
     name: c.name.substring(0, 45),
     grade: c.designation,
+    kind,
     category,
     area: getAreaForId(c.id, c.isRppf),
     isRppf: c.isRppf,
@@ -4638,11 +4803,56 @@ function finalizeExcelEmployee(c, sourceName) {
   };
 }
 
+/* ---- Name / designation cleaning (Work Log header + Summary sheet) ---- */
+function cleanEmpName(raw) {
+  let n = String(raw == null ? '' : raw).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').replace(/\s+/g, ' ').trim();
+  let prev;
+  do { prev = n; n = n.replace(/^(Mr|Mrs|Ms|Miss)\.?\s+/i, ''); } while (n !== prev);
+  return n.trim();
+}
+function cleanDesignation(raw) {
+  return String(raw == null ? '' : raw).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+/* Header: "RF20195  Mr. Md. Shahin Alam   Junior Officer C, Production Department, Rajendrapur Site"
+   (no comma between name and designation; designation itself may contain commas) */
+function parseEmpHeader(col0, id) {
+  const rest = col0.substring(id.length).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').trim();
+  const parts = rest.split(',').map(x => x.trim());
+  let nameDesig = rest;
+  if (parts.length >= 3) nameDesig = parts.slice(0, parts.length - 2).join(', ');   // drop Department, Location
+  const m = nameDesig.match(/^(.*?)\s{2,}(.+)$/);                                    // name | designation (2+ spaces)
+  if (m) return { name: cleanEmpName(m[1]), designation: cleanDesignation(m[2]) };
+  const g = nameDesig.match(/^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual)\b.*)$/i);
+  if (g) return { name: cleanEmpName(g[1]), designation: cleanDesignation(g[2]) };
+  return { name: cleanEmpName(nameDesig), designation: '' };
+}
+/* 'Summary' sheet: Employee ID | Employee Name | Designation ... -> { ID: {name, designation} } */
+function buildSummaryMap(workbook) {
+  const map = {};
+  const ws = workbook.Sheets && workbook.Sheets['Summary'];
+  if (!ws) return map;
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" });
+  let hi = -1, ci = {};
+  for (let i = 0; i < Math.min(rows.length, 15); i++) {
+    const low = (rows[i] || []).map(c => String(c).trim().toLowerCase());
+    if (low.includes('employee id')) { hi = i; ci = { id: low.indexOf('employee id'), name: low.indexOf('employee name'), desig: low.indexOf('designation') }; break; }
+  }
+  if (hi < 0) return map;
+  for (let i = hi + 1; i < rows.length; i++) {
+    const r = rows[i]; if (!r) continue;
+    const id = String(r[ci.id] == null ? '' : r[ci.id]).replace(/\s+/g, '').toUpperCase();
+    if (!id) continue;
+    map[id] = { name: cleanEmpName(ci.name >= 0 ? r[ci.name] : ''), designation: cleanDesignation(ci.desig >= 0 ? r[ci.desig] : '') };
+  }
+  return map;
+}
+
 /* Excel layout: [0]=Date [1]=Day [2]=In [3]=Out [4]=RegDuty [5]=RegOT [6]=DODuty [7]=DOOT [8]=HolDuty [9]=HolOT [10]=Night(Yes) */
 function parseExcelWorkbook(workbook, sourceName) {
   const sheetName = workbook.SheetNames.includes('Work Log') ? 'Work Log' : workbook.SheetNames[0];
   const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, raw: false, defval: "" });
   const out = [];
+  const summaryMap = buildSummaryMap(workbook);
   let cur = null;
   const flush = () => { if (cur) out.push(finalizeExcelEmployee(cur, sourceName)); cur = null; };
 
@@ -4652,13 +4862,14 @@ function parseExcelWorkbook(workbook, sourceName) {
     const col0 = row[0] === undefined || row[0] === null ? "" : String(row[0]).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, " ").trim();
 
     /* 1. Employee header line */
-    if (col0 && /^[A-Z]{2}\d{3,6}\s+/i.test(col0)) {
+    if (col0 && /^([A-Z]{2}\d{3,6}|\d{5,8})\s+/i.test(col0)) {
       flush();
-      const idMatch = col0.match(/^([A-Z]{2}\d{3,6})/i);
+      const idMatch = col0.match(/^([A-Z]{2}\d{3,6}|\d{5,8})/i);
       const id = idMatch ? idMatch[1].toUpperCase() : 'UNKNOWN';
-      const rest = col0.substring(id.length).trim();
-      const name = rest.split(',')[0].replace(/Mr\.|Mrs\.|Ms\./gi, '').trim();
-      const designation = rest.includes(',') ? rest.split(',')[1].trim() : '';
+      const hdr = parseEmpHeader(col0, id);
+      const sm = summaryMap[id];                       // Summary sheet = source of truth
+      const name = (sm && sm.name) || hdr.name;
+      const designation = (sm && sm.designation) || hdr.designation;
       cur = {
         id, name, designation,
         isRppf: isRppfText(col0) || col0.toUpperCase().includes('RAJENDRAPUR'),
