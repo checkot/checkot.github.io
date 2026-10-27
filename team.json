@@ -36,19 +36,19 @@
       "photo": "team/ashraful.png"
     },
     {
-      "id": "RF22846",
       "name": "Mr. Md. Ohab Bin Zahery Anik",
       "designation": "Junior Officer F",
+      "id": "RF22846",
+      "area": "Packing Hall",
       "whatsapp": "8801744783074",
-      "photo": "team/anik.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
+      "id": "CF8578",
       "name": "Mr. Habibul Bashar",
       "designation": "Contractual",
-      "id": "CF8578",
-      "area": "Packing Hall",
       "whatsapp": "8801636004496",
-      "photo": "https://checkot.github.io/icon.png"
+      "photo": "team/bashar.png"
     }
   ]
 }
