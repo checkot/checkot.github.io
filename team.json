@@ -43,11 +43,12 @@
       "photo": "team/anik.png"
     },
     {
-      "id": "CF8578",
       "name": "Mr. Habibul Bashar",
       "designation": "Contractual",
+      "id": "CF8578",
+      "area": "Packing Hall",
       "whatsapp": "8801636004496",
-      "photo": "team/bashar.png"
+      "photo": "https://checkot.github.io/icon.png"
     }
   ]
 }
