@@ -1,19 +1,19 @@
 {
   "team": [
     {
+      "id": "RF22111",
       "name": "Mr. Md. Sohel Mia",
       "designation": "Junior Officer D",
-      "id": "RF22111",
-      "area": "Solid Production",
       "whatsapp": "8801690268001",
-      "photo": "https://checkot.github.io/icon.png"
+      "photo": "team/sohel.png"
     },
     {
-      "id": "CF5242",
       "name": "Mr. Md. Shohidul Islam",
       "designation": "Contractual",
+      "id": "CF5242",
+      "area": "Solid Production",
       "whatsapp": "8801766251116",
-      "photo": "team/shohidul.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
       "id": "CF8355",
