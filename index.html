@@ -1454,6 +1454,11 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
             <button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">সব বাছাই / বাতিল</button>
           </div>
         </div>
+        <div class="admin-sub-box" style="margin-top:16px;" id="admDesigRateBox">
+          <div style="font-size:13.5px;font-weight:800;color:var(--text);">রেট ক্যাটাগরি নির্ধারণ (ডেজিগনেশন অনুযায়ী)</div>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;">শেষ আপলোড করা মাসের ফাইলে যত ধরনের ডেজিগনেশন আছে সব এখানে। প্রতিটির জন্য কোন রেটে টাকা হিসাব হবে বেছে দিন। "Unspecified" মানে কোনো রেট নেই — শুধু ঘণ্টা ও দিন দেখাবে, টাকা নয়। "Auto" রাখলে অ্যাপ নিজে গ্রেড দেখে ঠিক করবে (Helper → CF, Junior Officer C–F → JO, A/B → JO A/B, বাকি সব → Unspecified)।</div>
+          <div id="admDesigRateList" style="margin-top:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);"></div>
+        </div>
         <div style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--border-strong);">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
             <span style="font-size:13px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">নির্বাচিত এরিয়ার বর্তমান আইডি সমূহ:</span>
@@ -1704,9 +1709,8 @@ const RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
   JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
   JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" },
-  /* নতুন ক্যাটাগরি: ফিক্সড রেট নেই, তাই টাকার হিসাব হয় না — শুধু ঘণ্টা/দিন দেখানো হয় */
-  CAS:  { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Casual" },
-  EXEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Executive / Above" }
+  /* Unspecified: ফিক্সড রেট নেই — টাকার হিসাব হয় না, শুধু ঘণ্টা/দিন দেখানো হয় */
+  UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Unspecified (রেট নির্ধারিত নয়)" }
 };
 
 const DEFAULT_FALLBACK_AREAS = {
@@ -1779,6 +1783,7 @@ let noticesData = null;
 let currentLbListType = null;
 let currentLbModalList = [];
 let AREA_MAP = {};
+let DESIG_RATES = {};   // { designation(lowercase): "CF"|"JO"|"JO_B"|"UNSPEC" } — admin নির্ধারিত রেট ক্যাটাগরি
 let AREA_DETAILS = {};   // { ID: { g:"M"|"F", t:"CON"|"JO", s:"সাব-সেকশন" } }
 let AREA_SUBS = {};      // { "Area Name": ["Sub 1", "Sub 2"] }
 let AREA_MAP_LOADED = false;
@@ -2508,30 +2513,51 @@ function getPunchProblemCount(emp) {
 }
 
 /* ---- Casual / Executive: admin যাকে এরিয়ায় যোগ করেছে তার জন্য হিসাব সক্রিয়, নইলে নিষ্ক্রিয় ---- */
+const LEGACY_DESIG_TAIL = /\s+((?:Junior\s+Officer\s+[A-F])|Helper|Casual|(?:Senior\s+)?(?:Deputy\s+|Assistant\s+|Additional\s+|Senior\s+Deputy\s+)?Manager\b.*|(?:Senior\s+)?Officer(?:\s+[A-F])?|Un-?Skilled\s+Worker(?:\s+[IVX]+)?|Skilled\s+Worker(?:\s+[IVX]+)?|Head\s+of\b.*|In-?Charge\b.*|Executive\b.*)$/i;
+/* পুরনো আপলোডে নামের সাথে ডেজিগনেশন জুড়ে গিয়েছিল ও grade='Production Department' ছিল — লোডের সময় মেরামত */
+function repairLegacyEmployee(e) {
+  if (!/^(production|production department)$/i.test(String(e.grade || '').trim())) return;
+  const nm = String(e.name || '');
+  const m = nm.match(LEGACY_DESIG_TAIL);
+  if (m) { e.grade = m[1].trim(); e.name = nm.slice(0, m.index).trim(); }
+}
+function desigKey(d) { return String(d == null ? '' : d).replace(/\s+/g, ' ').trim().toLowerCase(); }
+function getDefaultRateCat(e) {
+  const d = detectCategory(e.grade || '', e.id);
+  return (d.valid && d.category && RATE_TABLE[d.category] && !RATE_TABLE[d.category].noRate) ? d.category : 'UNSPEC';
+}
+function getRateCategory(e) {
+  const o = DESIG_RATES[desigKey(e.grade)];
+  if (o && RATE_TABLE[o]) return { cat: o, src: 'admin' };
+  return { cat: getDefaultRateCat(e), src: '' };
+}
 function deriveEmpKind(e) {
   if (e.kind) return e.kind;
   const id = String(e.id || '').toUpperCase();
   if (/^\d{5,8}$/.test(id) || /^CASUAL/i.test(e.grade || '')) return 'CAS';
-  if (/^RF/.test(id) && e.valid === false) return 'EXEC';
+  if (/^RF/.test(id) && !detectCategory(e.grade || '', id).valid) return 'EXEC';
   return '';
 }
 function applyTypeOverride(e) {
   if (!e) return e;
+  repairLegacyEmployee(e);
   e.kind = deriveEmpKind(e);
-  if (e.kind !== 'CAS' && e.kind !== 'EXEC') return e;
   const assigned = Boolean(AREA_MAP && AREA_MAP[e.id]);
   const type = assigned ? getEmpMeta(e.id).type : '';
-  if (assigned && type === e.kind) {
-    const r = RATE_TABLE[e.kind];
-    const ot = Number(e.otHours) || 0, hc = Number(e.holidayCount) || 0, nc = Number(e.nightCount) || 0;
-    e.category = e.kind; e.valid = true;
-    e.otAmount = Number((ot * r.otRate).toFixed(2));
-    e.holidayAmount = Number((r.holidayType === 'hourly' ? hc * r.holidayHours * r.otRate : hc * r.holidayFlat).toFixed(2));
-    e.nightAmount = Number((nc * r.nightRate).toFixed(2));
-    e.totalEarned = Number((e.otAmount + e.holidayAmount + e.nightAmount).toFixed(2));
-  } else {
-    e.category = null; e.valid = false; e.otAmount = 0; e.holidayAmount = 0; e.nightAmount = 0; e.totalEarned = 0;
+  const kindActive = (e.kind === 'CAS' || e.kind === 'EXEC') && assigned && type === e.kind;
+  const rc = getRateCategory(e);
+  const active = e.kind === '' || kindActive || rc.cat !== 'UNSPEC';
+  if (!active) {
+    e.category = null; e.valid = false; e.rateSource = ''; e.otAmount = 0; e.holidayAmount = 0; e.nightAmount = 0; e.totalEarned = 0;
+    return e;
   }
+  const r = RATE_TABLE[rc.cat];
+  const ot = Number(e.otHours) || 0, hc = Number(e.holidayCount) || 0, nc = Number(e.nightCount) || 0;
+  e.category = rc.cat; e.valid = true; e.rateSource = rc.src;
+  e.otAmount = Number((ot * r.otRate).toFixed(2));
+  e.holidayAmount = Number((r.holidayType === 'hourly' ? hc * r.holidayHours * r.otRate : hc * r.holidayFlat).toFixed(2));
+  e.nightAmount = Number((nc * r.nightRate).toFixed(2));
+  e.totalEarned = Number((e.otAmount + e.holidayAmount + e.nightAmount).toFixed(2));
   return e;
 }
 function reapplyTypeOverrides() {
@@ -2603,13 +2629,14 @@ async function loadAreaMap() {
   if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
   try {
     const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
-    if (cachedRaw) { const parsed = JSON.parse(cachedRaw); if (parsed && parsed.data && typeof parsed.data === 'object') { AREA_MAP = parsed.data; AREA_DETAILS = (parsed.details && typeof parsed.details === 'object') ? parsed.details : {}; AREA_SUBS = (parsed.subs && typeof parsed.subs === 'object') ? parsed.subs : {}; } }
+    if (cachedRaw) { const parsed = JSON.parse(cachedRaw); if (parsed && parsed.data && typeof parsed.data === 'object') { AREA_MAP = parsed.data; AREA_DETAILS = (parsed.details && typeof parsed.details === 'object') ? parsed.details : {}; AREA_SUBS = (parsed.subs && typeof parsed.subs === 'object') ? parsed.subs : {}; DESIG_RATES = (parsed.rates && typeof parsed.rates === 'object') ? parsed.rates : {}; } }
   } catch (e) {}
   try {
     const data = await fetchJsonResource('areas.json');
     AREA_MAP = (data && data.areas && typeof data.areas === 'object') ? data.areas : DEFAULT_FALLBACK_AREAS;
     AREA_DETAILS = (data && data.details && typeof data.details === 'object') ? data.details : {};
     AREA_SUBS = (data && data.subsections && typeof data.subsections === 'object') ? data.subsections : {};
+    DESIG_RATES = (data && data.designationRates && typeof data.designationRates === 'object') ? data.designationRates : {};
     AREA_MAP_LOADED = true;
     saveAreaCache();
     updateSettingsAreaCount();
@@ -2628,7 +2655,7 @@ function isMappedAreaId(id) {
 }
 
 function saveAreaCache() {
-  try { localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP, details: AREA_DETAILS, subs: AREA_SUBS })); } catch (e) {}
+  try { localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP, details: AREA_DETAILS, subs: AREA_SUBS, rates: DESIG_RATES })); } catch (e) {}
 }
 const EMP_TYPE_LABELS = { CON: 'Contractual', JO: 'Junior Officer', CAS: 'Casual', EXEC: 'Executive/Above' };
 const GENDER_LABELS = { M: 'পুরুষ', F: 'মহিলা' };
@@ -3099,7 +3126,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const detectObj = {
     category: valid ? cat : null,
     valid,
-    reason: (cat === 'CAS' || cat === 'EXEC') ? RATE_TABLE[cat].name : (detection.reason || RATE_TABLE[cat]?.name || cat),
+    reason: (isNoRateCat(cat) || emp.rateSource === 'admin') ? RATE_TABLE[cat].name : (detection.reason || RATE_TABLE[cat]?.name || cat),
     gradeText: emp.grade || detection.gradeText || cat
   };
 
@@ -4578,6 +4605,7 @@ function handleAdminAreaFileSelect(event) {
       if (parsed && parsed.areas && typeof parsed.areas === 'object') {
         Object.assign(AREA_MAP, parsed.areas);
         if (parsed.details && typeof parsed.details === 'object') Object.assign(AREA_DETAILS, parsed.details);
+        if (parsed.designationRates && typeof parsed.designationRates === 'object') Object.assign(DESIG_RATES, parsed.designationRates);
         if (parsed.subsections && typeof parsed.subsections === 'object') Object.keys(parsed.subsections).forEach(a => { AREA_SUBS[a] = [...new Set([...(AREA_SUBS[a] || []), ...(parsed.subsections[a] || [])])]; });
         saveAreaCache();
         updateAdminAreaStats(); renderAdminAreaPreview();
@@ -4625,9 +4653,9 @@ async function adminLoadExtraCandidates(forceFresh) {
   if (lbl) lbl.textContent = 'শেষ আপলোড করা মাসের তালিকা খোঁজা হচ্ছে...';
   await loadAreaMap();
   const res = await adminFindLatestMonthList(Boolean(forceFresh));
-  if (!res) { _admExtraList = []; _admExtraMonth = ''; if (lbl) lbl.textContent = 'সার্ভারে কোনো মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।'; adminRenderExtraList(); return; }
+  if (!res) { _admExtraList = []; _admExtraMonth = ''; if (lbl) lbl.textContent = 'সার্ভারে কোনো মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।'; adminRenderExtraList(); adminRenderDesigRates(); return; }
   _admExtraList = res.list; _admExtraMonth = res.month;
-  adminRenderExtraList();
+  adminRenderExtraList(); adminRenderDesigRates();
 }
 function adminExtraCandidates() {
   const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
@@ -4702,8 +4730,54 @@ function adminAddExtraSelected() {
   showToast(`${targetArea}-এ ${bn(ids.length)} জন ${EMP_TYPE_LABELS[cat]} যোগ হয়েছে (সার্ভারে সেভ করতে ভুলবেন না)`, 'success');
 }
 
+/* ---- ডেজিগনেশন → রেট ক্যাটাগরি (admin) ---- */
+function admRateLabel(c) {
+  const r = RATE_TABLE[c]; if (!r) return c;
+  return r.noRate ? 'Unspecified — রেট নেই' : `${c === 'CF' ? 'CF' : c === 'JO' ? 'JO' : 'JO A/B'} — ওটি ৳${r.otRate}/ঘণ্টা`;
+}
+function adminDesigStats() {
+  const m = new Map();
+  _admExtraList.forEach(e => {
+    if (e.isRppf === false) return;
+    const g = String(e.grade || '').replace(/\s+/g, ' ').trim();
+    if (!g) return;
+    const k = desigKey(g);
+    const o = m.get(k) || { key: k, name: g, count: 0, sample: e };
+    o.count++; m.set(k, o);
+  });
+  return [...m.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+function adminRenderDesigRates() {
+  const box = document.getElementById('admDesigRateList');
+  if (!box) return;
+  const list = adminDesigStats();
+  if (!list.length) { box.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px;">শেষ আপলোড করা মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।</div>'; return; }
+  const cats = ['CF', 'JO', 'JO_B', 'UNSPEC'];
+  box.innerHTML = list.map(d => {
+    const def = getDefaultRateCat(d.sample);
+    const cur = DESIG_RATES[d.key] && RATE_TABLE[DESIG_RATES[d.key]] ? DESIG_RATES[d.key] : '';
+    const eff = cur || def;
+    return `<div class="xrow" style="cursor:default;flex-wrap:wrap;" data-dkey="${esc(d.key)}">
+      <span style="flex:1;min-width:150px;"><span style="display:block;font-size:13.5px;font-weight:700;">${esc(d.name)}</span><span style="display:block;font-size:12px;color:var(--muted);">${bn(d.count)} জন • এখন: <b class="admEff">${esc(admRateLabel(eff))}</b></span></span>
+      <select data-dkey="${esc(d.key)}" onchange="adminSetDesigRate(this.dataset.dkey, this.value)" style="width:auto;min-width:170px;margin:0;min-height:38px;font-size:13px;">
+        <option value="" ${cur === '' ? 'selected' : ''}>Auto (${esc(admRateLabel(def))})</option>
+        ${cats.map(c => `<option value="${c}" ${cur === c ? 'selected' : ''}>${esc(admRateLabel(c))}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+}
+function adminSetDesigRate(key, val) {
+  if (!val) delete DESIG_RATES[key]; else DESIG_RATES[key] = val;
+  saveAreaCache();
+  try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_')) localStorage.removeItem(k); }); } catch (e) {}
+  reapplyTypeOverrides();
+  const row = document.querySelector(`#admDesigRateList .xrow[data-dkey="${(window.CSS && CSS.escape) ? CSS.escape(key) : key}"]`);
+  const sample = (adminDesigStats().find(d => d.key === key) || {}).sample;
+  if (row && sample) { const eff = DESIG_RATES[key] || getDefaultRateCat(sample); const b = row.querySelector('.admEff'); if (b) b.textContent = admRateLabel(eff); }
+  showToast('রেট ক্যাটাগরি বদলেছে (সার্ভারে সেভ করতে ভুলবেন না)', 'success');
+}
+
 function adminDownloadAreasJson() {
-  const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS }, null, 2);
+  const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES }, null, 2);
   const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -4780,7 +4854,7 @@ async function adminPushAreasToGithub() {
   if (btn) btn.disabled = true;
   if (statusEl) { statusEl.style.color = 'var(--brand-text)'; statusEl.textContent = 'RPPF Cloud Server-এ areas.json সেভ হচ্ছে...'; }
   try {
-    const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS }, null, 2);
+    const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES }, null, 2);
     await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Admin Panel`);
     try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_') || k.startsWith('renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
     if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'সফলভাবে RPPF Cloud Server-এ areas.json আপডেট হয়েছে।'; }
