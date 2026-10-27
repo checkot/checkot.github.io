@@ -22,11 +22,12 @@
       "photo": "team/johirul.png"
     },
     {
-      "id": "RF21561",
       "name": "Mr. MD. Rahid Hossain",
       "designation": "Junior Officer D",
+      "id": "RF21561",
+      "area": "Packing Hall",
       "whatsapp": "8801648939558",
-      "photo": "team/rahid.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
       "id": "RF22849",
@@ -36,12 +37,11 @@
       "photo": "team/ashraful.png"
     },
     {
+      "id": "RF22846",
       "name": "Mr. Md. Ohab Bin Zahery Anik",
       "designation": "Junior Officer F",
-      "id": "RF22846",
-      "area": "Packing Hall",
       "whatsapp": "8801744783074",
-      "photo": "https://checkot.github.io/icon.png"
+      "photo": "team/anik.png"
     },
     {
       "id": "CF8578",
