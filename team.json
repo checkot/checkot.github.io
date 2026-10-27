@@ -8,19 +8,19 @@
       "photo": "team/sohel.png"
     },
     {
+      "id": "CF5242",
       "name": "Mr. Md. Shohidul Islam",
       "designation": "Contractual",
-      "id": "CF5242",
-      "area": "Solid Production",
       "whatsapp": "8801766251116",
-      "photo": "https://checkot.github.io/icon.png"
+      "photo": "team/shohidul.png"
     },
     {
-      "id": "CF8355",
       "name": "Mr. Johirul Islam Porag",
       "designation": "Contractual",
+      "id": "CF8355",
+      "area": "Solid Production",
       "whatsapp": "8801871370703",
-      "photo": "team/johirul.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
       "id": "RF21561",
