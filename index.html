@@ -1362,7 +1362,7 @@ details.adjust[open] > summary::after { transform: rotate(180deg); }
     <div class="admin-section-pane active" id="admPaneAreas">
       <div class="card">
         <div class="card-title">এরিয়া ভিত্তিক কর্মীর তালিকা (`areas.json`)</div>
-        <div class="card-sub" style="white-space:normal;">এখানে যেসব আইডি থাকবে শুধুমাত্র তারাই Solid/Softgel হিসেবে ধরা হবে। বাকি সব RPPF কর্মী Packing Hall হিসেবে গণ্য হবে।</div>
+        <div class="card-sub" style="white-space:normal;">এখানে যেসব আইডি থাকবে শুধুমাত্র তারাই এরিয়া অনুযায়ী (Solid/Softgel/Packing Hall ইত্যাদি) র‍্যাংকিংয়ে ধরা হবে। তালিকার বাইরের আইডি র‍্যাংকিংয়ে আসবে না — Packing Hall এর আইডিগুলোও এখানে যোগ করুন।</div>
         <div class="admin-stat-grid">
           <div class="admin-stat-box"><span class="as-num" id="admCountSolid">০</span><span class="as-lbl">Solid Production</span></div>
           <div class="admin-stat-box"><span class="as-num" id="admCountSoftgel">০</span><span class="as-lbl">Softgel Production</span></div>
@@ -2510,7 +2510,7 @@ function getAreaForId(id, isRppf = true) {
   if (!id) return "তালিকার বাইরে";
   const upperId = String(id).toUpperCase().trim();
   if (AREA_MAP[upperId]) return AREA_MAP[upperId];
-  return isRppf ? RPPF_FALLBACK_AREA : "অন্য ফ্যাসিলিটি";
+  return isRppf ? "তালিকার বাইরে" : "অন্য ফ্যাসিলিটি";
 }
 
 function populateAreaDropdown() {
@@ -3587,7 +3587,7 @@ function searchEmployeeFromLbBar() {
 }
 
 function buildLeaderboardPayloadFromList(month, allList) {
-  const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false));
+  const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id));
   const normalized = rppfEmployees.map(e => ({
     ...e,
     area: getAreaForId(e.id, true),
@@ -3856,7 +3856,7 @@ function switchToLbPunchTab() {
 function renderLeaderboardResult(result) {
   try {
     currentLeaderboardResult = result;
-    const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false);
+    const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id));
     result.allEmployees = allEmpsGlobal;
     result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
     const areaFilter = document.getElementById('areaFilter');
@@ -3927,7 +3927,7 @@ function applyAreaFilter() {
   if (!currentLeaderboardResult) return;
   const area = document.getElementById('areaFilter').value;
   if (getAppMode() === 'incharge') { try { localStorage.setItem(INCHARGE_AREA_KEY, area); } catch (e) {} }
-  const allEmps = (currentLeaderboardResult.allEmployees || []).filter(e => e.isRppf !== false);
+  const allEmps = (currentLeaderboardResult.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id));
   const filtered = area === 'all' ? allEmps : allEmps.filter(e => e.area === area);
   const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
   const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
