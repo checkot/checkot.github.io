@@ -1,11 +1,12 @@
 {
   "team": [
     {
-      "id": "RF22111",
       "name": "Mr. Md. Sohel Mia",
       "designation": "Junior Officer D",
+      "id": "RF22111",
+      "area": "Solid Production",
       "whatsapp": "8801690268001",
-      "photo": "team/sohel.png"
+      "photo": "https://checkot.github.io/icon.png"
     },
     {
       "id": "CF5242",
@@ -29,12 +30,11 @@
       "photo": "team/rahid.png"
     },
     {
+      "id": "RF22849",
       "name": "Mr. Md. Ashraful Alam",
       "designation": "Junior Officer D",
-      "id": "RF22849",
-      "area": "Softgel Production",
       "whatsapp": "8801883716637",
-      "photo": "https://checkot.github.io/icon.png"
+      "photo": "team/ashraful.png"
     },
     {
       "id": "RF22846",
