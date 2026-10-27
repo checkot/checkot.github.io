@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -27,10 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
-<!-- Excel Library (SheetJS) -->
+<!-- Excel Library (SheetJS) — Pre-Indexed Fast Engine -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
 <script>
@@ -216,7 +214,6 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .card-title { font-size: 14px; font-weight: 800; color: var(--text); }
 .card-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .section-label { font-size: 13px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 10px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-#pdf-viewer { margin: 0 auto; text-align: center; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-radius: var(--radius); display: block; margin: 0 auto; background: #fff; }
 .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .btn-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -471,7 +468,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   .ws-desc { font-size: 13.5px; max-width: 640px; }
   .ws-art { width: 82px; height: 82px; border-radius: 20px; }
   .ws-art svg { width: 42px; height: 42px; }
-  #page-search.active #pdf-viewer canvas { max-height: 70vh; width: auto; max-width: 100%; }
   #page-search.active #noticesHomeList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   #page-search.active #noticesHomeList .notice-item { margin-bottom: 0; }
   #page-leaderboard .lb-podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -521,7 +517,6 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
 #payslipCard    { order: 12; }
 #step5          { order: 13; }
 #step4          { order: 14; }
-#step2          { order: 15; }
 #quickActionsGrid { order: 30; }
 #welcomeBanner  { order: 31; }
 #noticesCard    { order: 32; }
@@ -539,7 +534,7 @@ canvas { border: 1px solid var(--border); max-width: 100%; height: auto; border-
   #page-search.active > #payslipCard,
   #page-search.active > #step5,
   #page-search.active > #step4 { grid-column: 1; }
-  #page-search.active > #step2 { grid-column: 2; grid-row: span 6; position: sticky; top: 84px; max-height: none; }
+  #page-search.active > #payslipCard, #page-search.active > #step5, #page-search.active > #step4 { grid-column: 2; }
 }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .card-head h3 { margin: 0; font-size: 15.5px; font-weight: 800; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text); }
@@ -710,6 +705,95 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
 .xrow.locked { opacity:.7; cursor:default; }
 .xbox { width:22px; height:22px; flex:none; border:2px solid var(--border-strong); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; background:var(--surface); }
 .xrow.on .xbox { background: var(--brand); border-color: var(--brand); }
+
+/* ============================================================
+   v3.0 — COMPACT ADMIN, RATE BUCKETS, MULTI-MODE LB, I18N & ERP ROUTING
+   ============================================================ */
+.lang-pill-btn {
+  width: auto !important; min-height: 36px !important; padding: 4px 10px !important;
+  border-radius: 999px !important; font-size: 12px !important; font-weight: 800 !important;
+  background: var(--surface-2) !important; color: var(--text) !important;
+  border: 1px solid var(--border-strong) !important; box-shadow: none !important;
+  display: inline-flex !important; align-items: center; gap: 4px; flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.lang-pill-btn:hover { background: var(--brand-soft) !important; color: var(--brand-text) !important; border-color: var(--brand-soft-border) !important; }
+.month-nav-bar {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px 10px; margin: 0 0 12px 0; box-shadow: var(--shadow-sm);
+}
+.month-nav-btn {
+  width: auto !important; min-height: 34px !important; padding: 4px 12px !important;
+  font-size: 12.5px !important; font-weight: 800 !important; border-radius: 8px !important;
+  background: var(--surface-2) !important; color: var(--brand-text) !important;
+  border: 1px solid var(--border-strong) !important; box-shadow: none !important;
+}
+.month-nav-btn:hover { background: var(--brand-soft) !important; border-color: var(--brand-soft-border) !important; }
+.month-nav-center { text-align: center; font-size: 13.5px; font-weight: 800; color: var(--text); }
+#monthNavBar { order: 4; }
+.lb-mode-tabs {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 4px; margin-bottom: 12px;
+}
+.lb-mode-btn {
+  background: transparent !important; color: var(--text-2) !important;
+  min-height: 36px !important; padding: 5px 6px !important; font-size: 12px !important;
+  font-weight: 800 !important; border-radius: 7px !important; box-shadow: none !important;
+}
+.lb-mode-btn.active {
+  background: var(--brand) !important; color: #FFFFFF !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.lb-range-sub {
+  display: none; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px;
+}
+.lb-range-sub.show { display: grid; }
+.admin-nav-tabs {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 12px;
+}
+@media (min-width: 640px) { .admin-nav-tabs { grid-template-columns: repeat(6, 1fr); } }
+.admin-tab-btn { min-height: 36px !important; padding: 5px 6px !important; font-size: 12px !important; }
+.rate-bucket-tabs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;
+}
+.rate-bucket-tab {
+  width: auto !important; flex: 1 1 auto; min-height: 36px !important; padding: 6px 10px !important;
+  font-size: 12.5px !important; font-weight: 800 !important; border-radius: 8px !important;
+  background: var(--surface-2) !important; color: var(--text-2) !important;
+  border: 1px solid var(--border-strong) !important; box-shadow: none !important;
+}
+.rate-bucket-tab.active {
+  background: var(--brand-soft) !important; color: var(--brand-text) !important;
+  border-color: var(--brand) !important;
+}
+.rate-pkg-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  padding: 10px; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); margin-bottom: 10px;
+}
+@media (min-width: 560px) { .rate-pkg-grid { grid-template-columns: repeat(4, 1fr); } }
+.rate-pkg-grid label { margin-top: 0; font-size: 11.5px; color: var(--muted); }
+.rate-pkg-grid input, .rate-pkg-grid select { margin-top: 3px; min-height: 36px; padding: 5px 8px; font-size: 13.5px; font-weight: 700; }
+.desig-chip-grid {
+  display: grid; grid-template-columns: 1fr; gap: 4px; max-height: 260px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px; background: var(--surface);
+}
+@media (min-width: 560px) { .desig-chip-grid { grid-template-columns: 1fr 1fr; } }
+.desig-check-item {
+  display: flex; align-items: center; gap: 8px; padding: 7px 9px;
+  border: 1px solid var(--border); border-radius: 7px; cursor: pointer;
+  font-size: 12.5px; background: var(--surface); user-select: none;
+}
+.desig-check-item.checked { background: var(--brand-soft); border-color: var(--brand-soft-border); font-weight: 700; }
+.erp-select-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 8px; background: var(--surface-2); cursor: pointer;
+}
+.erp-select-item:hover { border-color: var(--brand); background: var(--brand-soft); }
+
 </style>
 </head>
 <body data-page="search">
@@ -730,7 +814,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
     <button class="topnav-item" data-nav="notices" onclick="switchPage('notices')">নোটিশ</button>
     <button class="topnav-item" data-nav="team" onclick="switchPage('team')">ERP টিম</button>
     <button class="topnav-item" data-nav="settings" onclick="switchPage('settings')">সেটিংস</button>
-    <button class="topnav-item" data-nav="admin" onclick="switchPage('admin')">অ্যাডমিন</button>
+    <button type="button" id="topnavLangBtn" class="lang-pill-btn" onclick="toggleLanguage()" title="Switch Language (বাংলা / English)">BN | EN</button>
     <button type="button" id="topnavModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="মোড ও আইডি সেটিংস">মোড</button>
     <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="থিম বদলান" title="থিম বদলান">
       <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -766,6 +850,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
       <h2>RENATA PLC</h2>
       <p>ওভারটাইম রিপোর্ট ও হিসাব</p>
     </div>
+    <button type="button" id="headerLangBtn" class="lang-pill-btn" onclick="toggleLanguage()" title="বাংলা / English">BN | EN</button>
     <button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="মোড ও আইডি পরিবর্তন">মোড</button>
     <button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="তালিকায় ফিরুন">
       <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
@@ -782,7 +867,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
         <div class="ws-content">
           <span class="ws-badge">RPPF Production • Official PWA</span>
           <h3 class="ws-title">মাসিক ওভারটাইম রিপোর্ট ও অটো ক্যালকুলেটর</h3>
-          <p class="ws-desc">আইডি দিন, সাথে সাথে আপনার ওভারটাইম হিসাব ও PDF রিপোর্ট দেখুন। ওটি অ্যালাউন্স, হলিডে অ্যালাউন্স ও নাইট অ্যালাউন্স স্বয়ংক্রিয়ভাবে হিসাব হবে।</p>
+          <p class="ws-desc">আইডি দিন, সাথে সাথে আপনার ওভারটাইম হিসাব দেখুন। OT Allowance, Holiday Allowance, Night Allowance এবং Regular Duty স্বয়ংক্রিয়ভাবে হিসাব হবে।</p>
           <button type="button" class="ws-cta" onclick="focusSearchInput()">এখনই দেখুন</button>
         </div>
         <div class="ws-art" aria-hidden="true">
@@ -898,27 +983,16 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
     <div class="vc-actions" id="vcActions"></div>
   </div>
 
-  <div class="collapse-card" id="step2" style="display:none;">
-    <div class="collapse-header" id="step2Header" onclick="togglePdfCollapse('step2Body', this)">
-      <span class="title">আসল রিপোর্ট (PDF) দেখুন</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div class="collapse-body" id="step2Body">
-      <div id="pdfLazyStatus" style="display:none;text-align:center;padding:12px;font-size:13px;color:var(--muted);font-weight:600;">PDF রিপোর্ট প্রস্তুত করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
-      <div id="pdf-viewer"><canvas id="pdf-canvas"></canvas></div>
-      <div class="btn-group">
-        <a id="downloadBtn" class="btn-action" target="_blank" onclick="handlePdfDownloadClick(event)">PDF ডাউনলোড</a>
-        <button id="openBtn" class="btn-action btn-secondary" onclick="openModal()">বড় করে দেখুন</button>
-      </div>
-    </div>
+  <div class="month-nav-bar" id="monthNavBar" style="display:none;">
+    <button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)" id="prevMonthBtn">&lt; আগের মাস</button>
+    <div class="month-nav-center" id="monthNavCurrentLabel">—</div>
+    <button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)" id="nextMonthBtn">পরের মাস &gt;</button>
   </div>
 
   <div class="card" id="payslipCard" style="display:none;">
     <h3 class="card-h">সব মিলিয়ে কত টাকা পাবেন?</h3>
-    <p class="help">নিচে আপনার মাসের বেতন লিখুন। বেতন + ওভারটাইম = মোট কত পাবেন, তা সাথে সাথে হিসাব হয়ে যাবে।</p>
-    <label for="inpSalary" style="margin-top:0">আপনার মাসের বেতন কত? (রেগুলার ডিউটি)</label>
+    <label for="inpSalary" style="margin-top:0" id="lblSalaryInput">মাসিক বেতন (Regular Duty)</label>
     <input type="text" id="inpSalary" inputmode="numeric" autocomplete="off" placeholder="যেমন: 18000" oninput="handleSalaryInput(this.value)">
-    <div class="help small">এই সংখ্যা শুধু আপনার ফোনেই সংরক্ষিত থাকে, সার্ভারে পাঠানো হয় না।</div>
     <div class="payslip-preview-box" id="payslipPreview" style="display:none;"></div>
     <div class="pay-actions" id="payslipActions" style="display:none;">
       <button type="button" class="btn-primary" onclick="sharePayslip()">ছবি শেয়ার করুন</button>
@@ -944,23 +1018,23 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
       <div class="rate-line"><span>প্রতি ঘণ্টা: <b id="lblRate">৳ 0/hr</b></span><span id="lblRateSub">—</span></div>
       <div class="bill-list">
         <div class="bill-row ot">
-          <div><div class="bill-name">ওটি অ্যালাউন্স</div><div class="bill-calc" id="lblOtFormula">0 hr × ৳0</div></div>
+          <div><div class="bill-name" data-i18n="otAllowance">OT Allowance</div><div class="bill-calc" id="lblOtFormula">0 hr × ৳0</div></div>
           <div class="bill-amt" id="lblOtAmount">৳ 0</div>
         </div>
         <div class="bill-row hol">
-          <div><div class="bill-name">হলিডে অ্যালাউন্স</div><div class="bill-calc" id="lblHolidayFormula">0 দিন</div></div>
+          <div><div class="bill-name" data-i18n="holidayAllowance">Holiday Allowance</div><div class="bill-calc" id="lblHolidayFormula">0 দিন</div></div>
           <div class="bill-amt" id="lblHolidayAmount">৳ 0</div>
         </div>
         <div class="bill-row night">
-          <div><div class="bill-name">নাইট অ্যালাউন্স</div><div class="bill-calc" id="lblNightFormula">0 রাত</div></div>
+          <div><div class="bill-name" data-i18n="nightAllowance">Night Allowance</div><div class="bill-calc" id="lblNightFormula">0 রাত</div></div>
           <div class="bill-amt" id="lblNightAmount">৳ 0</div>
         </div>
       </div>
       <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
-        <div class="ds-cell"><span class="ds-value" id="dsRegularDays">—</span><span class="ds-label">সাধারণ দিন</span></div>
-        <div class="ds-cell"><span class="ds-value" id="dsHolidayDays">—</span><span class="ds-label">হলিডে অ্যালাউন্স</span></div>
-        <div class="ds-cell"><span class="ds-value" id="dsNightDays">—</span><span class="ds-label">নাইট অ্যালাউন্স</span></div>
-        <div class="ds-cell plain"><span class="ds-value" id="dsPlainDays">—</span><span class="ds-label">রেগুলার ডিউটি</span></div>
+        <div class="ds-cell"><span class="ds-value" id="dsRegularDays">—</span><span class="ds-label" data-i18n="totalDays">মোট ডিউটি দিন</span></div>
+        <div class="ds-cell"><span class="ds-value" id="dsHolidayDays">—</span><span class="ds-label">Holiday Allowance</span></div>
+        <div class="ds-cell"><span class="ds-value" id="dsNightDays">—</span><span class="ds-label">Night Allowance</span></div>
+        <div class="ds-cell plain"><span class="ds-value" id="dsPlainDays">—</span><span class="ds-label">Regular Duty</span></div>
       </div>
       <details class="adjust">
         <summary>ঘণ্টা কম-বেশি করলে কত টাকা হবে, দেখুন</summary>
@@ -1019,7 +1093,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
         <label for="compareId">সহকর্মীর আইডি নম্বর</label>
         <input type="text" id="compareId" placeholder="যেমন: CF8355" autocomplete="off" autocapitalize="characters" inputmode="text">
         <button id="compareBtn" class="btn-primary" onclick="runComparison()" style="margin-top:12px;">তুলনা করুন</button>
-        <div class="compare-hint">তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন।</div>
+
         <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
       </div>
       <div id="compareResult" style="display:none;"></div>
@@ -1063,7 +1137,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
   <div class="app-header">
     <img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
     <div class="header">
-      <h2 id="lbPageMainTitle">এই মাসে সেরা কে?</h2>
+      <h2 id="lbPageMainTitle">Leaderboard &amp; Punch Monitoring</h2>
       <p id="lbSubtitle">—</p>
     </div>
     <button type="button" id="headerModeBadgeLb" class="mode-pill-btn" onclick="openModeSetupModal()" title="মোড ও আইডি পরিবর্তন">মোড</button>
@@ -1125,8 +1199,14 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
           <option value="all">সব ধরন</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option>
         </select>
       </div>
-      <div class="area-filter-hint" id="areaFilterHint">
-        টিপস: উপরে এরিয়া বদলে অন্য সেকশনের সাথে <strong>তুলনা করুন</strong>
+      <div class="lb-mode-tabs" role="tablist" aria-label="Leaderboard Mode" style="margin-top:10px;margin-bottom:0;">
+        <button type="button" class="lb-mode-btn active" id="lbModeBtnMonthly" onclick="switchLbTimeMode('monthly')">Monthly Ranking</button>
+        <button type="button" class="lb-mode-btn" id="lbModeBtnRange" onclick="switchLbTimeMode('3m')">Last 3 / 6 Months</button>
+        <button type="button" class="lb-mode-btn" id="lbModeBtnAllTime" onclick="switchLbTimeMode('alltime')">All-Time Best (2026)</button>
+      </div>
+      <div class="lb-range-sub" id="lbRangeSubRow" style="margin-top:6px;margin-bottom:0;">
+        <button type="button" class="lb-mode-btn active" id="lbSubBtn3m" onclick="switchLbTimeMode('3m')">বিগত ৩ মাস (Last 3M)</button>
+        <button type="button" class="lb-mode-btn" id="lbSubBtn6m" onclick="switchLbTimeMode('6m')">বিগত ৬ মাস (Last 6M)</button>
       </div>
     </div>
     <div class="lb-kpi-grid" id="lbSummaryMetrics">
@@ -1193,8 +1273,9 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
         </button>
       </div>
       <div class="lb-panel" data-lb-panel="punch">
-        <div class="lb-panel-head">
-          <span class="lb-panel-sub" id="lbPunchPanelSub" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">In/Out পাঞ্চ সমস্যা থাকা কর্মী (00:00:00)</span>
+        <div class="lb-panel-head" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+          <span class="lb-panel-sub" id="lbPunchPanelSub" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">In/Out পাঞ্চ সমস্যা থাকা কর্মী</span>
+          <button type="button" class="calc-mini-btn" id="bulkForwardPunchBtn" onclick="openBulkPunchErpForward()" style="background:#1FA855!important;color:#fff!important;border-color:#1FA855!important;">পুরো তালিকার সামারি ERP-তে পাঠান</button>
         </div>
         <div id="lbTopPunch" class="lb-panel-list"></div>
         <button class="lb-expand-btn" id="punchExpandBtn" onclick="openLbFullList('punch')" type="button" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">
@@ -1203,7 +1284,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
         </button>
       </div>
     </div>
-    <div class="tap-hint">যেকোনো নামে ট্যাপ করলে তার পুরো রিপোর্ট দেখা যাবে</div>
+
     <button onclick="startLeaderboardScan(true)" class="reset-btn lb-rescan-btn">আবার নতুন করে দেখুন</button>
   </div>
 </div>
@@ -1254,7 +1335,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
     </button>
     <button class="more-item" onclick="switchPage('admin')" type="button">
       <span class="mi-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-      <span class="mi-text">অ্যাডমিন প্যানেল<small>PDF আপলোড, আইডি ও নোটিশ আপডেট</small></span>
+      <span class="mi-text">অ্যাডমিন প্যানেল<small>Excel ডাটা, রেট প্যাকেজ, আইডি ও ERP টিম</small></span>
       <span class="mi-chev">›</span>
     </button>
     <button class="more-item" onclick="switchPage('settings')" type="button">
@@ -1331,154 +1412,246 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
       <button type="button" class="reset-btn danger-btn" id="settingsDeleteIdBtn" style="margin-top:0;" onclick="deletePermanentIdFromSettings()">স্থায়ী আইডি মুছুন</button>
     </div>
   </div>
+  <div class="card">
+    <div class="card-title">ভাষা নির্বাচন (Language)</div>
+    <div class="btn-grid-2" style="margin-top:8px;">
+      <button type="button" class="btn-secondary" id="setLangBnBtn" onclick="setLanguage('bn')">বাংলা (BN)</button>
+      <button type="button" class="btn-secondary" id="setLangEnBtn" onclick="setLanguage('en')">English (EN)</button>
+    </div>
+  </div>
   <div class="card" style="border-color:var(--brand-soft-border);background:linear-gradient(180deg, var(--brand-soft) 0%, var(--surface) 100%);">
     <div class="card-title">অ্যাডমিন প্যানেল</div>
-    <div class="card-sub" style="white-space:normal;margin-bottom:12px;">কোডে হাত না দিয়েই অ্যাপের ভেতর থেকে মাসের PDF রিপোর্ট আপলোড, প্যাকিং/সলিড/সফটজেল কর্মীদের আইডি (`areas.json`) এবং নোটিশ আপডেট করুন।</div>
+    <div class="card-sub" style="white-space:normal;margin-bottom:10px;">Excel রিপোর্ট প্রসেসিং, রেট ও প্যাকেজ কন্ট্রোল, এরিয়া আইডি, ERP টিম এবং নোটিশ ব্যবস্থাপনা।</div>
     <button type="button" class="btn-primary" onclick="switchPage('admin')">অ্যাডমিন প্যানেলে যান</button>
   </div>
   <div class="card">
-    <div class="settings-row"><span class="label">App Version</span><span class="value">2.5.0</span></div>
-    <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam</span></div>
-    <div class="settings-row"><span class="label">Designation</span><span class="value">Coating PR</span></div>
+    <div class="settings-row"><span class="label">App Version</span><span class="value">3.0.0 (Excel Pre-Indexed Engine)</span></div>
+    <div class="settings-row"><span class="label">Server Engine</span><span class="value">RPPF Cloud Server</span></div>
+    <div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam (Coating PR)</span></div>
     <div class="settings-row"><span class="label">Facility Filter</span><span class="value" style="color:var(--success);">RPPF Only (Ranking)</span></div>
-    <div class="settings-row"><span class="label">Areas Loaded</span><span class="value" id="settingsAreaCount">—</span></div>
-    <div class="settings-footer">© 2026 RENATA PLC</div>
+    <div class="settings-row"><span class="label">Areas Status</span><span class="value" id="settingsAreaCount">—</span></div>
+    <div class="settings-row"><span class="label">Security &amp; Compliance</span><span class="value"><button type="button" class="calc-mini-btn" onclick="openComplianceModal()">Compliance Notice</button></span></div>
+    <div class="settings-footer">© 2026 RENATA PLC • Zero External Data Sharing</div>
   </div>
 </div>
 
 <div class="page" id="page-admin">
   <div class="app-header">
     <img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-    <div class="header"><h2>অ্যাডমিন প্যানেল</h2><p>কোড ছাড়াই ফাইল ও এরিয়া আইডি আপলোড</p></div>
+    <div class="header"><h2>অ্যাডমিন কন্ট্রোল প্যানেল</h2><p>RPPF Cloud Server ম্যানেজমেন্ট</p></div>
     <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="থিম বদলান">
       <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>
   </div>
   <div class="card" id="adminLoginCard">
-    <div class="admin-hero-banner">
+    <div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:12px;">
       <h3>অ্যাডমিন লগইন</h3>
-      <p>শুধুমাত্র অনুমোদিত অ্যাডমিনের জন্য। লগইন করে সরাসরি RPPF Cloud Server-এ মাসের PDF রিপোর্ট আপলোড, আইডি (`areas.json`) এবং নোটিশ ম্যানেজ করুন।</p>
+      <p>RPPF Cloud Server-এ মাসের Excel ডাটা, রেট প্যাকেজ, এরিয়া আইডি ও ERP টিম ম্যানেজ করুন।</p>
     </div>
-    <label for="adminPassInput" style="margin-top:0;">অ্যাডমিন পাসওয়ার্ড দিন:</label>
+    <label for="adminPassInput" style="margin-top:0;">অ্যাডমিন পাসওয়ার্ড</label>
     <div class="pin-input-wrap">
       <input type="password" id="adminPassInput" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off" style="font-size:16px;font-weight:800;padding-right:52px;" oninput="clearAdminLoginError()">
       <button type="button" class="pin-eye-btn" onclick="toggleAdminPassVis()" aria-label="পাসওয়ার্ড দেখুন">দেখুন</button>
     </div>
-    <div class="pin-error-msg" id="adminLoginError">ভুল অ্যাডমিন পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।</div>
-    <button type="button" class="btn-primary" style="margin-top:14px;" onclick="handleAdminLogin()">অ্যাডমিন প্যানেলে প্রবেশ করুন</button>
+    <div class="pin-error-msg" id="adminLoginError">ভুল অ্যাডমিন পাসওয়ার্ড!</div>
+    <button type="button" class="btn-primary" style="margin-top:12px;" onclick="handleAdminLogin()">প্রবেশ করুন</button>
   </div>
+
   <div id="adminDashboardWrap" style="display:none;">
-    <div class="admin-hero-banner">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
         <div>
-          <h3>RENATA PLC — অ্যাডমিন কন্ট্রোল রুম</h3>
-          <p id="adminTokenStatusText">RPPF Cloud Server কানেকশন স্ট্যাটাস চেক করুন</p>
+          <h3 style="font-size:15.5px;">RENATA PLC — অ্যাডমিন কন্ট্রোল রুম</h3>
+          <p id="adminTokenStatusText" style="font-size:12px;">RPPF Cloud Server স্ট্যাটাস</p>
         </div>
         <button type="button" class="mode-pill-btn" style="background:rgba(255,255,255,0.2)!important;color:#fff!important;border-color:rgba(255,255,255,0.35)!important;" onclick="handleAdminLogout()">লগআউট</button>
       </div>
     </div>
+
     <div class="admin-nav-tabs" role="tablist">
-      <button type="button" class="admin-tab-btn active" id="admTabBtnAreas" onclick="switchAdminTab('areas')">এরিয়া ও আইডি</button>
-      <button type="button" class="admin-tab-btn" id="admTabBtnPdf" onclick="switchAdminTab('pdf')">PDF ম্যানেজার</button>
-      <button type="button" class="admin-tab-btn" id="admTabBtnNotices" onclick="switchAdminTab('notices')">নোটিশ পোস্ট</button>
-      <button type="button" class="admin-tab-btn" id="admTabBtnSetup" onclick="switchAdminTab('setup')">সার্ভার সেটআপ</button>
+      <button type="button" class="admin-tab-btn active" id="admTabBtnAreas" onclick="switchAdminTab('areas')">১. এরিয়া ও আইডি</button>
+      <button type="button" class="admin-tab-btn" id="admTabBtnRates" onclick="switchAdminTab('rates')">২. রেট ও প্যাকেজ</button>
+      <button type="button" class="admin-tab-btn" id="admTabBtnData" onclick="switchAdminTab('data')">৩. ডাটা ম্যানেজার</button>
+      <button type="button" class="admin-tab-btn" id="admTabBtnTeam" onclick="switchAdminTab('team')">৪. ERP টিম</button>
+      <button type="button" class="admin-tab-btn" id="admTabBtnNotices" onclick="switchAdminTab('notices')">৫. নোটিশ</button>
+      <button type="button" class="admin-tab-btn" id="admTabBtnSetup" onclick="switchAdminTab('setup')">৬. সার্ভার সেটআপ</button>
     </div>
+
+    <!-- PANE 1: AREAS & IDS -->
     <div class="admin-section-pane active" id="admPaneAreas">
-      <div class="card">
-        <div class="card-title">এরিয়া ভিত্তিক কর্মীর তালিকা (`areas.json`)</div>
-        <div class="card-sub" style="white-space:normal;">এখানে যেসব আইডি থাকবে শুধুমাত্র তারাই এরিয়া অনুযায়ী (Solid/Softgel/Packing Hall ইত্যাদি) র‍্যাংকিংয়ে ধরা হবে। তালিকার বাইরের আইডি র‍্যাংকিংয়ে আসবে না — Packing Hall এর আইডিগুলোও এখানে যোগ করুন।</div>
-        <div class="admin-stat-grid">
-          <div class="admin-stat-box"><span class="as-num" id="admCountSolid">০</span><span class="as-lbl">Solid Production</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountSoftgel">০</span><span class="as-lbl">Softgel Production</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountPacking">০</span><span class="as-lbl">Packing Hall</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountTotal">০</span><span class="as-lbl">মোট তালিকাভুক্ত</span></div>
-        </div>
-        <div class="admin-stat-grid" style="margin-top:0;">
-          <div class="admin-stat-box"><span class="as-num" id="admCountMale">০</span><span class="as-lbl">পুরুষ</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountFemale">০</span><span class="as-lbl">মহিলা</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountCon">০</span><span class="as-lbl">Contractual</span></div>
-          <div class="admin-stat-box"><span class="as-num" id="admCountJo">০</span><span class="as-lbl">Junior Officer</span></div>
-        </div>
-        <label for="adminTargetAreaSelect">১. কোন এরিয়ায় আইডি যোগ করতে চান?</label>
-        <select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
-          <option value="Packing Hall">Packing Hall (প্যাকিং হল)</option>
-          <option value="Overall">Overall (ওভারঅল — Executive/Above)</option>
-          <option value="Solid Production">Solid Production (সলিড)</option>
-          <option value="Softgel Production">Softgel Production (সফটজেল)</option>
-        </select>
-        <div class="admin-sub-box">
-          <label for="adminNewSubInput" style="margin-top:0;">সাব-সেকশন (নির্বাচিত এরিয়ার অধীনে):</label>
-          <div style="display:flex;gap:8px;margin-top:6px;">
-            <input type="text" id="adminNewSubInput" maxlength="40" placeholder="যেমন: Compression, Coating, Blister Line" style="margin:0;flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminAddSubsection();}">
-            <button type="button" class="btn-secondary" onclick="adminAddSubsection()" style="width:auto;min-width:84px;margin:0;">যোগ করুন</button>
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <div class="card-title">এরিয়া ও আইডি ব্যবস্থাপনা (areas.json)</div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="calc-mini-btn" id="adminPushAreasBtn" onclick="adminPushAreasToGithub()" style="background:var(--success)!important;color:#fff!important;border-color:var(--success)!important;">সার্ভারে সেভ</button>
+            <button type="button" class="calc-mini-btn" onclick="adminDownloadAreasJson()">ব্যাকআপ</button>
           </div>
-          <div class="admin-chip-preview" id="adminSubsList"></div>
         </div>
-        <label for="adminBulkIdsInput">২. কর্মীদের আইডিগুলো পেস্ট করুন:</label>
-        <textarea id="adminBulkIdsInput" class="admin-textarea" placeholder="কমা, স্পেস বা নিচে নিচে যেকোনোভাবে পেস্ট করুন — CF/RF/CL আইডি অটো ডিটেক্ট হবে।"></textarea>
-        <div style="margin-top:8px;">
-          <label for="adminAreaTxtFile" style="margin-top:0;font-size:13px;color:var(--brand-text);cursor:pointer;">অথবা ফাইল থেকে আইডি লোড করুন (.txt / .csv / .json):</label>
-          <input type="file" id="adminAreaTxtFile" accept=".txt,.csv,.json" onchange="handleAdminAreaFileSelect(event)" style="padding:8px;font-size:13px;">
+        <div class="admin-stat-grid" style="margin:8px 0;">
+          <div class="admin-stat-box"><span class="as-num" id="admCountSolid">০</span><span class="as-lbl">Solid</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admCountSoftgel">০</span><span class="as-lbl">Softgel</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admCountPacking">০</span><span class="as-lbl">Packing</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admCountTotal">০</span><span class="as-lbl">মোট আইডি</span></div>
         </div>
-        <label style="margin-top:14px;">৩. এই আইডিগুলোর ক্যাটাগরি (ঐচ্ছিক — "অপরিবর্তিত" রাখলে আগেরটাই থাকবে):</label>
-        <div class="admin-meta-grid">
-          <div><label for="adminTargetSubSelect" style="margin-top:0;font-size:12.5px;">সাব-সেকশন</label><select id="adminTargetSubSelect"></select></div>
-          <div><label for="adminTargetGenderSelect" style="margin-top:0;font-size:12.5px;">পুরুষ / মহিলা</label>
-            <select id="adminTargetGenderSelect"><option value="">অপরিবর্তিত</option><option value="M">পুরুষ</option><option value="F">মহিলা</option><option value="__none__">মুছে দিন</option></select></div>
-          <div><label for="adminTargetTypeSelect" style="margin-top:0;font-size:12.5px;">কর্মীর ধরন</label>
-            <select id="adminTargetTypeSelect"><option value="">অপরিবর্তিত (আইডি থেকে অটো)</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option><option value="__none__">অটো (CF/RF) করুন</option></select></div>
+        <span id="admCountMale" style="display:none;">০</span>
+        <span id="admCountFemale" style="display:none;">০</span>
+        <span id="admCountCon" style="display:none;">০</span>
+        <span id="admCountJo" style="display:none;">০</span>
+
+        <div class="admin-meta-grid" style="margin-top:8px;">
+          <div>
+            <label for="adminTargetAreaSelect" style="margin-top:0;font-size:12px;">টার্গেট এরিয়া</label>
+            <select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
+              <option value="Packing Hall">Packing Hall</option>
+              <option value="Solid Production">Solid Production</option>
+              <option value="Softgel Production">Softgel Production</option>
+              <option value="Overall">Overall (Executive/Above)</option>
+            </select>
+          </div>
+          <div>
+            <label for="adminTargetSubSelect" style="margin-top:0;font-size:12px;">সাব-সেকশন</label>
+            <select id="adminTargetSubSelect"></select>
+          </div>
+          <div>
+            <label for="adminTargetGenderSelect" style="margin-top:0;font-size:12px;">পুরুষ / মহিলা</label>
+            <select id="adminTargetGenderSelect">
+              <option value="">অপরিবর্তিত</option><option value="M">পুরুষ</option><option value="F">মহিলা</option><option value="__none__">মুছে দিন</option>
+            </select>
+          </div>
         </div>
-        <div class="btn-grid-2">
-          <button type="button" class="btn-primary" onclick="adminAddBulkAreaIds()">এই এরিয়ায় আইডি যোগ করুন</button>
+        <select id="adminTargetTypeSelect" style="display:none;"><option value="">অপরিবর্তিত</option></select>
+
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <input type="text" id="adminNewSubInput" maxlength="40" placeholder="নতুন সাব-সেকশন যোগ করুন (যেমন: Blister, Coating)" style="margin:0;flex:1;min-height:36px;font-size:13px;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminAddSubsection();}">
+          <button type="button" class="btn-secondary" onclick="adminAddSubsection()" style="width:auto;min-width:86px;min-height:36px;margin:0;font-size:12.5px;">+ সাব-সেকশন</button>
+        </div>
+        <div class="admin-chip-preview" id="adminSubsList" style="max-height:76px;margin-top:6px;padding:6px;"></div>
+
+        <label for="adminBulkIdsInput" style="margin-top:10px;font-size:12.5px;">বাল্ক আইডি পেস্ট করুন অথবা ফাইল দিন (.txt/.csv/.json)</label>
+        <textarea id="adminBulkIdsInput" class="admin-textarea" style="min-height:68px;" placeholder="CF8355, RF20850..."></textarea>
+        <input type="file" id="adminAreaTxtFile" accept=".txt,.csv,.json" onchange="handleAdminAreaFileSelect(event)" style="padding:5px;font-size:12px;margin-top:4px;">
+
+        <div class="btn-grid-2" style="margin-top:8px;">
+          <button type="button" class="btn-primary" onclick="adminAddBulkAreaIds()">এরিয়ায় আইডি যোগ করুন</button>
           <button type="button" class="btn-secondary danger-btn" onclick="adminRemoveBulkAreaIds()">আইডি বাদ দিন</button>
         </div>
-        <div class="admin-sub-box" style="margin-top:16px;" id="admExtraCatBox">
-          <div style="font-size:13.5px;font-weight:800;color:var(--text);">অতিরিক্ত ক্যাটাগরি — শেষ আপলোড করা মাসের তালিকা থেকে বাছাই</div>
-          <div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;">উপরের "১. এরিয়া" (এবং চাইলে সাব-সেকশন / পুরুষ-মহিলা) যেটা সিলেক্ট আছে, বাছাই করা কর্মীরা সেখানেই যোগ হবে।</div>
-          <label for="admExtraCatSelect" style="font-size:12.5px;">ক্যাটাগরি</label>
-          <select id="admExtraCatSelect" onchange="adminRenderExtraList()">
-            <option value="CAS">Casual (নম্বর আইডি)</option>
-            <option value="EXEC">Executive / Above (RF আইডি, Junior Officer নয়) — শুধু ইন-চার্জ মোডে দেখা যাবে</option>
-          </select>
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <input type="text" id="admExtraSearch" placeholder="আইডি বা নাম খুঁজুন..." oninput="adminRenderExtraList()" style="margin:0;flex:1;min-height:38px;">
-            <button type="button" class="btn-secondary" onclick="adminLoadExtraCandidates(true)" style="width:auto;min-width:96px;margin:0;">রিলোড</button>
+
+        <details class="adjust" style="margin-top:10px;">
+          <summary>Casual ও Executive কর্মী তালিকা থেকে বাছাই করুন</summary>
+          <div class="adjust-body" id="admExtraCatBox">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <select id="admExtraCatSelect" onchange="adminRenderExtraList()" style="flex:1;min-width:160px;margin:0;min-height:36px;font-size:13px;">
+                <option value="CAS">Casual (নম্বর আইডি)</option>
+                <option value="EXEC">Executive / Above (শুধু ইন-চার্জ মোড)</option>
+              </select>
+              <input type="text" id="admExtraSearch" placeholder="আইডি বা নাম খুঁজুন..." oninput="adminRenderExtraList()" style="flex:1;min-width:140px;margin:0;min-height:36px;font-size:13px;">
+              <button type="button" class="calc-mini-btn" onclick="adminLoadExtraCandidates(true)">রিলোড</button>
+            </div>
+            <div id="admExtraMonthLbl" style="font-size:11.5px;color:var(--muted);margin-top:6px;"></div>
+            <div id="admExtraNote" style="display:none;"></div>
+            <div id="admExtraList" style="max-height:220px;overflow:auto;margin-top:6px;border:1px solid var(--border);border-radius:8px;background:var(--surface);"></div>
+            <div id="admExtraCount" style="font-size:11.5px;color:var(--muted);margin-top:4px;"></div>
+            <div class="btn-grid-2" style="margin-top:6px;">
+              <button type="button" class="btn-primary" onclick="adminAddExtraSelected()">নির্বাচিতদের যোগ করুন</button>
+              <button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">সব বাছাই / বাতিল</button>
+            </div>
           </div>
-          <div id="admExtraMonthLbl" style="font-size:12.5px;color:var(--muted);margin-top:8px;">তালিকা লোড হচ্ছে...</div>
-          <div id="admExtraNote" style="font-size:12.5px;color:var(--brand-text);margin-top:8px;font-weight:700;"></div>
-          <div id="admExtraList" style="max-height:320px;overflow:auto;margin-top:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface);"></div>
-          <div id="admExtraCount" style="font-size:12.5px;color:var(--muted);margin-top:6px;"></div>
-          <div class="btn-grid-2">
-            <button type="button" class="btn-primary" onclick="adminAddExtraSelected()">নির্বাচিতদের এই এরিয়ায় যোগ করুন</button>
-            <button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">সব বাছাই / বাতিল</button>
-          </div>
-        </div>
-        <div class="admin-sub-box" style="margin-top:16px;" id="admDesigRateBox">
-          <div style="font-size:13.5px;font-weight:800;color:var(--text);">রেট ক্যাটাগরি নির্ধারণ (ডেজিগনেশন অনুযায়ী)</div>
-          <div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;">শেষ আপলোড করা মাসের ফাইলে যত ধরনের ডেজিগনেশন আছে সব এখানে। প্রতিটির জন্য কোন রেটে টাকা হিসাব হবে বেছে দিন। "Unspecified" মানে কোনো রেট নেই — শুধু ঘণ্টা ও দিন দেখাবে, টাকা নয়। "Auto" রাখলে অ্যাপ নিজে গ্রেড দেখে ঠিক করবে (Helper → CF, Junior Officer C–F → JO, A/B → JO A/B, বাকি সব → Unspecified)।</div>
-          <div id="admDesigRateList" style="margin-top:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);"></div>
-        </div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--border-strong);">
+        </details>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-strong);">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-            <span style="font-size:13px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">নির্বাচিত এরিয়ার বর্তমান আইডি সমূহ:</span>
-            <input type="text" id="admFilterIdsInput" placeholder="আইডি খুঁজুন..." oninput="renderAdminAreaPreview()" style="width:140px;min-height:34px;padding:4px 10px;font-size:12.5px;margin:0;">
+            <span style="font-size:12.5px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">নির্বাচিত এরিয়ার আইডি:</span>
+            <input type="text" id="admFilterIdsInput" placeholder="আইডি খুঁজুন..." oninput="renderAdminAreaPreview()" style="width:140px;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
           </div>
-          <div class="admin-chip-preview" id="adminAreaIdsPreview"></div>
+          <div class="admin-chip-preview" id="adminAreaIdsPreview" style="max-height:130px;margin-top:6px;"></div>
         </div>
-        <div id="adminAreaPushStatus" style="margin-top:12px;font-size:13.5px;font-weight:700;text-align:center;"></div>
-        <div class="btn-grid-2">
-          <button type="button" class="btn-primary" id="adminPushAreasBtn" onclick="adminPushAreasToGithub()" style="background:linear-gradient(135deg, #15803D 0%, #16A34A 100%);">সার্ভারে সেভ করুন</button>
-          <button type="button" class="btn-secondary" onclick="adminDownloadAreasJson()">ব্যাকআপ ডাউনলোড</button>
-        </div>
+        <div id="adminAreaPushStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
       </div>
     </div>
-    <div class="admin-section-pane" id="admPanePdf">
-      <div class="card">
-        <div class="card-title">মাসিক ওভারটাইম Excel রিপোর্ট আপলোড</div>
-        <div class="card-sub" style="white-space:normal;">এখান থেকে মাস সিলেক্ট করে Excel (.xlsx) ফাইল আপলোড করলে অ্যাপ নিজেই সব কর্মীর ওটি, হলিডে, নাইট ও পাঞ্চ হিসাব করে RPPF Cloud Server-এর <code>data/YYYY-MM.json</code> ফাইলে জমা করবে। আলাদা করে PDF আপলোড বা অপ্টিমাইজ করার দরকার নেই।</div>
-        <label for="adminPdfMonth">১. কোন মাসের রিপোর্ট আপলোড করবেন?</label>
-        <div class="row">
+
+    <!-- PANE 2: RATE-CENTRIC CALCULATION & PACKAGE MANAGER -->
+    <div class="admin-section-pane" id="admPaneRates">
+      <div class="card" style="padding:14px;" id="admDesigRateBox">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div>
+            <div class="card-title">রেট ও ওভারটাইম প্যাকেজ কন্ট্রোল</div>
+            <div class="card-sub" style="white-space:normal;">রেট অনুযায়ী ক্যাটাগরি ভাগ করা আছে — যেকোনো রেট ট্যাবে ক্লিক করে প্যাকেজ (ঘণ্টা রেট, নাইট, হলিডে) এডিট করুন এবং কোন কোন ডেজিগনেশন ওই রেটের অধীনে থাকবে তা সিলেক্ট করুন।</div>
+          </div>
+          <button type="button" class="calc-mini-btn" onclick="adminSaveRatesAndPush()" style="background:var(--success)!important;color:#fff!important;border-color:var(--success)!important;">এক ক্লিকে সার্ভারে সেভ</button>
+        </div>
+
+        <div class="rate-bucket-tabs" id="adminRateBucketTabs"></div>
+
+        <!-- 1-Click Package Editor for Selected Rate Bucket -->
+        <div id="adminRatePkgEditorWrap">
+          <div class="rate-pkg-grid" id="adminRatePkgGrid">
+            <div>
+              <label for="pkgOtRateInp">ওটি রেট (৳/ঘণ্টা)</label>
+              <input type="number" id="pkgOtRateInp" step="1" oninput="onAdminPkgFieldChange()">
+            </div>
+            <div>
+              <label for="pkgNightRateInp">নাইট অ্যালাউন্স (৳/রাত)</label>
+              <input type="number" id="pkgNightRateInp" step="10" oninput="onAdminPkgFieldChange()">
+            </div>
+            <div>
+              <label for="pkgHolTypeSel">হলিডে ধরন</label>
+              <select id="pkgHolTypeSel" onchange="onAdminPkgFieldChange()">
+                <option value="hourly">ঘণ্টা গুণ (Hourly)</option>
+                <option value="flat">ফিক্সড টাকা (Flat)</option>
+              </select>
+            </div>
+            <div>
+              <label for="pkgHolValInp" id="pkgHolValLbl">হলিডে ঘণ্টা / টাকা</label>
+              <input type="number" id="pkgHolValInp" step="1" oninput="onAdminPkgFieldChange()">
+            </div>
+          </div>
+        </div>
+
+        <!-- Designation Checklist for Selected Rate Bucket -->
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 6px 0;flex-wrap:wrap;">
+          <span style="font-size:12.5px;font-weight:800;color:var(--text);" id="adminRateBucketDesigTitle">এই রেটের অধীনে থাকা ডেজিগনেশন ও কন্ট্রাক্টস:</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(true)">সব সিলেক্ট</button>
+            <button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(false)">সব আনসিলেক্ট</button>
+          </div>
+        </div>
+        <div class="desig-chip-grid" id="admDesigRateList"></div>
+
+        <!-- Add New Custom Rate Tier -->
+        <details class="adjust" style="margin-top:10px;">
+          <summary>+ নতুন কাস্টম রেট প্যাকেজ যোগ করুন</summary>
+          <div class="adjust-body">
+            <div class="rate-pkg-grid">
+              <div>
+                <label for="newRateNameInp">প্যাকেজের নাম</label>
+                <input type="text" id="newRateNameInp" placeholder="যেমন: Special 50">
+              </div>
+              <div>
+                <label for="newRateOtInp">ওটি রেট (৳/ঘণ্টা)</label>
+                <input type="number" id="newRateOtInp" placeholder="50" value="50">
+              </div>
+              <div>
+                <label for="newRateNightInp">নাইট অ্যালাউন্স (৳)</label>
+                <input type="number" id="newRateNightInp" placeholder="500" value="500">
+              </div>
+              <div>
+                <label for="newRateHolInp">হলিডে ফিক্সড (৳)</label>
+                <input type="number" id="newRateHolInp" placeholder="400" value="400">
+              </div>
+            </div>
+            <button type="button" class="btn-primary" onclick="adminCreateNewRateBucket()">নতুন রেট প্যাকেজ তৈরি করুন</button>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- PANE 3: EXCEL DATA MANAGER (UPLOAD, RE-OPTIMIZE, REPLACE, DELETE WITH CONFIRMATION) -->
+    <div class="admin-section-pane" id="admPaneData">
+      <div class="card" style="padding:14px;">
+        <div class="card-title">মাসিক Excel ডাটা ম্যানেজার (data/YYYY-MM.json)</div>
+        <div class="card-sub" style="white-space:normal;">মাস সিলেক্ট করে Excel (.xlsx) আপলোড করলে স্বয়ংক্রিয়ভাবে সব কর্মীর হিসাব প্রসেস হয়ে RPPF Cloud Server-এ সেভ হবে।</div>
+        <div class="row" style="margin-top:8px;">
           <select id="adminPdfYear" aria-label="বছর" onchange="adminCheckMonthData()"></select>
           <select id="adminPdfMonth" aria-label="মাস" onchange="adminCheckMonthData()">
             <option value="01">জানুয়ারি (01)</option><option value="02">ফেব্রুয়ারি (02)</option>
@@ -1489,69 +1662,113 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
             <option value="11">নভেম্বর (11)</option><option value="12">ডিসেম্বর (12)</option>
           </select>
         </div>
-        <label for="adminExcelFileInput">২. Excel ফাইল নির্বাচন করুন (.xlsx):</label>
-        <input type="file" id="adminExcelFileInput" accept=".xlsx,.xls" multiple style="padding:8px;">
-        <div id="adminPdfUploadProgress" style="display:none;margin-top:12px;">
+        <input type="file" id="adminExcelFileInput" accept=".xlsx,.xls" multiple style="padding:7px;margin-top:8px;">
+        <div id="adminPdfUploadProgress" style="display:none;margin-top:10px;">
           <div class="scan-counter" id="adminPdfStatusText">তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
           <div class="scan-progress-bar"><div class="scan-progress-fill" id="adminPdfProgressFill"></div></div>
         </div>
-        <button type="button" class="btn-primary" id="adminUploadExcelBtn" onclick="processExcelUpload()" style="margin-top:14px;">Excel আপলোড করুন</button>
-        <div style="margin-top:18px;padding-top:12px;border-top:1px dashed var(--border-strong);">
+        <div class="btn-grid-2" style="margin-top:10px;">
+          <button type="button" class="btn-primary" id="adminUploadExcelBtn" onclick="processExcelUpload()">Excel আপলোড ও সেভ করুন</button>
+          <button type="button" class="btn-secondary" onclick="adminReoptimizeMonthData()">এই মাসের ডাটা রি-অপ্টিমাইজ করুন</button>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:13px;font-weight:800;color:var(--text);">এই মাসের সার্ভারে থাকা ডাটা:</span>
-            <button type="button" class="calc-mini-btn" onclick="adminCheckMonthData()">চেক করুন</button>
+            <span style="font-size:12.5px;font-weight:800;color:var(--text);">সার্ভারে থাকা মাসের ফাইল:</span>
+            <button type="button" class="calc-mini-btn" onclick="adminCheckMonthData()">রিফ্রেশ</button>
           </div>
-          <div class="admin-file-list" id="adminExistingDataStatus">মাস সিলেক্ট করে "চেক করুন" চাপুন।</div>
+          <div class="admin-file-list" id="adminExistingDataStatus">মাস সিলেক্ট করে স্ট্যাটাস দেখুন।</div>
         </div>
       </div>
     </div>
+
+    <!-- PANE 4: ERP TEAM MANAGER (team.json) -->
+    <div class="admin-section-pane" id="admPaneTeam">
+      <div class="card" style="padding:14px;">
+        <div class="card-title">ERP টিম ম্যানেজার (team.json)</div>
+        <div class="card-sub" style="white-space:normal;">প্যাকিং, সলিড ও সফটজেল সেকশনের জন্য নির্ধারিত ERP প্রতিনিধি যোগ, এডিট বা ডিলিট করুন।</div>
+        <input type="hidden" id="admTeamEditIdx" value="-1">
+        <div class="admin-meta-grid" style="margin-top:8px;">
+          <div>
+            <label for="admTeamName" style="margin-top:0;font-size:12px;">নাম</label>
+            <input type="text" id="admTeamName" placeholder="যেমন: Md. Ariful Islam" style="margin-top:3px;min-height:36px;">
+          </div>
+          <div>
+            <label for="admTeamDesig" style="margin-top:0;font-size:12px;">পদবী (Designation)</label>
+            <input type="text" id="admTeamDesig" placeholder="যেমন: Coating PR" style="margin-top:3px;min-height:36px;">
+          </div>
+          <div>
+            <label for="admTeamId" style="margin-top:0;font-size:12px;">আইডি নম্বর</label>
+            <input type="text" id="admTeamId" placeholder="যেমন: CF8355" style="margin-top:3px;min-height:36px;text-transform:uppercase;">
+          </div>
+        </div>
+        <div class="btn-grid-2" style="margin-top:8px;">
+          <div>
+            <label for="admTeamArea" style="margin-top:0;font-size:12px;">নির্ধারিত এরিয়া</label>
+            <select id="admTeamArea" style="margin-top:3px;min-height:36px;">
+              <option value="All">All Areas (সব এরিয়া)</option>
+              <option value="Solid Production">Solid Production</option>
+              <option value="Packing Hall">Packing Hall</option>
+              <option value="Softgel Production">Softgel Production</option>
+            </select>
+          </div>
+          <div>
+            <label for="admTeamWa" style="margin-top:0;font-size:12px;">WhatsApp নম্বর (880 সহ)</label>
+            <input type="text" id="admTeamWa" placeholder="8801845873227" style="margin-top:3px;min-height:36px;">
+          </div>
+        </div>
+        <div class="btn-grid-2" style="margin-top:10px;">
+          <button type="button" class="btn-primary" id="admTeamSaveBtn" onclick="adminSaveTeamMember()">ERP মেম্বার যোগ ও সেভ করুন</button>
+          <button type="button" class="btn-secondary" onclick="adminResetTeamForm()">ফর্ম ক্লিয়ার</button>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
+          <div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">বর্তমান ERP টিম তালিকা:</div>
+          <div id="adminTeamManagerList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANE 5: NOTICES -->
     <div class="admin-section-pane" id="admPaneNotices">
-      <div class="card">
-        <div class="card-title">নতুন নোটিশ প্রকাশ করুন (`notices.json`)</div>
-        <div class="card-sub" style="white-space:normal;">এখান থেকে নোটিশ পোস্ট করলে অ্যাপের হোমপেজ ও নোটিশ বোর্ডে সাথে সাথে ভেসে উঠবে।</div>
-        <label for="adminNoticeTitle">নোটিশের শিরোনাম (Title):</label>
+      <div class="card" style="padding:14px;">
+        <div class="card-title">নোটিশ প্রকাশ ও ব্যবস্থাপনা (notices.json)</div>
+        <label for="adminNoticeTitle" style="margin-top:8px;font-size:12.5px;">নোটিশের শিরোনাম</label>
         <input type="text" id="adminNoticeTitle" placeholder="যেমন: অক্টোবর মাসের ওভারটাইম রিপোর্ট প্রকাশিত হয়েছে">
-        <label for="adminNoticeBody">বিস্তারিত বার্তা (Body):</label>
-        <textarea id="adminNoticeBody" class="admin-textarea" placeholder="নোটিশের বিস্তারিত এখানে লিখুন..."></textarea>
-        <label for="adminNoticePriority">গুরুত্ব (Priority):</label>
-        <select id="adminNoticePriority">
-          <option value="normal">সাধারণ (Normal)</option>
-          <option value="high">জরুরি (High)</option>
-          <option value="low">কম (Low)</option>
-        </select>
-        <button type="button" class="btn-primary" style="margin-top:12px;" onclick="adminAddAndPushNotice()">নোটিশ প্রকাশ ও সার্ভারে সেভ করুন</button>
-        <div style="margin-top:18px;padding-top:12px;border-top:1px dashed var(--border-strong);">
-          <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:8px;">বর্তমান নোটিশ তালিকা:</div>
+        <label for="adminNoticeBody" style="margin-top:8px;font-size:12.5px;">বিস্তারিত বার্তা</label>
+        <textarea id="adminNoticeBody" class="admin-textarea" style="min-height:72px;" placeholder="নোটিশের বিস্তারিত লিখুন..."></textarea>
+        <div class="btn-grid-2" style="margin-top:8px;align-items:end;">
+          <div>
+            <label for="adminNoticePriority" style="margin-top:0;font-size:12px;">গুরুত্ব (Priority)</label>
+            <select id="adminNoticePriority" style="margin-top:3px;">
+              <option value="normal">সাধারণ (Normal)</option>
+              <option value="high">জরুরি (High)</option>
+              <option value="low">কম (Low)</option>
+            </select>
+          </div>
+          <button type="button" class="btn-primary" onclick="adminAddAndPushNotice()">নোটিশ প্রকাশ করুন</button>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
+          <div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">বর্তমান নোটিশ তালিকা:</div>
           <div id="adminCurrentNoticesList"></div>
         </div>
       </div>
     </div>
+
+    <!-- PANE 6: SERVER SETUP -->
     <div class="admin-section-pane" id="admPaneSetup">
-      <div class="card">
-        <div class="card-title">RPPF Cloud Server কানেকশন ও পাসওয়ার্ড সেটিংস</div>
-        <div class="card-sub" style="white-space:normal;">অ্যাপের ভেতর থেকে সরাসরি RPPF Cloud Server-এ ফাইল আপলোড করতে আপনার Server Access Key একবার নিচে বসিয়ে সেভ করে নিন।</div>
-        <label for="adminGhTokenInput">Server Access Key:</label>
+      <div class="card" style="padding:14px;">
+        <div class="card-title">RPPF Cloud Server কানেকশন ও পাসওয়ার্ড</div>
+        <label for="adminGhTokenInput" style="margin-top:8px;font-size:12.5px;">Server Access Key</label>
         <div class="pin-input-wrap">
           <input type="password" id="adminGhTokenInput" placeholder="সার্ভার অ্যাক্সেস কি দিন" autocomplete="off" style="font-size:14px;padding-right:52px;">
           <button type="button" class="pin-eye-btn" onclick="toggleGhTokenVis()" aria-label="কি দেখুন">দেখুন</button>
         </div>
-        <div class="help small">এই Server Access Key শুধুমাত্র আপনার ফোনের ব্রাউজারে (`localStorage`) সংরক্ষিত থাকে।</div>
-        <div class="btn-grid-2">
+        <div class="btn-grid-2" style="margin-top:8px;">
           <button type="button" class="btn-primary" onclick="adminSaveAndTestGhToken()">সেভ ও কানেকশন টেস্ট</button>
           <button type="button" class="btn-secondary danger-btn" onclick="adminClearGhToken()">মুছে ফেলুন</button>
         </div>
-        <div id="adminGhTokenTestResult" style="margin-top:10px;font-size:13px;font-weight:700;text-align:center;"></div>
-        <div style="margin-top:18px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);">
-          <div style="font-size:13.5px;font-weight:800;color:var(--brand-text);margin-bottom:6px;">১ মিনিটে Server Access Key কীভাবে সেটআপ করবেন?</div>
-          <ol class="admin-guide-steps">
-            <li>আপনার RPPF Cloud Server অ্যাকাউন্টে লগইন থাকা অবস্থায় <strong>Developer Settings → Access Keys (Classic)</strong>-এ যান।</li>
-            <li><strong>Generate New Key</strong> বাটনে ক্লিক করুন।</li>
-            <li>Note-এ <code>Renata App Admin</code> লিখুন, Expiration-এ <code>No expiration</code> দিন এবং নিচে ফুল অ্যাক্সেস অপশনে টিক দিন।</li>
-            <li>জেনারেট হওয়া <strong>Server Access Key</strong> কপি করে উপরের বক্সে বসিয়ে <strong>সেভ ও কানেকশন টেস্ট</strong> চাপুন।</li>
-          </ol>
-        </div>
-        <div style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);">
-          <label for="adminNewPassInput" style="margin-top:0;">অ্যাডমিন পাসওয়ার্ড পরিবর্তন করুন (বর্তমান ডিফল্ট: <code>admin1234</code>):</label>
+        <div id="adminGhTokenTestResult" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
+          <label for="adminNewPassInput" style="margin-top:0;font-size:12.5px;">অ্যাডমিন পাসওয়ার্ড পরিবর্তন করুন</label>
           <div class="incharge-search-row">
             <input type="text" id="adminNewPassInput" placeholder="নতুন পাসওয়ার্ড লিখুন" autocomplete="off" style="text-transform:none;">
             <button type="button" class="btn-secondary" onclick="adminChangePassword()">পাসওয়ার্ড বদলান</button>
@@ -1562,9 +1779,49 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
   </div>
 </div>
 
-<div id="pdfModal" class="modal" onclick="modalBackdropClick(event)">
-  <div class="modal-content-wrapper"><canvas id="modal-canvas"></canvas></div>
-  <div class="modal-bottom"><button class="close-btn" onclick="closeModal()">বন্ধ করুন</button></div>
+<!-- Select ERP Representative Modal -->
+<div id="erpSupportModal" class="lb-modal" onclick="if(event.target.id==='erpSupportModal')closeErpSupportModal()">
+  <div class="lb-modal-content" style="max-width:460px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="erpModalTitle">
+    <div class="lb-modal-header">
+      <div class="lb-modal-title-wrap">
+        <div class="lb-modal-title" id="erpModalTitle">Select ERP Representative</div>
+        <div class="lb-modal-subtitle" id="erpModalSub">আপনার সেকশনের নির্ধারিত ERP প্রতিনিধিকে বেছে নিন</div>
+      </div>
+      <button type="button" class="lb-modal-close" onclick="closeErpSupportModal()" aria-label="বন্ধ করুন">✕</button>
+    </div>
+    <div class="lb-modal-body" id="erpModalListBody"></div>
+  </div>
+</div>
+
+<!-- In-Page Confirmation Modal (Zero Blocked Dialog Policy) -->
+<div id="confirmActionModal" class="lb-modal" onclick="if(event.target.id==='confirmActionModal')closeConfirmModal()">
+  <div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="wb-title" id="confirmModalTitle" style="margin-top:18px;">নিশ্চিত করুন</div>
+    <div class="wb-sub" id="confirmModalMsg">আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?</div>
+    <div class="wb-actions">
+      <button type="button" class="btn-secondary" onclick="closeConfirmModal()">না, থাক</button>
+      <button type="button" class="btn-primary danger-btn" id="confirmModalYesBtn" onclick="runConfirmedAction()">হ্যাঁ, ডিলিট করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- Corporate Security & Data Privacy Compliance Modal -->
+<div id="complianceModal" class="lb-modal" onclick="if(event.target.id==='complianceModal')closeComplianceModal()">
+  <div class="lb-modal-content" style="max-width:560px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="complianceModalTitle">
+    <div class="lb-modal-header">
+      <div class="lb-modal-title-wrap">
+        <div class="lb-modal-title" id="complianceModalTitle">Security &amp; Data Privacy Compliance Notice</div>
+        <div class="lb-modal-subtitle">RENATA PLC (RPPF Production) — Internal Audit &amp; IT Compliance</div>
+      </div>
+      <button type="button" class="lb-modal-close" onclick="closeComplianceModal()" aria-label="বন্ধ করুন">✕</button>
+    </div>
+    <div class="lb-modal-body" style="font-size:13px;line-height:1.65;color:var(--text-2);">
+      <p style="margin-top:0;"><strong>1. 100% Client-Side Processing:</strong> এই অ্যাপ্লিকেশনটি সম্পূর্ণ স্ট্যাটিক প্রোগ্রেসিভ ওয়েব অ্যাপ (PWA) আর্কিটেকচারে নির্মিত। কোনো থার্ড-পার্টি সার্ভার, বাহ্যিক ডাটাবেস বা ট্র্যাকিং স্ক্রিপ্টে কর্মীদের তথ্য পাঠানো হয় না।</p>
+      <p><strong>2. Salary &amp; Personal Preferences Privacy:</strong> পে-স্লিপ ক্যালকুলেটরে ইউজার যে মাসিক বেতন ইনপুট দেন তা শুধুমাত্র ইউজারের নিজস্ব ফোনের লোকাল স্টোরেজে (<code>localStorage</code>) থাকে; কখনোই সার্ভারে প্রেরণ করা হয় না।</p>
+      <p><strong>3. RPPF Cloud Server Access Control:</strong> শুধুমাত্র অনুমোদিত অ্যাডমিন এনক্রিপ্টেড HTTPS সংযোগের মাধ্যমে প্রি-ইনডেক্সড ওভারটাইম সামারি (<code>data/YYYY-MM.json</code>) আপডেট করতে পারেন।</p>
+      <p style="margin-bottom:0;"><strong>4. Zero External Telemetry:</strong> অ্যাপে কোনো বিজ্ঞাপন, অ্যানালিটিক্স বা বাহ্যিক ডেটা মাইনিং SDK যুক্ত নেই।</p>
+    </div>
+  </div>
 </div>
 
 <div id="lbFullListModal" class="lb-modal" onclick="lbModalBackdropClick(event)">
@@ -1592,15 +1849,15 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
     </div>
     <div class="lb-modal-body">
       <table class="rate-table">
-        <thead><tr><th>ক্যাটাগরি</th><th>ওটি অ্যালাউন্স</th><th>হলিডে অ্যালাউন্স</th><th>নাইট অ্যালাউন্স</th></tr></thead>
-        <tbody>
+        <thead><tr><th>ক্যাটাগরি / রেট</th><th>OT Allowance</th><th>Holiday Allowance</th><th>Night Allowance</th></tr></thead>
+        <tbody id="rateChartTableBody">
           <tr><td><strong>CF</strong><br><small style="color:var(--muted)">চুক্তিভিত্তিক</small></td><td><strong>৳ ৩৮</strong> / ঘণ্টা</td><td>৮ ঘণ্টা × ৳৩৮<br><small style="color:var(--muted)">(৳ ৩০৪ / দিন)</small></td><td><strong>৳ ৩০০</strong> / রাত</td></tr>
           <tr><td><strong>JO</strong><br><small style="color:var(--muted)">Grade C–F (M18–20)</small></td><td><strong>৳ ৪০</strong> / ঘণ্টা</td><td><strong>৳ ৩০০</strong> / দিন<br><small style="color:var(--muted)">(ফিক্সড)</small></td><td><strong>৳ ৪০০</strong> / রাত</td></tr>
           <tr><td><strong>JO (A/B)</strong><br><small style="color:var(--muted)">Grade A–B (M16–17)</small></td><td><strong>৳ ৪৫</strong> / ঘণ্টা</td><td><strong>৳ ৩৫০</strong> / দিন<br><small style="color:var(--muted)">(ফিক্সড)</small></td><td><strong>৳ ৫০০</strong> / রাত</td></tr>
         </tbody>
       </table>
       <div class="card" style="background:var(--surface-2); margin-bottom:0;">
-        <div class="card-title" style="margin-bottom:8px;">কুইক হিসাব (PDF ছাড়াই)</div>
+        <div class="card-title" style="margin-bottom:8px;">কুইক ওভারটাইম ক্যালকুলেটর</div>
         <div class="calc-compact">
           <div class="field"><label for="qcCategory">ক্যাটাগরি</label><select id="qcCategory" onchange="runQuickModalCalc()"><option value="CF">CF - চুক্তিভিত্তিক</option><option value="JO" selected>JO - জুনিয়র অফিসার</option><option value="JO_B">JO (A/B) - জুনিয়র অফিসার A/B</option></select></div>
           <div class="field"><label for="qcOt">ওটি ঘণ্টা</label><input type="number" id="qcOt" value="40" step="0.5" inputmode="decimal" oninput="runQuickModalCalc()"></div>
@@ -1682,7 +1939,7 @@ body.norate-view #step4, body.norate-view #payslipCard, body.norate-view #compar
   </div>
 </div>
 
-<a class="wa-float" href="https://wa.me/8801845873227?text=RENATA%20Overtime%20App%20-%20এর%20হেল্প%20প্রয়োজন" target="_blank" rel="noopener noreferrer" title="WhatsApp Help" aria-label="WhatsApp Help">
+<a class="wa-float" href="javascript:void(0)" onclick="openErpSupportModal()" title="ERP Support" aria-label="ERP Support">
   <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 </a>
 
@@ -1695,23 +1952,25 @@ const FALLBACK_LOGO_URI = "data:image/svg+xml;utf8," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2563EB"/><path d="M18 46V18h14c6.6 0 11 4 11 9.8 0 4.5-2.6 7.8-6.8 9L44 46h-8l-6.8-8.4H25V46h-7zm7-14.2h6.2c2.9 0 4.8-1.6 4.8-4s-1.9-4-4.8-4H25v8z" fill="#FFFFFF"/></svg>'
 );
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 const GITHUB_USERNAME = "checkot";
 const REPO_NAME = "checkot.github.io";
 const REMOTE_BASE_URL = "https://checkot.github.io/";
 
 const ERP_WA = "8801845873227";
-function erpWaLink(text) { return `https://wa.me/${ERP_WA}?text=${encodeURIComponent(text)}`; }
+function erpWaLink(text, phone) {
+  const num = String(phone || ERP_WA).replace(/[^0-9]/g, '') || ERP_WA;
+  return `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+}
 
 const OVERALL_AREA = 'Overall';
-function isNoRateCat(c) { return Boolean(c && RATE_TABLE[c] && RATE_TABLE[c].noRate); }
-const RATE_TABLE = {
-  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, name: "Contractual (CF)" },
-  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayFlat: 300, name: "Junior Officer (Below B)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayFlat: 350, name: "Junior Officer A/B (Above B)" },
-  /* Unspecified: ফিক্সড রেট নেই — টাকার হিসাব হয় না, শুধু ঘণ্টা/দিন দেখানো হয় */
-  UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayFlat: 0, noRate: true, name: "Unspecified (রেট নির্ধারিত নয়)" }
+const DEFAULT_RATE_TABLE = {
+  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "৳৩৮/ঘণ্টা প্যাকেজ (Contractual / CF)" },
+  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayHours: 8, holidayFlat: 300, name: "৳৪০/ঘণ্টা প্যাকেজ (JO C–F)" },
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayHours: 8, holidayFlat: 350, name: "৳৪৫/ঘণ্টা প্যাকেজ (JO A/B)" },
+  UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayHours: 0, holidayFlat: 0, noRate: true, name: "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)" }
 };
+let RATE_TABLE = JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE));
+function isNoRateCat(c) { return Boolean(c && RATE_TABLE[c] && RATE_TABLE[c].noRate); }
 
 const DEFAULT_FALLBACK_AREAS = {
   "CF8355": "Solid Production",
@@ -1733,6 +1992,7 @@ const DEFAULT_FALLBACK_TEAM = [
     name: "Md. Ariful Islam",
     designation: "Coating PR",
     id: "CF8355",
+    area: "Solid Production",
     whatsapp: "8801845873227",
     photo: "https://checkot.github.io/icon.png"
   }
@@ -1764,37 +2024,27 @@ const SALARY_KEY = 'renata_salary_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 let _lbView = false;
-let singlePageBlobUrl = null;
-let matchedPdfPage = null;
-let currentPdf = null;
-let currentFileUrl = null;
-let currentPageNum = 1;
 let currentFileName = "";
 let currentSearchId = "";
 let currentMonth = "";
 let currentToken = 0;
-const activeTasks = new Set();
-let ocrWorker = null;
 let currentResult = null;
 let isScanning = false;
 let currentLeaderboardResult = null;
+let currentLbTimeMode = 'monthly'; // 'monthly' | '3m' | '6m' | 'alltime'
 let teamData = null;
 let noticesData = null;
 let currentLbListType = null;
 let currentLbModalList = [];
 let AREA_MAP = {};
-let DESIG_RATES = {};   // { designation(lowercase): "CF"|"JO"|"JO_B"|"UNSPEC" } — admin নির্ধারিত রেট ক্যাটাগরি
-let AREA_DETAILS = {};   // { ID: { g:"M"|"F", t:"CON"|"JO", s:"সাব-সেকশন" } }
-let AREA_SUBS = {};      // { "Area Name": ["Sub 1", "Sub 2"] }
+let DESIG_RATES = {};   // { designation(lowercase): rateKey }
+let AREA_DETAILS = {};  // { ID: { g:"M"|"F", t:"CON"|"JO", s:"সাব-সেকশন" } }
+let AREA_SUBS = {};     // { "Area Name": ["Sub 1", "Sub 2"] }
 let AREA_MAP_LOADED = false;
-
-/* Lazy PDF state for instant search */
-let pendingPdfTarget = null;
-let isPdfRenderedForCurrent = false;
-let isPdfLoadingNow = false;
-
-/* Admin PDF Replace state */
-let pendingReplacePdfInfo = null;
+let activeAdminRateBucket = 'CF';
+let pendingErpMessage = '';
+let pendingErpArea = '';
+let pendingConfirmFn = null;
 
 /* In-memory cache for data/YYYY-MM.json */
 const monthIndexMemoryCache = {};
@@ -1803,9 +2053,9 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'
 
 function showSearchError(msg) {
   const s = document.getElementById('status');
-  const help = `আমি ${currentSearchId || ''} (${currentMonth || ''}) এর ওভারটাইম রিপোর্ট দেখতে পাচ্ছি না।`;
+  const help = `আসসালামু আলাইকুম, আইডি ${currentSearchId || ''} (${currentMonth || ''})-এর ওভারটাইম রিপোর্ট অ্যাপে খুঁজে পাচ্ছি না। অনুগ্রহ করে দেখবেন।`;
   s.innerHTML = `<div class="err-box"><div>${esc(msg)}</div>
-    <a class="btn-primary" target="_blank" rel="noopener" href="${erpWaLink(help)}">ERP টিমকে WhatsApp করুন</a></div>`;
+    <button type="button" class="btn-primary" onclick="openErpSupportModal(${ esc(JSON.stringify(help)) })">ERP টিমকে WhatsApp করুন</button></div>`;
 }
 
 function stepVal(id, delta) {
@@ -2409,9 +2659,34 @@ function focusSearchInput() {
 /* ============================================================
    RATE CHART & QUICK CALCULATOR MODAL
    ============================================================ */
+function syncRateDropdownOptions() {
+  const keys = Object.keys(RATE_TABLE).filter(k => !RATE_TABLE[k].noRate);
+  ['inpCategory', 'qcCategory'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = keys.map(k => {
+      const r = RATE_TABLE[k];
+      return `<option value="${esc(k)}">${esc(r.name || k)} (৳${r.otRate}/hr)</option>`;
+    }).join('');
+    if (keys.includes(prev)) sel.value = prev;
+  });
+  const tbody = document.getElementById('rateChartTableBody');
+  if (tbody) {
+    tbody.innerHTML = keys.map(k => {
+      const r = RATE_TABLE[k];
+      const holTxt = r.holidayType === 'hourly'
+        ? `${r.holidayHours || 8} ঘণ্টা × ৳${r.otRate}<br><small style="color:var(--muted)">(৳ ${(r.holidayHours || 8) * r.otRate} / দিন)</small>`
+        : `<strong>৳ ${r.holidayFlat}</strong> / দিন<br><small style="color:var(--muted)">(ফিক্সড)</small>`;
+      return `<tr><td><strong>${esc(k)}</strong><br><small style="color:var(--muted)">${esc(r.name || '')}</small></td><td><strong>৳ ${r.otRate}</strong> / ঘণ্টা</td><td>${holTxt}</td><td><strong>৳ ${r.nightRate}</strong> / রাত</td></tr>`;
+    }).join('');
+  }
+}
+
 function openRateChartModal() {
   const modal = document.getElementById('rateChartModal');
   if (!modal) return;
+  syncRateDropdownOptions();
   runQuickModalCalc();
   modal.classList.add('open');
   document.body.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.width = '100%';
@@ -2492,19 +2767,7 @@ async function fetchMonthPreIndexedData(month, forceFresh = false) {
   return null;
 }
 
-function countPunchProblems(text) {
-  let punchProblems = 0;
-  try {
-    const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
-    let rm; const seen = new Set();
-    while ((rm = rowRegex.exec(text)) !== null) {
-      if (seen.has(rm[1])) continue;
-      seen.add(rm[1]);
-      if (rm[9] === "00:00:00" || rm[10] === "00:00:00") punchProblems++;
-    }
-  } catch (e) {}
-  return punchProblems;
-}
+
 
 function getPunchProblemCount(emp) {
   if (!emp) return 0;
@@ -2629,7 +2892,18 @@ async function loadAreaMap() {
   if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
   try {
     const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
-    if (cachedRaw) { const parsed = JSON.parse(cachedRaw); if (parsed && parsed.data && typeof parsed.data === 'object') { AREA_MAP = parsed.data; AREA_DETAILS = (parsed.details && typeof parsed.details === 'object') ? parsed.details : {}; AREA_SUBS = (parsed.subs && typeof parsed.subs === 'object') ? parsed.subs : {}; DESIG_RATES = (parsed.rates && typeof parsed.rates === 'object') ? parsed.rates : {}; } }
+    if (cachedRaw) {
+      const parsed = JSON.parse(cachedRaw);
+      if (parsed && parsed.data && typeof parsed.data === 'object') {
+        AREA_MAP = parsed.data;
+        AREA_DETAILS = (parsed.details && typeof parsed.details === 'object') ? parsed.details : {};
+        AREA_SUBS = (parsed.subs && typeof parsed.subs === 'object') ? parsed.subs : {};
+        DESIG_RATES = (parsed.rates && typeof parsed.rates === 'object') ? parsed.rates : {};
+        if (parsed.rateTable && typeof parsed.rateTable === 'object') {
+          RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), parsed.rateTable);
+        }
+      }
+    }
   } catch (e) {}
   try {
     const data = await fetchJsonResource('areas.json');
@@ -2637,13 +2911,19 @@ async function loadAreaMap() {
     AREA_DETAILS = (data && data.details && typeof data.details === 'object') ? data.details : {};
     AREA_SUBS = (data && data.subsections && typeof data.subsections === 'object') ? data.subsections : {};
     DESIG_RATES = (data && data.designationRates && typeof data.designationRates === 'object') ? data.designationRates : {};
+    if (data && data.rateTable && typeof data.rateTable === 'object') {
+      RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), data.rateTable);
+    }
     AREA_MAP_LOADED = true;
     saveAreaCache();
+    syncRateDropdownOptions();
     updateSettingsAreaCount();
     return AREA_MAP;
   } catch (e) {
     if (!AREA_MAP || Object.keys(AREA_MAP).length === 0) AREA_MAP = DEFAULT_FALLBACK_AREAS;
-    AREA_MAP_LOADED = true; updateSettingsAreaCount();
+    AREA_MAP_LOADED = true;
+    syncRateDropdownOptions();
+    updateSettingsAreaCount();
     return AREA_MAP;
   }
 }
@@ -2655,7 +2935,16 @@ function isMappedAreaId(id) {
 }
 
 function saveAreaCache() {
-  try { localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: AREA_MAP, details: AREA_DETAILS, subs: AREA_SUBS, rates: DESIG_RATES })); } catch (e) {}
+  try {
+    localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({
+      ts: Date.now(),
+      data: AREA_MAP,
+      details: AREA_DETAILS,
+      subs: AREA_SUBS,
+      rates: DESIG_RATES,
+      rateTable: RATE_TABLE
+    }));
+  } catch (e) {}
 }
 const EMP_TYPE_LABELS = { CON: 'Contractual', JO: 'Junior Officer', CAS: 'Casual', EXEC: 'Executive/Above' };
 const GENDER_LABELS = { M: 'পুরুষ', F: 'মহিলা' };
@@ -2868,51 +3157,39 @@ function toggleCollapse(bodyId, headerEl) {
   else { body.classList.add('show'); headerEl.classList.add('expanded'); }
 }
 
-async function togglePdfCollapse(bodyId, headerEl) {
-  const body = document.getElementById(bodyId);
-  const isOpen = body.classList.contains('show');
-  if (isOpen) {
-    body.classList.remove('show');
-    headerEl.classList.remove('expanded');
-  } else {
-    body.classList.add('show');
-    headerEl.classList.add('expanded');
-    await ensureLazyPdfLoaded();
-  }
+function updateMonthNavBar(monthStr) {
+  const bar = document.getElementById('monthNavBar');
+  const lbl = document.getElementById('monthNavCurrentLabel');
+  if (!bar || !lbl || !monthStr) return;
+  const [yy, mm] = String(monthStr).split('-');
+  const mIdx = (parseInt(mm, 10) || 1) - 1;
+  lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)} (${monthStr})`;
+  bar.style.display = 'grid';
 }
 
-async function ensureLazyPdfLoaded() {
-  if (isPdfRenderedForCurrent && matchedPdfPage) return true;
-  if (!pendingPdfTarget || !pendingPdfTarget.fileUrl) return false;
-  if (isPdfLoadingNow) return false;
-  isPdfLoadingNow = true;
-  const lazyStatus = document.getElementById('pdfLazyStatus');
-  if (lazyStatus) lazyStatus.style.display = 'block';
-  try {
-    await showResult(pendingPdfTarget.fileUrl, pendingPdfTarget.pageNum, pendingPdfTarget.fileName);
-    isPdfRenderedForCurrent = true;
-    return true;
-  } catch (e) {
-    showToast('PDF লোড করতে সমস্যা হয়েছে: ' + e.message, 'error');
-    return false;
-  } finally {
-    isPdfLoadingNow = false;
-    if (lazyStatus) lazyStatus.style.display = 'none';
+function navigateReportMonth(delta) {
+  const ySel = document.getElementById('yearSelect');
+  const mSel = document.getElementById('monthSelect');
+  if (!ySel || !mSel) return;
+  let y = parseInt(ySel.value, 10) || new Date().getFullYear();
+  let m = parseInt(mSel.value, 10) || 1;
+  m += delta;
+  if (m < 1) { m = 12; y -= 1; }
+  if (m > 12) { m = 1; y += 1; }
+  const yStr = String(y);
+  const mStr = String(m).padStart(2, '0');
+  if (![...ySel.options].some(o => o.value === yStr)) {
+    const opt = document.createElement('option');
+    opt.value = yStr;
+    opt.textContent = bn(yStr);
+    ySel.appendChild(opt);
   }
-}
-
-async function handlePdfDownloadClick(event) {
-  if (singlePageBlobUrl) return;
-  if (event) event.preventDefault();
-  showToast('PDF ডাউনলোডের জন্য প্রস্তুত করা হচ্ছে...', 'info');
-  const ok = await ensureLazyPdfLoaded();
-  if (ok && singlePageBlobUrl) {
-    const a = document.createElement('a');
-    a.href = singlePageBlobUrl;
-    a.download = `Overtime_${currentSearchId}_${currentMonth}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  ySel.value = yStr;
+  mSel.value = mStr;
+  if (currentSearchId) {
+    document.getElementById('employeeId').value = currentSearchId;
+    toggleClearIdBtn();
+    findReport();
   }
 }
 
@@ -3005,7 +3282,7 @@ async function renderTeamPage() {
       <img class="team-photo" src="${esc(photoUrl)}" alt="${esc(m.name || 'Team')}" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
       <div class="team-info">
         <div class="team-name">${esc(m.name || '—')}</div>
-        <div class="team-desig">${esc(m.designation || '—')}</div>
+        <div class="team-desig">${esc(m.designation || '—')} ${m.area ? `• <span class="admin-tag">${esc(m.area)}</span>` : ''}</div>
         <div class="team-id">ID: ${esc(m.id || '—')}</div>
       </div>
       <a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RENATA Overtime App — সহায়তা প্রয়োজন')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
@@ -3034,57 +3311,21 @@ document.addEventListener('keydown', e => {
     if (document.getElementById('modeSetupModal')?.classList.contains('open')) { closeModeSetupModal(); return; }
     if (document.getElementById('welcomeBackModal')?.classList.contains('open')) { closeWelcomeBackModal(); return; }
     if (document.getElementById('rateChartModal')?.classList.contains('open')) { closeRateChartModal(); return; }
-    if (document.getElementById('lbFullListModal').classList.contains('open')) { closeLbFullList(); return; }
-    closeModal(); closeDrawer();
+    if (document.getElementById('erpSupportModal')?.classList.contains('open')) { closeErpSupportModal(); return; }
+    if (document.getElementById('confirmActionModal')?.classList.contains('open')) { closeConfirmModal(); return; }
+    if (document.getElementById('complianceModal')?.classList.contains('open')) { closeComplianceModal(); return; }
+    if (document.getElementById('lbFullListModal')?.classList.contains('open')) { closeLbFullList(); return; }
+    closeDrawer();
   }
 });
 
 /* ============================================================
-   REPORT SEARCH (FAST INDEX + FALLBACK PDF SCAN + LAZY PDF)
+   REPORT SEARCH (FAST PRE-INDEXED EXCEL DATA ENGINE)
    ============================================================ */
-async function findAllMatches(pdfFiles, searchId, myToken, progressDiv) {
-  const matches = [];
-  for (const file of pdfFiles) {
-    if (myToken !== currentToken) break;
-    let pdf = null;
-    try {
-      pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
-      for (let p = 1; p <= pdf.numPages; p++) {
-        if (myToken !== currentToken) break;
-        const page = await pdf.getPage(p);
-        const tc = await page.getTextContent();
-        const text = tc.items.map(i => i.str).join(" ").toUpperCase();
-        if (text.includes(searchId)) { matches.push({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf, text }); break; }
-      }
-      if (progressDiv) progressDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-    } catch (e) { console.log("PDF error:", file.name, e.message); }
-    finally {
-      if (pdf && (!matches.length || matches[matches.length - 1].fileName !== file.name)) {
-        try { await pdf.destroy(); } catch (err) {}
-      }
-    }
-  }
-  return matches;
-}
-
-async function pickBestMatch(matches) {
-  if (matches.length === 1) return matches[0];
-  const scored = [];
-  for (const m of matches) {
-    let punchProblems = countPunchProblems(m.text);
-    let otHours = 0;
-    try { const parsed = parseText(m.text); otHours = parsed.otHours || 0; } catch (e) {}
-    scored.push({ match: m, punchProblems, otHours });
-  }
-  scored.sort((a, b) => { if (a.punchProblems !== b.punchProblems) return a.punchProblems - b.punchProblems; return b.otHours - a.otHours; });
-  const winner = scored[0];
-  for (const s of scored) { if (s.match !== winner.match && s.match.pdf) { try { await s.match.pdf.destroy(); } catch (e) {} } }
-  return winner.match;
-}
-
 function renderInstantEmployeeRecord(emp, month, searchId) {
-  const detection = detectCategory(emp.grade || '', searchId);
-  const cat = emp.category || detection.category || 'JO';
+  applyTypeOverride(emp);
+  const rc = getRateCategory(emp);
+  const cat = emp.category || rc.cat || 'JO';
   const r = RATE_TABLE[cat] || RATE_TABLE.JO;
   const otHours = Number(emp.otHours) || 0;
   const holidayCount = Number(emp.holidayCount != null ? emp.holidayCount : emp.holiday) || 0;
@@ -3094,7 +3335,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const nightAmount = emp.nightAmount != null ? Number(emp.nightAmount) : (nightCount * r.nightRate);
   const totalEarned = emp.totalEarned != null ? Number(emp.totalEarned) : (otAmount + holidayAmount + nightAmount);
   const isRppf = emp.isRppf !== false;
-  const valid = detection.valid || Boolean(emp.category);
+  const valid = emp.valid !== false;
 
   currentResult = {
     category: cat,
@@ -3126,36 +3367,11 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const detectObj = {
     category: valid ? cat : null,
     valid,
-    reason: (isNoRateCat(cat) || emp.rateSource === 'admin') ? RATE_TABLE[cat].name : (detection.reason || RATE_TABLE[cat]?.name || cat),
-    gradeText: emp.grade || detection.gradeText || cat
+    reason: RATE_TABLE[cat]?.name || cat,
+    gradeText: emp.grade || cat
   };
 
-  pendingPdfTarget = (emp.fileUrl && emp.pageNum) ? {
-    fileUrl: emp.fileUrl,
-    pageNum: Number(emp.pageNum) || 1,
-    fileName: emp.fileName || ''
-  } : null;
-  isPdfRenderedForCurrent = false;
-  matchedPdfPage = null;
-
-  const step2 = document.getElementById('step2');
-  const step2Body = document.getElementById('step2Body');
-  const step2Header = document.getElementById('step2Header');
-  const dlBtn = document.getElementById('downloadBtn');
-  const openBtn = document.getElementById('openBtn');
-  if (step2) {
-    step2.style.display = pendingPdfTarget ? 'block' : 'none';
-    if (step2Body) step2Body.classList.remove('show');
-    if (step2Header) step2Header.classList.remove('expanded');
-  }
-  if (dlBtn) {
-    dlBtn.removeAttribute('href');
-    dlBtn.style.display = pendingPdfTarget ? 'flex' : 'none';
-  }
-  if (openBtn) {
-    openBtn.style.display = pendingPdfTarget ? 'flex' : 'none';
-  }
-
+  updateMonthNavBar(month);
   applyExtraction(parsedObj, detectObj);
   const viewCtx = getReportViewContext(currentSearchId);
   const myAmountDiv = document.getElementById('compareMyAmount');
@@ -3174,14 +3390,14 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   document.body.classList.add('has-result');
   const nc = document.getElementById('noticesCard');
   if (nc) nc.style.display = 'block';
-  addToHistory(searchId, month, emp.name || emp.fileName || '');
+  addToHistory(searchId, month, emp.name || '');
   enterCompactMode(searchId, month);
   if (!getPreferredId() && getAppMode() !== 'incharge') {
     setPreferredId(searchId);
     setAppMode('employee');
   }
   updateModeUI();
-  setTimeout(() => { document.getElementById('step3')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);
+  setTimeout(() => { document.getElementById('step3')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
 }
 
 async function findReport() {
@@ -3198,208 +3414,56 @@ async function findReport() {
   const searchId = rawId.toUpperCase().replace(/\s+/g, '');
   currentSearchId = searchId; currentMonth = month;
   _lbView = false;
-  ['viewingContextBanner','step2','step3','step4','step5','step6','step7','payslipCard'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
-  document.getElementById('downloadBtn').style.display = "none";
-  document.getElementById('openBtn').style.display = "none";
+  ['viewingContextBanner','monthNavBar','step3','step4','step5','step7','payslipCard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = "none"; el.classList.remove('show'); }
+  });
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
   document.getElementById('compareId').value = "";
   document.getElementById('daySummaryGrid').style.display = "none";
-  ['step2Body','step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
+  ['step4Body','step5Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
-  if (singlePageBlobUrl) { URL.revokeObjectURL(singlePageBlobUrl); singlePageBlobUrl = null; }
-  matchedPdfPage = null; currentResult = null; pendingPdfTarget = null; isPdfRenderedForCurrent = false;
+  currentResult = null;
   currentToken++;
   const myToken = currentToken;
-  for (const t of activeTasks) { try { t.destroy(); } catch (e) {} }
-  activeTasks.clear();
-  statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-  progressDiv.style.display = "none"; progressDiv.innerText = "";
-  spinner.style.display = "block"; searchBtn.disabled = true;
+  statusDiv.style.color = "var(--primary-blue)";
+  statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
+  progressDiv.style.display = "none";
+  progressDiv.innerText = "";
+  spinner.style.display = "block";
+  searchBtn.disabled = true;
 
   try {
     await loadAreaMap();
-    /* 1. Try pre-indexed fast data engine data/${month}.json first (<0.2s, no PDF download) */
     const fastList = await fetchMonthPreIndexedData(month);
     if (myToken !== currentToken) return;
-    if (fastList && Array.isArray(fastList)) {
-      const matchedEmp = fastList.find(e => String(e.id || '').toUpperCase() === searchId);
-      if (matchedEmp && isExecHiddenFor(matchedEmp)) {
-        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-        showSearchError('এই আইডির হিসাব শুধু ইন-চার্জ মোডে দেখা যায়।');
-        return;
-      }
-      if (matchedEmp) {
-        spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-        statusDiv.style.color = "var(--success)"; statusDiv.innerText = "হিসাব প্রস্তুত হয়েছে";
-        renderInstantEmployeeRecord(matchedEmp, month, searchId);
-        return;
-      }
+    if (!fastList || !Array.isArray(fastList) || fastList.length === 0) {
+      spinner.style.display = "none"; searchBtn.disabled = false;
+      updateMonthNavBar(month);
+      showSearchError(`${month} মাসের ওভারটাইম ডাটা এখনো সার্ভারে আপলোড করা হয়নি।`);
+      return;
     }
-
-    /* 2. Check per-employee cache */
-    const cached = getCached(month, searchId);
-    if (cached && cached.parsed && cached.detection) {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
+    const matchedEmp = fastList.find(e => String(e.id || '').toUpperCase() === searchId);
+    if (matchedEmp && isExecHiddenFor(matchedEmp)) {
+      spinner.style.display = "none"; searchBtn.disabled = false;
+      showSearchError('এই আইডির হিসাব শুধু ইন-চার্জ মোডে দেখা যায়।');
+      return;
+    }
+    if (matchedEmp) {
+      spinner.style.display = "none"; searchBtn.disabled = false;
       statusDiv.style.color = "var(--success)"; statusDiv.innerText = "হিসাব প্রস্তুত হয়েছে";
-      renderInstantEmployeeRecord({
-        id: searchId,
-        name: cached.name || '',
-        grade: cached.detection.gradeText || '',
-        category: cached.detection.category || 'JO',
-        isRppf: cached.isRppf !== false,
-        otHours: cached.parsed.otHours,
-        holidayCount: cached.parsed.holidayCount,
-        nightCount: cached.parsed.nightCount,
-        regularDaysCount: cached.parsed.regularDaysCount,
-        plainDaysCount: cached.parsed.plainDaysCount,
-        holidayDays: cached.parsed.holidayDays,
-        nightDays: cached.parsed.nightDays,
-        punchProblems: cached.parsed.punchProblems,
-        fileUrl: cached.fileUrl,
-        pageNum: cached.pageNum,
-        fileName: cached.fileName
-      }, month, searchId);
+      renderInstantEmployeeRecord(matchedEmp, month, searchId);
       return;
     }
-
-    /* 3. Fallback to scanning PDFs in pdfs/${month} */
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const resp = await fetch(apiUrl);
-    if (!resp.ok) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; showSearchError('এই মাসের রিপোর্ট এখনো আপলোড হয়নি। অন্য মাস বেছে দেখুন।'); return; }
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    if (pdfFiles.length === 0) { spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; showSearchError('এই মাসের রিপোর্ট এখনো আপলোড হয়নি।'); return; }
-    progressDiv.style.display = "block";
-    progressDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-    const allMatches = await findAllMatches(pdfFiles, searchId, myToken, progressDiv);
-    if (myToken !== currentToken) return;
-    if (!allMatches || allMatches.length === 0) {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      showSearchError(`"${rawId}" আইডি এই মাসের রিপোর্টে পাওয়া যায়নি। আইডি ঠিক আছে কিনা দেখুন।`);
-      return;
-    }
-    const match = await pickBestMatch(allMatches);
-    if (myToken !== currentToken) return;
-    if (match) {
-      pendingPdfTarget = { fileUrl: match.fileUrl, pageNum: match.pageNum, fileName: match.fileName };
-      matchedPdfPage = match.page;
-      currentPdf = match.pdf;
-      currentFileUrl = match.fileUrl;
-      currentPageNum = match.pageNum;
-      currentFileName = match.fileName;
-      isPdfRenderedForCurrent = false;
-      document.getElementById('step2').style.display = "block";
-      document.getElementById('downloadBtn').style.display = "flex";
-      document.getElementById('openBtn').style.display = "flex";
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      statusDiv.style.color = "var(--success)"; statusDiv.innerText = "রিপোর্ট পাওয়া গেছে";
-      addToHistory(searchId, month, match.fileName);
-      enterCompactMode(searchId, month); if (!getPreferredId() && getAppMode() !== 'incharge') { setPreferredId(searchId); setAppMode('employee'); } updateModeUI();
-      try { await runExtraction(); } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Error: " + e.message; }
-    } else {
-      spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none";
-      showSearchError(`"${rawId}" আইডি এই মাসের রিপোর্টে পাওয়া যায়নি।`);
-    }
-  } catch (err) { console.error(err); spinner.style.display = "none"; searchBtn.disabled = false; progressDiv.style.display = "none"; showSearchError('ইন্টারনেট সংযোগ পরীক্ষা করুন।'); }
-}
-
-async function parallelSearch(pdfFiles, searchId, myToken, progressDiv) {
-  const total = pdfFiles.length; let scanned = 0;
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
-    pdfFiles.forEach((file) => {
-      (async () => {
-        if (myToken !== currentToken) return;
-        let task = null, pdf = null;
-        try {
-          task = pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 });
-          activeTasks.add(task); pdf = await task.promise;
-          for (let p = 1; p <= pdf.numPages; p++) {
-            if (myToken !== currentToken || settled) break;
-            const page = await pdf.getPage(p);
-            const tc = await page.getTextContent();
-            const text = tc.items.map(i => i.str).join(" ").toUpperCase();
-            if (text.includes(searchId)) { finish({ page, pageNum: p, fileUrl: file.url, fileName: file.name, pdf }); return; }
-          }
-          scanned++;
-          if (progressDiv) progressDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-        } catch (e) { console.log("PDF error:", file.name, e.message); }
-        finally { if (task) activeTasks.delete(task); if (!settled && pdf) { try { await pdf.destroy(); } catch (e) {} } }
-      })();
-    });
-    setTimeout(() => { if (!settled) { const check = setInterval(() => { if (scanned >= total || myToken !== currentToken) { clearInterval(check); finish(null); } }, 200); } }, 100);
-  });
-}
-
-async function showResult(fileUrl, pageNum, fileName) {
-  if (!currentPdf || currentFileUrl !== fileUrl) { const task = pdfjsLib.getDocument(fileUrl); currentPdf = await task.promise; currentFileUrl = fileUrl; }
-  currentPageNum = pageNum; currentFileName = fileName;
-  const page = await currentPdf.getPage(pageNum); matchedPdfPage = page;
-  renderPageHD(page, document.getElementById('pdf-canvas'), 1.5);
-  document.getElementById('step2').style.display = "block";
-  singlePageBlobUrl = await extractSinglePagePdf(fileUrl, pageNum);
-  const downloadBtn = document.getElementById('downloadBtn');
-  downloadBtn.href = singlePageBlobUrl;
-  downloadBtn.setAttribute('download', `Overtime_${currentSearchId}_${currentMonth}.pdf`);
-  downloadBtn.style.display = "flex";
-  document.getElementById('openBtn').style.display = "flex";
-  isPdfRenderedForCurrent = true;
-}
-
-async function runExtraction() {
-  if (!matchedPdfPage) return;
-  const statusDiv = document.getElementById('status');
-  statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-  try {
-    let rawText = "", parsed = null;
-    try { const tc = await matchedPdfPage.getTextContent(); rawText = tc.items.map(i => i.str).join(" "); const cleanText = rawText.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) parsed = parseText(rawText); } catch (e) { console.log("Text error:", e.message); }
-    let empName = "";
-    const nm = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
-    if (nm && nm[1]) empName = nm[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
-    if (!parsed || !parsed.totalHourLine) {
-      statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
-      const viewport = matchedPdfPage.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      await matchedPdfPage.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas); rawText = ocrResult?.data?.text || ""; parsed = parseText(rawText);
-      const nmOcr = rawText.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
-      if (!empName && nmOcr && nmOcr[1]) empName = nmOcr[1].replace(/MR\.|MRS\.|MS\./gi, '').trim();
-    }
-    const isRppf = isRppfText(rawText);
-    if (!isRppf) {
-      showToast('এই কর্মী RPPF-এর নন — অন্য ফ্যাসিলিটির রিপোর্ট', 'warn');
-    }
-    let gradeText = "";
-    const gm = rawText.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-    if (gm) gradeText = gm[0];
-    const detection = detectCategory(gradeText, currentSearchId);
-    const r = RATE_TABLE[detection.category] || RATE_TABLE.JO;
-    const otAmount = parsed.otHours * r.otRate;
-    let holidayAmount = 0;
-    if (r.holidayType === "hourly") holidayAmount = parsed.holidayCount * r.holidayHours * r.otRate;
-    else holidayAmount = parsed.holidayCount * r.holidayFlat;
-    const nightAmount = parsed.nightCount * r.nightRate;
-    currentResult = { category: detection.category, otHours: parsed.otHours, holiday: parsed.holidayCount, night: parsed.nightCount, plainDays: parsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: gradeText, valid: detection.valid, name: empName, isRppf };
-    setCache(currentMonth, currentSearchId, { fileUrl: currentFileUrl, pageNum: currentPageNum, fileName: currentFileName, parsed, detection, name: empName, isRppf });
-    applyExtraction(parsed, detection);
-    const viewCtx = getReportViewContext(currentSearchId);
-    const myAmountDiv = document.getElementById('compareMyAmount');
-    myAmountDiv.style.display = "block";
-    myAmountDiv.innerText = viewCtx === 'own'
-      ? `আপনার আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`
-      : `${currentSearchId}-এর আয়: ৳ ${currentResult.totalEarned.toFixed(2)}`;
-    statusDiv.style.color = "var(--success)"; statusDiv.innerText = "হিসাব তৈরি হয়েছে";
-    ['step3','step4','step5','step6','step7'].forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('show'); el.style.display = 'block'; } });
-    applyReportViewContext(parsed, detection);
-    document.body.classList.add('has-result');
-    const nc = document.getElementById('noticesCard');
-    if (nc) { nc.style.display = 'block'; }
-    setTimeout(() => { document.getElementById('step3').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
-  } catch (e) { console.error("runExtraction error:", e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "হিসাব করতে সমস্যা হয়েছে: " + e.message; throw e; }
+    spinner.style.display = "none"; searchBtn.disabled = false;
+    updateMonthNavBar(month);
+    showSearchError(`"${rawId}" আইডি ${month} মাসের রিপোর্টে পাওয়া যায়নি। আইডি বা মাস ঠিক আছে কিনা দেখুন।`);
+  } catch (err) {
+    console.error(err);
+    spinner.style.display = "none"; searchBtn.disabled = false;
+    showSearchError('ইন্টারনেট সংযোগ পরীক্ষা করুন।');
+  }
 }
 
 function applyExtraction(parsed, detection) {
@@ -3505,68 +3569,6 @@ function detectCategory(gradeText, empId) {
   return { category: null, valid: false, reason: "Grade সনাক্ত করা যায়নি", gradeText: g || "—" };
 }
 
-function parseText(rawText) {
-  const cleanText = rawText.replace(/\s+/g, " ").toUpperCase();
-  let otHours = 0, nightCount = 0, totalDuty = 0;
-  let holidayDays = [], nightDays = [], punchProblems = [];
-  let plainDays = [], regularDays = [];
-  let totalHourLine = false;
-  const thIndex = cleanText.search(/TOTAL\s*HOUR/i);
-  if (thIndex !== -1) {
-    const after = cleanText.substring(thIndex, thIndex + 300);
-    const numbers = after.match(/\d+\.\d+|\d+/g) || [];
-    if (numbers.length >= 7) {
-      const n = numbers.slice(0, 7).map(x => parseFloat(x));
-      const valid = n[0] >= 0 && n[1] >= 0 && n[2] >= 0 && n[3] >= 0 && n[4] >= 0 && n[5] >= 0 && Number.isInteger(n[6]) && n[6] < 200;
-      if (valid) {
-        totalDuty = n[0] + n[1] + n[2] + n[3] + n[4] + n[5];
-        otHours = n[1] + n[3] + n[5];
-        nightCount = n[6];
-        totalHourLine = true;
-      }
-    }
-  }
-  if (!totalHourLine) {
-    const allNums = cleanText.match(/\d+\.\d+|\d+/g) || [];
-    if (allNums.length >= 7) {
-      const n = allNums.slice(-7).map(parseFloat);
-      if (Number.isInteger(n[6]) && n[6] < 200) {
-        totalDuty = n[0] + n[1] + n[2] + n[3] + n[4] + n[5];
-        otHours = n[1] + n[3] + n[5];
-        nightCount = n[6];
-        totalHourLine = true;
-      }
-    }
-  }
-  const rowRegex = /(\d{2}\/\d{2}\/\d{4})\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+(YES|NO)\s+(\d{2}:\d{2}:\d{2})\s*-\s*(\d{2}:\d{2}:\d{2})/gi;
-  let rm;
-  const seenDates = new Set();
-  while ((rm = rowRegex.exec(cleanText)) !== null) {
-    const date = rm[1];
-    if (seenDates.has(date)) continue;
-    seenDates.add(date);
-    const regDuty = parseFloat(rm[2]) || 0;
-    const regExtra = parseFloat(rm[3]) || 0;
-    const doDuty = parseFloat(rm[4]) || 0;
-    const doExtra = parseFloat(rm[5]) || 0;
-    const holDuty = parseFloat(rm[6]) || 0;
-    const holExtra = parseFloat(rm[7]) || 0;
-    const isNight = rm[8].toUpperCase() === "YES";
-    const inTime = rm[9], outTime = rm[10];
-    if (regDuty > 0) regularDays.push(date);
-    if (doDuty > 0 || doExtra > 0 || holDuty > 0 || holExtra > 0) holidayDays.push({ date, doDuty, doExtra, holDuty, holExtra });
-    if (isNight) nightDays.push(date);
-    if (inTime === "00:00:00" || outTime === "00:00:00") punchProblems.push({ date, inTime, outTime });
-    const hasAnyDuty = (regDuty + doDuty + holDuty) > 0;
-    const hasAnyExtra = (regExtra + doExtra + holExtra) > 0;
-    const hasValidPunch = inTime !== "00:00:00" && outTime !== "00:00:00";
-    if (hasAnyDuty && !isNight && !hasAnyExtra && hasValidPunch) {
-      plainDays.push({ date, dutyType: regDuty > 0 ? 'Regular' : (doDuty > 0 ? 'DO' : 'Holiday'), hours: regDuty > 0 ? regDuty : (doDuty > 0 ? doDuty : holDuty) });
-    }
-  }
-  return { totalDuty: Number(totalDuty.toFixed(2)), otHours: Number(otHours.toFixed(2)), nightCount, holidayCount: holidayDays.length, holidayDays, nightDays, punchProblems, totalHourLine, regularDaysCount: regularDays.length, regularDays, plainDaysCount: plainDays.length, plainDays };
-}
-
 function showHolidayList(list) {
   const box = document.getElementById('holidayList');
   const cnt = document.getElementById('holidayCount');
@@ -3598,14 +3600,30 @@ function showNightList(list) {
   }
 }
 
+function buildSingleEmployeeErpMessage(datesStr, issueType) {
+  const ctx = getReportViewContext(currentSearchId);
+  const empName = (currentResult && currentResult.name) ? currentResult.name : '';
+  const areaName = getAreaForId(currentSearchId, currentResult?.isRppf !== false);
+  if (ctx === 'incharge') {
+    if (issueType === 'punch') {
+      return `আসসালামু আলাইকুম, ${areaName} সেকশনের কর্মী ${empName || currentSearchId} (${currentSearchId})-এর ${currentMonth}-এর রিপোর্টে নিচের তারিখে পাঞ্চ সমস্যা পাওয়া গেছে: ${datesStr} (In/Out মিসিং)। অনুগ্রহ করে দেখবেন।`;
+    }
+    return `আসসালামু আলাইকুম, ${areaName} সেকশনের কর্মী ${empName || currentSearchId} (${currentSearchId})-এর ${currentMonth}-এর রিপোর্টে গ্রেড ও পাঞ্চ (${datesStr}) যাচাই প্রয়োজন।`;
+  }
+  if (issueType === 'punch') {
+    return `আসসালামু আলাইকুম ভাই, আমার আইডি: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, এরিয়া: ${areaName}। আমার ${currentMonth}-এর রিপোর্টে ${datesStr}-এ In/Out পাঞ্চ মিসিং আছে, অনুগ্রহ করে দেখবেন।`;
+  }
+  return `আসসালামু আলাইকুম ভাই, আমার আইডি: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, এরিয়া: ${areaName}। আমার ${currentMonth}-এর রিপোর্টে গ্রেড/রেট ও পাঞ্চ (${datesStr}) বিষয়ে সহায়তা প্রয়োজন।`;
+}
+
 function showRemarks(punchProblems, detection) {
   const box = document.getElementById('remarksBox');
   const pList = Array.isArray(punchProblems) ? punchProblems : [];
   const pCount = Array.isArray(punchProblems) ? punchProblems.length : (Number(punchProblems) || 0);
   const hasP = pCount > 0;
   const dates = pList.length > 0 ? pList.map(p => (typeof p === 'string' ? p : p.date)).join(', ') : `${bn(pCount)} দিন`;
-  const wa = (txt) => `<a class="btn-secondary" target="_blank" rel="noopener" href="${erpWaLink(txt)}">ERP টিমকে WhatsApp করুন</a>`;
-  const who = `${currentSearchId} (${currentMonth})`;
+  const areaName = getAreaForId(currentSearchId, currentResult?.isRppf !== false);
+  const waBtn = (msg) => `<button type="button" class="btn-secondary" style="margin-top:10px;" onclick="openErpSupportModal(${esc(JSON.stringify(msg))}, ${esc(JSON.stringify(areaName))})">ERP টিমকে WhatsApp করুন (Select Representative)</button>`;
   const ctx = getReportViewContext(currentSearchId);
   const isOwn = (ctx === 'own');
   const subj = isOwn ? 'আপনার' : `এই কর্মীর (${esc(currentSearchId)})`;
@@ -3616,13 +3634,13 @@ function showRemarks(punchProblems, detection) {
     box.innerHTML = `${subj} সব In/Out পাঞ্চ ঠিক আছে।${facilityWarn}`;
   } else if (detection.valid && hasP) {
     box.className = "remarks-box remarks-warn";
-    box.innerHTML = `${subj} <b>${esc(dates)}</b> তারিখে পাঞ্চ মিসিং (${bn(pCount)} দিন)। এজন্য ওভারটাইম কম আসতে পারে।${facilityWarn}` + wa(`${who}: ${dates} তারিখে In/Out পাঞ্চ সমস্যা আছে।`);
+    box.innerHTML = `${subj} <b>${esc(dates)}</b> তারিখে পাঞ্চ মিসিং (${bn(pCount)} দিন)।${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
   } else if (!detection.valid && !hasP) {
     box.className = "remarks-box remarks-error";
-    box.innerHTML = `${subj} গ্রেড এই হিসাবের আওতায় পড়ছে না, তাই টাকার হিসাব দেখানো যাচ্ছে না।${facilityWarn}` + wa(`${who}: গ্রেড (${detection.reason}) নিয়ে সমস্যা।`);
+    box.innerHTML = `${subj} গ্রেড এই হিসাবের আওতায় পড়ছে না, তাই টাকার হিসাব দেখানো যাচ্ছে না।${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage('—', 'grade'));
   } else {
     box.className = "remarks-box remarks-error";
-    box.innerHTML = `${subj} দুইটা সমস্যা আছে:<ul><li>গ্রেড হিসাবের আওতায় পড়ছে না</li><li>${esc(dates)} তারিখে পাঞ্চ মিসিং</li></ul>${facilityWarn}` + wa(`${who}: গ্রেড ও পাঞ্চ (${dates}) দুটোতেই সমস্যা।`);
+    box.innerHTML = `${subj} দুইটা সমস্যা আছে:<ul><li>গ্রেড হিসাবের আওতায় পড়ছে না</li><li>${esc(dates)} তারিখে পাঞ্চ মিসিং</li></ul>${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'both'));
   }
 }
 
@@ -3667,12 +3685,12 @@ async function runComparison() {
   if (cached) { statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন হয়েছে"; showComparison(currentResult, cached.other, cached.otherId); compareBtn.disabled = false; return; }
   statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
   try {
-    /* Try pre-indexed JSON first for instant comparison */
     const fastList = await fetchMonthPreIndexedData(currentMonth);
     if (fastList && Array.isArray(fastList)) {
       const otherEmp = fastList.find(e => String(e.id || '').toUpperCase() === otherId);
       if (otherEmp && isExecHiddenFor(otherEmp)) { showToast('এই আইডির হিসাব শুধু ইন-চার্জ মোডে দেখা যায়', 'warn'); compareBtn.disabled = false; return; }
       if (otherEmp) {
+        applyTypeOverride(otherEmp);
         const cat = otherEmp.category || detectCategory(otherEmp.grade || '', otherId).category || 'JO';
         const r = RATE_TABLE[cat] || RATE_TABLE.JO;
         const otAmount = otherEmp.otAmount != null ? Number(otherEmp.otAmount) : (Number(otherEmp.otHours || 0) * r.otRate);
@@ -3700,39 +3718,14 @@ async function runComparison() {
         return;
       }
     }
-
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${currentMonth}`;
-    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("এই মাসের রিপোর্ট পাওয়া যায়নি");
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    currentToken++; const myToken = currentToken;
-    const match = await parallelSearch(pdfFiles, otherId, myToken, null);
-    if (!match) { statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `"${otherId}" আইডি পাওয়া যায়নি।`; compareBtn.disabled = false; return; }
-    statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-    let otherParsed = null, otherGradeText = "";
-    try { const tc = await match.page.getTextContent(); const txt = tc.items.map(i => i.str).join(" "); const cleanText = txt.replace(/\s+/g, " ").toUpperCase(); if (/TOTAL\s*HOUR/i.test(cleanText) && !/^(1\s+)+1?$/.test(cleanText.trim().replace(/\s+/g, " ").substring(0, 100))) otherParsed = parseText(txt); const gm = txt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0]; } catch (e) {}
-    if (!otherParsed || !otherParsed.totalHourLine) {
-      statusDiv.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-      if (!ocrWorker) { ocrWorker = await Tesseract.createWorker('eng'); await ocrWorker.setParameters({ preserve_interword_spaces: '1', tessedit_pageseg_mode: '6' }); }
-      const viewport = match.page.getViewport({ scale: 3.0 });
-      const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      await match.page.render({ canvasContext: ctx, viewport }).promise;
-      const ocrResult = await ocrWorker.recognize(canvas); const ocrTxt = ocrResult?.data?.text || ""; otherParsed = parseText(ocrTxt);
-      const gm = ocrTxt.toUpperCase().match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/); if (gm) otherGradeText = gm[0];
-    }
-    const otherDetect = detectCategory(otherGradeText, otherId);
-    const r = RATE_TABLE[otherDetect.category] || RATE_TABLE.JO;
-    const otAmount = otherParsed.otHours * r.otRate;
-    let holidayAmount = 0;
-    if (r.holidayType === "hourly") holidayAmount = otherParsed.holidayCount * r.holidayHours * r.otRate;
-    else holidayAmount = otherParsed.holidayCount * r.holidayFlat;
-    const nightAmount = otherParsed.nightCount * r.nightRate;
-    const otherResult = { category: otherDetect.category, categoryName: r.name, otHours: otherParsed.otHours, holiday: otherParsed.holidayCount, night: otherParsed.nightCount, plainDays: otherParsed.plainDaysCount, otAmount, holidayAmount, nightAmount, totalEarned: otAmount + holidayAmount + nightAmount, grade: otherGradeText };
-    setCompareCache(currentMonth, currentSearchId, otherId, { other: otherResult, otherId });
-    showComparison(currentResult, otherResult, otherId);
-    statusDiv.style.color = "var(--success)"; statusDiv.innerText = "তুলনা সম্পন্ন হয়েছে";
-  } catch (e) { console.error(e); statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "তুলনা করতে সমস্যা হয়েছে: " + e.message; } finally { compareBtn.disabled = false; }
+    statusDiv.style.color = "var(--danger)";
+    statusDiv.innerText = `"${otherId}" আইডি এই মাসের ডাটাতে পাওয়া যায়নি।`;
+  } catch (e) {
+    statusDiv.style.color = "var(--danger)";
+    statusDiv.innerText = "তুলনা করতে সমস্যা হয়েছে: " + e.message;
+  } finally {
+    compareBtn.disabled = false;
+  }
 }
 
 function showComparison(mine, other, otherId) {
@@ -3808,10 +3801,104 @@ function buildLeaderboardPayloadFromList(month, allList) {
   };
 }
 
+function getPreviousMonthStrings(baseMonthStr, count) {
+  const [yy, mm] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
+  const out = [];
+  let y = yy || new Date().getFullYear();
+  let m = mm || 1;
+  for (let i = 0; i < count; i++) {
+    out.push(`${y}-${String(m).padStart(2, '0')}`);
+    m -= 1;
+    if (m < 1) { m = 12; y -= 1; }
+  }
+  return out;
+}
+
+function getAllTime2026Months(baseMonthStr) {
+  const [yy, mm] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
+  const year = yy || 2026;
+  const maxM = (year === 2026 && mm) ? mm : 12;
+  const out = [];
+  for (let m = 1; m <= maxM; m++) {
+    out.push(`${year}-${String(m).padStart(2, '0')}`);
+  }
+  return out;
+}
+
+function switchLbTimeMode(mode) {
+  currentLbTimeMode = mode || 'monthly';
+  const btnM = document.getElementById('lbModeBtnMonthly');
+  const btnR = document.getElementById('lbModeBtnRange');
+  const btnA = document.getElementById('lbModeBtnAllTime');
+  const subRow = document.getElementById('lbRangeSubRow');
+  const sub3 = document.getElementById('lbSubBtn3m');
+  const sub6 = document.getElementById('lbSubBtn6m');
+  if (btnM) btnM.classList.toggle('active', currentLbTimeMode === 'monthly');
+  if (btnR) btnR.classList.toggle('active', currentLbTimeMode === '3m' || currentLbTimeMode === '6m');
+  if (btnA) btnA.classList.toggle('active', currentLbTimeMode === 'alltime');
+  if (subRow) subRow.classList.toggle('show', currentLbTimeMode === '3m' || currentLbTimeMode === '6m');
+  if (sub3) sub3.classList.toggle('active', currentLbTimeMode === '3m');
+  if (sub6) sub6.classList.toggle('active', currentLbTimeMode === '6m');
+  startLeaderboardScan(false);
+}
+
+async function aggregateMultiMonthEmployees(monthList) {
+  const map = new Map();
+  let loadedMonths = 0;
+  const lists = await Promise.all(monthList.map(m => fetchMonthPreIndexedData(m, false).catch(() => null)));
+  lists.forEach(list => {
+    if (!list || !list.length) return;
+    loadedMonths++;
+    list.forEach(e => {
+      if (!e || e.isRppf === false || e.valid === false || !isMappedAreaId(e.id)) return;
+      const cur = map.get(e.id);
+      const pArr = Array.isArray(e.punchProblems) ? e.punchProblems : [];
+      if (!cur) {
+        map.set(e.id, {
+          ...e,
+          monthsCount: 1,
+          totalDuty: Number(e.totalDuty || 0),
+          otHours: Number(e.otHours || 0),
+          holidayCount: Number(e.holidayCount || 0),
+          nightCount: Number(e.nightCount || 0),
+          totalEarned: Number(e.totalEarned || 0),
+          punchProblems: [...pArr]
+        });
+      } else {
+        cur.monthsCount += 1;
+        cur.totalDuty = Number((cur.totalDuty + Number(e.totalDuty || 0)).toFixed(2));
+        cur.otHours = Number((cur.otHours + Number(e.otHours || 0)).toFixed(2));
+        cur.holidayCount += Number(e.holidayCount || 0);
+        cur.nightCount += Number(e.nightCount || 0);
+        cur.totalEarned = Number((cur.totalEarned + Number(e.totalEarned || 0)).toFixed(2));
+        cur.punchProblems.push(...pArr);
+        if (!cur.name && e.name) cur.name = e.name;
+      }
+    });
+  });
+  const merged = Array.from(map.values()).map(e => {
+    const mc = Math.max(1, e.monthsCount || 1);
+    return {
+      ...e,
+      avgDuty: Number((e.totalDuty / mc).toFixed(1)),
+      avgOt: Number((e.otHours / mc).toFixed(1)),
+      avgNight: Number((e.nightCount / mc).toFixed(1)),
+      avgEarned: Number((e.totalEarned / mc).toFixed(0))
+    };
+  });
+  return { merged, loadedMonths };
+}
+
 async function initLeaderboardPage() {
   syncLbMonthSelectors(); updateModeUI();
   const month = getCurrentMonth();
-  document.getElementById('lbSubtitle').innerText = month;
+  const subLbl = document.getElementById('lbSubtitle');
+  if (subLbl) {
+    subLbl.innerText = currentLbTimeMode === 'monthly' ? month
+      : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
+      : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+      : `All-Time Best (${month.split('-')[0]})`;
+  }
   await startLeaderboardScan(false);
 }
 
@@ -3828,17 +3915,43 @@ async function startLeaderboardScan(forceRescan = false) {
   const fill = document.getElementById('lbScanFill');
   const hint = document.getElementById('lbScanHint');
   counter.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-  fill.style.width = "25%";
+  fill.style.width = "35%";
   hint.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
 
   try {
     await loadAreaMap();
     populateAreaDropdown();
 
-    /* 1. Try pre-indexed fast data engine data/${month}.json first */
+    const subLbl = document.getElementById('lbSubtitle');
+    if (subLbl) {
+      subLbl.innerText = currentLbTimeMode === 'monthly' ? month
+        : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
+        : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+        : `All-Time Best (${month.split('-')[0]})`;
+    }
+
+    if (currentLbTimeMode !== 'monthly') {
+      const monthsToLoad = currentLbTimeMode === '3m' ? getPreviousMonthStrings(month, 3)
+        : currentLbTimeMode === '6m' ? getPreviousMonthStrings(month, 6)
+        : getAllTime2026Months(month);
+      const { merged } = await aggregateMultiMonthEmployees(monthsToLoad);
+      if (merged && merged.length > 0) {
+        const lbPayload = buildLeaderboardPayloadFromList(month, merged);
+        lbPayload.timeMode = currentLbTimeMode;
+        currentLeaderboardResult = lbPayload;
+        fill.style.width = "100%";
+        renderLeaderboardResult(lbPayload);
+        document.getElementById('lbScanCard').style.display = "none";
+        document.getElementById('lbResultCard').style.display = "block";
+        isScanning = false;
+        return;
+      }
+    }
+
     const fastList = await fetchMonthPreIndexedData(month, forceRescan);
     if (fastList && fastList.length > 0) {
       const lbPayload = buildLeaderboardPayloadFromList(month, fastList);
+      lbPayload.timeMode = 'monthly';
       setLeaderboardCache(month, lbPayload);
       currentLeaderboardResult = lbPayload;
       fill.style.width = "100%";
@@ -3849,7 +3962,6 @@ async function startLeaderboardScan(forceRescan = false) {
       return;
     }
 
-    /* 2. Check localStorage leaderboard cache if not forceRescan */
     if (!forceRescan) {
       const cached = getLeaderboardCache(month);
       if (cached && Array.isArray(cached.allEmployees)) {
@@ -3864,126 +3976,15 @@ async function startLeaderboardScan(forceRescan = false) {
       }
     }
 
-    /* 3. Automatic fallback to scanning PDFs if data/${month}.json is missing */
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/pdfs/${month}`;
-    const resp = await fetch(apiUrl); if (!resp.ok) throw new Error("এই মাসের রিপোর্ট পাওয়া যায়নি");
-    const filesData = await resp.json();
-    const pdfFiles = filesData.filter(f => f.type === "file" && f.name.toLowerCase().endsWith('.pdf')).map(f => ({ name: f.name, url: f.download_url }));
-    if (pdfFiles.length === 0) throw new Error("এই মাসে কোনো রিপোর্ট নেই");
-
-    const loadedPdfs = [];
-    for (const file of pdfFiles) {
-      const pdf = await pdfjsLib.getDocument({ url: file.url, disableAutoFetch: true, rangeChunkSize: 65536 }).promise;
-      loadedPdfs.push({ file, pdf });
-    }
-    let totalPages = 0; loadedPdfs.forEach(p => { totalPages += p.pdf.numPages; });
-    const employees = [];
-    let processedPages = 0;
-    for (const { file, pdf } of loadedPdfs) {
-      const numPages = pdf.numPages;
-      const CONCURRENCY = 4;
-      let nextPage = 1;
-      while (nextPage <= numPages) {
-        const batch = [];
-        for (let i = 0; i < CONCURRENCY && nextPage + i <= numPages; i++) {
-          batch.push(processPdfPageForIndex(pdf, nextPage + i, file.name, file.url));
-        }
-        nextPage += batch.length;
-        const results = await Promise.all(batch);
-        for (const r of results) {
-          if (r && r.valid && r.isRppf !== false) {
-            const existingIdx = employees.findIndex(e => e.id === r.id);
-            if (existingIdx === -1) employees.push(r);
-            else {
-              const winner = pickBestEmployee(employees[existingIdx], r);
-              if (winner === r) employees[existingIdx] = r;
-            }
-          }
-        }
-        processedPages += results.length;
-        const percent = Math.min(98, Math.floor((processedPages / Math.max(1, totalPages)) * 100));
-        fill.style.width = percent + "%";
-        counter.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-        hint.innerText = "তথ্য যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-        await new Promise(res => setTimeout(res, 10));
-      }
-      try { await pdf.destroy(); } catch (e) {}
-    }
-
-    const result = buildLeaderboardPayloadFromList(month, employees);
-    setLeaderboardCache(month, result);
-    currentLeaderboardResult = result;
-    fill.style.width = "100%";
-    renderLeaderboardResult(result);
-    document.getElementById('lbScanCard').style.display = "none";
-    document.getElementById('lbResultCard').style.display = "block";
-    isScanning = false;
+    throw new Error(`${month} মাসের ডাটা সার্ভারে পাওয়া যায়নি।`);
   } catch (e) {
     console.error(e);
-    hint.innerText = "সমস্যা হয়েছে: " + e.message;
+    hint.innerText = e.message;
     isScanning = false;
     setTimeout(() => {
       document.getElementById('lbScanCard').style.display = "none";
       document.getElementById('lbInitialCard').style.display = "block";
-    }, 1500);
-  }
-}
-
-async function processPdfPageForIndex(pdf, pageNum, fileName = "", fileUrl = "") {
-  try {
-    const page = await pdf.getPage(pageNum);
-    const tc = await page.getTextContent();
-    const items = tc.items.map(i => i.str);
-    const text = items.join(" ");
-    const upper = text.toUpperCase();
-    const idMatch = upper.match(/\b(CF|RF|CL)\d{3,5}\b/);
-    if (!idMatch) return { valid: false, id: null };
-    const id = idMatch[0];
-    const isRppf = isRppfText(text);
-    const cleanText = upper.replace(/\s+/g, " ");
-    if (!/TOTAL\s*HOUR/i.test(cleanText)) return { valid: false, id };
-    const nameMatch = text.match(/NAME\s*:?\s*(.+?)\s+(?=LOCATION|DEPARTMENT|DESIGNATION|COMPANY|FACILITY|GRADE|DIVISION|$)/i);
-    const name = nameMatch ? nameMatch[1].replace(/MR\.|MRS\.|MS\./gi, '').trim().substring(0, 45) : "";
-    const gm = upper.match(/\bM\d{2}\s+JUNIOR\s+OFFICER\s+[A-F]\b/);
-    const gradeText = gm ? gm[0] : "";
-    const detection = detectCategory(gradeText, id);
-    if (!detection.valid) return { valid: false, id };
-
-    const parsed = parseText(text);
-    const r = RATE_TABLE[detection.category] || RATE_TABLE.JO;
-    const otAmount = Number((parsed.otHours * r.otRate).toFixed(2));
-    const holidayAmount = Number((r.holidayType === "hourly" ? parsed.holidayCount * r.holidayHours * r.otRate : parsed.holidayCount * r.holidayFlat).toFixed(2));
-    const nightAmount = Number((parsed.nightCount * r.nightRate).toFixed(2));
-    const totalEarned = Number((otAmount + holidayAmount + nightAmount).toFixed(2));
-    const area = getAreaForId(id, isRppf);
-
-    return {
-      valid: true,
-      id,
-      name,
-      grade: gradeText,
-      category: detection.category,
-      area,
-      isRppf,
-      totalDuty: parsed.totalDuty,
-      otHours: parsed.otHours,
-      holidayCount: parsed.holidayCount,
-      nightCount: parsed.nightCount,
-      regularDaysCount: parsed.regularDaysCount,
-      plainDaysCount: parsed.plainDaysCount,
-      holidayDays: parsed.holidayDays,
-      nightDays: parsed.nightDays,
-      punchProblems: parsed.punchProblems,
-      otAmount,
-      holidayAmount,
-      nightAmount,
-      totalEarned,
-      fileName,
-      fileUrl,
-      pageNum
-    };
-  } catch (e) {
-    return { valid: false, id: null };
+    }, 1200);
   }
 }
 
@@ -3991,7 +3992,10 @@ function buildRankItemHTML(e, index, type, isMine) {
   let valueStr = "", metaStr = "";
   const pCount = getPunchProblemCount(e);
   const punchTag = pCount > 0 ? ` • পাঞ্চ সমস্যা: ${bn(pCount)}` : '';
-  const commonMeta = `OT: ${e.otHours} | হলিডে: ${e.holidayCount} | নাইট: ${e.nightCount}${punchTag}`;
+  const isMulti = currentLbTimeMode !== 'monthly' && (e.monthsCount || 1) >= 1 && e.avgOt !== undefined;
+  const commonMeta = isMulti
+    ? `Total: Duty ${e.totalDuty}h, OT ${e.otHours}h, Hol ${e.holidayCount}, Night ${e.nightCount} • গড়/মাস: ডিউটি ${e.avgDuty}h, ওটি ${e.avgOt}h, নাইট ${e.avgNight}`
+    : `OT: ${e.otHours} | হলিডে: ${e.holidayCount} | নাইট: ${e.nightCount}${punchTag}`;
   if (type === 'duty') { valueStr = `${e.totalDuty} ঘণ্টা`; metaStr = commonMeta; }
   else if (type === 'ot') { valueStr = `${e.otHours} ঘণ্টা`; metaStr = commonMeta; }
   else if (type === 'earned') { valueStr = `৳ ${Number(e.totalEarned || 0).toFixed(2)}`; metaStr = commonMeta; }
@@ -4194,21 +4198,10 @@ function updateAreaFilterCount() {
 }
 
 function updateAreaHint() {
-  const hint = document.getElementById('areaFilterHint');
   const heroLabel = document.getElementById('lbHeroAreaLabel');
-  if (!hint || !currentLeaderboardResult) return;
+  if (!currentLeaderboardResult || !heroLabel) return;
   const area = document.getElementById('areaFilter')?.value || 'all';
-  const myArea = getMyId() ? getAreaForId(getMyId(), true) : null;
-  if (area === 'all') {
-    if (hint) hint.innerHTML = `টিপস: উপরে এরিয়া বদলে অন্য সেকশনের সাথে <strong>তুলনা করুন</strong>`;
-    if (heroLabel) heroLabel.textContent = 'সব এরিয়া — সর্বোচ্চ Duty Hours';
-  } else if (area === myArea) {
-    if (hint) hint.innerHTML = `এটি <strong>আপনার এরিয়া</strong> — ${esc(area)}`;
-    if (heroLabel) heroLabel.textContent = `সর্বোচ্চ Duty Hours — ${area}`;
-  } else {
-    if (hint) hint.innerHTML = `আপনি এখন <strong>${esc(area)}</strong>-এর তালিকা দেখছেন`;
-    if (heroLabel) heroLabel.textContent = `সর্বোচ্চ Duty Hours — ${area}`;
-  }
+  heroLabel.textContent = area === 'all' ? 'সব এরিয়া — সর্বোচ্চ Duty Hours' : `সর্বোচ্চ Duty Hours — ${area}`;
 }
 
 function openLbFullList(type) {
@@ -4289,58 +4282,21 @@ async function viewEmployeeFromLeaderboard(empId) {
   setTimeout(() => { findReport(); }, 100);
 }
 
-async function extractSinglePagePdf(pdfUrl, pageNumber) {
-  const bytes = await fetch(pdfUrl).then(r => r.arrayBuffer());
-  const src = await PDFLib.PDFDocument.load(bytes);
-  const out = await PDFLib.PDFDocument.create();
-  const [pg] = await out.copyPages(src, [pageNumber - 1]);
-  out.addPage(pg);
-  const outBytes = await out.save();
-  return URL.createObjectURL(new Blob([outBytes], { type: 'application/pdf' }));
-}
-function renderPageHD(page, targetCanvas, divider) {
-  const ctx = targetCanvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 2;
-  const viewport = page.getViewport({ scale: 2.5 });
-  targetCanvas.width = Math.floor(viewport.width * dpr);
-  targetCanvas.height = Math.floor(viewport.height * dpr);
-  targetCanvas.style.width = Math.floor(viewport.width / divider) + "px";
-  targetCanvas.style.height = "auto";
-  ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-  const transform = dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null;
-  page.render({ canvasContext: ctx, transform, viewport });
-}
-async function openModal() {
-  if (!matchedPdfPage) {
-    showToast('PDF লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...', 'info');
-    const ok = await ensureLazyPdfLoaded();
-    if (!ok || !matchedPdfPage) return;
-  }
-  const modal = document.getElementById('pdfModal');
-  const mc = document.getElementById('modal-canvas');
-  mc.width = 0; mc.height = 0;
-  modal.style.display = "block"; document.body.style.overflow = "hidden"; document.body.style.position = 'fixed'; document.body.style.width = '100%';
-  const divider = window.innerWidth < 768 ? 1.15 : 1.0;
-  renderPageHD(matchedPdfPage, mc, divider);
-}
-function closeModal() {
-  const modal = document.getElementById('pdfModal');
-  if (modal.style.display === "block") {
-    modal.style.display = "none"; document.body.style.overflow = ''; document.body.style.position = ''; document.body.style.width = '';
-    const mc = document.getElementById('modal-canvas'); mc.width = 0; mc.height = 0;
-  }
-}
-function modalBackdropClick(e) { if (e.target.id === "pdfModal") closeModal(); }
-
 function resetAll() {
   document.body.classList.remove('has-result');
-  ['viewingContextBanner','step2','step3','step4','step5','step6','step7','payslipCard'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = "none"; el.classList.remove('show'); } });
-  ['step2Body','step4Body','step5Body','step6Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
+  ['viewingContextBanner','monthNavBar','step3','step4','step5','step7','payslipCard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = "none"; el.classList.remove('show'); }
+  });
+  ['step4Body','step5Body'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('show'); });
   document.querySelectorAll('.collapse-header').forEach(h => h.classList.remove('expanded'));
-  document.getElementById('status').innerText = ""; document.getElementById('progress').style.display = "none";
+  document.getElementById('status').innerText = "";
+  document.getElementById('progress').style.display = "none";
   document.getElementById('employeeId').value = '';
   toggleClearIdBtn();
-  document.getElementById('inpOtHours').value = 0; document.getElementById('inpHoliday').value = 0; document.getElementById('inpNight').value = 0;
+  document.getElementById('inpOtHours').value = 0;
+  document.getElementById('inpHoliday').value = 0;
+  document.getElementById('inpNight').value = 0;
   document.getElementById('compareId').value = "";
   document.getElementById('compareResult').style.display = "none";
   document.getElementById('compareInputArea').style.display = "block";
@@ -4349,8 +4305,7 @@ function resetAll() {
   document.getElementById('backToLbBtn').style.display = "none";
   const greetBox = document.getElementById('userGreeting');
   if (greetBox) greetBox.style.display = "none";
-  currentPdf = null; currentFileUrl = null; currentPageNum = 1; matchedPdfPage = null; currentResult = null;
-  pendingPdfTarget = null; isPdfRenderedForCurrent = false;
+  currentResult = null;
   document.getElementById('searchFormCard').style.display = "block";
   document.getElementById('welcomeBanner')?.classList.remove('hidden-compact');
   document.getElementById('quickActionsGrid')?.classList.remove('hidden-compact');
@@ -4470,9 +4425,22 @@ function initAdminPage() {
 }
 
 function switchAdminTab(tab) {
-  const map = { areas: ['admTabBtnAreas', 'admPaneAreas'], pdf: ['admTabBtnPdf', 'admPanePdf'], notices: ['admTabBtnNotices', 'admPaneNotices'], setup: ['admTabBtnSetup', 'admPaneSetup'] };
-  Object.keys(map).forEach(k => { const [btnId, paneId] = map[k]; document.getElementById(btnId)?.classList.toggle('active', k === tab); document.getElementById(paneId)?.classList.toggle('active', k === tab); });
-  if (tab === 'pdf') adminCheckMonthData();
+  const map = {
+    areas: ['admTabBtnAreas', 'admPaneAreas'],
+    rates: ['admTabBtnRates', 'admPaneRates'],
+    data: ['admTabBtnData', 'admPaneData'],
+    team: ['admTabBtnTeam', 'admPaneTeam'],
+    notices: ['admTabBtnNotices', 'admPaneNotices'],
+    setup: ['admTabBtnSetup', 'admPaneSetup']
+  };
+  Object.keys(map).forEach(k => {
+    const [btnId, paneId] = map[k];
+    document.getElementById(btnId)?.classList.toggle('active', k === tab);
+    document.getElementById(paneId)?.classList.toggle('active', k === tab);
+  });
+  if (tab === 'rates') adminRenderDesigRates();
+  if (tab === 'data') adminCheckMonthData();
+  if (tab === 'team') renderAdminTeamManager();
   if (tab === 'notices') renderAdminNoticesList();
 }
 function onAdminAreaChange() {
@@ -4516,12 +4484,13 @@ function adminRemoveSubsectionAt(i) {
   const list = AREA_SUBS[area] || [];
   const name = list[i];
   if (name === undefined) return;
-  if (!confirm(`"${name}" সাব-সেকশন মুছবেন? এর কর্মীরা এরিয়াতেই থাকবে, শুধু সাব-সেকশন খালি হবে।`)) return;
-  list.splice(i, 1);
-  if (!list.length) delete AREA_SUBS[area];
-  pruneAreaMeta(); saveAreaCache();
-  updateAdminAreaStats(); renderAdminAreaPreview();
-  showToast(`${name} মুছে ফেলা হয়েছে`, 'info');
+  openConfirmModal(`"${name}" সাব-সেকশন মুছবেন? এর কর্মীরা এরিয়াতেই থাকবে, শুধু সাব-সেকশন খালি হবে।`, () => {
+    list.splice(i, 1);
+    if (!list.length) delete AREA_SUBS[area];
+    pruneAreaMeta(); saveAreaCache();
+    updateAdminAreaStats(); renderAdminAreaPreview();
+    showToast(`${name} মুছে ফেলা হয়েছে`, 'info');
+  });
 }
 function updateAdminAreaStats() {
   pruneAreaMeta();
@@ -4606,6 +4575,7 @@ function handleAdminAreaFileSelect(event) {
         Object.assign(AREA_MAP, parsed.areas);
         if (parsed.details && typeof parsed.details === 'object') Object.assign(AREA_DETAILS, parsed.details);
         if (parsed.designationRates && typeof parsed.designationRates === 'object') Object.assign(DESIG_RATES, parsed.designationRates);
+        if (parsed.rateTable && typeof parsed.rateTable === 'object') Object.assign(RATE_TABLE, parsed.rateTable);
         if (parsed.subsections && typeof parsed.subsections === 'object') Object.keys(parsed.subsections).forEach(a => { AREA_SUBS[a] = [...new Set([...(AREA_SUBS[a] || []), ...(parsed.subsections[a] || [])])]; });
         saveAreaCache();
         updateAdminAreaStats(); renderAdminAreaPreview();
@@ -4730,13 +4700,29 @@ function adminAddExtraSelected() {
   showToast(`${targetArea}-এ ${bn(ids.length)} জন ${EMP_TYPE_LABELS[cat]} যোগ হয়েছে (সার্ভারে সেভ করতে ভুলবেন না)`, 'success');
 }
 
-/* ---- ডেজিগনেশন → রেট ক্যাটাগরি (admin) ---- */
+/* ---- রেট ও ওভারটাইম প্যাকেজ ম্যানেজার (Rate-Centric Buckets + 1-Click Package Editor) ---- */
 function admRateLabel(c) {
   const r = RATE_TABLE[c]; if (!r) return c;
-  return r.noRate ? 'Unspecified — রেট নেই' : `${c === 'CF' ? 'CF' : c === 'JO' ? 'JO' : 'JO A/B'} — ওটি ৳${r.otRate}/ঘণ্টা`;
+  return r.noRate ? 'Unspecified (রেটবিহীন)' : `৳${r.otRate}/ঘণ্টা (${c})`;
 }
+
 function adminDesigStats() {
   const m = new Map();
+  const defaults = [
+    { name: 'Contractual (CF) — All Contracts', grade: 'Helper', id: 'CF0001' },
+    { name: 'Helper', grade: 'Helper', id: 'CF0002' },
+    { name: 'Junior Officer F', grade: 'Junior Officer F', id: 'RF0001' },
+    { name: 'Junior Officer E', grade: 'Junior Officer E', id: 'RF0002' },
+    { name: 'Junior Officer D', grade: 'Junior Officer D', id: 'RF0003' },
+    { name: 'Junior Officer C', grade: 'Junior Officer C', id: 'RF0004' },
+    { name: 'Junior Officer B', grade: 'Junior Officer B', id: 'RF0005' },
+    { name: 'Junior Officer A', grade: 'Junior Officer A', id: 'RF0006' },
+    { name: 'Casual', grade: 'Casual', id: '100001' }
+  ];
+  defaults.forEach(d => {
+    const k = desigKey(d.grade);
+    if (!m.has(k)) m.set(k, { key: k, name: d.grade, count: 0, sample: { id: d.id, grade: d.grade } });
+  });
   _admExtraList.forEach(e => {
     if (e.isRppf === false) return;
     const g = String(e.grade || '').replace(/\s+/g, ' ').trim();
@@ -4747,37 +4733,163 @@ function adminDesigStats() {
   });
   return [...m.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
+
+function getEffectiveDesigRateBucket(d) {
+  const cur = DESIG_RATES[d.key];
+  if (cur && RATE_TABLE[cur]) return cur;
+  return getDefaultRateCat(d.sample);
+}
+
+function selectAdminRateBucket(bucketKey) {
+  if (!RATE_TABLE[bucketKey]) bucketKey = 'CF';
+  activeAdminRateBucket = bucketKey;
+  adminRenderDesigRates();
+}
+
 function adminRenderDesigRates() {
-  const box = document.getElementById('admDesigRateList');
-  if (!box) return;
-  const list = adminDesigStats();
-  if (!list.length) { box.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px;">শেষ আপলোড করা মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।</div>'; return; }
-  const cats = ['CF', 'JO', 'JO_B', 'UNSPEC'];
-  box.innerHTML = list.map(d => {
-    const def = getDefaultRateCat(d.sample);
-    const cur = DESIG_RATES[d.key] && RATE_TABLE[DESIG_RATES[d.key]] ? DESIG_RATES[d.key] : '';
-    const eff = cur || def;
-    return `<div class="xrow" style="cursor:default;flex-wrap:wrap;" data-dkey="${esc(d.key)}">
-      <span style="flex:1;min-width:150px;"><span style="display:block;font-size:13.5px;font-weight:700;">${esc(d.name)}</span><span style="display:block;font-size:12px;color:var(--muted);">${bn(d.count)} জন • এখন: <b class="admEff">${esc(admRateLabel(eff))}</b></span></span>
-      <select data-dkey="${esc(d.key)}" onchange="adminSetDesigRate(this.dataset.dkey, this.value)" style="width:auto;min-width:170px;margin:0;min-height:38px;font-size:13px;">
-        <option value="" ${cur === '' ? 'selected' : ''}>Auto (${esc(admRateLabel(def))})</option>
-        ${cats.map(c => `<option value="${c}" ${cur === c ? 'selected' : ''}>${esc(admRateLabel(c))}</option>`).join('')}
-      </select></div>`;
+  const tabsBox = document.getElementById('adminRateBucketTabs');
+  const pkgWrap = document.getElementById('adminRatePkgEditorWrap');
+  const listBox = document.getElementById('admDesigRateList');
+  if (!tabsBox || !listBox) return;
+
+  if (!RATE_TABLE[activeAdminRateBucket]) activeAdminRateBucket = 'CF';
+  const allDesigs = adminDesigStats();
+  const bucketKeys = Object.keys(RATE_TABLE);
+
+  tabsBox.innerHTML = bucketKeys.map(k => {
+    const r = RATE_TABLE[k];
+    const assignedCount = allDesigs.filter(d => getEffectiveDesigRateBucket(d) === k).length;
+    const titleTxt = r.noRate ? `Unspecified (${bn(assignedCount)})` : `৳${bn(r.otRate)}/ঘণ্টা • ${k} (${bn(assignedCount)})`;
+    return `<button type="button" class="rate-bucket-tab ${k === activeAdminRateBucket ? 'active' : ''}" onclick="selectAdminRateBucket('${esc(k)}')">${titleTxt}</button>`;
+  }).join('');
+
+  const curRate = RATE_TABLE[activeAdminRateBucket];
+  if (pkgWrap) {
+    if (curRate && !curRate.noRate) {
+      pkgWrap.style.display = 'block';
+      const otInp = document.getElementById('pkgOtRateInp');
+      const nightInp = document.getElementById('pkgNightRateInp');
+      const holSel = document.getElementById('pkgHolTypeSel');
+      const holValInp = document.getElementById('pkgHolValInp');
+      const holValLbl = document.getElementById('pkgHolValLbl');
+      if (otInp) otInp.value = curRate.otRate || 0;
+      if (nightInp) nightInp.value = curRate.nightRate || 0;
+      if (holSel) holSel.value = curRate.holidayType || 'flat';
+      if (holValLbl) holValLbl.textContent = (curRate.holidayType === 'hourly') ? 'হলিডে ঘণ্টা (× ওটি রেট)' : 'হলিডে ফিক্সড টাকা (৳)';
+      if (holValInp) holValInp.value = (curRate.holidayType === 'hourly') ? (curRate.holidayHours || 8) : (curRate.holidayFlat || 300);
+    } else {
+      pkgWrap.style.display = 'none';
+    }
+  }
+
+  const titleEl = document.getElementById('adminRateBucketDesigTitle');
+  if (titleEl) {
+    titleEl.textContent = curRate?.noRate
+      ? 'Unspecified (শুধু ঘণ্টা ও দিন দেখাবে) — ডেজিগনেশন সিলেক্ট করুন:'
+      : `৳${curRate.otRate}/ঘণ্টা (${curRate.name || activeAdminRateBucket}) — যেসব ডেজিগনেশন/কন্ট্রাক্টস এই রেটে হিসাব হবে:`;
+  }
+
+  listBox.innerHTML = allDesigs.map(d => {
+    const eff = getEffectiveDesigRateBucket(d);
+    const isChecked = (eff === activeAdminRateBucket);
+    const otherR = RATE_TABLE[eff];
+    const otherBadge = !isChecked ? `<span class="admin-tag">${otherR?.noRate ? 'Unspecified' : '৳' + (otherR?.otRate || 0)}</span>` : `<span class="admin-tag" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border);">সক্রিয়</span>`;
+    return `<div class="desig-check-item ${isChecked ? 'checked' : ''}" data-dkey="${esc(d.key)}" onclick="toggleDesigInActiveBucket(this.dataset.dkey)">
+      <span class="xbox" style="width:18px;height:18px;font-size:12px;${isChecked ? 'background:var(--brand);border-color:var(--brand);' : ''}">${isChecked ? '✓' : ''}</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.name)} ${d.count ? `(${bn(d.count)})` : ''}</span>
+      ${otherBadge}
+    </div>`;
   }).join('');
 }
-function adminSetDesigRate(key, val) {
-  if (!val) delete DESIG_RATES[key]; else DESIG_RATES[key] = val;
+
+function onAdminPkgFieldChange() {
+  const curRate = RATE_TABLE[activeAdminRateBucket];
+  if (!curRate || curRate.noRate) return;
+  const otVal = parseFloat(document.getElementById('pkgOtRateInp')?.value) || 0;
+  const nightVal = parseFloat(document.getElementById('pkgNightRateInp')?.value) || 0;
+  const holType = document.getElementById('pkgHolTypeSel')?.value || 'flat';
+  const holVal = parseFloat(document.getElementById('pkgHolValInp')?.value) || 0;
+  curRate.otRate = otVal;
+  curRate.nightRate = nightVal;
+  curRate.holidayType = holType;
+  if (holType === 'hourly') curRate.holidayHours = holVal;
+  else curRate.holidayFlat = holVal;
+  const holValLbl = document.getElementById('pkgHolValLbl');
+  if (holValLbl) holValLbl.textContent = (holType === 'hourly') ? 'হলিডে ঘণ্টা (× ওটি রেট)' : 'হলিডে ফিক্সড টাকা (৳)';
   saveAreaCache();
-  try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_')) localStorage.removeItem(k); }); } catch (e) {}
+  syncRateDropdownOptions();
   reapplyTypeOverrides();
-  const row = document.querySelector(`#admDesigRateList .xrow[data-dkey="${(window.CSS && CSS.escape) ? CSS.escape(key) : key}"]`);
-  const sample = (adminDesigStats().find(d => d.key === key) || {}).sample;
-  if (row && sample) { const eff = DESIG_RATES[key] || getDefaultRateCat(sample); const b = row.querySelector('.admEff'); if (b) b.textContent = admRateLabel(eff); }
-  showToast('রেট ক্যাটাগরি বদলেছে (সার্ভারে সেভ করতে ভুলবেন না)', 'success');
+}
+
+function toggleDesigInActiveBucket(dkey) {
+  if (!dkey) return;
+  const allDesigs = adminDesigStats();
+  const item = allDesigs.find(x => x.key === dkey);
+  const currentBucket = item ? getEffectiveDesigRateBucket(item) : '';
+  if (currentBucket === activeAdminRateBucket) {
+    DESIG_RATES[dkey] = 'UNSPEC';
+  } else {
+    DESIG_RATES[dkey] = activeAdminRateBucket;
+  }
+  saveAreaCache();
+  reapplyTypeOverrides();
+  adminRenderDesigRates();
+}
+
+function adminBucketSelectAllDesigs(selectAll) {
+  const allDesigs = adminDesigStats();
+  allDesigs.forEach(d => {
+    if (selectAll) {
+      DESIG_RATES[d.key] = activeAdminRateBucket;
+    } else if (getEffectiveDesigRateBucket(d) === activeAdminRateBucket) {
+      DESIG_RATES[d.key] = 'UNSPEC';
+    }
+  });
+  saveAreaCache();
+  reapplyTypeOverrides();
+  adminRenderDesigRates();
+  showToast(selectAll ? 'সব ডেজিগনেশন এই রেটে যুক্ত হয়েছে' : 'এই রেটের সব ডেজিগনেশন আনসিলেক্ট করা হয়েছে', 'info');
+}
+
+function adminCreateNewRateBucket() {
+  const name = (document.getElementById('newRateNameInp')?.value || '').trim();
+  const otRate = parseFloat(document.getElementById('newRateOtInp')?.value) || 0;
+  const nightRate = parseFloat(document.getElementById('newRateNightInp')?.value) || 0;
+  const holFlat = parseFloat(document.getElementById('newRateHolInp')?.value) || 0;
+  if (!otRate || otRate <= 0) {
+    showToast('সঠিক ওটি ঘণ্টা রেট দিন', 'warn');
+    return;
+  }
+  const key = 'R_' + Math.round(otRate);
+  RATE_TABLE[key] = {
+    otRate,
+    nightRate,
+    holidayType: 'flat',
+    holidayHours: 8,
+    holidayFlat: holFlat,
+    name: name || `৳${otRate}/ঘণ্টা প্যাকেজ`
+  };
+  activeAdminRateBucket = key;
+  saveAreaCache();
+  syncRateDropdownOptions();
+  reapplyTypeOverrides();
+  adminRenderDesigRates();
+  showToast(`৳${otRate}/ঘণ্টা রেট প্যাকেজ তৈরি হয়েছে`, 'success');
+}
+
+async function adminSaveRatesAndPush() {
+  onAdminPkgFieldChange();
+  await adminPushAreasToGithub();
 }
 
 function adminDownloadAreasJson() {
-  const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES }, null, 2);
+  const jsonStr = JSON.stringify({
+    areas: AREA_MAP,
+    details: AREA_DETAILS,
+    subsections: AREA_SUBS,
+    designationRates: DESIG_RATES,
+    rateTable: RATE_TABLE
+  }, null, 2);
   const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -4854,7 +4966,7 @@ async function adminPushAreasToGithub() {
   if (btn) btn.disabled = true;
   if (statusEl) { statusEl.style.color = 'var(--brand-text)'; statusEl.textContent = 'RPPF Cloud Server-এ areas.json সেভ হচ্ছে...'; }
   try {
-    const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES }, null, 2);
+    const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2);
     await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Admin Panel`);
     try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_') || k.startsWith('renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
     if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'সফলভাবে RPPF Cloud Server-এ areas.json আপডেট হয়েছে।'; }
@@ -5114,10 +5226,357 @@ async function adminCheckMonthData() {
     const data = await fetchJsonResource(`data/${monthFolder}.json`);
     const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : []);
     const when = data && data.updatedAt ? new Date(data.updatedAt).toLocaleString('bn-BD') : '—';
-    box.innerHTML = `<strong>data/${esc(monthFolder)}.json</strong><br>কর্মী: <b>${list.length}</b> জন<br>সর্বশেষ আপডেট: ${esc(when)}`;
+    box.innerHTML = `<div class="admin-file-item">
+      <div>
+        <strong>data/${esc(monthFolder)}.json</strong>
+        <div style="font-size:12px;color:var(--muted);">আপডেট: ${esc(when)}</div>
+      </div>
+      <div class="admin-file-actions">
+        <button type="button" class="btn-secondary" onclick="document.getElementById('adminExcelFileInput')?.click()">রিপ্লেস</button>
+        <button type="button" class="btn-secondary danger-btn" onclick="adminConfirmDeleteMonthData('${esc(monthFolder)}')">মুছুন</button>
+      </div>
+    </div>`;
   } catch (e) {
     box.innerHTML = `<span style="color:var(--muted);">এই মাসের কোনো ডাটা এখনো সার্ভারে নেই।</span>`;
   }
+}
+
+async function adminReoptimizeMonthData() {
+  const y = document.getElementById('adminPdfYear')?.value;
+  const m = document.getElementById('adminPdfMonth')?.value;
+  if (!y || !m) return;
+  const monthFolder = `${y}-${m}`;
+  showToast(`${monthFolder} মাসের ডাটা রি-অপ্টিমাইজ করা হচ্ছে...`, 'info');
+  try {
+    await loadAreaMap();
+    const list = await fetchMonthPreIndexedData(monthFolder, true);
+    if (!list || !list.length) throw new Error('সার্ভারে এই মাসের ডাটা পাওয়া যায়নি। আগে Excel আপলোড করুন।');
+    list.forEach(e => { e.area = getAreaForId(e.id, e.isRppf !== false); applyTypeOverride(e); });
+    const payload = { month: monthFolder, updatedAt: new Date().toISOString(), employees: list };
+    await githubPutFile(`data/${monthFolder}.json`, utf8ToBase64(JSON.stringify(payload)), `Re-optimize ${monthFolder} data via RPPF Admin Panel`);
+    monthIndexMemoryCache[monthFolder] = list;
+    showToast(`${monthFolder} মাসের ডাটা নতুন রেট ও এরিয়া অনুযায়ী রি-অপ্টিমাইজ হয়েছে`, 'success');
+    adminCheckMonthData();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function adminConfirmDeleteMonthData(monthFolder) {
+  openConfirmModal(`আপনি কি নিশ্চিতভাবে "${monthFolder}" মাসের অপ্টিমাইজড ডাটা ফাইল (data/${monthFolder}.json) মুছে ফেলতে চান?`, async () => {
+    try {
+      await githubDeleteFile(`data/${monthFolder}.json`, null, `Delete data/${monthFolder}.json via RPPF Admin Panel`);
+      delete monthIndexMemoryCache[monthFolder];
+      try {
+        localStorage.removeItem(MONTH_DATA_CACHE_PREFIX + monthFolder);
+        localStorage.removeItem(LEADERBOARD_PREFIX + monthFolder);
+      } catch (e) {}
+      showToast(`${monthFolder} মাসের ডাটা মুছে ফেলা হয়েছে`, 'success');
+      adminCheckMonthData();
+    } catch (err) {
+      showToast(`ডিলিট করতে সমস্যা: ${err.message}`, 'error');
+    }
+  });
+}
+
+/* ============================================================
+   IN-PAGE CONFIRMATION MODAL & COMPLIANCE MODAL
+   ============================================================ */
+function openConfirmModal(message, onConfirm) {
+  pendingConfirmFn = onConfirm;
+  const msgEl = document.getElementById('confirmModalMsg');
+  const modal = document.getElementById('confirmActionModal');
+  if (msgEl) msgEl.textContent = message;
+  if (modal) modal.classList.add('open');
+}
+function closeConfirmModal() {
+  pendingConfirmFn = null;
+  document.getElementById('confirmActionModal')?.classList.remove('open');
+}
+function runConfirmedAction() {
+  const fn = pendingConfirmFn;
+  closeConfirmModal();
+  if (typeof fn === 'function') fn();
+}
+function openComplianceModal() {
+  document.getElementById('complianceModal')?.classList.add('open');
+}
+function closeComplianceModal() {
+  document.getElementById('complianceModal')?.classList.remove('open');
+}
+
+/* ============================================================
+   ERP TEAM MANAGER (ADMIN PANE 4) & SMART ERP SUPPORT ROUTING
+   ============================================================ */
+async function renderAdminTeamManager() {
+  const box = document.getElementById('adminTeamManagerList');
+  if (!box) return;
+  const list = await loadTeamData();
+  if (!list || list.length === 0) {
+    box.innerHTML = '<div style="color:var(--muted);font-size:13px;">কোনো ERP মেম্বার নেই।</div>';
+    return;
+  }
+  box.innerHTML = list.map((m, idx) => `<div class="admin-file-item">
+    <div style="flex:1;min-width:0;">
+      <div style="font-weight:800;color:var(--text);">${esc(m.name)} <span class="admin-tag">${esc(m.area || 'All')}</span></div>
+      <div style="font-size:12px;color:var(--muted);">${esc(m.designation || '')} • ID: ${esc(m.id || '')} • WA: ${esc(m.whatsapp || '')}</div>
+    </div>
+    <div class="admin-file-actions">
+      <button type="button" class="btn-secondary" onclick="adminEditTeamMember(${idx})">এডিট</button>
+      <button type="button" class="btn-secondary danger-btn" onclick="adminDeleteTeamMember(${idx})">মুছুন</button>
+    </div>
+  </div>`).join('');
+}
+
+function adminEditTeamMember(idx) {
+  if (!teamData || !teamData[idx]) return;
+  const m = teamData[idx];
+  document.getElementById('admTeamEditIdx').value = String(idx);
+  document.getElementById('admTeamName').value = m.name || '';
+  document.getElementById('admTeamDesig').value = m.designation || '';
+  document.getElementById('admTeamId').value = m.id || '';
+  document.getElementById('admTeamArea').value = m.area || 'All';
+  document.getElementById('admTeamWa').value = m.whatsapp || '';
+  const btn = document.getElementById('admTeamSaveBtn');
+  if (btn) btn.textContent = 'আপডেট ও সার্ভারে সেভ করুন';
+}
+
+function adminResetTeamForm() {
+  document.getElementById('admTeamEditIdx').value = '-1';
+  document.getElementById('admTeamName').value = '';
+  document.getElementById('admTeamDesig').value = '';
+  document.getElementById('admTeamId').value = '';
+  document.getElementById('admTeamArea').value = 'All';
+  document.getElementById('admTeamWa').value = '';
+  const btn = document.getElementById('admTeamSaveBtn');
+  if (btn) btn.textContent = 'ERP মেম্বার যোগ ও সেভ করুন';
+}
+
+async function adminSaveTeamMember() {
+  const name = (document.getElementById('admTeamName')?.value || '').trim();
+  const designation = (document.getElementById('admTeamDesig')?.value || '').trim();
+  const id = (document.getElementById('admTeamId')?.value || '').trim().toUpperCase();
+  const area = document.getElementById('admTeamArea')?.value || 'All';
+  const whatsapp = (document.getElementById('admTeamWa')?.value || '').replace(/[^0-9]/g, '');
+  if (!name || !whatsapp) {
+    showToast('ERP মেম্বারের নাম এবং WhatsApp নম্বর দিন', 'warn');
+    return;
+  }
+  const list = [...(await loadTeamData())];
+  const editIdx = parseInt(document.getElementById('admTeamEditIdx')?.value || '-1', 10);
+  const memberObj = {
+    name,
+    designation: designation || 'ERP Representative',
+    id: id || '—',
+    area,
+    whatsapp,
+    photo: 'https://checkot.github.io/icon.png'
+  };
+  if (editIdx >= 0 && editIdx < list.length) list[editIdx] = memberObj;
+  else list.push(memberObj);
+  teamData = list;
+  try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
+  adminResetTeamForm();
+  renderAdminTeamManager();
+  try {
+    await githubPutFile('team.json', utf8ToBase64(JSON.stringify({ team: teamData }, null, 2)), `Update team.json via RPPF Admin Panel`);
+    showToast('ERP টিম তালিকা সার্ভারে সেভ হয়েছে', 'success');
+  } catch (err) {
+    showToast('স্থানীয়ভাবে সেভ হয়েছে; সার্ভারে পুশ করতে Server Access Key সেট করুন', 'warn');
+  }
+}
+
+function adminDeleteTeamMember(idx) {
+  if (!teamData || !teamData[idx]) return;
+  const m = teamData[idx];
+  openConfirmModal(`আপনি কি নিশ্চিতভাবে ERP মেম্বার "${m.name}"-কে তালিকা থেকে মুছে ফেলতে চান?`, async () => {
+    teamData.splice(idx, 1);
+    try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
+    renderAdminTeamManager();
+    try {
+      await githubPutFile('team.json', utf8ToBase64(JSON.stringify({ team: teamData }, null, 2)), `Delete ERP member ${m.name}`);
+      showToast('ERP মেম্বার মুছে ফেলা হয়েছে', 'success');
+    } catch (err) {
+      showToast('স্থানীয়ভাবে মুছে ফেলা হয়েছে', 'info');
+    }
+  });
+}
+
+async function openErpSupportModal(customMsg, preferredArea) {
+  pendingErpMessage = customMsg || `আসসালামু আলাইকুম, RENATA Overtime App থেকে সহায়তা প্রয়োজন।`;
+  pendingErpArea = preferredArea || (currentSearchId ? getAreaForId(currentSearchId, true) : '');
+  const modal = document.getElementById('erpSupportModal');
+  const body = document.getElementById('erpModalListBody');
+  if (!modal || !body) return;
+  const list = await loadTeamData();
+  const sorted = [...(list || DEFAULT_FALLBACK_TEAM)].sort((a, b) => {
+    const aMatch = (a.area && pendingErpArea && a.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
+    const bMatch = (b.area && pendingErpArea && b.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
+    return aMatch - bMatch;
+  });
+  body.innerHTML = sorted.map((m, idx) => {
+    const isMatched = m.area && pendingErpArea && m.area.toLowerCase() === pendingErpArea.toLowerCase();
+    return `<div class="erp-select-item" onclick="sendErpWhatsAppToMember(${idx})">
+      <div>
+        <div style="font-weight:800;font-size:14px;color:var(--text);">${esc(m.name)} ${isMatched ? '<span class="admin-tag" style="background:var(--success-bg);color:var(--success);">আপনার এরিয়া</span>' : ''}</div>
+        <div style="font-size:12px;color:var(--muted);">${esc(m.designation || '')} • ${esc(m.area || 'All Areas')}</div>
+      </div>
+      <span class="team-wa" style="min-height:34px;padding:6px 12px;font-size:12.5px;">WhatsApp</span>
+    </div>`;
+  }).join('');
+  window._currentErpSortedList = sorted;
+  modal.classList.add('open');
+}
+
+function closeErpSupportModal() {
+  document.getElementById('erpSupportModal')?.classList.remove('open');
+}
+
+function sendErpWhatsAppToMember(idx) {
+  const list = window._currentErpSortedList || teamData || DEFAULT_FALLBACK_TEAM;
+  const m = list[idx] || list[0];
+  if (!m) return;
+  const url = erpWaLink(pendingErpMessage, m.whatsapp);
+  closeErpSupportModal();
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function openBulkPunchErpForward() {
+  if (!currentLeaderboardResult) {
+    showToast('আগে লিডারবোর্ডের তালিকা লোড করুন', 'warn');
+    return;
+  }
+  const f = currentLeaderboardResult.filtered;
+  const punchList = f ? f.sortedByPunch : (currentLeaderboardResult.sortedByPunch || []);
+  if (!punchList || punchList.length === 0) {
+    showToast('এই সেকশনে কোনো পাঞ্চ সমস্যা থাকা কর্মী নেই', 'info');
+    return;
+  }
+  const areaLabel = describeLbFilter();
+  const monthStr = currentLeaderboardResult.month || getCurrentMonth();
+  const lines = punchList.map((e, i) => {
+    const pDates = Array.isArray(e.punchProblems)
+      ? e.punchProblems.map(p => (typeof p === 'string' ? p : p.date)).join(', ')
+      : `${getPunchProblemCount(e)} দিন`;
+    return `${i + 1}. ${e.name || '—'} (${e.id}) — মিসিং: ${pDates}`;
+  });
+  const msg = `আসসালামু আলাইকুম,\n${areaLabel} সেকশনের ${monthStr} মাসের রিপোর্টে নিচের কর্মীদের In/Out পাঞ্চ মিসিং পাওয়া গেছে:\n\n${lines.join('\n')}\n\nঅনুগ্রহ করে যাচাই করবেন।`;
+  const areaOnly = document.getElementById('areaFilter')?.value || 'All';
+  openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
+}
+
+/* ============================================================
+   QUICK LANGUAGE SWITCHER (BN | EN) DICTIONARY ENGINE
+   ============================================================ */
+const APP_LANG_KEY = 'renata_app_lang_v1';
+const I18N_DICT = {
+  bn: {
+    navSearch: 'রিপোর্ট',
+    navLb: 'সেরা',
+    navHistory: 'হিস্ট্রি',
+    navNotices: 'নোটিশ',
+    navTeam: 'ERP টিম',
+    navSettings: 'সেটিংস',
+    navMore: 'আরও',
+    headerSub: 'ওভারটাইম রিপোর্ট ও হিসাব',
+    lblWhichMonth: 'কোন মাসের ওভারটাইম দেখবেন?',
+    lblYourId: 'আপনার আইডি নম্বর',
+    btnSeeOt: 'আমার ওভারটাইম দেখুন',
+    prevMonth: '< আগের মাস',
+    nextMonth: 'পরের মাস >',
+    payslipTitle: 'সব মিলিয়ে কত টাকা পাবেন?',
+    lblSalary: 'মাসিক বেতন (Regular Duty)',
+    rateChartBtn: 'রেট চার্ট',
+    gtLabel: 'ওভারটাইমে মোট পাবেন',
+    totalDays: 'মোট ডিউটি দিন',
+    compareHeader: 'অন্য সহকর্মীর সাথে মিলিয়ে দেখুন',
+    datesHeader: 'হলিডে ও নাইট ডিউটির তারিখ',
+    remarksHeader: 'আপনার রিপোর্ট ঠিক আছে কিনা',
+    resetBtn: 'আবার নতুন করে দেখুন',
+    noticeBoard: 'নোটিশ বোর্ড'
+  },
+  en: {
+    navSearch: 'Report',
+    navLb: 'Leaderboard',
+    navHistory: 'History',
+    navNotices: 'Notices',
+    navTeam: 'ERP Team',
+    navSettings: 'Settings',
+    navMore: 'More',
+    headerSub: 'Overtime Report & Calculator',
+    lblWhichMonth: 'Select Report Month',
+    lblYourId: 'Employee ID Number',
+    btnSeeOt: 'View Overtime Report',
+    prevMonth: '< Prev Month',
+    nextMonth: 'Next Month >',
+    payslipTitle: 'Estimated Total Payout (Salary + OT)',
+    lblSalary: 'Monthly Basic/Gross Salary (Regular Duty)',
+    rateChartBtn: 'Rate Chart',
+    gtLabel: 'Total Overtime Allowance',
+    totalDays: 'Total Duty Days',
+    compareHeader: 'Compare with a Colleague',
+    datesHeader: 'Holiday & Night Duty Dates',
+    remarksHeader: 'Report & Punch Verification Status',
+    resetBtn: 'Search Another Report',
+    noticeBoard: 'Notice Board'
+  }
+};
+
+function getAppLang() {
+  try { return localStorage.getItem(APP_LANG_KEY) === 'en' ? 'en' : 'bn'; } catch (e) { return 'bn'; }
+}
+
+function setLanguage(lang) {
+  const target = lang === 'en' ? 'en' : 'bn';
+  try { localStorage.setItem(APP_LANG_KEY, target); } catch (e) {}
+  applyLanguageUI();
+}
+
+function toggleLanguage() {
+  setLanguage(getAppLang() === 'bn' ? 'en' : 'bn');
+}
+
+function applyLanguageUI() {
+  const lang = getAppLang();
+  const d = I18N_DICT[lang] || I18N_DICT.bn;
+  document.documentElement.setAttribute('lang', lang);
+  ['topnavLangBtn', 'headerLangBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = lang === 'en' ? 'EN | বাংলা' : 'BN | EN';
+  });
+  document.getElementById('setLangBnBtn')?.classList.toggle('btn-primary', lang === 'bn');
+  document.getElementById('setLangEnBtn')?.classList.toggle('btn-primary', lang === 'en');
+
+  document.querySelectorAll('.topnav-item[data-nav="search"], .bn-item[data-nav="search"] span').forEach(el => { el.textContent = d.navSearch; });
+  document.querySelectorAll('.topnav-item[data-nav="leaderboard"], .bn-item[data-nav="leaderboard"] span').forEach(el => { el.textContent = d.navLb; });
+  document.querySelectorAll('.topnav-item[data-nav="history"]').forEach(el => { el.textContent = d.navHistory; });
+  document.querySelectorAll('.topnav-item[data-nav="notices"], .bn-item[data-nav="notices"] span:first-of-type').forEach(el => { el.textContent = d.navNotices; });
+  document.querySelectorAll('.topnav-item[data-nav="team"]').forEach(el => { el.textContent = d.navTeam; });
+  document.querySelectorAll('.topnav-item[data-nav="settings"]').forEach(el => { el.textContent = d.navSettings; });
+  document.querySelectorAll('.bn-item[data-nav="more"] span').forEach(el => { el.textContent = d.navMore; });
+
+  const hdrP = document.querySelector('#mainHeader p');
+  if (hdrP) hdrP.textContent = d.headerSub;
+  const mLbl = document.querySelector('label[for="monthSelect"]');
+  if (mLbl) mLbl.textContent = d.lblWhichMonth;
+  const sBtn = document.getElementById('searchBtn');
+  if (sBtn && getAppMode() !== 'incharge') sBtn.textContent = d.btnSeeOt;
+  const prevB = document.getElementById('prevMonthBtn');
+  const nextB = document.getElementById('nextMonthBtn');
+  if (prevB) prevB.textContent = d.prevMonth;
+  if (nextB) nextB.textContent = d.nextMonth;
+  const payH = document.querySelector('#payslipCard .card-h');
+  if (payH) payH.textContent = d.payslipTitle;
+  const salL = document.getElementById('lblSalaryInput');
+  if (salL) salL.textContent = d.lblSalary;
+  const gtL = document.getElementById('gtLabelText');
+  if (gtL && getReportViewContext(currentSearchId) === 'own') gtL.textContent = d.gtLabel;
+  const step7L = document.getElementById('step7LabelText');
+  if (step7L && getReportViewContext(currentSearchId) === 'own') step7L.textContent = d.remarksHeader;
+  const step4T = document.querySelector('#step4 .collapse-header .title');
+  if (step4T) step4T.textContent = d.compareHeader;
+  const step5T = document.querySelector('#step5 .collapse-header .title');
+  if (step5T) step5T.textContent = d.datesHeader;
 }
 
 async function renderAdminNoticesList() {
@@ -5150,15 +5609,17 @@ async function adminAddAndPushNotice() {
   } catch (err) { showToast(`নোটিশ অ্যাপে সেভ হয়েছে, তবে সার্ভারে আপলোডের জন্য Server Access Key সেট করুন`, 'warn'); }
 }
 async function adminDeleteNotice(noticeId) {
-  const list = (await loadNoticesData()).filter(n => n.id !== noticeId);
-  noticesData = list;
-  try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
-  renderAdminNoticesList(); renderNoticesHome();
-  try {
-    const jsonStr = JSON.stringify({ notices: noticesData }, null, 2);
-    await githubPutFile('notices.json', utf8ToBase64(jsonStr), `Delete notice ${noticeId}`);
-    showToast('নোটিশ মুছে ফেলা হয়েছে', 'success');
-  } catch (err) { showToast('স্থানীয়ভাবে নোটিশ মুছে ফেলা হয়েছে।', 'info'); }
+  openConfirmModal('আপনি কি নিশ্চিতভাবে এই নোটিশটি মুছে ফেলতে চান?', async () => {
+    const list = (await loadNoticesData()).filter(n => n.id !== noticeId);
+    noticesData = list;
+    try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
+    renderAdminNoticesList(); renderNoticesHome();
+    try {
+      const jsonStr = JSON.stringify({ notices: noticesData }, null, 2);
+      await githubPutFile('notices.json', utf8ToBase64(jsonStr), `Delete notice ${noticeId}`);
+      showToast('নোটিশ মুছে ফেলা হয়েছে', 'success');
+    } catch (err) { showToast('স্থানীয়ভাবে নোটিশ মুছে ফেলা হয়েছে।', 'info'); }
+  });
 }
 async function adminSaveAndTestGhToken() {
   const inp = document.getElementById('adminGhTokenInput');
@@ -5198,6 +5659,8 @@ initYearDropdown();
 setDefaultMonth();
 initLbTabs();
 initTheme();
+syncRateDropdownOptions();
+applyLanguageUI();
 initWelcomeBanner();
 renderRecentSearchChips();
 loadSavedSalary();
