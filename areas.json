@@ -336,6 +336,64 @@
     "CF8313": "Packing Hall",
     "CF8373": "Packing Hall",
     "CF8554": "Packing Hall",
-    "CF8598": "Packing Hall"
-  }
+    "CF8598": "Packing Hall",
+    "RF21062": "Overall",
+    "RF21283": "Overall",
+    "RF21291": "Overall",
+    "RF23234": "Overall",
+    "RF0364": "Overall",
+    "RF20716": "Overall",
+    "RF22690": "Overall",
+    "RF23810": "Overall",
+    "RF8941": "Overall",
+    "RF23849": "Overall",
+    "RF23848": "Overall"
+  },
+  "details": {
+    "RF21062": {
+      "t": "EXEC",
+      "g": "F"
+    },
+    "RF21283": {
+      "t": "EXEC",
+      "g": "F"
+    },
+    "RF21291": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF23234": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF0364": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF20716": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF22690": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF23810": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF8941": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF23849": {
+      "t": "EXEC",
+      "g": "M"
+    },
+    "RF23848": {
+      "t": "EXEC",
+      "g": "M"
+    }
+  },
+  "subsections": {}
 }
