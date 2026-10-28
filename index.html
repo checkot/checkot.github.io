@@ -5073,6 +5073,295 @@ body[data-page="search"] .wa-float {
     border-radius: 0 !important;
     box-shadow: none !important;
   }
+  /* Smart Desktop Middle Breakdown Column (hidden on mobile, shown on desktop) */
+  .icc-desktop-mid {
+    display: none;
+  }
+  .icc-head-mid {
+    display: none;
+  }
+  .icc-show-details-btn {
+    display: none;
+    width: auto;
+    min-height: 24px;
+    height: 24px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: var(--brand);
+    color: #FFFFFF;
+    border: 1px solid var(--brand);
+    font-size: 10.5px;
+    font-weight: 800;
+    margin-left: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .icc-row.show-details-open .icc-show-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  @media (min-width: 900px) {
+    #page-leaderboard.full-screen-drawer,
+    body.drawer-fullscreen-active #page-leaderboard.drawer-active {
+      background: var(--bg) !important;
+      padding: 16px 24px 36px 24px !important;
+    }
+    #page-leaderboard.full-screen-drawer #iccRankDrillView.active,
+    body.drawer-fullscreen-active #page-leaderboard #iccRankDrillView.active {
+      max-width: 960px !important;
+      margin: 0 auto !important;
+      min-height: auto !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow) !important;
+      overflow: hidden !important;
+    }
+    #iccRankDrillView .icc-topbar {
+      padding: 10px 28px;
+    }
+    /* Center & evenly spread top criteria navigation across the middle on Desktop */
+    #iccRankDrillView .icc-crit-strip {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      padding: 0 24px;
+    }
+    #iccRankDrillView .icc-crit-tab {
+      flex: 1 1 auto;
+      text-align: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    /* Center & spread month/period strip on Desktop */
+    #iccRankDrillView .icc-period-strip {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 24px;
+    }
+    #iccRankDrillView .icc-area-wrap {
+      padding: 8px 28px;
+    }
+    #iccRankDrillView .icc-mypos-banner {
+      padding: 6px 32px;
+      font-size: 12.5px;
+    }
+    /* 4-Column Smart Desktop Table Header & Row (Rank | Employee | Middle KPIs | Score) */
+    #iccRankDrillView .icc-table-head {
+      grid-template-columns: 42px minmax(180px, 1.15fr) minmax(220px, 1.35fr) minmax(110px, 0.6fr);
+      padding: 8px 32px;
+      font-size: 11.5px;
+      gap: 12px;
+    }
+    .icc-head-mid {
+      display: block;
+      text-align: center;
+    }
+    #iccRankDrillView .icc-row {
+      grid-template-columns: 42px minmax(180px, 1.15fr) minmax(220px, 1.35fr) minmax(110px, 0.6fr);
+      padding: 8px 32px;
+      min-height: 50px;
+      gap: 12px;
+    }
+    .icc-desktop-mid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .icc-mid-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-2);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .icc-mid-pill b {
+      color: var(--brand-text);
+      font-weight: 700;
+    }
+    #iccRankDrillView .icc-rank-col {
+      font-size: 14px;
+    }
+    #iccRankDrillView .icc-avatar {
+      width: 34px;
+      height: 34px;
+      font-size: 12px;
+    }
+    #iccRankDrillView .icc-emp-name {
+      font-size: 14px;
+    }
+    #iccRankDrillView .icc-emp-sub {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    #iccRankDrillView .icc-val-col {
+      padding-right: 6px;
+    }
+    #iccRankDrillView .icc-val-main {
+      font-size: 14.5px;
+    }
+    #iccRankDrillView .icc-val-sub {
+      font-size: 11.5px;
+      margin-top: 2px;
+    }
+    body.incharge-mode-active #iccRankDrillView .icc-row:hover .icc-show-details-btn {
+      display: inline-flex;
+    }
+  }
+
+  /* In-Charge / Manager Mode: Hide Money Calculations on Home & Style Full Employee Profile Card */
+  body.incharge-mode-active #payslipCard,
+  body.incharge-mode-active #step3 .grand-total-block,
+  body.incharge-mode-active #step3 .rate-line,
+  body.incharge-mode-active #step3 .bill-list,
+  body.incharge-mode-active #step3 details.adjust,
+  body.incharge-mode-active #step3 .card-head button {
+    display: none !important;
+  }
+  .inc-profile-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  body.incharge-mode-active.has-result .inc-profile-card {
+    display: block;
+  }
+  .inc-prof-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .inc-prof-title {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .inc-prof-meta {
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  .inc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 600px) {
+    .inc-kpi-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .inc-kpi-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 10px;
+  }
+  .inc-kpi-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .inc-kpi-val {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--brand-text);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .inc-kpi-sub {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 1px;
+    font-weight: 600;
+  }
+  .inc-ytd-banner {
+    background: linear-gradient(135deg, var(--indigo-soft) 0%, var(--brand-soft) 100%);
+    border: 1px solid var(--brand-soft-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    text-align: center;
+  }
+  .inc-ytd-val {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--indigo);
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+  .inc-ytd-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-2);
+  }
+  .inc-mw-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .inc-mw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .inc-mw-table th,
+  .inc-mw-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .inc-mw-table th {
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .inc-mw-table tr.active-month-row {
+    background: var(--brand-soft);
+    font-weight: 700;
+  }
+  .inc-mw-table tbody tr {
+    cursor: pointer;
+  }
+  .inc-mw-table tbody tr:hover {
+    background: var(--surface-2);
+  }
 
   /* Report Page Organized Header & Month Navigation Strip */
   #page-report .app-header {
@@ -5954,6 +6243,76 @@ body[data-page="search"] .wa-float {
 <button type="button" class="btn-secondary" onclick="sharePayslip()">Share</button>
 </div>
 </div>
+<div class="inc-profile-card" id="inchargeEmpProfileCard">
+<div class="inc-prof-header">
+<div>
+<div class="inc-prof-title" id="incProfNameTitle">Employee Profile</div>
+<div class="inc-prof-meta" id="incProfSubMeta">—</div>
+</div>
+<span class="badge" id="incProfAreaBadge">RPPF</span>
+</div>
+<div class="inc-kpi-grid">
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">Monthly Logged Duty</div>
+<div class="inc-kpi-val" id="incKpiDutyHrs">—</div>
+<div class="inc-kpi-sub" id="incKpiPresentDays">—</div>
+</div>
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">Average Duty Hour</div>
+<div class="inc-kpi-val" id="incKpiAvgDuty">—</div>
+<div class="inc-kpi-sub">Per Present Duty Day</div>
+</div>
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">Avg Punch In / Out</div>
+<div class="inc-kpi-val" id="incKpiAvgInOut">—</div>
+<div class="inc-kpi-sub" id="incKpiPunchStatus">—</div>
+</div>
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">Monthly OT Hours</div>
+<div class="inc-kpi-val" id="incKpiOtHrs">—</div>
+<div class="inc-kpi-sub" id="incKpiAvgOtDay">—</div>
+</div>
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">4:30 pm Regular Days</div>
+<div class="inc-kpi-val" id="incKpiPlainDays">—</div>
+<div class="inc-kpi-sub" id="incKpiRegDays">—</div>
+</div>
+<div class="inc-kpi-box">
+<div class="inc-kpi-lbl">Holiday &amp; Night</div>
+<div class="inc-kpi-val" id="incKpiHolNight">—</div>
+<div class="inc-kpi-sub">Month Shift Summary</div>
+</div>
+</div>
+<div class="inc-ytd-banner" id="incYtdSummaryBanner">
+<div><span class="inc-ytd-val" id="incYtdTotalOt">—</span><span class="inc-ytd-lbl" id="incYtdOtLbl">This Year Total OT</span></div>
+<div><span class="inc-ytd-val" id="incYtdAvgMonthlyOt">—</span><span class="inc-ytd-lbl">Avg OT / Month</span></div>
+<div><span class="inc-ytd-val" id="incYtdTotalDuty">—</span><span class="inc-ytd-lbl">This Year Total Duty</span></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;">
+<span style="font-size:12.5px;font-weight:800;color:var(--text);">Month-Wise Performance History (<span id="incMwYearLbl">2026</span>)</span>
+<span style="font-size:11px;color:var(--muted);">Tap any month to view</span>
+</div>
+<div class="inc-mw-table-wrap">
+<table class="inc-mw-table">
+<thead>
+<tr>
+<th style="text-align:left;">Month</th>
+<th>Days</th>
+<th>Duty Hrs</th>
+<th>OT Hrs</th>
+<th>Avg Duty/d</th>
+<th>Avg In–Out</th>
+<th>4:30pm</th>
+<th>Hol/Night</th>
+<th>Punch</th>
+</tr>
+</thead>
+<tbody id="incEmpMonthWiseTbody">
+<tr><td colspan="9" style="color:var(--muted);">Loading month-wise records...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="card calc-card" id="step3">
 <div class="card-head">
 <h3><span id="step3HeadingText">Your overtime</span> <span id="categoryBadge" class="badge">—</span></h3>
@@ -6143,7 +6502,9 @@ body[data-page="search"] .wa-float {
 <option value="current">Selected Month</option>
 <option value="3m">Last 3 Months Total</option>
 <option value="6m">Last 6 Months Total</option>
-<option value="alltime">All-Time 2026</option>
+<option value="ytd">This Year So Far (YTD)</option>
+<option value="1y">Last 1 Year (12 Months)</option>
+<option value="alltime">All-Time</option>
 </select>
 <select id="vsMonthOverrideSelect" onchange="onVsMonthOverrideChange()" aria-label="Comparison Month"></select>
 </div>
@@ -6366,6 +6727,7 @@ body[data-page="search"] .wa-float {
 <div class="icc-table-head">
 <span>Rank</span>
 <span>Employee</span>
+<span class="icc-head-mid">Work Summary (Duty • OT • Hol • Night • 4:30pm)</span>
 <span id="iccMetricColHeader" style="text-align:right;">Duty Hrs</span>
 </div>
 </div>
@@ -8309,6 +8671,7 @@ if (el) { el.classList.add('show'); el.style.display = 'block'; }
 });
 applyReportViewContext(parsedObj, detectObj);
 try { syncReportPageBanner(); } catch (e) {}
+try { if (typeof renderInchargeEmployeeProfile === 'function') renderInchargeEmployeeProfile(emp, month, searchId); } catch (e) { console.warn(e); }
 document.body.classList.add('has-result');
 const nc = document.getElementById('noticesCard');
 if (nc) nc.style.display = 'block';
@@ -8761,7 +9124,7 @@ let fastList = null;
 if (periodMode === 'current') {
 fastList = await fetchMonthPreIndexedData(month);
 } else {
-const mList = periodMode === '3m' ? getPreviousMonthStrings(month, 3) : periodMode === '6m' ? getPreviousMonthStrings(month, 6) : getAllTime2026Months(month);
+const mList = periodMode === '3m' ? getPreviousMonthStrings(month, 3) : periodMode === '6m' ? getPreviousMonthStrings(month, 6) : periodMode === 'ytd' ? getYearToDateMonths(month) : periodMode === '1y' ? getPreviousMonthStrings(month, 12) : getAllTime2026Months(month);
 const agg = await aggregateMultiMonthEmployees(mList);
 fastList = agg.merged;
 }
@@ -9133,6 +9496,8 @@ subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 if (currentLbTimeMode !== 'monthly') {
 const monthsToLoad = currentLbTimeMode === '3m' ? getPreviousMonthStrings(month, 3)
 : currentLbTimeMode === '6m' ? getPreviousMonthStrings(month, 6)
+: currentLbTimeMode === 'ytd' ? getYearToDateMonths(month)
+: currentLbTimeMode === '1y' ? getPreviousMonthStrings(month, 12)
 : getAllTime2026Months(month);
 const { merged } = await aggregateMultiMonthEmployees(monthsToLoad);
 if (merged && merged.length > 0) {
@@ -10051,6 +10416,16 @@ document.getElementById('iccRankDrillView')?.classList.remove('filters-scroll-hi
 setTimeout(() => document.getElementById('iccSearchInput')?.focus(), 80);
 }
 }
+function getYearToDateMonths(baseMonthStr) {
+const [yy, mm] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
+const year = (yy >= 2020 && yy <= 2032) ? yy : new Date().getFullYear();
+const maxM = mm ? Math.min(12, Math.max(1, mm)) : 12;
+const out = [];
+for (let m = 1; m <= maxM; m++) {
+out.push(`${year}-${String(m).padStart(2, '0')}`);
+}
+return out;
+}
 function getIccPeriodOptions() {
 const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const curYear = document.getElementById('yearSelect')?.value || '2026';
@@ -10061,6 +10436,8 @@ opts.push({ key: `month:${curYear}-${mStr}`, label: shortMonths[m - 1], mode: 'm
 }
 opts.push({ key: 'mode:3m', label: 'Last 3M', mode: '3m' });
 opts.push({ key: 'mode:6m', label: 'Last 6M', mode: '6m' });
+opts.push({ key: 'mode:ytd', label: 'This Year So Far', mode: 'ytd' });
+opts.push({ key: 'mode:1y', label: 'Last 1Y (12M)', mode: '1y' });
 opts.push({ key: 'mode:alltime', label: 'All-Time', mode: 'alltime' });
 return opts;
 }
@@ -10304,25 +10681,39 @@ if (crit === 'avgDuty') return `${e.avgDutyPerDay || Number(((e.totalDuty || 0) 
 if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}–${e.avgOutTimeStr || '17:00'}`;
 return `${getPunchProblemCount(e)}d miss`;
 }
-const ICC_RENDER_BATCH_SIZE = 60;
+const ICC_RENDER_BATCH_SIZE = 25;
 let _iccCurrentFilteredList = [];
 let _iccRenderedCount = 0;
+function onIccRowClick(rowEl, empId) {
+if (getAppMode() === 'incharge') {
+const alreadyOpen = rowEl && rowEl.classList.contains('show-details-open');
+document.querySelectorAll('#iccDrillListBody .icc-row.show-details-open').forEach(r => r.classList.remove('show-details-open'));
+if (!alreadyOpen && rowEl) {
+rowEl.classList.add('show-details-open');
+return;
+}
+}
+viewEmployeeFromLeaderboard(empId);
+}
 function buildIccRowHtml(e, myId, adminActive) {
 const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
 const rk = e._iccRank;
 const isMine = e.id === myId;
 const initials = String(e.name || e.id || 'R').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'RP';
 const mainVal = formatIccMainMetric(e, activeIccCriterion);
+const dutyNum = Math.round((Number(e.totalDuty) || 0) * 10) / 10;
 const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
 const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
+const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
 const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (rk <= 3 ? `icc-rank-${rk}` : '');
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
+const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}')">Show Details →</button>`;
 const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
-return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
+return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${esc(e.id)}" onclick="onIccRowClick(this, '${esc(e.id)}')">
 <div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
 <div class="icc-emp-col">
 <div class="icc-avatar">${esc(initials)}</div>
@@ -10330,7 +10721,14 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmp
 <div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
 <div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>
 </div>
-${adminCatBtnHtml}
+${showDetailsBtnHtml}${adminCatBtnHtml}
+</div>
+<div class="icc-desktop-mid">
+<span class="icc-mid-pill">Duty <b>${dutyNum}h</b></span>
+<span class="icc-mid-pill">OT <b>${otNum}h</b></span>
+<span class="icc-mid-pill">Hol <b>${holNum}d</b></span>
+<span class="icc-mid-pill">Night <b>${ngtNum}n</b></span>
+<span class="icc-mid-pill">4:30pm <b>${plainNum}d</b></span>
 </div>
 <div class="icc-val-col">
 <div class="icc-val-main">${mainVal}</div>
@@ -10641,6 +11039,7 @@ function syncPrivilegedUI() {
 const mode = getAppMode();
 const admin = isAdminLoggedIn();
 const isPriv = (mode === 'incharge') || admin;
+document.body.classList.toggle('incharge-mode-active', mode === 'incharge');
 // Show ⚙ Cat button in Ranking ONLY for Admin / In-Charge / Manager
 const catBtn = document.getElementById('iccAdminCatToggleBtn');
 if (catBtn) catBtn.style.display = isPriv ? 'inline-flex' : 'none';
@@ -11420,6 +11819,119 @@ showToast('Could not create the PNG. Check your internet connection and try agai
 }
 (function () { const b = document.getElementById('pngShareBtn'); if (b && typeof navigator.canShare === 'function') b.style.display = ''; })();
 
+
+
+/* ===== In-Charge / Manager Mode: Money-Free Employee Full Profile & Month-Wise Overview on Home ===== */
+async function renderInchargeEmployeeProfile(emp, month, searchId) {
+  const card = document.getElementById('inchargeEmpProfileCard');
+  if (!card || !emp) return;
+  const isInc = getAppMode() === 'incharge';
+  document.body.classList.toggle('incharge-mode-active', isInc);
+  if (!isInc) return;
+
+  const avgStats = (typeof computeEmpAvgDutyAndInOut === 'function') ? computeEmpAvgDutyAndInOut(emp) : {};
+  const presentDays = avgStats.presentDaysCount || Math.max(1, Number(emp.regularDaysCount || 0) + Number(emp.holidayCount || 0));
+  const totalDuty = Number(emp.totalDuty || 0);
+  const otHours = Number(emp.otHours || 0);
+  const avgDutyDay = avgStats.avgDutyPerDay != null ? avgStats.avgDutyPerDay : Number((totalDuty / presentDays).toFixed(2));
+  const avgOtDay = Number((otHours / presentDays).toFixed(2));
+  const avgInStr = avgStats.avgInTimeStr || '08:00';
+  const avgOutStr = avgStats.avgOutTimeStr || '17:00';
+  const pCount = getPunchProblemCount(emp);
+  const area = getAreaForId(searchId, emp.isRppf !== false);
+  const meta = getEmpMeta(searchId);
+  const desig = getDesignation(emp) || emp.grade || 'Employee';
+  const cats = (meta.cats && meta.cats.length) ? ` • Tags: ${meta.cats.join(', ')}` : '';
+
+  const setT = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+  setT('incProfNameTitle', `${emp.name || searchId} (${searchId})`);
+  setT('incProfSubMeta', `${desig}${meta.sub ? ' • ' + meta.sub : ''}${cats}`);
+  setT('incProfAreaBadge', area === OVERALL_AREA ? 'Executives' : area);
+  setT('incKpiDutyHrs', `${totalDuty} hrs`);
+  setT('incKpiPresentDays', `${presentDays} Present Duty Days`);
+  setT('incKpiAvgDuty', `${avgDutyDay} hrs/day`);
+  setT('incKpiAvgInOut', `${avgInStr} – ${avgOutStr}`);
+  setT('incKpiPunchStatus', pCount > 0 ? `⚠ ${pCount} day(s) punch missing` : '✓ All In/Out punches OK');
+  setT('incKpiOtHrs', `${otHours} hrs`);
+  setT('incKpiAvgOtDay', `Avg ${avgOtDay} hrs OT / day`);
+  setT('incKpiPlainDays', `${Number(emp.plainDaysCount || emp.plainDays || 0)} days`);
+  setT('incKpiRegDays', `Regular duty: ${Number(emp.regularDaysCount || 0)} days`);
+  setT('incKpiHolNight', `Hol: ${Number(emp.holidayCount || 0)}d • Night: ${Number(emp.nightCount || 0)}n`);
+
+  // Build Month-Wise History & This Year Totals for this Employee
+  const [yrStr, curMStr] = String(month || getCurrentMonth()).split('-');
+  const year = parseInt(yrStr, 10) || new Date().getFullYear();
+  const maxM = parseInt(curMStr, 10) || 12;
+  setT('incMwYearLbl', String(year));
+  setT('incYtdOtLbl', `${year} Total OT`);
+
+  const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ytdMonths = [];
+  for (let m = 1; m <= 12; m++) {
+    ytdMonths.push(`${year}-${String(m).padStart(2, '0')}`);
+  }
+
+  // Fetch cached/available months in parallel without blocking UI
+  const monthRecords = [];
+  await Promise.all(ytdMonths.map(async (ym) => {
+    let list = monthIndexMemoryCache[ym];
+    if (!list && parseInt(ym.split('-')[1], 10) <= maxM) {
+      try { list = await fetchMonthPreIndexedData(ym, false); } catch (e) {}
+    }
+    if (Array.isArray(list)) {
+      const found = list.find(x => String(x.id || '').toUpperCase() === searchId);
+      if (found) monthRecords.push({ ym, emp: found });
+    }
+  }));
+
+  if (!monthRecords.some(r => r.ym === month)) {
+    monthRecords.push({ ym: month, emp });
+  }
+  monthRecords.sort((a, b) => a.ym.localeCompare(b.ym));
+
+  let ytdOt = 0, ytdDuty = 0;
+  monthRecords.forEach(r => {
+    ytdOt += Number(r.emp.otHours || 0);
+    ytdDuty += Number(r.emp.totalDuty || 0);
+  });
+  const mCnt = Math.max(1, monthRecords.length);
+  setT('incYtdTotalOt', `${Math.round(ytdOt * 10) / 10} hrs`);
+  setT('incYtdAvgMonthlyOt', `${(ytdOt / mCnt).toFixed(1)} hrs/m`);
+  setT('incYtdTotalDuty', `${Math.round(ytdDuty * 10) / 10} hrs`);
+
+  const tbody = document.getElementById('incEmpMonthWiseTbody');
+  if (tbody) {
+    tbody.innerHTML = monthRecords.map(r => {
+      const e = r.emp;
+      const st = (typeof computeEmpAvgDutyAndInOut === 'function') ? computeEmpAvgDutyAndInOut(e) : {};
+      const [, mm] = r.ym.split('-');
+      const mLabel = `${shortMonths[(parseInt(mm, 10) || 1) - 1]} ${year}`;
+      const pIssues = getPunchProblemCount(e);
+      const isCur = r.ym === month;
+      return `<tr class="${isCur ? 'active-month-row' : ''}" onclick="switchInchargeEmpMonth('${esc(r.ym)}', '${esc(searchId)}')">
+        <td style="text-align:left;font-weight:700;">${esc(mLabel)}</td>
+        <td>${st.presentDaysCount || '—'}d</td>
+        <td><b>${Number(e.totalDuty || 0)}h</b></td>
+        <td style="color:var(--brand-text);font-weight:700;">${Number(e.otHours || 0)}h</td>
+        <td>${st.avgDutyPerDay || '—'}h/d</td>
+        <td>${st.avgInTimeStr || '08:00'}–${st.avgOutTimeStr || '17:00'}</td>
+        <td>${Number(e.plainDaysCount || e.plainDays || 0)}d</td>
+        <td>H:${Number(e.holidayCount || 0)} | N:${Number(e.nightCount || 0)}</td>
+        <td style="color:${pIssues > 0 ? 'var(--danger)' : 'var(--success)'};font-weight:700;">${pIssues > 0 ? pIssues + ' miss' : 'OK'}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+function switchInchargeEmpMonth(ym, empId) {
+  const [y, m] = String(ym || '').split('-');
+  const ySel = document.getElementById('yearSelect');
+  const mSel = document.getElementById('monthSelect');
+  if (ySel && y) ySel.value = y;
+  if (mSel && m) mSel.value = m;
+  const empInp = document.getElementById('employeeId');
+  if (empInp && empId) { empInp.value = empId; toggleClearIdBtn(); }
+  findReport();
+}
 
 /* ===== Cross-Tab Live Sync with Standalone admin.html ===== */
 function openStandaloneAdminFile() {
