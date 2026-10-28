@@ -5,28 +5,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENATA PLC - Overtime Report</title>
+<title>RPPF - Overtime Report</title>
 <link rel="manifest" href="https://checkot.github.io/manifest.json">
 <meta name="theme-color" content="#0F172A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="https://checkot.github.io/icon.png">
-<meta property="og:title" content="RENATA PLC - Overtime Report">
+<meta property="og:title" content="RPPF - Overtime Report">
 <meta property="og:description" content="Overtime Report Search & Calculator">
 <meta property="og:image" content="https://checkot.github.io/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://checkot.github.io/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="RENATA PLC Overtime Report">
+<meta property="og:site_name" content="RPPF Overtime Report">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RENATA PLC - Overtime Report">
+<meta name="twitter:title" content="RPPF - Overtime Report">
 <meta name="twitter:description" content="Overtime Report Search & Calculator">
 <meta name="twitter:image" content="https://checkot.github.io/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <script>
 (function () {
 try {
@@ -4892,12 +4891,14 @@ body[data-page="search"] .wa-float {
     position: fixed;
     inset: 0;
     bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
-    background: rgba(11, 27, 51, 0.42);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    background: rgba(11, 27, 51, 0.48);
     z-index: 840;
     opacity: 0;
-    transition: opacity 0.24s ease;
+    transition: opacity 0.16s ease;
+  }
+  /* Critical Performance Fix: Inactive side drawers must be display:none so 7 hidden pages do not force layout/paint on mobile */
+  .page.side-drawer-page:not(.drawer-active) {
+    display: none !important;
   }
   body.drawer-open-left .side-drawer-backdrop,
   body.drawer-open-right .side-drawer-backdrop {
@@ -4947,16 +4948,26 @@ body[data-page="search"] .wa-float {
       position: fixed;
       top: 56px;
       bottom: 0;
-      width: 440px;
-      max-width: 86vw;
+      width: 72vw;
+      max-width: 1120px;
+      min-width: 540px;
       z-index: 850;
       background: var(--bg);
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 14px 16px 32px 16px;
+      padding: 16px 24px 32px 24px;
       box-shadow: var(--shadow-lg);
       transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
       pointer-events: none;
+    }
+    .page.side-drawer-page > * {
+      max-width: 100%;
+    }
+    #page-settings.side-drawer-page .settings-desktop-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 16px;
+      align-items: start;
     }
     .page.side-drawer-left {
       left: 0;
@@ -5002,33 +5013,113 @@ body[data-page="search"] .wa-float {
     -webkit-user-select: none;
   }
 
-  /* Full-Screen Mode (100vw) for Advanced Views: Ranking Full View & Admin Control Panel */
+  /* Full-Screen Mode (100vw Edge-to-Edge) for Advanced Views: Ranking Full View & Admin Control Panel */
+  .page.side-drawer-page {
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), width 0.2s cubic-bezier(0.22, 1, 0.36, 1), max-width 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    scrollbar-width: none;
+  }
+  .page.side-drawer-page::-webkit-scrollbar {
+    display: none;
+  }
   @media (max-width: 899px) {
-    .page.side-drawer-page.full-screen-drawer {
+    .page.side-drawer-page.full-screen-drawer,
+    body.drawer-fullscreen-active #page-leaderboard.drawer-active {
       width: 100vw !important;
+      min-width: 100vw !important;
       max-width: 100vw !important;
       left: 0 !important;
       right: 0 !important;
+      top: 0 !important;
       border-left: none !important;
       border-right: none !important;
-      padding: 8px 8px 24px 8px;
+      padding: 0 0 20px 0 !important;
+      margin: 0 !important;
+      z-index: 905 !important;
+    }
+    #page-admin.side-drawer-page.full-screen-drawer {
+      padding: 10px 10px 24px 10px !important;
     }
   }
   @media (min-width: 900px) {
-    .page.side-drawer-page.full-screen-drawer {
+    .page.side-drawer-page.full-screen-drawer,
+    body.drawer-fullscreen-active #page-leaderboard.drawer-active {
       width: 100vw !important;
+      min-width: 100vw !important;
       max-width: 100vw !important;
       left: 0 !important;
       right: 0 !important;
       border-left: none !important;
       border-right: none !important;
-      padding: 16px 24px 36px 24px;
+      padding: 0 0 28px 0 !important;
+      margin: 0 !important;
+      z-index: 905 !important;
     }
-    .page.side-drawer-page.full-screen-drawer > * {
+    #page-admin.side-drawer-page.full-screen-drawer {
+      padding: 16px 24px 36px 24px !important;
+    }
+    #page-admin.side-drawer-page.full-screen-drawer > * {
       max-width: 1080px;
       margin-left: auto;
       margin-right: auto;
     }
+  }
+  #page-leaderboard.full-screen-drawer #iccRankDrillView.active,
+  body.drawer-fullscreen-active #page-leaderboard #iccRankDrillView.active {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: calc(100dvh - var(--nav-h));
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Report Page Organized Header & Month Navigation Strip */
+  #page-report .app-header {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+  }
+  .report-emp-card {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .report-strip-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .report-strip-nav {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-strong);
+  }
+  .report-strip-nav .month-nav-btn {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    width: auto;
+  }
+  .report-strip-month-lbl {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brand-text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Pull-to-Refresh Indicator Banner */
@@ -5190,6 +5281,172 @@ body[data-page="search"] .wa-float {
     border-color: var(--brand);
   }
 
+  /* ==========================================================================
+     15. ROUND 5 UPDATES: COMPACT CLEAN RANK HUB, ROLE-BASED HIDDEN UI,
+         IN-CHARGE UPCOMING ANALYTICS & MULTI-EMPLOYEE VS
+     ========================================================================== */
+  /* Compact Rank Hub so all options + search fit on a single screen without scrolling */
+  #page-leaderboard .app-header {
+    margin-bottom: 6px;
+    padding: 6px 10px;
+  }
+  #page-leaderboard #inchargeQuickCard {
+    padding: 8px 10px;
+    margin-bottom: 8px;
+  }
+  #page-leaderboard #inchargeQuickCard .incharge-lb-head {
+    margin-bottom: 4px;
+  }
+  #page-leaderboard #inchargeQuickCard .row {
+    margin-bottom: 6px !important;
+  }
+  #page-leaderboard #inchargeQuickCard select,
+  #page-leaderboard #inchargeQuickCard input,
+  #page-leaderboard #inchargeQuickCard button {
+    min-height: 34px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 12.5px;
+  }
+  .rank-hub-menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 359px) {
+    .rank-hub-menu {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rank-hub-item {
+    padding: 8px 10px;
+    min-height: 46px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+  .rank-hub-left {
+    gap: 8px;
+  }
+  .rank-hub-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .rank-hub-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .rank-hub-sub {
+    font-size: 10.5px;
+    margin-top: 1px;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Hide default best employee value on Rank Hub cards to keep them clean */
+  .rank-hub-right {
+    display: none !important;
+  }
+  .rank-hub-chev {
+    font-size: 15px;
+    margin-left: 2px;
+  }
+  .rank-hub-section-divider {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--indigo);
+    background: var(--indigo-soft);
+    border: 1px solid rgba(79, 70, 229, 0.22);
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rank-hub-item.incharge-hub-opt {
+    border-color: rgba(79, 70, 229, 0.28);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  }
+  .rank-hub-item.incharge-hub-opt .rank-hub-icon {
+    background: var(--indigo-soft);
+    color: var(--indigo);
+  }
+
+  /* Hide Mode Switch Tabs & Special Mode Elements from General Users */
+  .mode-switch-tabs,
+  #modePaneIncharge {
+    display: none !important;
+  }
+  .special-role-auth-box {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--indigo-soft);
+    border: 1px solid rgba(79, 70, 229, 0.35);
+  }
+  .special-role-auth-box.show {
+    display: block;
+    animation: pageIn 0.18s ease;
+  }
+  .special-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--indigo);
+    color: #FFFFFF;
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* Custom VS Multi-Employee Count Bar */
+  .vs-custom-count-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-soft-border);
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+  }
+  .vs-custom-count-bar.show {
+    display: flex;
+  }
+  .vs-slot-box {
+    position: relative;
+  }
+  .vs-slot-remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: none;
+  }
+
   /* Compact ICC Drill-Down View: Frozen Top Header + Auto-Hiding Filter Stack + >=10 Employees on Initial Screen */
   .icc-rank-view {
     overflow: visible;
@@ -5335,6 +5592,7 @@ body[data-page="search"] .wa-float {
     gap: 6px;
     padding: 4px 10px;
     min-height: 40px;
+    contain: layout style;
   }
   .icc-rank-col {
     gap: 0;
@@ -5503,9 +5761,9 @@ body[data-page="search"] .wa-float {
 <div id="sideDrawerBackdrop" class="side-drawer-backdrop" onclick="closeSideDrawer()"></div>
 <nav class="topnav" aria-label="Main">
 <a class="topnav-brand" onclick="switchPage('search')">
-<img src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="topnav-brand-text">
-<strong>RENATA PLC</strong>
+<strong>RPPF</strong>
 <small>Overtime Report</small>
 </div>
 </a>
@@ -5550,9 +5808,9 @@ body[data-page="search"] .wa-float {
 </nav>
 <div class="page active" id="page-search">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header" id="mainHeader">
-<h2>RENATA PLC</h2>
+<h2>RPPF</h2>
 <p>Overtime report and calculator</p>
 </div>
 <button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
@@ -5692,8 +5950,8 @@ body[data-page="search"] .wa-float {
 <input type="text" id="inpSalary" inputmode="numeric" autocomplete="off" placeholder="e.g. 18000" oninput="handleSalaryInput(this.value)">
 <div class="payslip-preview-box" id="payslipPreview" style="display:none;"></div>
 <div class="pay-actions" id="payslipActions" style="display:none;">
-<button type="button" class="btn-primary" onclick="sharePayslip()">Share image</button>
-<button type="button" class="btn-secondary" onclick="downloadPayslipJPG()">Save to phone</button>
+<button type="button" class="btn-primary" onclick="downloadPayslipJPG()">⬇ Download</button>
+<button type="button" class="btn-secondary" onclick="sharePayslip()">Share</button>
 </div>
 </div>
 <div class="card calc-card" id="step3">
@@ -5808,7 +6066,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-report">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header">
 <h2 id="reportPageTitle">Report &amp; Punch Confirmation</h2>
 <p id="reportPageSub">Daily work log and In/Out punch verification</p>
@@ -5819,7 +6077,8 @@ body[data-page="search"] .wa-float {
 <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
 </button>
 </div>
-<div class="subpage-emp-strip" id="reportEmpStrip" style="display:none;">
+<div class="report-emp-card" id="reportEmpStrip" style="display:none;">
+<div class="report-strip-top">
 <div class="subpage-emp-meta">
 <span class="subpage-emp-id" id="reportEmpIdBadge">—</span>
 <div class="subpage-emp-text">
@@ -5827,34 +6086,35 @@ body[data-page="search"] .wa-float {
 <div class="subpage-emp-sub" id="reportEmpSubLbl">—</div>
 </div>
 </div>
-<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;">
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)">&lt; Prev</button>
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)">Next &gt;</button>
-<button type="button" class="calc-mini-btn btn-success-solid" id="topPngDlBtn" onclick="downloadReportPNG(false)">⬇ Download PNG</button>
+<button type="button" class="calc-mini-btn" onclick="switchPage('search');expandSearchForm();" style="flex-shrink:0;">Change ID</button>
+</div>
+<div class="report-strip-nav">
+<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)">‹ Prev Month</button>
+<div class="report-strip-month-lbl" id="reportStripMonthLbl">—</div>
+<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)">Next Month ›</button>
 </div>
 </div>
 <div class="card" id="reportEmptyCard">
-<div class="empty-msg" style="padding:14px 0;">Load an employee ID to verify punches and view the full daily report.</div>
+<div class="empty-msg" style="padding:10px 0;">Enter an employee ID to verify punches and view the full daily report.</div>
 <div class="incharge-search-row">
-<input type="text" id="reportQuickIdInput" placeholder="Enter ID (e.g. CF8355)" autocomplete="off" autocapitalize="characters">
+<input type="text" id="reportQuickIdInput" placeholder="Enter ID (e.g. RF20850)" autocomplete="off" autocapitalize="characters">
 <button type="button" class="btn-primary" onclick="searchFromReportPage()">Load Report</button>
 </div>
 </div>
-<div class="card calc-card" id="step7">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">
-<div class="section-label" id="step7LabelText" style="margin:0;padding:0;border:none;">Is your report correct?</div>
-<button type="button" class="calc-mini-btn btn-success-solid" onclick="downloadReportPNG(false)">⬇ Download Report</button>
-</div>
+<div class="card calc-card" id="step7" style="padding:12px;">
+<div class="section-label" id="step7LabelText" style="margin:0 0 6px 0;padding:0 0 6px 0;border-bottom:1px solid var(--border);">Report &amp; Punch Verification Status</div>
 <div id="remarksBox" class="remarks-box remarks-info">—</div>
-<button type="button" class="btn-secondary" id="rptPreviewBtn" style="width:100%;margin-top:10px;" onclick="toggleReportPreview()">Preview daily report ▼</button>
-<div id="rptPreviewHost" style="display:none;margin-top:10px;"></div>
-<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"><button type="button" class="btn-primary" id="pngDlBtn" style="flex:1;min-width:150px;" onclick="downloadReportPNG(false)">Download report PNG</button><button type="button" class="btn-secondary" id="pngShareBtn" style="flex:1;min-width:120px;display:none;" onclick="downloadReportPNG(true)">Share PNG</button></div>
-<button onclick="switchPage('search');expandSearchForm();" class="reset-btn">Change ID / Month</button>
+<button type="button" class="btn-secondary" id="rptPreviewBtn" style="width:100%;margin-top:8px;" onclick="toggleReportPreview()">Preview daily report ▼</button>
+<div id="rptPreviewHost" style="display:none;margin-top:8px;"></div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+<button type="button" class="btn-primary" id="pngDlBtn" style="flex:1;min-width:140px;margin-top:0;" onclick="downloadReportPNG(false)">⬇ Download</button>
+<button type="button" class="btn-secondary" id="pngShareBtn" style="flex:1;min-width:110px;margin-top:0;" onclick="downloadReportPNG(true)">Share</button>
+</div>
 </div>
 </div>
 <div class="page" id="page-vs">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header">
 <h2 id="vsPageTitle">VS Comparison</h2>
 <p id="vsPageSub">Compare overtime &amp; allowances (1:1 or 1:1:1)</p>
@@ -5890,41 +6150,27 @@ body[data-page="search"] .wa-float {
 <div class="vs-quick-picks" id="vsQuickPicksRow"></div>
 </div>
 <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
+<div class="vs-custom-count-bar" id="vsCustomCountBar">
+<div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
+<div style="display:flex;gap:6px;">
+<button type="button" class="calc-mini-btn" onclick="changeCustomVsSlots(-1)">− Remove</button>
+<button type="button" class="calc-mini-btn btn-success-solid" onclick="changeCustomVsSlots(1)">+ Add Employee</button>
+</div>
+</div>
 <div class="vs-inputs-grid mode-2" id="vsInputsGrid">
 <div class="vs-slot-box">
 <label for="compareId1">1st Employee ID</label>
-<input type="text" id="compareId1" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text">
 </div>
 <div class="vs-slot-box">
 <label for="compareId">2nd Employee ID (VS)</label>
-<input type="text" id="compareId" placeholder="e.g. RF20850" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF20850" autocomplete="off" autocapitalize="characters" inputmode="text">
 </div>
 <div class="vs-slot-box" id="vsSlot3Wrap" style="display:none;">
 <label for="compareId3">3rd Employee ID (VS)</label>
-<input type="text" id="compareId3" placeholder="e.g. CF9012" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF9012" autocomplete="off" autocapitalize="characters" inputmode="text">
 </div>
-</div>
-<div id="vsCustomSimulatorWrap" style="display:none;margin-top:10px;">
-<div class="vs-inputs-grid mode-2">
-<div class="vs-slot-box">
-<label>Option A (Current / Base)</label>
-<select id="vsCustCatA"><option value="CF">CF (৳38/hr)</option><option value="JO" selected>JO C–F (৳40/hr)</option><option value="JO_B">JO A/B (৳45/hr)</option></select>
-<div class="row" style="margin-top:6px;">
-<input type="number" id="vsCustOtA" placeholder="OT hrs" value="50" step="0.5">
-<input type="number" id="vsCustHolA" placeholder="Hol days" value="2" step="1">
-<input type="number" id="vsCustNightA" placeholder="Nights" value="4" step="1">
-</div>
-</div>
-<div class="vs-slot-box">
-<label>Option B (Target / Custom)</label>
-<select id="vsCustCatB"><option value="CF">CF (৳38/hr)</option><option value="JO">JO C–F (৳40/hr)</option><option value="JO_B" selected>JO A/B (৳45/hr)</option></select>
-<div class="row" style="margin-top:6px;">
-<input type="number" id="vsCustOtB" placeholder="OT hrs" value="65" step="0.5">
-<input type="number" id="vsCustHolB" placeholder="Hol days" value="3" step="1">
-<input type="number" id="vsCustNightB" placeholder="Nights" value="6" step="1">
-</div>
-</div>
-</div>
+<div id="vsExtraSlotsContainer" style="display:contents;"></div>
 </div>
 <button id="compareBtn" class="btn-primary" onclick="runComparison()" style="margin-top:12px;">Compare Now (VS)</button>
 <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
@@ -5935,7 +6181,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-leaderboard">
 <div class="app-header" id="lbMainAppHeader">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header">
 <h2 id="lbPageMainTitle">Rank</h2>
 <p id="lbSubtitle">—</p>
@@ -6030,11 +6276,41 @@ body[data-page="search"] .wa-float {
 <span class="rank-hub-icon">!</span>
 <div>
 <div class="rank-hub-title">Punch Problem</div>
-<div class="rank-hub-sub" id="hubSubPunch">Missing In/Out Punch Monitoring</div>
+<div class="rank-hub-sub" id="hubSubPunch">Missing In/Out Punch List</div>
 </div>
 </div>
 <div class="rank-hub-right">
 <span class="rank-hub-val" id="hubValPunch">—</span>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<div class="rank-hub-section-divider" id="inchargeHubUpcomingDivider" style="display:none;">
+<span>In-Charge &amp; Manager Analytics</span>
+<span>RPPF</span>
+</div>
+<button type="button" class="rank-hub-item incharge-hub-opt" id="hubBtnAvgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">⌀H</span>
+<div>
+<div class="rank-hub-title">Average Duty Hour</div>
+<div class="rank-hub-sub" id="hubSubAvgDuty">Daily Average Duty Hours</div>
+</div>
+</div>
+<div class="rank-hub-right">
+<span class="rank-hub-val" id="hubValAvgDuty">—</span>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<button type="button" class="rank-hub-item incharge-hub-opt" id="hubBtnAvgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">⏱</span>
+<div>
+<div class="rank-hub-title">Avg In &amp; Out Time</div>
+<div class="rank-hub-sub" id="hubSubAvgInOut">Average In-Time &amp; Out-Time</div>
+</div>
+</div>
+<div class="rank-hub-right">
+<span class="rank-hub-val" id="hubValAvgInOut">—</span>
 </div>
 <span class="rank-hub-chev">›</span>
 </button>
@@ -6055,6 +6331,8 @@ body[data-page="search"] .wa-float {
 <button type="button" class="icc-crit-tab" data-icc-crit="lessDuty" onclick="openRankDrillDown('lessDuty')">Less Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
+<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
+<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">Avg In/Out</button>
 </div>
 </div>
 <div class="icc-collapsible-filters" id="iccCollapsibleFilters">
@@ -6227,7 +6505,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-notices">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header"><h2>Notice board</h2><p>General notices</p></div>
 <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
 <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -6244,7 +6522,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-more">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header"><h2>More</h2><p>Other options</p></div>
 </div>
 <div class="more-list">
@@ -6255,7 +6533,7 @@ body[data-page="search"] .wa-float {
 </button>
 <button class="more-item" onclick="openModeSetupModal()" type="button">
 <span class="mi-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-<span class="mi-text">Mode and permanent ID settings<small id="moreModeSummaryText">Employee mode / In-charge mode (PIN)</small></span>
+<span class="mi-text">Saved ID Settings<small id="moreModeSummaryText">Set or change your ID number</small></span>
 <span class="mi-chev">›</span>
 </button>
 <button class="more-item" onclick="openRateChartModal()" type="button">
@@ -6271,11 +6549,6 @@ body[data-page="search"] .wa-float {
 <button class="more-item" onclick="switchPage('team')" type="button">
 <span class="mi-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
 <span class="mi-text">ERP Team<small>Report problems here</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="switchPage('admin')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-<span class="mi-text">Admin panel<small>Excel data, rate packages, IDs and ERP team</small></span>
 <span class="mi-chev">›</span>
 </button>
 <button class="more-item" onclick="switchPage('settings')" type="button">
@@ -6296,7 +6569,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-team">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header"><h2>ERP Team</h2><p>Contact us if you have a problem</p></div>
 <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
 <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -6310,7 +6583,7 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-history">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header"><h2>My history</h2><p>What you viewed before</p></div>
 <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
 <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -6324,355 +6597,51 @@ body[data-page="search"] .wa-float {
 </div>
 <div class="page" id="page-settings">
 <div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header"><h2>Settings</h2><p>App information</p></div>
 <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
 <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
 <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
 </button>
 </div>
+<div class="settings-desktop-grid">
 <div class="card" id="settingsProfileCard">
-<div class="card-title" style="margin-bottom:4px;">App mode and permanent ID (registration)</div>
-<div class="card-sub" style="white-space:normal;margin-bottom:12px;">In Employee mode your own ID stays saved permanently. In Floor / Production In-charge mode you can monitor rankings and everyone report with a PIN code.</div>
-<div class="settings-row"><span class="label">Current mode</span><span class="value" id="settingsCurrentModeLabel">Employee mode</span></div>
-<div class="settings-row" id="settingsRegIdRow"><span class="label">Your permanent ID</span><span class="value" id="settingsRegisteredIdLabel" style="color:var(--brand-text);font-size:15px;">Not set</span></div>
-<div class="settings-row" id="settingsInchargeAreaRow" style="display:none;"><span class="label">In-charge default area</span><span class="value" id="settingsInchargeAreaLabel">All areas</span></div>
+<div class="card-title" style="margin-bottom:4px;">Your Saved ID (Registration)</div>
+<div class="card-sub" style="white-space:normal;margin-bottom:12px;">Save your ID once so your current month overtime report loads automatically whenever you open the app.</div>
+<div class="settings-row" id="settingsModeRow" style="display:none;"><span class="label">Active Role</span><span class="value" id="settingsCurrentModeLabel">Employee</span></div>
+<div class="settings-row" id="settingsRegIdRow"><span class="label">Your Saved ID</span><span class="value" id="settingsRegisteredIdLabel" style="color:var(--brand-text);font-size:15px;">Not set</span></div>
+<div class="settings-row" id="settingsInchargeAreaRow" style="display:none;"><span class="label">Default Area</span><span class="value" id="settingsInchargeAreaLabel">All areas</span></div>
 <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-strong);">
-<label for="settingsNewIdInput" style="margin-top:0;">Change or set a new permanent employee ID:</label>
+<label for="settingsNewIdInput" style="margin-top:0;">Enter or change your ID number:</label>
 <div class="incharge-search-row">
 <input type="text" id="settingsNewIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters">
 <button type="button" class="btn-primary" onclick="savePermanentIdFromSettings()">Save</button>
 </div>
 </div>
-<div class="btn-grid-2">
-<button type="button" class="reset-btn" style="margin-top:0;" onclick="openModeSetupModal()">Change mode</button>
-<button type="button" class="reset-btn danger-btn" id="settingsDeleteIdBtn" style="margin-top:0;" onclick="deletePermanentIdFromSettings()">Delete permanent ID</button>
+<div class="btn-grid-2" style="margin-top:10px;">
+<button type="button" class="reset-btn" style="margin-top:0;" onclick="openModeSetupModal()">ID Setup</button>
+<button type="button" class="reset-btn danger-btn" id="settingsDeleteIdBtn" style="margin-top:0;" onclick="deletePermanentIdFromSettings()">Delete Saved ID</button>
 </div>
 </div>
 
+<div>
+<div class="card" style="margin-bottom:12px;">
+<div class="card-title">Theme (Appearance)</div>
+<div class="card-sub" style="white-space:normal;">Choose Light, Dark, or Auto phone theme.</div>
+<div class="theme-seg" role="group" aria-label="Theme">
+<button type="button" data-theme-opt="auto" onclick="setTheme('auto')">Auto</button>
+<button type="button" data-theme-opt="light" onclick="setTheme('light')">Light</button>
+<button type="button" data-theme-opt="dark" onclick="setTheme('dark')">Dark</button>
+</div>
+</div>
 <div class="card">
-<div class="settings-row"><span class="label">App Version</span><span class="value">3.0.0 (Excel Pre-Indexed Engine)</span></div>
+<div class="settings-row"><span class="label">App Version</span><span class="value">3.2.0 (Enterprise Edition)</span></div>
 <div class="settings-row"><span class="label">Server Engine</span><span class="value">RPPF Cloud Server</span></div>
-<div class="settings-row"><span class="label">Developed by</span><span class="value">Md. Ariful Islam (Coating PR)</span></div>
+<div class="settings-row"><span class="label">Developed by</span><span class="value" style="text-align:right;line-height:1.25;">Md. Ariful Islam<div style="font-size:11.5px;color:var(--muted);font-weight:600;">RPPF Production</div></span></div>
 <div class="settings-row"><span class="label">Facility Filter</span><span class="value" style="color:var(--success);">RPPF Only (Ranking)</span></div>
 <div class="settings-row"><span class="label">Areas Status</span><span class="value" id="settingsAreaCount">—</span></div>
 <div class="settings-row"><span class="label">Security &amp; Compliance</span><span class="value"><button type="button" class="calc-mini-btn" onclick="openComplianceModal()">Compliance Notice</button></span></div>
-<div class="settings-footer">© 2026 RENATA PLC • Zero External Data Sharing</div>
-</div>
-</div>
-<div class="page" id="page-admin">
-<div class="app-header">
-<button type="button" class="icon-btn" onclick="switchPage('more', true)" aria-label="Back to More" title="Back">←</button>
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RENATA" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>Admin Control Panel</h2><p>Full-screen data, rates, categories & area management</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card" id="adminLoginCard">
-<div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:12px;">
-<h3>Admin login</h3>
-<p>Manage monthly Excel data, rate packages, area IDs and ERP team on the RPPF Cloud Server.</p>
-</div>
-<label for="adminPassInput" style="margin-top:0;">Admin password</label>
-<div class="pin-input-wrap">
-<input type="password" id="adminPassInput" placeholder="Enter password" autocomplete="off" style="font-size:16px;font-weight:800;padding-right:52px;" oninput="clearAdminLoginError()">
-<button type="button" class="pin-eye-btn" onclick="toggleAdminPassVis()" aria-label="Show password">Show</button>
-</div>
-<div class="pin-error-msg" id="adminLoginError">Wrong admin password!</div>
-<button type="button" class="btn-primary" style="margin-top:12px;" onclick="handleAdminLogin()">Enter</button>
-</div>
-<div id="adminDashboardWrap" style="display:none;">
-<div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:10px;">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-<div>
-<h3 style="font-size:15.5px;">RENATA PLC - Admin control room</h3>
-<p id="adminTokenStatusText" style="font-size:12px;">RPPF Cloud Server status</p>
-</div>
-<button type="button" class="mode-pill-btn btn-hero-glass" onclick="handleAdminLogout()">Logout</button>
-</div>
-</div>
-<div class="admin-nav-tabs" role="tablist">
-<button type="button" class="admin-tab-btn active" id="admTabBtnAreas" onclick="switchAdminTab('areas')">1. Areas and IDs</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnRates" onclick="switchAdminTab('rates')">2. Rates and packages</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnData" onclick="switchAdminTab('data')">3. Data manager</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnTeam" onclick="switchAdminTab('team')">4. ERP team</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnNotices" onclick="switchAdminTab('notices')">5. Notices</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnSetup" onclick="switchAdminTab('setup')">6. Server setup</button>
-</div>
-<div class="admin-section-pane active" id="admPaneAreas">
-<div class="card" style="padding:14px;">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-<div class="card-title">Area and ID management (areas.json)</div>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn btn-success-solid" id="adminPushAreasBtn" onclick="adminPushAreasToGithub()">Save to server</button>
-<button type="button" class="calc-mini-btn" onclick="adminDownloadAreasJson()">Backup</button>
-</div>
-</div>
-<div class="admin-stat-grid" style="margin:8px 0;">
-<div class="admin-stat-box"><span class="as-num" id="admCountSolid">0</span><span class="as-lbl">Solid</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountSoftgel">0</span><span class="as-lbl">Softgel</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountPacking">0</span><span class="as-lbl">Packing</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountTotal">0</span><span class="as-lbl">Total IDs</span></div>
-</div>
-<span id="admCountMale" style="display:none;">0</span>
-<span id="admCountFemale" style="display:none;">0</span>
-<span id="admCountCon" style="display:none;">0</span>
-<span id="admCountJo" style="display:none;">0</span>
-<div class="admin-meta-grid" style="margin-top:8px;">
-<div>
-<label for="adminTargetAreaSelect" style="margin-top:0;font-size:12px;">Target area</label>
-<select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
-<option value="Packing Hall">Packing Hall</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Softgel Production">Softgel Production</option>
-<option value="Overall">Executives (Executive/Above)</option>
-</select>
-</div>
-<div>
-<label for="adminTargetSubSelect" style="margin-top:0;font-size:12px;">Sub-section</label>
-<select id="adminTargetSubSelect"></select>
-</div>
-<div>
-<label for="adminTargetGenderSelect" style="margin-top:0;font-size:12px;">Male / Female</label>
-<select id="adminTargetGenderSelect">
-<option value="">Unchanged</option><option value="M">Male</option><option value="F">Female</option><option value="__none__">Clear</option>
-</select>
-</div>
-</div>
-<select id="adminTargetTypeSelect" style="display:none;"><option value="">Unchanged</option></select>
-<div style="display:flex;gap:6px;margin-top:8px;">
-<input type="text" id="adminNewSubInput" maxlength="40" placeholder="Add new sub-section (e.g. Blister, Coating)" style="margin:0;flex:1;min-height:36px;font-size:13px;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminAddSubsection();}">
-<button type="button" class="btn-secondary" onclick="adminAddSubsection()" style="width:auto;min-width:86px;min-height:36px;margin:0;font-size:12.5px;">+ Sub-section</button>
-</div>
-<div class="admin-chip-preview" id="adminSubsList" style="max-height:76px;margin-top:6px;padding:6px;"></div>
-<label for="adminBulkIdsInput" style="margin-top:10px;font-size:12.5px;">Paste bulk IDs or provide a file (.txt/.csv/.json)</label>
-<textarea id="adminBulkIdsInput" class="admin-textarea" style="min-height:68px;" placeholder="CF8355, RF20850..."></textarea>
-<input type="file" id="adminAreaTxtFile" accept=".txt,.csv,.json" onchange="handleAdminAreaFileSelect(event)" style="padding:5px;font-size:12px;margin-top:4px;">
-<div class="btn-grid-2" style="margin-top:8px;">
-<button type="button" class="btn-primary" onclick="adminAddBulkAreaIds()">Add IDs to area</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminRemoveBulkAreaIds()">Remove IDs</button>
-</div>
-<details class="adjust" style="margin-top:10px;">
-<summary>Pick from the Casual and Executive employee list</summary>
-<div class="adjust-body" id="admExtraCatBox">
-<div style="display:flex;gap:6px;flex-wrap:wrap;">
-<select id="admExtraCatSelect" onchange="adminRenderExtraList()" style="flex:1;min-width:160px;margin:0;min-height:36px;font-size:13px;">
-<option value="CAS">Casual (numeric ID)</option>
-<option value="EXEC">Executive / Above (In-charge mode only)</option>
-</select>
-<input type="text" id="admExtraSearch" placeholder="Search by ID or name..." oninput="adminRenderExtraList()" style="flex:1;min-width:140px;margin:0;min-height:36px;font-size:13px;">
-<button type="button" class="calc-mini-btn" onclick="adminLoadExtraCandidates(true)">Reload</button>
-</div>
-<div id="admExtraMonthLbl" style="font-size:11.5px;color:var(--muted);margin-top:6px;"></div>
-<div id="admExtraNote" style="display:none;"></div>
-<div id="admExtraList" style="max-height:220px;overflow:auto;margin-top:6px;border:1px solid var(--border);border-radius:8px;background:var(--surface);"></div>
-<div id="admExtraCount" style="font-size:11.5px;color:var(--muted);margin-top:4px;"></div>
-<div class="btn-grid-2" style="margin-top:6px;">
-<button type="button" class="btn-primary" onclick="adminAddExtraSelected()">Add selected</button>
-<button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">Select all / Deselect</button>
-</div>
-</div>
-</details>
-<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">IDs of selected area:</span>
-<input type="text" id="admFilterIdsInput" placeholder="Search ID..." oninput="renderAdminAreaPreview()" style="width:140px;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
-</div>
-<div class="admin-chip-preview" id="adminAreaIdsPreview" style="max-height:130px;margin-top:6px;"></div>
-</div>
-<div id="adminAreaPushStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneRates">
-<div class="card" style="padding:14px;" id="admDesigRateBox">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-<div>
-<div class="card-title">Rate and overtime package control</div>
-<div class="card-sub" style="white-space:normal;">Categories are grouped by rate - click any rate tab to edit the package (hourly rate, night, holiday) and select which designations belong under that rate.</div>
-</div>
-<button type="button" class="calc-mini-btn btn-success-solid" onclick="adminSaveRatesAndPush()">Save to server in one click</button>
-</div>
-<div class="rate-bucket-tabs" id="adminRateBucketTabs"></div>
-<div id="adminRatePkgEditorWrap">
-<div class="rate-pkg-grid" id="adminRatePkgGrid">
-<div>
-<label for="pkgOtRateInp">OT rate (৳/hour)</label>
-<input type="number" id="pkgOtRateInp" step="1" oninput="onAdminPkgFieldChange()">
-</div>
-<div>
-<label for="pkgNightRateInp">Night Allowance (৳/night)</label>
-<input type="number" id="pkgNightRateInp" step="10" oninput="onAdminPkgFieldChange()">
-</div>
-<div>
-<label for="pkgHolTypeSel">Holiday type</label>
-<select id="pkgHolTypeSel" onchange="onAdminPkgFieldChange()">
-<option value="hourly">Hourly multiplier (Hourly)</option>
-<option value="flat">Fixed amount (Flat)</option>
-</select>
-</div>
-<div>
-<label for="pkgHolValInp" id="pkgHolValLbl">Holiday hours / amount</label>
-<input type="number" id="pkgHolValInp" step="1" oninput="onAdminPkgFieldChange()">
-</div>
-</div>
-</div>
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 6px 0;flex-wrap:wrap;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);" id="adminRateBucketDesigTitle">Designations and contracts under this rate:</span>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(true)">Select all</button>
-<button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(false)">Deselect all</button>
-</div>
-</div>
-<div class="desig-chip-grid" id="admDesigRateList"></div>
-<details class="adjust" style="margin-top:10px;">
-<summary>+ Add new custom rate package</summary>
-<div class="adjust-body">
-<div class="rate-pkg-grid">
-<div>
-<label for="newRateNameInp">Package name</label>
-<input type="text" id="newRateNameInp" placeholder="e.g. Special 50">
-</div>
-<div>
-<label for="newRateOtInp">OT rate (৳/hour)</label>
-<input type="number" id="newRateOtInp" placeholder="50" value="50">
-</div>
-<div>
-<label for="newRateNightInp">Night Allowance (৳)</label>
-<input type="number" id="newRateNightInp" placeholder="500" value="500">
-</div>
-<div>
-<label for="newRateHolInp">Holiday fixed (৳)</label>
-<input type="number" id="newRateHolInp" placeholder="400" value="400">
-</div>
-</div>
-<button type="button" class="btn-primary" onclick="adminCreateNewRateBucket()">Create new rate package</button>
-</div>
-</details>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneData">
-<div class="card" style="padding:14px;">
-<div class="card-title">Monthly Excel data manager (data/YYYY-MM.json)</div>
-<div class="card-sub" style="white-space:normal;">Select a month and upload an Excel (.xlsx) file to process all employee calculations automatically and save them to the RPPF Cloud Server.</div>
-<div class="row" style="margin-top:8px;">
-<select id="adminPdfYear" aria-label="Year" onchange="adminCheckMonthData()"></select>
-<select id="adminPdfMonth" aria-label="Month" onchange="adminCheckMonthData()">
-<option value="01">January (01)</option><option value="02">February (02)</option>
-<option value="03">March (03)</option><option value="04">April (04)</option>
-<option value="05">May (05)</option><option value="06">June (06)</option>
-<option value="07">July (07)</option><option value="08">August (08)</option>
-<option value="09">September (09)</option><option value="10">October (10)</option>
-<option value="11">November (11)</option><option value="12">December (12)</option>
-</select>
-</div>
-<input type="file" id="adminExcelFileInput" accept=".xlsx,.xls" multiple style="padding:7px;margin-top:8px;">
-<div id="adminPdfUploadProgress" style="display:none;margin-top:10px;">
-<div class="scan-counter" id="adminPdfStatusText">Verifying data, please wait...</div>
-<div class="scan-progress-bar"><div class="scan-progress-fill" id="adminPdfProgressFill"></div></div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" id="adminUploadExcelBtn" onclick="processExcelUpload()">Upload Excel and save</button>
-<button type="button" class="btn-secondary" onclick="adminReoptimizeMonthData()">Re-optimize this month data</button>
-</div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);">Month files on the server:</span>
-<button type="button" class="calc-mini-btn" onclick="adminCheckMonthData()">Refresh</button>
-</div>
-<div class="admin-file-list" id="adminExistingDataStatus">Select a month to see status.</div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneTeam">
-<div class="card" style="padding:14px;">
-<div class="card-title">ERP team manager (team.json)</div>
-<div class="card-sub" style="white-space:normal;">Add, edit or delete the ERP representatives assigned to the Packing, Solid and Softgel sections.</div>
-<input type="hidden" id="admTeamEditIdx" value="-1">
-<div class="admin-meta-grid" style="margin-top:8px;">
-<div>
-<label for="admTeamName" style="margin-top:0;font-size:12px;">Name</label>
-<input type="text" id="admTeamName" placeholder="e.g. Md. Ariful Islam" style="margin-top:3px;min-height:36px;">
-</div>
-<div>
-<label for="admTeamDesig" style="margin-top:0;font-size:12px;">Designation</label>
-<input type="text" id="admTeamDesig" placeholder="e.g. Coating PR" style="margin-top:3px;min-height:36px;">
-</div>
-<div>
-<label for="admTeamId" style="margin-top:0;font-size:12px;">ID number</label>
-<input type="text" id="admTeamId" placeholder="e.g. CF8355" style="margin-top:3px;min-height:36px;text-transform:uppercase;">
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:8px;">
-<div>
-<label for="admTeamArea" style="margin-top:0;font-size:12px;">Assigned area</label>
-<select id="admTeamArea" style="margin-top:3px;min-height:36px;">
-<option value="All">All Areas</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Packing Hall">Packing Hall</option>
-<option value="Softgel Production">Softgel Production</option>
-</select>
-</div>
-<div>
-<label for="admTeamWa" style="margin-top:0;font-size:12px;">WhatsApp number (with 880)</label>
-<input type="text" id="admTeamWa" placeholder="8801845873227" style="margin-top:3px;min-height:36px;">
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" id="admTeamSaveBtn" onclick="adminSaveTeamMember()">Add and save ERP member</button>
-<button type="button" class="btn-secondary" onclick="adminResetTeamForm()">Clear form</button>
-</div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">Current ERP team list:</div>
-<div id="adminTeamManagerList"></div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneNotices">
-<div class="card" style="padding:14px;">
-<div class="card-title">Publish and manage notices (notices.json)</div>
-<label for="adminNoticeTitle" style="margin-top:8px;font-size:12.5px;">Notice title</label>
-<input type="text" id="adminNoticeTitle" placeholder="e.g. The October overtime report has been published">
-<label for="adminNoticeBody" style="margin-top:8px;font-size:12.5px;">Details</label>
-<textarea id="adminNoticeBody" class="admin-textarea" style="min-height:72px;" placeholder="Write the notice details..."></textarea>
-<div class="btn-grid-2" style="margin-top:8px;align-items:end;">
-<div>
-<label for="adminNoticePriority" style="margin-top:0;font-size:12px;">Priority</label>
-<select id="adminNoticePriority" style="margin-top:3px;">
-<option value="normal">Normal</option>
-<option value="high">Urgent (High)</option>
-<option value="low">Low</option>
-</select>
-</div>
-<button type="button" class="btn-primary" onclick="adminAddAndPushNotice()">Publish notice</button>
-</div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">Current notice list:</div>
-<div id="adminCurrentNoticesList"></div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneSetup">
-<div class="card" style="padding:14px;">
-<div class="card-title">RPPF Cloud Server connection and password</div>
-<label for="adminGhTokenInput" style="margin-top:8px;font-size:12.5px;">Server Access Key</label>
-<div class="pin-input-wrap">
-<input type="password" id="adminGhTokenInput" placeholder="Enter server access key" autocomplete="off" style="font-size:14px;padding-right:52px;">
-<button type="button" class="pin-eye-btn" onclick="toggleGhTokenVis()" aria-label="Show key">Show</button>
-</div>
-<div class="btn-grid-2" style="margin-top:8px;">
-<button type="button" class="btn-primary" onclick="adminSaveAndTestGhToken()">Save and test connection</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminClearGhToken()">Remove</button>
-</div>
-<div id="adminGhTokenTestResult" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<label for="adminNewPassInput" style="margin-top:0;font-size:12.5px;">Change admin password</label>
-<div class="incharge-search-row">
-<input type="text" id="adminNewPassInput" placeholder="Enter new password" autocomplete="off" style="text-transform:none;">
-<button type="button" class="btn-secondary" onclick="adminChangePassword()">Change password</button>
-</div>
-</div>
+<div class="settings-footer">© 2026 RPPF • Zero External Data Sharing</div>
 </div>
 </div>
 </div>
@@ -6704,7 +6673,7 @@ body[data-page="search"] .wa-float {
 <div class="lb-modal-header">
 <div class="lb-modal-title-wrap">
 <div class="lb-modal-title" id="complianceModalTitle">Security &amp; Data Privacy Compliance Notice</div>
-<div class="lb-modal-subtitle">RENATA PLC (RPPF Production) — Internal Audit &amp; IT Compliance</div>
+<div class="lb-modal-subtitle">RPPF Production — Internal Audit &amp; IT Compliance</div>
 </div>
 <button type="button" class="lb-modal-close" onclick="closeComplianceModal()" aria-label="Close">✕</button>
 </div>
@@ -6778,27 +6747,31 @@ body[data-page="search"] .wa-float {
 <div class="lb-modal-content mode-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modeModalTitle">
 <div class="mode-modal-hero" id="modeModalHero">
 <button type="button" class="mode-modal-close-x" id="modeModalCloseBtn" onclick="closeModeSetupModal()" aria-label="Close">✕</button>
-<h3 id="modeModalTitle">RENATA PLC - Select app mode</h3>
-<p id="modeModalSubtitle">Choose how you want to use the app</p>
+<h3 id="modeModalTitle">RPPF — User Login</h3>
+<p id="modeModalSubtitle">Enter your Employee ID number to continue</p>
 </div>
 <div class="mode-switch-tabs" role="tablist">
-<button type="button" class="mode-tab-btn active-emp" id="tabBtnEmployee" onclick="selectSetupTab('employee')">
-<span>Employee mode</span>
-<small>Register your own permanent ID</small>
-</button>
-<button type="button" class="mode-tab-btn" id="tabBtnIncharge" onclick="selectSetupTab('incharge')">
-<span>Floor / Production In-charge</span>
-<small>Ranking and employee management (PIN)</small>
-</button>
+<button type="button" class="mode-tab-btn active-emp" id="tabBtnEmployee" onclick="selectSetupTab('employee')"><span>Employee</span></button>
+<button type="button" class="mode-tab-btn" id="tabBtnIncharge" onclick="selectSetupTab('incharge')"><span>In-Charge</span></button>
 </div>
 <div class="mode-pane active" id="modePaneEmployee">
 <div class="mode-info-box">
-<strong>One-time registration:</strong> Once you save your own ID, <strong>your current month report will load automatically</strong> as soon as you open the app. Searching another ID later will not erase your own ID.
+<strong>One-time ID setup:</strong> Enter your ID once and your monthly overtime report will load automatically every time you open the app.
 </div>
-<label for="regEmpIdInput" style="margin-top:0;">Enter your own employee ID number:</label>
-<input type="text" id="regEmpIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;">
+<label for="regEmpIdInput" style="margin-top:0;">Enter your ID number:</label>
+<input type="text" id="regEmpIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="onRegEmpIdInputChange()">
 <div id="regCurrentSavedHint" style="display:none;margin-top:8px;font-size:12.5px;color:var(--success);font-weight:700;"></div>
-<button type="button" class="btn-primary" style="margin-top:14px;" onclick="saveEmployeeModeSetup()">Save permanent ID and view report</button>
+<div id="specialRoleAuthBox" class="special-role-auth-box">
+<div class="special-role-badge" id="specialRoleBadgeText">Authorized Role</div>
+<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;" id="specialRolePersonName">—</div>
+<label for="specialRolePassInput" style="margin-top:0;font-size:12px;">Enter Password / PIN for this ID:</label>
+<div class="pin-input-wrap">
+<input type="password" id="specialRolePassInput" placeholder="Enter password or PIN" autocomplete="off" style="font-size:16px;font-weight:800;letter-spacing:0.15em;text-align:center;" oninput="document.getElementById('specialRolePinError')?.classList.remove('show')">
+</div>
+<div class="pin-error-msg" id="specialRolePinError">Incorrect password or PIN!</div>
+</div>
+<button type="button" class="btn-primary" id="regPrimarySubmitBtn" style="margin-top:14px;" onclick="saveEmployeeModeSetup()">Continue</button>
+<button type="button" class="btn-secondary" id="regSkipAdminNormalBtn" style="display:none;margin-top:8px;" onclick="saveNormalEmployeeBypass()">Continue as Normal Employee (No Password)</button>
 </div>
 <div class="mode-pane" id="modePaneIncharge">
 <div class="mode-info-box inc">
@@ -6878,8 +6851,8 @@ priority: "normal"
 const DEFAULT_FALLBACK_TEAM = [
 {
 name: "Md. Ariful Islam",
-designation: "Coating PR",
-id: "CF8355",
+designation: "RPPF Production",
+id: "RF20850",
 area: "Solid Production",
 whatsapp: "8801845873227",
 photo: "https://checkot.github.io/icon.png"
@@ -7339,7 +7312,7 @@ let _payFonts = null;
 function ensurePayslipFonts() {
 if (_payFonts) return _payFonts;
 if (!document.fonts || !document.fonts.load) return (_payFonts = Promise.resolve());
-const sample = 'My overtime ৳ 0123456789 monthly salary RENATA 0123456789';
+const sample = 'My overtime ৳ 0123456789 monthly salary RPPF 0123456789';
 const loads = ['400', '600', '700'].map(w => document.fonts.load(`${w} 28px "Hind Siliguri"`, sample));
 _payFonts = Promise.race([Promise.all(loads).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 3000))]).catch(() => {});
 return _payFonts;
@@ -7390,7 +7363,7 @@ x.save(); _rr(x, 40, 40, W - 80, H - 80, 36); x.clip();
 const g = x.createLinearGradient(40, 40, W - 40, 290);
 g.addColorStop(0, '#1E3A8A'); g.addColorStop(1, '#2563EB');
 x.fillStyle = g; x.fillRect(40, 40, W - 80, 250); x.restore();
-_txt(x, 'RENATA PLC', P, 140, 56, 700, '#FFFFFF');
+_txt(x, 'RPPF', P, 140, 56, 700, '#FFFFFF');
 _txt(x, 'Overtime and allowance statement (estimated)', P, 204, 30, 400, 'rgba(255,255,255,.88)', 'left', W - 2 * P);
 const [yy, mm] = String(currentMonth).split('-');
 const monthLabel = `${BN_MONTHS[(parseInt(mm, 10) || 1) - 1]} ${bn(yy)}`;
@@ -7419,7 +7392,7 @@ x.strokeStyle = '#BFD3FB'; x.lineWidth = 2; x.stroke();
 _txt(x, 'Total take-home (estimated)', W / 2, 1080, 32, 700, '#1D4ED8', 'center', W - 2 * P - 40);
 _txt(x, money(t.total), W / 2, 1180, 84, 700, '#1D4ED8', 'center', W - 2 * P - 40);
 _txt(x, '* Estimate calculated from the report. This is not an official payslip.', W / 2, 1292, 26, 400, '#566783', 'center', W - 2 * P);
-_txt(x, `Created: ${new Date().toLocaleDateString('en-GB')}  •  RENATA PLC App`, W / 2, 1352, 22, 400, '#8EA0BC', 'center', W - 2 * P);
+_txt(x, `Created: ${new Date().toLocaleDateString('en-GB')}  •  RPPF App`, W / 2, 1352, 22, 400, '#8EA0BC', 'center', W - 2 * P);
 return c;
 }
 function _canvasToBlob(c) { return new Promise(res => c.toBlob(res, 'image/jpeg', 0.95)); }
@@ -7438,7 +7411,7 @@ const t = getPayslipTotals();
 const blob = await getPayslipBlob();
 const file = new File([blob], `Payslip_${currentSearchId}_${currentMonth}.jpg`, { type: 'image/jpeg' });
 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-try { await navigator.share({ files: [file], title: 'RENATA PLC', text: `My estimated total: ${money(t.total)}` }); }
+try { await navigator.share({ files: [file], title: 'RPPF', text: `My estimated total: ${money(t.total)}` }); }
 catch (err) { if (err && err.name !== 'AbortError') await downloadPayslipJPG(); }
 } else {
 await downloadPayslipJPG();
@@ -7468,19 +7441,29 @@ function resetBannerAutoPlay() {
 if (bannerTimer) clearInterval(bannerTimer);
 if (bannerProgressTimer) clearInterval(bannerProgressTimer);
 const fill = document.getElementById('bannerProgressFill');
-if (fill) fill.style.width = '0%';
-bannerProgressStart = Date.now();
-bannerProgressTimer = setInterval(() => {
-if (bannerPaused || document.visibilityState !== 'visible' || !document.getElementById('welcomeBanner').offsetParent) { bannerProgressStart += 100; return; }
-const elapsed = Date.now() - bannerProgressStart;
-const pct = Math.min(100, (elapsed / BANNER_INTERVAL_MS) * 100);
-if (fill) fill.style.width = pct + '%';
-if (elapsed >= BANNER_INTERVAL_MS) {
-bannerCurrentIndex = (bannerCurrentIndex + 1) % BANNER_SLIDE_COUNT;
-updateBannerUI(); bannerProgressStart = Date.now();
-if (fill) fill.style.width = '0%';
+if (fill) {
+fill.style.transition = 'none';
+fill.style.width = '0%';
+requestAnimationFrame(() => {
+fill.style.transition = `width ${BANNER_INTERVAL_MS}ms linear`;
+fill.style.width = '100%';
+});
 }
-}, 100);
+bannerProgressTimer = setInterval(() => {
+if (bannerPaused || document.visibilityState !== 'visible' || currentPermanentPage !== 'search' || currentSideDrawerPage || document.body.classList.contains('has-result')) {
+return;
+}
+bannerCurrentIndex = (bannerCurrentIndex + 1) % BANNER_SLIDE_COUNT;
+updateBannerUI();
+if (fill) {
+fill.style.transition = 'none';
+fill.style.width = '0%';
+requestAnimationFrame(() => {
+fill.style.transition = `width ${BANNER_INTERVAL_MS}ms linear`;
+fill.style.width = '100%';
+});
+}
+}, BANNER_INTERVAL_MS);
 }
 function initWelcomeBanner() {
 const slider = document.getElementById('welcomeBanner');
@@ -7580,9 +7563,16 @@ area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facili
 }));
 normalized.forEach(applyTypeOverride);
 monthIndexMemoryCache[month] = normalized;
+setTimeout(() => {
 try {
+// Keep at most 2 recent month caches in localStorage to prevent QuotaExceeded & main-thread freeze
+const mKeys = Object.keys(localStorage).filter(k => k.startsWith(MONTH_DATA_CACHE_PREFIX));
+if (mKeys.length >= 2) {
+mKeys.sort().slice(0, mKeys.length - 1).forEach(k => localStorage.removeItem(k));
+}
 localStorage.setItem(MONTH_DATA_CACHE_PREFIX + month, JSON.stringify({ ts: Date.now(), employees: normalized }));
 } catch (e) {}
+}, 80);
 return normalized;
 }
 } catch (e) {
@@ -7902,7 +7892,18 @@ function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX 
 function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
 function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
 function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
-function setLeaderboardCache(month, payload) { try { localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+function setLeaderboardCache(month, payload) {
+setTimeout(() => {
+try {
+const slimEmps = (payload.allEmployees || []).map(e => {
+const copy = { ...e };
+delete copy.daily;
+return copy;
+});
+localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), month: payload.month, allEmployees: slimEmps }));
+} catch (e) {}
+}, 120);
+}
 function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
 function addToHistory(id, month, name) {
 try {
@@ -7943,7 +7944,7 @@ inp.value = id; toggleClearIdBtn(); findReport();
 function openDrawer() {}
 function closeDrawer() {}
 const PERMANENT_PAGES = ['search', 'report', 'vs'];
-const MORE_PAGES = ['history', 'team', 'settings', 'admin', 'notices'];
+const MORE_PAGES = ['history', 'team', 'settings', 'notices'];
 let currentPermanentPage = 'search';
 let currentSideDrawerPage = null;
 function initSideDrawerClasses() {
@@ -7993,7 +7994,7 @@ document.body.dataset.page = pageName;
 updateNavHighlights();
 if (pageName === 'report') initReportPage();
 if (pageName === 'vs') initVsPage();
-window.scrollTo({ top: 0, behavior: 'smooth' });
+window.scrollTo(0, 0);
 return;
 }
 // Side drawer page ('leaderboard' on left, 'more' / MORE_PAGES on right)
@@ -8012,7 +8013,7 @@ PERMANENT_PAGES.forEach(p => {
 const el = document.getElementById('page-' + p);
 if (el) el.classList.toggle('active', p === currentPermanentPage);
 });
-const isFullScreenAdv = (pageName === 'admin') || (pageName === 'leaderboard' && typeof iccDrillOpen !== 'undefined' && iccDrillOpen);
+const isFullScreenAdv = (pageName === 'leaderboard' && typeof iccDrillOpen !== 'undefined' && iccDrillOpen);
 document.querySelectorAll('.page.side-drawer-page').forEach(p => p.classList.remove('drawer-active', 'active', 'full-screen-drawer'));
 const targetEl = document.getElementById('page-' + pageName);
 if (targetEl) {
@@ -8025,12 +8026,13 @@ document.body.classList.toggle('drawer-open-left', isLeft);
 document.body.classList.toggle('drawer-open-right', !isLeft);
 document.body.classList.toggle('drawer-fullscreen-active', isFullScreenAdv);
 updateNavHighlights();
+requestAnimationFrame(() => {
 if (pageName === 'history') renderHistory();
 if (pageName === 'leaderboard') initLeaderboardPage();
 if (pageName === 'team') renderTeamPage();
 if (pageName === 'notices') renderNoticesPage();
-if (pageName === 'settings') updateSettingsAreaCount();
-if (pageName === 'admin') initAdminPage();
+if (pageName === 'settings') { updateSettingsAreaCount(); updateModeUI(); }
+});
 }
 function renderHistory() {
 const list = getHistory(); const box = document.getElementById('historyList');
@@ -8213,7 +8215,7 @@ return `
 <div class="team-desig">${esc(m.designation || '—')} ${m.area ? `• <span class="admin-tag">${esc(m.area)}</span>` : ''}</div>
 <div class="team-id">ID: ${esc(m.id || '—')}</div>
 </div>
-<a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RENATA Overtime App - Support needed')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
+<a class="team-wa" href="https://wa.me/${(m.whatsapp || '').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('RPPF Overtime App - Support needed')}" target="_blank" rel="noopener noreferrer" title="WhatsApp">
 <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 <span>WhatsApp</span>
 </a>
@@ -8232,7 +8234,6 @@ document.getElementById('regEmpIdInput')?.addEventListener('keydown', e => { if 
 document.getElementById('inchargePinInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') saveInchargeModeSetup(); });
 document.getElementById('lbQuickSearchInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') searchEmployeeFromLbBar(); });
 document.getElementById('settingsNewIdInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') savePermanentIdFromSettings(); });
-document.getElementById('adminPassInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') handleAdminLogin(); });
 document.addEventListener('keydown', e => {
 if (e.key === 'Escape') {
 if (document.getElementById('modeSetupModal')?.classList.contains('open')) { closeModeSetupModal(); return; }
@@ -8449,7 +8450,7 @@ const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
 const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
 const night = parseInt(document.getElementById('inpNight').value) || 0;
 const totalTxt = document.getElementById('lblGrandTotal').innerText;
-const summary = `RENATA PLC — Overtime Summary\nID: ${currentSearchId || '—'} (${currentMonth || '—'})\nCategory: ${RATE_TABLE[cat]?.name || cat}\nOT Allowance: ${otHours} hr (${document.getElementById('lblOtAmount').innerText})\nHoliday Allowance: ${holiday} days (${document.getElementById('lblHolidayAmount').innerText})\nNight Allowance: ${night} nights (${document.getElementById('lblNightAmount').innerText})\nGrand Total: ${totalTxt}`;
+const summary = `RPPF — Overtime Summary\nID: ${currentSearchId || '—'} (${currentMonth || '—'})\nCategory: ${RATE_TABLE[cat]?.name || cat}\nOT Allowance: ${otHours} hr (${document.getElementById('lblOtAmount').innerText})\nHoliday Allowance: ${holiday} days (${document.getElementById('lblHolidayAmount').innerText})\nNight Allowance: ${night} nights (${document.getElementById('lblNightAmount').innerText})\nGrand Total: ${totalTxt}`;
 try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(summary).then(() => showToast("Copied", "success")).catch(() => fallbackCopyText(summary)); } else { fallbackCopyText(summary); } }
 catch (e) { fallbackCopyText(summary); }
 }
@@ -8584,29 +8585,52 @@ if (nightSub) nightSub.innerText = `${night} nights × ৳${r.nightRate}`;
 updatePayslipPreview();
 }
 let currentVsMode = 2;
+let customVsTotalSlots = 4;
+function renderExtraVsSlots() {
+const container = document.getElementById('vsExtraSlotsContainer');
+const lbl = document.getElementById('vsCustomCountLbl');
+if (lbl) lbl.textContent = String(customVsTotalSlots);
+if (!container) return;
+if (currentVsMode !== 'custom') {
+container.innerHTML = '';
+return;
+}
+const existingVals = {};
+container.querySelectorAll('input[data-slot-idx]').forEach(inp => {
+existingVals[inp.getAttribute('data-slot-idx')] = inp.value;
+});
+let htmlStr = '';
+for (let i = 4; i <= customVsTotalSlots; i++) {
+const ord = i === 4 ? '4th' : i === 5 ? '5th' : i === 6 ? '6th' : `${i}th`;
+const val = existingVals[String(i)] || '';
+htmlStr += `<div class="vs-slot-box">
+<label for="compareId${i}">${ord} Employee ID (VS)</label>
+${i > 4 ? `<button type="button" class="vs-slot-remove-btn" onclick="changeCustomVsSlots(-1)" title="Remove slot">✕</button>` : ''}
+<input type="text" id="compareId${i}" data-slot-idx="${i}" class="vs-emp-id-input" value="${esc(val)}" placeholder="e.g. CF83${50 + i}" autocomplete="off" autocapitalize="characters" inputmode="text">
+</div>`;
+}
+container.innerHTML = htmlStr;
+}
+function changeCustomVsSlots(delta) {
+customVsTotalSlots = Math.max(4, Math.min(10, customVsTotalSlots + delta));
+renderExtraVsSlots();
+}
 function setVsMode(mode) {
 currentVsMode = mode === 3 ? 3 : mode === 'custom' ? 'custom' : 2;
 document.getElementById('vsModeBtn2')?.classList.toggle('active', currentVsMode === 2);
 document.getElementById('vsModeBtn3')?.classList.toggle('active', currentVsMode === 3);
 document.getElementById('vsModeBtnCustom')?.classList.toggle('active', currentVsMode === 'custom');
 const grid = document.getElementById('vsInputsGrid');
-const custWrap = document.getElementById('vsCustomSimulatorWrap');
-const mBar = document.getElementById('vsMonthBarWrap');
-if (currentVsMode === 'custom') {
-if (grid) grid.style.display = 'none';
-if (custWrap) custWrap.style.display = 'block';
-if (mBar) mBar.style.display = 'none';
-} else {
+const countBar = document.getElementById('vsCustomCountBar');
+const slot3 = document.getElementById('vsSlot3Wrap');
 if (grid) {
 grid.style.display = 'grid';
-grid.classList.toggle('mode-2', currentVsMode === 2);
+grid.classList.toggle('mode-2', currentVsMode === 2 || currentVsMode === 'custom');
 grid.classList.toggle('mode-3', currentVsMode === 3);
 }
-if (custWrap) custWrap.style.display = 'none';
-if (mBar) mBar.style.display = 'block';
-const slot3 = document.getElementById('vsSlot3Wrap');
-if (slot3) slot3.style.display = currentVsMode === 3 ? 'block' : 'none';
-}
+if (slot3) slot3.style.display = (currentVsMode === 3 || currentVsMode === 'custom') ? 'block' : 'none';
+if (countBar) countBar.classList.toggle('show', currentVsMode === 'custom');
+renderExtraVsSlots();
 }
 function populateVsMonthSelect() {
 const sel = document.getElementById('vsMonthOverrideSelect');
@@ -8627,11 +8651,11 @@ if (!candidates.length) { box.innerHTML = ''; return; }
 box.innerHTML = `<span style="font-size:11px;color:var(--muted);font-weight:600;">Quick pick:</span>` + candidates.map(id => `<button type="button" class="vs-Quick-chip" onclick="fillVsCandidateId('${esc(id)}')">${esc(id)}</button>`).join('');
 }
 function fillVsCandidateId(id) {
-const inp2 = document.getElementById('compareId');
-const inp3 = document.getElementById('compareId3');
-if (inp2 && !inp2.value.trim()) { inp2.value = id; return; }
-if (currentVsMode === 3 && inp3 && !inp3.value.trim()) { inp3.value = id; return; }
-if (inp2) inp2.value = id;
+const inputs = [...document.querySelectorAll('#vsInputsGrid input.vs-emp-id-input')].filter(el => el.offsetParent !== null);
+for (let i = 1; i < inputs.length; i++) {
+if (!inputs[i].value.trim()) { inputs[i].value = id; return; }
+}
+if (inputs[1]) inputs[1].value = id;
 }
 function onVsPeriodChange() {
 const p = document.getElementById('vsPeriodSelect')?.value || 'current';
@@ -8708,29 +8732,25 @@ async function runComparison() {
 const statusDiv = document.getElementById('compareStatus');
 const compareBtn = document.getElementById('compareBtn');
 const resultDiv = document.getElementById('compareResult');
-if (currentVsMode === 'custom') {
-const catA = document.getElementById('vsCustCatA')?.value || 'JO';
-const otA = parseFloat(document.getElementById('vsCustOtA')?.value) || 0;
-const holA = parseInt(document.getElementById('vsCustHolA')?.value) || 0;
-const ngtA = parseInt(document.getElementById('vsCustNightA')?.value) || 0;
-const catB = document.getElementById('vsCustCatB')?.value || 'JO_B';
-const otB = parseFloat(document.getElementById('vsCustOtB')?.value) || 0;
-const holB = parseInt(document.getElementById('vsCustHolB')?.value) || 0;
-const ngtB = parseInt(document.getElementById('vsCustNightB')?.value) || 0;
-const recA = buildCustomSimRecord('Option A', catA, otA, holA, ngtA);
-const recB = buildCustomSimRecord('Option B', catB, otB, holB, ngtB);
-showComparison(recA, recB, 'Option B', null);
-if (statusDiv) { statusDiv.style.color = 'var(--success)'; statusDiv.innerText = 'Custom comparison ready'; }
-return;
-}
 const inp1El = document.getElementById('compareId1');
 const id1 = (inp1El && inp1El.value.trim() ? inp1El.value.trim() : (currentSearchId || getPreferredId() || '')).toUpperCase().replace(/\s+/g, '');
 const id2 = (document.getElementById('compareId')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
-const id3 = currentVsMode === 3 ? (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '') : '';
 if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
 if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
-if (currentVsMode === 3 && !id3) { showToast("Enter 3rd employee ID number for 1:1:1 mode", "warn"); document.getElementById('compareId3')?.focus(); return; }
-const ids = currentVsMode === 3 ? [id1, id2, id3] : [id1, id2];
+let ids = [id1, id2];
+if (currentVsMode === 3) {
+const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+if (!id3) { showToast("Enter 3rd employee ID number for 1:1:1 mode", "warn"); document.getElementById('compareId3')?.focus(); return; }
+ids.push(id3);
+} else if (currentVsMode === 'custom') {
+const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+if (id3) ids.push(id3);
+for (let i = 4; i <= customVsTotalSlots; i++) {
+const v = (document.getElementById('compareId' + i)?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+if (v) ids.push(v);
+}
+if (ids.length < 2) { showToast("Enter at least 2 employee IDs to compare", "warn"); return; }
+}
 if (new Set(ids).size !== ids.length) { showToast("Please enter different ID numbers to compare", "warn"); return; }
 const periodMode = document.getElementById('vsPeriodSelect')?.value || 'current';
 const month = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || getCurrentMonth();
@@ -8786,7 +8806,7 @@ records.push(buildCompareRecord(found, targetId));
 if (records.length === 2 && periodMode === 'current') {
 setCompareCache(month, records[0].id, records[1].id, { other: records[1], otherId: records[1].id });
 }
-showComparison(records[0], records[1], records[1].id, records[2] || null);
+showComparison(records[0], records[1], records[1].id, records[2] || null, records);
 statusDiv.style.color = "var(--success)"; statusDiv.innerText = "Comparison completed";
 } catch (e) {
 statusDiv.style.color = "var(--danger)";
@@ -8795,9 +8815,9 @@ statusDiv.innerText = "Problem while comparing: " + e.message;
 compareBtn.disabled = false;
 }
 }
-function showComparison(mine, other, otherId, third) {
+function showComparison(mine, other, otherId, third, allRecords) {
 const div = document.getElementById('compareResult');
-const list = third ? [mine, other, third] : [mine, other];
+const list = (Array.isArray(allRecords) && allRecords.length >= 2) ? allRecords : (third ? [mine, other, third] : [mine, other]);
 const myPref = getPreferredId();
 const labelFor = (r) => {
 const base = r.id === myPref ? `You (${esc(r.id)})` : esc(r.id);
@@ -8844,28 +8864,35 @@ div.innerHTML = `
 <div class="compare-diff"><strong>${diffText}</strong></div>
 </div>
 <div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" onclick="downloadVsComparisonPNG()">⬇ Download VS PNG</button>
-<button type="button" onclick="resetComparison()" class="btn-secondary">Compare Other IDs</button>
-</div>`;
+<button type="button" class="btn-primary" onclick="downloadVsComparisonPNG(false)">⬇ Download</button>
+<button type="button" class="btn-secondary" onclick="downloadVsComparisonPNG(true)">Share</button>
+</div>
+<button type="button" onclick="resetComparison()" class="reset-btn" style="margin-top:8px;">Compare Other IDs</button>`;
 div.style.display = "block";
 document.getElementById('compareInputArea').style.display = "none";
 }
-async function downloadVsComparisonPNG() {
+async function downloadVsComparisonPNG(share = false) {
 const target = document.getElementById('vsExportTarget');
 if (!target) return;
 try {
-showToast('Creating comparison image...', 'info');
+showToast(share ? 'Preparing to share...' : 'Downloading...', 'info');
 if (!window.html2canvas) await _loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
 const canvas = await html2canvas(target, { scale: 2, backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#ffffff' });
 const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+const fname = `VS_Compare_${currentMonth || getCurrentMonth()}.png`;
+const file = new File([blob], fname, { type: 'image/png' });
+if (share && navigator.canShare && navigator.canShare({ files: [file] })) {
+await navigator.share({ files: [file], title: fname });
+return;
+}
 const url = URL.createObjectURL(blob);
 const a = document.createElement('a');
-a.href = url; a.download = `VS_Compare_${currentMonth || getCurrentMonth()}.png`;
+a.href = url; a.download = fname;
 document.body.appendChild(a); a.click(); a.remove();
 setTimeout(() => URL.revokeObjectURL(url), 4000);
-showToast('Comparison image downloaded', 'success');
+showToast('Downloaded successfully', 'success');
 } catch (e) {
-showToast('Could not create image', 'error');
+if (e && e.name !== 'AbortError') showToast('Could not export image', 'error');
 }
 }
 function resetComparison() {
@@ -8901,6 +8928,49 @@ viewEmployeeFromLeaderboard(raw);
 }
 function buildLeaderboardPayloadFromList(month, allList) {
 const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id));
+function computeEmpAvgDutyAndInOut(e) {
+const daily = Array.isArray(e.daily) ? e.daily : [];
+let inMinsSum = 0, inCnt = 0, outMinsSum = 0, outCnt = 0, activeDays = 0;
+daily.forEach(r => {
+if (!r) return;
+const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
+const inStr = String(r[2] || '').trim();
+const outStr = String(r[3] || '').trim();
+if (dHrs > 0 || inStr || outStr) activeDays++;
+const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
+if (mIn) { inMinsSum += (+mIn[1]) * 60 + (+mIn[2]); inCnt++; }
+const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
+if (mOut) { outMinsSum += (+mOut[1]) * 60 + (+mOut[2]); outCnt++; }
+});
+const fallbackDays = Math.max(1, activeDays, Number(e.regularDaysCount || 0) + Number(e.holidayCount || 0), Math.round((Number(e.totalDuty || 0)) / 12));
+const avgDutyPerDay = Number(((Number(e.totalDuty || 0)) / fallbackDays).toFixed(2));
+const fmtM = (mins) => {
+if (mins == null) return '—';
+const norm = ((Math.round(mins) % 1440) + 1440) % 1440;
+const hh = String(Math.floor(norm / 60)).padStart(2, '0');
+const mm = String(norm % 60).padStart(2, '0');
+return `${hh}:${mm}`;
+};
+const avgInMins = inCnt > 0 ? (inMinsSum / inCnt) : 480; // default 08:00 when daily log not embedded
+const avgOutMins = outCnt > 0 ? (outMinsSum / outCnt) : Math.min(1380, Math.round(480 + avgDutyPerDay * 60));
+return {
+presentDaysCount: fallbackDays,
+avgDutyPerDay,
+avgInMins,
+avgOutMins,
+avgInTimeStr: fmtM(avgInMins),
+avgOutTimeStr: fmtM(avgOutMins)
+};
+}
+window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
+window.ensureEmpAvgStats = function(list) {
+(list || []).forEach(e => {
+if (!e || e._avgComputed) return;
+const st = computeEmpAvgDutyAndInOut(e);
+Object.assign(e, st, { _avgComputed: true });
+});
+return list;
+}
 const normalized = rppfEmployees.map(e => ({
 ...e,
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
@@ -8913,6 +8983,8 @@ const sortedByEarned = [...normalized].sort((a,b) => b.totalEarned - a.totalEarn
 const sortedByPlain = [...normalized].sort((a,b) => (b.plainDaysCount - a.plainDaysCount) || (b.totalDuty - a.totalDuty));
 const sortedByLessDuty = [...normalized].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
 const sortedByLessOT = [...normalized].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
+const sortedByAvgDuty = [];
+const sortedByAvgInOut = [];
 return {
 month,
 allEmployees: normalized,
@@ -8921,7 +8993,9 @@ sortedByOT,
 sortedByEarned,
 sortedByPlain,
 sortedByLessDuty,
-sortedByLessOT
+sortedByLessOT,
+sortedByAvgDuty,
+sortedByAvgInOut
 };
 }
 function getPreviousMonthStrings(baseMonthStr, count) {
@@ -9025,6 +9099,11 @@ subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
+if (currentLeaderboardResult && currentLeaderboardResult.month === month && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
+updateRankHubCards(currentLeaderboardResult.filtered ? currentLeaderboardResult.filtered.sortedByDuty : currentLeaderboardResult.allEmployees);
+if (iccDrillOpen) renderIccDrillList();
+return;
+}
 await startLeaderboardScan(false);
 }
 function getCurrentMonth() { return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`; }
@@ -9033,7 +9112,7 @@ const month = getCurrentMonth();
 if (isScanning) return;
 isScanning = true;
 document.getElementById('lbInitialCard').style.display = "none";
-document.getElementById('lbScanCard').style.display = "block";
+document.getElementById('lbScanCard').style.display = (typeof iccDrillOpen !== 'undefined' && iccDrillOpen) ? "none" : "block";
 document.getElementById('lbResultCard').style.display = "none";
 const counter = document.getElementById('lbScanCounter');
 const fill = document.getElementById('lbScanFill');
@@ -9326,8 +9405,15 @@ const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort(
 const sortedByPlain = [...filtered].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
 const sortedByLessDuty = [...filtered].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
 const sortedByLessOT = [...filtered].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
+let sortedByAvgDuty = [];
+let sortedByAvgInOut = [];
+if (typeof activeIccCriterion !== 'undefined' && (activeIccCriterion === 'avgDuty' || activeIccCriterion === 'avgInOut')) {
+ensureEmpAvgStats(filtered);
+sortedByAvgDuty = [...filtered].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDutyPerDay || 0)) || (b.totalDuty - a.totalDuty));
+sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
+}
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-currentLeaderboardResult.filtered = { sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByPunch, area };
+currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, area };
 updateLbSummaryMetrics(filtered);
 renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
 renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
@@ -9568,506 +9654,6 @@ function getGhToken() { try { return (localStorage.getItem(ADMIN_GH_TOKEN_KEY) |
 function setGhToken(t) {
 try { if (t) localStorage.setItem(ADMIN_GH_TOKEN_KEY, t.trim()); else localStorage.removeItem(ADMIN_GH_TOKEN_KEY); } catch (e) {}
 }
-function toggleAdminPassVis() { const inp = document.getElementById('adminPassInput'); if (inp) inp.type = inp.type === 'password' ? 'text' : 'password'; }
-function toggleGhTokenVis() { const inp = document.getElementById('adminGhTokenInput'); if (inp) inp.type = inp.type === 'password' ? 'text' : 'password'; }
-function clearAdminLoginError() { document.getElementById('adminLoginError')?.classList.remove('show'); }
-function handleAdminLogin() {
-const inp = document.getElementById('adminPassInput');
-const raw = (inp ? inp.value : '').trim();
-const expected = getAdminPassword();
-if (raw !== expected && raw !== DEFAULT_ADMIN_PASS) {
-document.getElementById('adminLoginError')?.classList.add('show');
-showToast('Wrong admin password!', 'error');
-if (inp) inp.focus();
-return;
-}
-setAdminLoggedIn(true);
-if (inp) inp.value = '';
-clearAdminLoginError();
-showToast('Welcome to the admin panel', 'success');
-initAdminPage();
-}
-function handleAdminLogout() { setAdminLoggedIn(false); showToast('Logged out of the admin panel.', 'info'); initAdminPage(); }
-function adminChangePassword() {
-const inp = document.getElementById('adminNewPassInput');
-const val = (inp ? inp.value : '').trim();
-if (!val || val.length < 4) { showToast('Enter a new password of at least 4 characters', 'warn'); return; }
-try { localStorage.setItem(ADMIN_PASS_KEY, val); } catch (e) {}
-if (inp) inp.value = '';
-showToast('New admin password saved', 'success');
-}
-function initAdminPage() {
-const loginCard = document.getElementById('adminLoginCard');
-const dashWrap = document.getElementById('adminDashboardWrap');
-if (!loginCard || !dashWrap) return;
-if (!isAdminLoggedIn()) { loginCard.style.display = 'block'; dashWrap.style.display = 'none'; return; }
-loginCard.style.display = 'none'; dashWrap.style.display = 'block';
-const ySel = document.getElementById('yearSelect'); const mSel = document.getElementById('monthSelect');
-const admY = document.getElementById('adminPdfYear'); const admM = document.getElementById('adminPdfMonth');
-if (ySel && admY) { admY.innerHTML = ySel.innerHTML; admY.value = ySel.value; }
-if (mSel && admM) admM.value = mSel.value;
-const tok = getGhToken();
-const tokInp = document.getElementById('adminGhTokenInput');
-const statusTxt = document.getElementById('adminTokenStatusText');
-if (tokInp) tokInp.value = tok;
-if (statusTxt) statusTxt.innerHTML = tok ? 'RPPF Cloud Server is connected - files can be uploaded and optimized directly.' : 'Server Access Key has not been set yet.';
-loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); adminLoadExtraCandidates(false); });
-renderAdminNoticesList();
-}
-function switchAdminTab(tab) {
-const map = {
-areas: ['admTabBtnAreas', 'admPaneAreas'],
-rates: ['admTabBtnRates', 'admPaneRates'],
-data: ['admTabBtnData', 'admPaneData'],
-team: ['admTabBtnTeam', 'admPaneTeam'],
-notices: ['admTabBtnNotices', 'admPaneNotices'],
-setup: ['admTabBtnSetup', 'admPaneSetup']
-};
-Object.keys(map).forEach(k => {
-const [btnId, paneId] = map[k];
-document.getElementById(btnId)?.classList.toggle('active', k === tab);
-document.getElementById(paneId)?.classList.toggle('active', k === tab);
-});
-if (tab === 'rates') adminRenderDesigRates();
-if (tab === 'data') adminCheckMonthData();
-if (tab === 'team') renderAdminTeamManager();
-if (tab === 'notices') renderAdminNoticesList();
-}
-function onAdminAreaChange() {
-renderAdminSubsList(); populateAdminSubSelect(); renderAdminAreaPreview();
-}
-function populateAdminSubSelect() {
-const sel = document.getElementById('adminTargetSubSelect');
-if (!sel) return;
-const area = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const subs = AREA_SUBS[area] || [];
-const prev = sel.value;
-sel.innerHTML = '<option value="">Unchanged</option><option value="__none__">Not in any sub-section</option>' + subs.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
-if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
-}
-function renderAdminSubsList() {
-const box = document.getElementById('adminSubsList');
-if (!box) return;
-const area = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const subs = AREA_SUBS[area] || [];
-if (!subs.length) { box.innerHTML = `<div style="padding:8px;color:var(--muted);font-size:12.5px;width:100%;text-align:center;">${esc(area)} has no sub-sections yet.</div>`; return; }
-box.innerHTML = subs.map((name, i) => {
-const n = Object.keys(AREA_MAP).filter(id => AREA_MAP[id] === area && (AREA_DETAILS[id] || {}).s === name).length;
-return `<span class="admin-id-pill"><span>${esc(name)} (${bn(n)})</span><button type="button" onclick="adminRemoveSubsectionAt(${i})" title="Delete">✕</button></span>`;
-}).join('');
-}
-function adminAddSubsection() {
-const area = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const inp = document.getElementById('adminNewSubInput');
-const name = (inp?.value || '').replace(/\s+/g, ' ').trim();
-if (!name) { showToast('Enter a sub-section name', 'warn'); if (inp) inp.focus(); return; }
-if (!AREA_SUBS[area]) AREA_SUBS[area] = [];
-if (AREA_SUBS[area].some(x => x.toLowerCase() === name.toLowerCase())) { showToast('A sub-section with this name already exists', 'warn'); return; }
-AREA_SUBS[area].push(name);
-saveAreaCache();
-if (inp) inp.value = '';
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast(`${area} → ${name} added (do not forget to save to the server)`, 'success');
-}
-function adminRemoveSubsectionAt(i) {
-const area = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const list = AREA_SUBS[area] || [];
-const name = list[i];
-if (name === undefined) return;
-openConfirmModal(`"${name}" sub-section - delete it? Its employees will stay in the area; only the sub-section will become empty.`, () => {
-list.splice(i, 1);
-if (!list.length) delete AREA_SUBS[area];
-pruneAreaMeta(); saveAreaCache();
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast(`${name} has been deleted`, 'info');
-});
-}
-function updateAdminAreaStats() {
-pruneAreaMeta();
-const vals = Object.values(AREA_MAP || {});
-const solid = vals.filter(v => v === 'Solid Production').length;
-const softgel = vals.filter(v => v === 'Softgel Production').length;
-const packing = vals.filter(v => v === 'Packing Hall').length;
-const total = vals.length;
-const elS = document.getElementById('admCountSolid'); const elG = document.getElementById('admCountSoftgel');
-const elP = document.getElementById('admCountPacking'); const elT = document.getElementById('admCountTotal');
-if (elS) elS.textContent = bn(solid);
-if (elG) elG.textContent = bn(softgel);
-if (elP) elP.textContent = bn(packing);
-if (elT) elT.textContent = bn(total);
-const ids = Object.keys(AREA_MAP || {});
-const metas = ids.map(getEmpMeta);
-const setN = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = bn(n); };
-setN('admCountMale', metas.filter(m => m.gender === 'M').length);
-setN('admCountFemale', metas.filter(m => m.gender === 'F').length);
-setN('admCountCon', metas.filter(m => m.type === 'CON').length);
-setN('admCountJo', metas.filter(m => m.type === 'JO').length);
-renderAdminSubsList(); populateAdminSubSelect();
-updateSettingsAreaCount(); populateAreaDropdown();
-}
-function extractEmployeeIdsFromText(rawText) {
-const upper = String(rawText || '').toUpperCase();
-const regexMatches = upper.match(/\b(?:(?:CF|RF|CL)\d{2,6}|\d{5,8})\b/g) || [];
-if (regexMatches.length > 0) return [...new Set(regexMatches)];
-return [...new Set(upper.split(/[\s,;\n\r\t]+/).map(s => s.replace(/[^A-Z0-9]/g, '')).filter(s => s.length >= 3))];
-}
-function adminAddBulkAreaIds() {
-const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const inp = document.getElementById('adminBulkIdsInput');
-const raw = inp ? inp.value : '';
-const ids = extractEmployeeIdsFromText(raw);
-if (ids.length === 0) { showToast('No valid ID (e.g. CF8355 or RF20850) found!', 'warn'); if (inp) inp.focus(); return; }
-let added = 0, updated = 0;
-const subVal = document.getElementById('adminTargetSubSelect')?.value || '';
-const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
-const tVal = document.getElementById('adminTargetTypeSelect')?.value || '';
-ids.forEach(id => {
-if (!AREA_MAP[id]) added++; else if (AREA_MAP[id] !== targetArea) updated++;
-AREA_MAP[id] = targetArea;
-const d = AREA_DETAILS[id] || (AREA_DETAILS[id] = {});
-if (subVal === '__none__') delete d.s; else if (subVal) d.s = subVal;
-if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
-if (tVal === '__none__') delete d.t; else if (tVal) d.t = tVal;
-});
-saveAreaCache(); reapplyTypeOverrides();
-if (inp) inp.value = '';
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast(`${targetArea}: ${bn(ids.length)} IDs updated (do not forget to save to the server)`, 'success');
-}
-function adminRemoveBulkAreaIds() {
-const inp = document.getElementById('adminBulkIdsInput');
-const raw = inp ? inp.value : '';
-const ids = extractEmployeeIdsFromText(raw);
-if (ids.length === 0) { showToast('Type the IDs you want to remove in the box', 'warn'); return; }
-ids.forEach(id => { if (AREA_MAP[id]) delete AREA_MAP[id]; delete AREA_DETAILS[id]; });
-saveAreaCache(); reapplyTypeOverrides();
-if (inp) inp.value = '';
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast('IDs removed from the list.', 'info');
-}
-function adminRemoveSingleId(id) {
-if (AREA_MAP && AREA_MAP[id]) {
-delete AREA_MAP[id]; delete AREA_DETAILS[id];
-saveAreaCache(); reapplyTypeOverrides();
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast(`${id} removed`, 'info');
-}
-}
-function handleAdminAreaFileSelect(event) {
-const file = event.target?.files?.[0];
-if (!file) return;
-const reader = new FileReader();
-reader.onload = (e) => {
-const content = String(e.target?.result || '');
-try {
-const parsed = JSON.parse(content);
-if (parsed && parsed.areas && typeof parsed.areas === 'object') {
-Object.assign(AREA_MAP, parsed.areas);
-if (parsed.details && typeof parsed.details === 'object') Object.assign(AREA_DETAILS, parsed.details);
-if (parsed.designationRates && typeof parsed.designationRates === 'object') Object.assign(DESIG_RATES, parsed.designationRates);
-if (parsed.rateTable && typeof parsed.rateTable === 'object') Object.assign(RATE_TABLE, parsed.rateTable);
-if (parsed.subsections && typeof parsed.subsections === 'object') Object.keys(parsed.subsections).forEach(a => { AREA_SUBS[a] = [...new Set([...(AREA_SUBS[a] || []), ...(parsed.subsections[a] || [])])]; });
-saveAreaCache();
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast('IDs loaded from the JSON file', 'success');
-return;
-}
-} catch (err) {}
-const inp = document.getElementById('adminBulkIdsInput');
-if (inp) {
-inp.value = content;
-showToast('IDs loaded from the file into the box.', 'info');
-}
-};
-reader.readAsText(file);
-}
-function renderAdminAreaPreview() {
-const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const filterQ = (document.getElementById('admFilterIdsInput')?.value || '').trim().toUpperCase();
-const box = document.getElementById('adminAreaIdsPreview');
-const titleEl = document.getElementById('admPreviewHeaderTitle');
-if (!box) return;
-const idsInArea = Object.keys(AREA_MAP || {}).filter(id => AREA_MAP[id] === targetArea).filter(id => !filterQ || id.includes(filterQ)).sort();
-if (titleEl) titleEl.textContent = `${targetArea}:`;
-if (idsInArea.length === 0) { box.innerHTML = `<div style="padding:12px;color:var(--muted);font-size:13px;width:100%;text-align:center;">${targetArea} has no IDs added yet.</div>`; return; }
-box.innerHTML = idsInArea.map(id => { const m = getEmpMeta(id); const tags = [m.sub, GENDER_LABELS[m.gender], EMP_TYPE_LABELS[m.type]].filter(Boolean).map(t => `<span class="admin-tag">${esc(t)}</span>`).join(''); return `<span class="admin-id-pill"><span>${esc(id)}</span>${tags}<button type="button" onclick="adminRemoveSingleId('${esc(id)}')" title="Delete">✕</button></span>`; }).join('');
-}
-let _admExtraList = [], _admExtraMonth = '', _admExtraChecked = new Set();
-async function adminFindLatestMonthList(forceFresh) {
-const now = new Date();
-for (let i = 0; i < 8; i++) {
-const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-try {
-const list = await fetchMonthPreIndexedData(m, forceFresh);
-if (list && list.length) return { month: m, list };
-} catch (e) {}
-}
-return null;
-}
-async function adminLoadExtraCandidates(forceFresh) {
-const lbl = document.getElementById('admExtraMonthLbl');
-if (lbl) lbl.textContent = 'Looking for the list of the last uploaded month...';
-await loadAreaMap();
-const res = await adminFindLatestMonthList(Boolean(forceFresh));
-if (!res) { _admExtraList = []; _admExtraMonth = ''; if (lbl) lbl.textContent = 'No monthly data found on the server. Upload Excel first.'; adminRenderExtraList(); adminRenderDesigRates(); return; }
-_admExtraList = res.list; _admExtraMonth = res.month;
-adminRenderExtraList(); adminRenderDesigRates();
-}
-function adminExtraCandidates() {
-const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-const q = (document.getElementById('admExtraSearch')?.value || '').trim().toUpperCase();
-return _admExtraList.filter(e => e.kind === cat && (e.isRppf !== false) && (!q || String(e.id).includes(q) || String(e.name || '').toUpperCase().includes(q)))
-.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
-}
-function adminIsAssignedExtra(e, cat) { return Boolean(AREA_MAP[e.id]) && getEmpMeta(e.id).type === cat; }
-function adminUpdateExtraCount() {
-const el = document.getElementById('admExtraCount');
-if (el) el.textContent = _admExtraChecked.size ? `${bn(_admExtraChecked.size)} selected` : 'No one selected';
-}
-function adminRenderExtraList() {
-const box = document.getElementById('admExtraList'); const lbl = document.getElementById('admExtraMonthLbl'); const note = document.getElementById('admExtraNote');
-if (!box) return;
-const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-if (note) note.textContent = cat === 'EXEC' ? 'All of them will go to the "Executives" area (whichever area is selected above) and will be visible only in in-charge mode. No amount will be calculated.' : 'They will be added to the area selected in "1. Area" above. No amount will be calculated; only hours and days are shown.';
-const list = adminExtraCandidates();
-const total = _admExtraList.filter(e => e.kind === cat && e.isRppf !== false).length;
-if (lbl && _admExtraMonth) lbl.innerHTML = `Source: <b>${esc(_admExtraMonth)}</b> upload • total ${bn(total)} employees • showing ${bn(list.length)} employees`;
-if (!list.length) {
-box.innerHTML = `<div style="padding:14px;text-align:center;color:var(--muted);font-size:13px;">${_admExtraMonth ? 'No one found in this category.' + (cat === 'CAS' ? ' (Casual was not in the old upload - upload the Excel again)' : '') : 'No list.'}</div>`;
-adminUpdateExtraCount(); return;
-}
-box.innerHTML = list.map(e => {
-const assigned = adminIsAssignedExtra(e, cat);
-const on = assigned || _admExtraChecked.has(e.id);
-const tag = AREA_MAP[e.id] ? `<span class="admin-tag">${assigned ? '' : 'Other: '}${esc(AREA_MAP[e.id])}</span>` : '';
-return `<div class="xrow ${on ? 'on' : ''} ${assigned ? 'locked' : ''}" data-id="${esc(e.id)}" data-locked="${assigned ? 1 : 0}" role="checkbox" aria-checked="${on}" tabindex="0">
-<span class="xbox">${on ? '✓' : ''}</span>
-<span style="flex:1;min-width:0;"><span style="display:block;font-size:13.5px;font-weight:700;">${esc(e.name || '—')}</span><span style="display:block;font-size:12px;color:var(--muted);">${esc(e.id)} • ${esc(e.grade || '')}</span></span>${tag}</div>`;
-}).join('');
-adminUpdateExtraCount();
-}
-function adminExtraRowToggle(row) {
-if (!row || row.dataset.locked === '1') return;
-const id = row.dataset.id;
-const on = !_admExtraChecked.has(id);
-if (on) _admExtraChecked.add(id); else _admExtraChecked.delete(id);
-row.classList.toggle('on', on); row.setAttribute('aria-checked', on);
-const bx = row.querySelector('.xbox'); if (bx) bx.textContent = on ? '✓' : '';
-adminUpdateExtraCount();
-}
-document.addEventListener('click', e => { const row = e.target.closest && e.target.closest('#admExtraList .xrow'); if (row) adminExtraRowToggle(row); }, true);
-document.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && e.target.classList && e.target.classList.contains('xrow') && e.target.closest('#admExtraList')) { e.preventDefault(); adminExtraRowToggle(e.target); } });
-function adminToggleExtraAll() {
-const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-const list = adminExtraCandidates().filter(e => !adminIsAssignedExtra(e, cat));
-const allOn = list.length > 0 && list.every(e => _admExtraChecked.has(e.id));
-list.forEach(e => { if (allOn) _admExtraChecked.delete(e.id); else _admExtraChecked.add(e.id); });
-adminRenderExtraList();
-}
-function adminAddExtraSelected() {
-const cat = document.getElementById('admExtraCatSelect')?.value || 'CAS';
-let targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-if (cat === 'EXEC') targetArea = OVERALL_AREA;
-else if (targetArea === OVERALL_AREA) { showToast('Select one area of Solid / Softgel / Packing for Casual', 'warn'); return; }
-const subVal = cat === 'EXEC' ? '' : (document.getElementById('adminTargetSubSelect')?.value || '');
-const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
-const ids = _admExtraList.filter(e => e.kind === cat && _admExtraChecked.has(e.id)).map(e => e.id);
-if (!ids.length) { showToast('First select employees from the list', 'warn'); return; }
-ids.forEach(id => {
-AREA_MAP[id] = targetArea;
-const d = AREA_DETAILS[id] || (AREA_DETAILS[id] = {});
-d.t = cat;
-if (subVal === '__none__') delete d.s; else if (subVal) d.s = subVal;
-if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
-_admExtraChecked.delete(id);
-});
-saveAreaCache(); reapplyTypeOverrides();
-updateAdminAreaStats(); renderAdminAreaPreview(); adminRenderExtraList();
-showToast(`${targetArea}: ${bn(ids.length)} ${EMP_TYPE_LABELS[cat]} employee(s) added (do not forget to save to the server)`, 'success');
-}
-function admRateLabel(c) {
-const r = RATE_TABLE[c]; if (!r) return c;
-return r.noRate ? 'Unspecified (no rate)' : `৳${r.otRate}/hour (${c})`;
-}
-function adminDesigStats() {
-const m = new Map();
-const defaults = [
-{ name: 'Contractual (CF) — All Contracts', grade: 'Helper', id: 'CF0001' },
-{ name: 'Helper', grade: 'Helper', id: 'CF0002' },
-{ name: 'Junior Officer F', grade: 'Junior Officer F', id: 'RF0001' },
-{ name: 'Junior Officer E', grade: 'Junior Officer E', id: 'RF0002' },
-{ name: 'Junior Officer D', grade: 'Junior Officer D', id: 'RF0003' },
-{ name: 'Junior Officer C', grade: 'Junior Officer C', id: 'RF0004' },
-{ name: 'Junior Officer B', grade: 'Junior Officer B', id: 'RF0005' },
-{ name: 'Junior Officer A', grade: 'Junior Officer A', id: 'RF0006' },
-{ name: 'Casual', grade: 'Casual', id: '100001' }
-];
-defaults.forEach(d => {
-const k = desigKey(d.grade);
-if (!m.has(k)) m.set(k, { key: k, name: d.grade, count: 0, sample: { id: d.id, grade: d.grade } });
-});
-_admExtraList.forEach(e => {
-if (e.isRppf === false) return;
-const g = String(e.grade || '').replace(/\s+/g, ' ').trim();
-if (!g) return;
-const k = desigKey(g);
-const o = m.get(k) || { key: k, name: g, count: 0, sample: e };
-o.count++; m.set(k, o);
-});
-return [...m.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-}
-function getEffectiveDesigRateBucket(d) {
-const cur = DESIG_RATES[d.key];
-if (cur && RATE_TABLE[cur]) return cur;
-return getDefaultRateCat(d.sample);
-}
-function selectAdminRateBucket(bucketKey) {
-if (!RATE_TABLE[bucketKey]) bucketKey = 'CF';
-activeAdminRateBucket = bucketKey;
-adminRenderDesigRates();
-}
-function adminRenderDesigRates() {
-const tabsBox = document.getElementById('adminRateBucketTabs');
-const pkgWrap = document.getElementById('adminRatePkgEditorWrap');
-const listBox = document.getElementById('admDesigRateList');
-if (!tabsBox || !listBox) return;
-if (!RATE_TABLE[activeAdminRateBucket]) activeAdminRateBucket = 'CF';
-const allDesigs = adminDesigStats();
-const bucketKeys = Object.keys(RATE_TABLE);
-tabsBox.innerHTML = bucketKeys.map(k => {
-const r = RATE_TABLE[k];
-const assignedCount = allDesigs.filter(d => getEffectiveDesigRateBucket(d) === k).length;
-const titleTxt = r.noRate ? `Unspecified (${bn(assignedCount)})` : `৳${bn(r.otRate)}/hour • ${k} (${bn(assignedCount)})`;
-return `<button type="button" class="rate-bucket-tab ${k === activeAdminRateBucket ? 'active' : ''}" onclick="selectAdminRateBucket('${esc(k)}')">${titleTxt}</button>`;
-}).join('');
-const curRate = RATE_TABLE[activeAdminRateBucket];
-if (pkgWrap) {
-if (curRate && !curRate.noRate) {
-pkgWrap.style.display = 'block';
-const otInp = document.getElementById('pkgOtRateInp');
-const nightInp = document.getElementById('pkgNightRateInp');
-const holSel = document.getElementById('pkgHolTypeSel');
-const holValInp = document.getElementById('pkgHolValInp');
-const holValLbl = document.getElementById('pkgHolValLbl');
-if (otInp) otInp.value = curRate.otRate || 0;
-if (nightInp) nightInp.value = curRate.nightRate || 0;
-if (holSel) holSel.value = curRate.holidayType || 'flat';
-if (holValLbl) holValLbl.textContent = (curRate.holidayType === 'hourly') ? 'Holiday hours (× OT rate)' : 'Holiday fixed amount (৳)';
-if (holValInp) holValInp.value = (curRate.holidayType === 'hourly') ? (curRate.holidayHours || 8) : (curRate.holidayFlat || 300);
-} else {
-pkgWrap.style.display = 'none';
-}
-}
-const titleEl = document.getElementById('adminRateBucketDesigTitle');
-if (titleEl) {
-titleEl.textContent = curRate?.noRate
-? 'Unspecified (only hours and days shown) - select designations:'
-: `৳${curRate.otRate}/hour (${curRate.name || activeAdminRateBucket}) - designations/contracts that will be calculated at this rate:`;
-}
-listBox.innerHTML = allDesigs.map(d => {
-const eff = getEffectiveDesigRateBucket(d);
-const isChecked = (eff === activeAdminRateBucket);
-const otherR = RATE_TABLE[eff];
-const otherBadge = !isChecked ? `<span class="admin-tag">${otherR?.noRate ? 'Unspecified' : '৳' + (otherR?.otRate || 0)}</span>` : `<span class="admin-tag" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border);">Active</span>`;
-return `<div class="desig-check-item ${isChecked ? 'checked' : ''}" data-dkey="${esc(d.key)}" onclick="toggleDesigInActiveBucket(this.dataset.dkey)">
-<span class="xbox" style="width:18px;height:18px;font-size:12px;${isChecked ? 'background:var(--brand);border-color:var(--brand);' : ''}">${isChecked ? '✓' : ''}</span>
-<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.name)} ${d.count ? `(${bn(d.count)})` : ''}</span>
-${otherBadge}
-</div>`;
-}).join('');
-}
-function onAdminPkgFieldChange() {
-const curRate = RATE_TABLE[activeAdminRateBucket];
-if (!curRate || curRate.noRate) return;
-const otVal = parseFloat(document.getElementById('pkgOtRateInp')?.value) || 0;
-const nightVal = parseFloat(document.getElementById('pkgNightRateInp')?.value) || 0;
-const holType = document.getElementById('pkgHolTypeSel')?.value || 'flat';
-const holVal = parseFloat(document.getElementById('pkgHolValInp')?.value) || 0;
-curRate.otRate = otVal;
-curRate.nightRate = nightVal;
-curRate.holidayType = holType;
-if (holType === 'hourly') curRate.holidayHours = holVal;
-else curRate.holidayFlat = holVal;
-const holValLbl = document.getElementById('pkgHolValLbl');
-if (holValLbl) holValLbl.textContent = (holType === 'hourly') ? 'Holiday hours (× OT rate)' : 'Holiday fixed amount (৳)';
-saveAreaCache();
-syncRateDropdownOptions();
-reapplyTypeOverrides();
-}
-function toggleDesigInActiveBucket(dkey) {
-if (!dkey) return;
-const allDesigs = adminDesigStats();
-const item = allDesigs.find(x => x.key === dkey);
-const currentBucket = item ? getEffectiveDesigRateBucket(item) : '';
-if (currentBucket === activeAdminRateBucket) {
-DESIG_RATES[dkey] = 'UNSPEC';
-} else {
-DESIG_RATES[dkey] = activeAdminRateBucket;
-}
-saveAreaCache();
-reapplyTypeOverrides();
-adminRenderDesigRates();
-}
-function adminBucketSelectAllDesigs(selectAll) {
-const allDesigs = adminDesigStats();
-allDesigs.forEach(d => {
-if (selectAll) {
-DESIG_RATES[d.key] = activeAdminRateBucket;
-} else if (getEffectiveDesigRateBucket(d) === activeAdminRateBucket) {
-DESIG_RATES[d.key] = 'UNSPEC';
-}
-});
-saveAreaCache();
-reapplyTypeOverrides();
-adminRenderDesigRates();
-showToast(selectAll ? 'All designations were added to this rate' : 'All designations of this rate were deselected', 'info');
-}
-function adminCreateNewRateBucket() {
-const name = (document.getElementById('newRateNameInp')?.value || '').trim();
-const otRate = parseFloat(document.getElementById('newRateOtInp')?.value) || 0;
-const nightRate = parseFloat(document.getElementById('newRateNightInp')?.value) || 0;
-const holFlat = parseFloat(document.getElementById('newRateHolInp')?.value) || 0;
-if (!otRate || otRate <= 0) {
-showToast('Enter a valid OT hourly rate', 'warn');
-return;
-}
-const key = 'R_' + Math.round(otRate);
-RATE_TABLE[key] = {
-otRate,
-nightRate,
-holidayType: 'flat',
-holidayHours: 8,
-holidayFlat: holFlat,
-name: name || `৳${otRate}/hour package`
-};
-activeAdminRateBucket = key;
-saveAreaCache();
-syncRateDropdownOptions();
-reapplyTypeOverrides();
-adminRenderDesigRates();
-showToast(`৳${otRate}/hour rate package created`, 'success');
-}
-async function adminSaveRatesAndPush() {
-onAdminPkgFieldChange();
-await adminPushAreasToGithub();
-}
-function adminDownloadAreasJson() {
-const jsonStr = JSON.stringify({
-areas: AREA_MAP,
-details: AREA_DETAILS,
-subsections: AREA_SUBS,
-designationRates: DESIG_RATES,
-rateTable: RATE_TABLE
-}, null, 2);
-const blob = new Blob([jsonStr], { type: 'application/json' });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url; a.download = 'areas.json';
-document.body.appendChild(a); a.click(); a.remove();
-setTimeout(() => URL.revokeObjectURL(url), 3000);
-showToast('areas.json backup downloaded', 'success');
-}
 function utf8ToBase64(str) {
 const bytes = new TextEncoder().encode(str);
 let binary = '';
@@ -10094,7 +9680,7 @@ return null;
 }
 async function githubPutFile(repoPath, base64Content, commitMessage) {
 const token = getGhToken();
-if (!token) { switchAdminTab('setup'); throw new Error('First go to the "Server setup" tab and save your Server Access Key there.'); }
+if (!token) { throw new Error('Save your Server Access Key in admin.html first.'); }
 const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${repoPath}`;
 const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
 const sha = await githubGetSha(repoPath, headers);
@@ -10110,7 +9696,7 @@ return await putResp.json();
 }
 async function githubDeleteFile(repoPath, sha, commitMessage) {
 const token = getGhToken();
-if (!token) { switchAdminTab('setup'); throw new Error('First go to the "Server setup" tab and save your Server Access Key there.'); }
+if (!token) { throw new Error('Save your Server Access Key in admin.html first.'); }
 const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${repoPath}`;
 const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
 let fileSha = sha;
@@ -10132,20 +9718,14 @@ throw new Error(errTxt);
 return await delResp.json();
 }
 async function adminPushAreasToGithub() {
-const btn = document.getElementById('adminPushAreasBtn');
-const statusEl = document.getElementById('adminAreaPushStatus');
-if (btn) btn.disabled = true;
-if (statusEl) { statusEl.style.color = 'var(--brand-text)'; statusEl.textContent = 'Saving areas.json to RPPF Cloud Server...'; }
 try {
 const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2);
-await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Admin Panel`);
+await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Ranking Category Editor`);
 try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_') || k.startsWith('renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
-if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'areas.json was successfully updated on the RPPF Cloud Server.'; }
-showToast('areas.json was successfully saved to the server', 'success');
+showToast('Saved to RPPF Cloud Server', 'success');
 } catch (err) {
-if (statusEl) { statusEl.style.color = 'var(--danger)'; statusEl.textContent = `Problem: ${err.message}`; }
 showToast(err.message, 'error');
-} finally { if (btn) btn.disabled = false; }
+}
 }
 function cleanPunchValue(val) {
 if (val === undefined || val === null) return "";
@@ -10160,268 +9740,6 @@ if (cleaned === "-" || cleaned === "--" || cleaned === "N/A" || cleaned === "NA"
 if (/^0{1,2}:00(:00)?$/.test(cleaned)) return true;
 if (!/^\d{1,2}:\d{2}(:\d{2})?([AP]M)?$/i.test(cleaned)) return true;
 return false;
-}
-function finalizeExcelEmployee(c, sourceName) {
-const detection = detectCategory(c.designation, c.id);
-const valid = Boolean(detection.valid && detection.category);
-const category = valid ? detection.category : null;
-const kind = /^\d{5,8}$/.test(String(c.id)) || /^CASUAL/i.test(c.designation || '') ? 'CAS' : (!valid && /^RF/i.test(String(c.id)) ? 'EXEC' : '');
-const r = RATE_TABLE[category] || RATE_TABLE.JO;
-const otHours = Number((c.totalRow ? c.totalRow.ot : c.dailyOt).toFixed(2));
-const totalDuty = Number((c.totalRow ? c.totalRow.duty : c.dailyDuty).toFixed(2));
-const holidayCount = c.holidayDays.length;
-const nightCount = c.nightDays.length;
-const otAmount = valid ? Number((otHours * r.otRate).toFixed(2)) : 0;
-const holidayAmount = valid ? Number((r.holidayType === "hourly" ? holidayCount * r.holidayHours * r.otRate : holidayCount * r.holidayFlat).toFixed(2)) : 0;
-const nightAmount = valid ? Number((nightCount * r.nightRate).toFixed(2)) : 0;
-return {
-valid,
-id: c.id,
-name: c.name.substring(0, 45),
-grade: c.designation,
-kind,
-category,
-area: getAreaForId(c.id, c.isRppf),
-isRppf: c.isRppf,
-totalDuty,
-otHours,
-holidayCount,
-nightCount,
-regularDaysCount: c.regularDaysCount,
-plainDaysCount: c.plainDaysCount,
-holidayDays: c.holidayDays,
-nightDays: c.nightDays,
-punchProblems: c.punchProblems,
-daily: c.daily || [],
-otAmount,
-holidayAmount,
-nightAmount,
-totalEarned: Number((otAmount + holidayAmount + nightAmount).toFixed(2)),
-fileName: sourceName || ''
-};
-}
-function cleanEmpName(raw) {
-let n = String(raw == null ? '' : raw).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').replace(/\s+/g, ' ').trim();
-let prev;
-do { prev = n; n = n.replace(/^(Mr|Mrs|Ms|Miss)\.?\s+/i, ''); } while (n !== prev);
-return n.trim();
-}
-function cleanDesignation(raw) {
-return String(raw == null ? '' : raw).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').replace(/\s+/g, ' ').trim();
-}
-function parseEmpHeader(col0, id) {
-const rest = col0.substring(id.length).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, ' ').trim();
-const parts = rest.split(',').map(x => x.trim());
-let nameDesig = rest;
-if (parts.length >= 3) nameDesig = parts.slice(0, parts.length - 2).join(', ');   // drop Department, Location
-const m = nameDesig.match(/^(.*?)\s{2,}(.+)$/);                                    // name | designation (2+ spaces)
-if (m) return { name: cleanEmpName(m[1]), designation: cleanDesignation(m[2]) };
-const g = nameDesig.match(/^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual)\b.*)$/i);
-if (g) return { name: cleanEmpName(g[1]), designation: cleanDesignation(g[2]) };
-return { name: cleanEmpName(nameDesig), designation: '' };
-}
-function buildSummaryMap(workbook) {
-const map = {};
-const ws = workbook.Sheets && workbook.Sheets['Summary'];
-if (!ws) return map;
-const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" });
-let hi = -1, ci = {};
-for (let i = 0; i < Math.min(rows.length, 15); i++) {
-const low = (rows[i] || []).map(c => String(c).trim().toLowerCase());
-if (low.includes('employee id')) { hi = i; ci = { id: low.indexOf('employee id'), name: low.indexOf('employee name'), desig: low.indexOf('designation') }; break; }
-}
-if (hi < 0) return map;
-for (let i = hi + 1; i < rows.length; i++) {
-const r = rows[i]; if (!r) continue;
-const id = String(r[ci.id] == null ? '' : r[ci.id]).replace(/\s+/g, '').toUpperCase();
-if (!id) continue;
-map[id] = { name: cleanEmpName(ci.name >= 0 ? r[ci.name] : ''), designation: cleanDesignation(ci.desig >= 0 ? r[ci.desig] : '') };
-}
-return map;
-}
-function parseExcelWorkbook(workbook, sourceName) {
-const sheetName = workbook.SheetNames.includes('Work Log') ? 'Work Log' : workbook.SheetNames[0];
-const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, raw: false, defval: "" });
-const out = [];
-const summaryMap = buildSummaryMap(workbook);
-let cur = null;
-const flush = () => { if (cur) out.push(finalizeExcelEmployee(cur, sourceName)); cur = null; };
-for (let i = 0; i < json.length; i++) {
-const row = json[i];
-if (!row || row.length === 0) continue;
-const col0 = row[0] === undefined || row[0] === null ? "" : String(row[0]).replace(/[\u00A0\u200B-\u200D\uFEFF]/g, " ").trim();
-if (col0 && /^([A-Z]{2}\d{3,6}|\d{5,8})\s+/i.test(col0)) {
-flush();
-const idMatch = col0.match(/^([A-Z]{2}\d{3,6}|\d{5,8})/i);
-const id = idMatch ? idMatch[1].toUpperCase() : 'UNKNOWN';
-const hdr = parseEmpHeader(col0, id);
-const sm = summaryMap[id];                       // Summary sheet = source of truth
-const name = (sm && sm.name) || hdr.name;
-const designation = (sm && sm.designation) || hdr.designation;
-cur = {
-id, name, designation,
-isRppf: isRppfText(col0) || col0.toUpperCase().includes('RAJENDRAPUR'),
-totalRow: null, dailyDuty: 0, dailyOt: 0,
-regularDaysCount: 0, plainDaysCount: 0,
-holidayDays: [], nightDays: [], punchProblems: [], daily: []
-};
-continue;
-}
-if (!cur) continue;
-if (/^total$/i.test(col0)) {
-const n = k => Number(row[k]) || 0;
-cur.totalRow = {
-duty: n(4) + n(5) + n(6) + n(7) + n(8) + n(9),
-ot: n(5) + n(7) + n(9)
-};
-continue;
-}
-if (col0 && /^\d{2}-[A-Z]{3}-\d{4}$/i.test(col0)) {
-const date = col0.toUpperCase();
-const missIn = isPunchMissing(row[2]);
-const missOut = isPunchMissing(row[3]);
-const regDuty = Number(row[4]) || 0, regOT = Number(row[5]) || 0;
-const doDuty = Number(row[6]) || 0, doOT = Number(row[7]) || 0;
-const holDuty = Number(row[8]) || 0, holOT = Number(row[9]) || 0;
-const isNight = cleanPunchValue(row[10]).toLowerCase() === 'yes';
-cur.daily.push([date, cleanPunchValue(row[1]), cleanPunchValue(row[2]), cleanPunchValue(row[3]), regDuty, regOT, doDuty, doOT, holDuty, holOT, isNight ? 1 : 0]);
-cur.dailyDuty += regDuty + regOT + doDuty + doOT + holDuty + holOT;
-cur.dailyOt += regOT + doOT + holOT;
-if (regDuty > 0) cur.regularDaysCount++;
-if (doDuty > 0 || doOT > 0 || holDuty > 0 || holOT > 0) {
-cur.holidayDays.push({ date, doDuty, doExtra: doOT, holDuty, holExtra: holOT });
-}
-if (isNight) cur.nightDays.push(date);
-if (missIn || missOut) {
-cur.punchProblems.push(date);
-} else if ((regDuty + doDuty + holDuty) > 0 && !isNight && (regOT + doOT + holOT) === 0) {
-cur.plainDaysCount++;
-}
-}
-}
-flush();
-return out;
-}
-async function processExcelUpload() {
-const y = document.getElementById('adminPdfYear')?.value;
-const m = document.getElementById('adminPdfMonth')?.value;
-const fileInp = document.getElementById('adminExcelFileInput');
-const files = fileInp?.files;
-if (!files || files.length === 0) { showToast('Please select at least one Excel file', 'warn'); return; }
-if (typeof XLSX === 'undefined') { showToast('Excel library did not load, refresh the page and try again', 'error'); return; }
-const monthFolder = `${y}-${m}`;
-const btn = document.getElementById('adminUploadExcelBtn');
-const progWrap = document.getElementById('adminPdfUploadProgress');
-const progTxt = document.getElementById('adminPdfStatusText');
-const progFill = document.getElementById('adminPdfProgressFill');
-if (btn) btn.disabled = true;
-if (progWrap) progWrap.style.display = 'block';
-try {
-await loadAreaMap();
-const employeesMap = new Map();
-for (let i = 0; i < files.length; i++) {
-const file = files[i];
-if (progTxt) progTxt.textContent = `Reading file: ${file.name}...`;
-if (progFill) progFill.style.width = `${10 + Math.round((i / files.length) * 40)}%`;
-const buf = await file.arrayBuffer();
-const workbook = XLSX.read(new Uint8Array(buf), { type: 'array' });
-const list = parseExcelWorkbook(workbook, file.name);
-for (const e of list) {
-const existing = employeesMap.get(e.id);
-employeesMap.set(e.id, existing ? pickBestEmployee(existing, e) : e);
-}
-await new Promise(res => setTimeout(res, 10));
-}
-const allEmployees = Array.from(employeesMap.values());
-if (allEmployees.length === 0) throw new Error('No employee data found in the file. Check that the Excel format is correct (existing server data is unchanged).');
-if (progFill) progFill.style.width = '65%';
-if (progTxt) progTxt.textContent = `${allEmployees.length} employee calculations created, saving to the server...`;
-const payload = { month: monthFolder, updatedAt: new Date().toISOString(), employees: allEmployees };
-await githubPutFile(`data/${monthFolder}.json`, utf8ToBase64(JSON.stringify(payload)), `Upload Excel data for ${monthFolder} via RPPF Admin Panel`);
-monthIndexMemoryCache[monthFolder] = allEmployees;
-try {
-localStorage.setItem(MONTH_DATA_CACHE_PREFIX + monthFolder, JSON.stringify({ ts: Date.now(), employees: allEmployees }));
-localStorage.removeItem(LEADERBOARD_PREFIX + monthFolder);
-Object.keys(localStorage).forEach(k => {
-if (k.startsWith(COMPARE_CACHE_PREFIX + monthFolder + '_') || k.startsWith(CACHE_PREFIX + monthFolder + '_')) localStorage.removeItem(k);
-});
-} catch (e) {}
-const rppf = allEmployees.filter(e => e.isRppf !== false && e.valid !== false).length;
-const skipped = allEmployees.filter(e => e.valid === false).length;
-const punch = allEmployees.filter(e => getPunchProblemCount(e) > 0).length;
-if (progFill) progFill.style.width = '100%';
-if (progTxt) progTxt.textContent = `Done: total ${allEmployees.length} (RPPF ${rppf}, out of grade ${skipped}, punch problems ${punch})`;
-if (fileInp) fileInp.value = '';
-showToast(`${monthFolder} data was uploaded successfully`, 'success');
-adminCheckMonthData();
-} catch (err) {
-console.error(err);
-if (progTxt) progTxt.textContent = `Upload failed: ${err.message}`;
-showToast(err.message, 'error');
-} finally {
-if (btn) btn.disabled = false;
-}
-}
-async function adminCheckMonthData() {
-const y = document.getElementById('adminPdfYear')?.value;
-const m = document.getElementById('adminPdfMonth')?.value;
-const box = document.getElementById('adminExistingDataStatus');
-if (!y || !m || !box) return;
-const monthFolder = `${y}-${m}`;
-box.textContent = 'Verifying data, please wait...';
-try {
-const data = await fetchJsonResource(`data/${monthFolder}.json`);
-const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : []);
-const when = data && data.updatedAt ? new Date(data.updatedAt).toLocaleString('en-GB') : '—';
-box.innerHTML = `<div class="admin-file-item">
-<div>
-<strong>data/${esc(monthFolder)}.json</strong>
-<div style="font-size:12px;color:var(--muted);">Updated: ${esc(when)}</div>
-</div>
-<div class="admin-file-actions">
-<button type="button" class="btn-secondary" onclick="document.getElementById('adminExcelFileInput')?.click()">Replace</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminConfirmDeleteMonthData('${esc(monthFolder)}')">Delete</button>
-</div>
-</div>`;
-} catch (e) {
-box.innerHTML = `<span style="color:var(--muted);">No data for this month on the server yet.</span>`;
-}
-}
-async function adminReoptimizeMonthData() {
-const y = document.getElementById('adminPdfYear')?.value;
-const m = document.getElementById('adminPdfMonth')?.value;
-if (!y || !m) return;
-const monthFolder = `${y}-${m}`;
-showToast(`${monthFolder} data is being re-optimized...`, 'info');
-try {
-await loadAreaMap();
-const list = await fetchMonthPreIndexedData(monthFolder, true);
-if (!list || !list.length) throw new Error('No data for this month found on the server. Upload Excel first.');
-list.forEach(e => { e.area = getAreaForId(e.id, e.isRppf !== false); applyTypeOverride(e); });
-const payload = { month: monthFolder, updatedAt: new Date().toISOString(), employees: list };
-await githubPutFile(`data/${monthFolder}.json`, utf8ToBase64(JSON.stringify(payload)), `Re-optimize ${monthFolder} data via RPPF Admin Panel`);
-monthIndexMemoryCache[monthFolder] = list;
-showToast(`${monthFolder} data was re-optimized according to the new rates and areas`, 'success');
-adminCheckMonthData();
-} catch (err) {
-showToast(err.message, 'error');
-}
-}
-function adminConfirmDeleteMonthData(monthFolder) {
-openConfirmModal(`Are you sure you want to delete the optimized data for "${monthFolder}" (file data/${monthFolder}.json)?`, async () => {
-try {
-await githubDeleteFile(`data/${monthFolder}.json`, null, `Delete data/${monthFolder}.json via RPPF Admin Panel`);
-delete monthIndexMemoryCache[monthFolder];
-try {
-localStorage.removeItem(MONTH_DATA_CACHE_PREFIX + monthFolder);
-localStorage.removeItem(LEADERBOARD_PREFIX + monthFolder);
-} catch (e) {}
-showToast(`${monthFolder} data deleted`, 'success');
-adminCheckMonthData();
-} catch (err) {
-showToast(`Problem while deleting: ${err.message}`, 'error');
-}
-});
 }
 function openConfirmModal(message, onConfirm) {
 pendingConfirmFn = onConfirm;
@@ -10445,97 +9763,8 @@ document.getElementById('complianceModal')?.classList.add('open');
 function closeComplianceModal() {
 document.getElementById('complianceModal')?.classList.remove('open');
 }
-async function renderAdminTeamManager() {
-const box = document.getElementById('adminTeamManagerList');
-if (!box) return;
-const list = await loadTeamData();
-if (!list || list.length === 0) {
-box.innerHTML = '<div style="color:var(--muted);font-size:13px;">No ERP members.</div>';
-return;
-}
-box.innerHTML = list.map((m, idx) => `<div class="admin-file-item">
-<div style="flex:1;min-width:0;">
-<div style="font-weight:800;color:var(--text);">${esc(m.name)} <span class="admin-tag">${esc(m.area || 'All')}</span></div>
-<div style="font-size:12px;color:var(--muted);">${esc(m.designation || '')} • ID: ${esc(m.id || '')} • WA: ${esc(m.whatsapp || '')}</div>
-</div>
-<div class="admin-file-actions">
-<button type="button" class="btn-secondary" onclick="adminEditTeamMember(${idx})">Edit</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminDeleteTeamMember(${idx})">Delete</button>
-</div>
-</div>`).join('');
-}
-function adminEditTeamMember(idx) {
-if (!teamData || !teamData[idx]) return;
-const m = teamData[idx];
-document.getElementById('admTeamEditIdx').value = String(idx);
-document.getElementById('admTeamName').value = m.name || '';
-document.getElementById('admTeamDesig').value = m.designation || '';
-document.getElementById('admTeamId').value = m.id || '';
-document.getElementById('admTeamArea').value = m.area || 'All';
-document.getElementById('admTeamWa').value = m.whatsapp || '';
-const btn = document.getElementById('admTeamSaveBtn');
-if (btn) btn.textContent = 'Update and save to server';
-}
-function adminResetTeamForm() {
-document.getElementById('admTeamEditIdx').value = '-1';
-document.getElementById('admTeamName').value = '';
-document.getElementById('admTeamDesig').value = '';
-document.getElementById('admTeamId').value = '';
-document.getElementById('admTeamArea').value = 'All';
-document.getElementById('admTeamWa').value = '';
-const btn = document.getElementById('admTeamSaveBtn');
-if (btn) btn.textContent = 'Add and save ERP member';
-}
-async function adminSaveTeamMember() {
-const name = (document.getElementById('admTeamName')?.value || '').trim();
-const designation = (document.getElementById('admTeamDesig')?.value || '').trim();
-const id = (document.getElementById('admTeamId')?.value || '').trim().toUpperCase();
-const area = document.getElementById('admTeamArea')?.value || 'All';
-const whatsapp = (document.getElementById('admTeamWa')?.value || '').replace(/[^0-9]/g, '');
-if (!name || !whatsapp) {
-showToast('Enter the ERP member name and WhatsApp number', 'warn');
-return;
-}
-const list = [...(await loadTeamData())];
-const editIdx = parseInt(document.getElementById('admTeamEditIdx')?.value || '-1', 10);
-const memberObj = {
-name,
-designation: designation || 'ERP Representative',
-id: id || '—',
-area,
-whatsapp,
-photo: 'https://checkot.github.io/icon.png'
-};
-if (editIdx >= 0 && editIdx < list.length) list[editIdx] = memberObj;
-else list.push(memberObj);
-teamData = list;
-try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
-adminResetTeamForm();
-renderAdminTeamManager();
-try {
-await githubPutFile('team.json', utf8ToBase64(JSON.stringify({ team: teamData }, null, 2)), `Update team.json via RPPF Admin Panel`);
-showToast('ERP team list saved to the server', 'success');
-} catch (err) {
-showToast('Saved locally; set the Server Access Key to push to the server', 'warn');
-}
-}
-function adminDeleteTeamMember(idx) {
-if (!teamData || !teamData[idx]) return;
-const m = teamData[idx];
-openConfirmModal(`Are you sure you want to delete ERP member "${m.name}" from the list?`, async () => {
-teamData.splice(idx, 1);
-try { localStorage.setItem(TEAM_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: teamData })); } catch (e) {}
-renderAdminTeamManager();
-try {
-await githubPutFile('team.json', utf8ToBase64(JSON.stringify({ team: teamData }, null, 2)), `Delete ERP member ${m.name}`);
-showToast('ERP member deleted', 'success');
-} catch (err) {
-showToast('Deleted locally', 'info');
-}
-});
-}
 async function openErpSupportModal(customMsg, preferredArea) {
-pendingErpMessage = customMsg || `Hello, support is needed from the RENATA Overtime App.`;
+pendingErpMessage = customMsg || `Hello, support is needed from the RPPF Overtime App.`;
 pendingErpArea = preferredArea || (currentSearchId ? getAreaForId(currentSearchId, true) : '');
 const modal = document.getElementById('erpSupportModal');
 const body = document.getElementById('erpModalListBody');
@@ -10691,80 +9920,6 @@ if (step4T) step4T.textContent = d.compareHeader;
 const step5T = document.querySelector('#step5 .collapse-header .title');
 if (step5T) step5T.textContent = d.datesHeader;
 }
-async function renderAdminNoticesList() {
-const box = document.getElementById('adminCurrentNoticesList');
-if (!box) return;
-const list = await loadNoticesData();
-if (!list || list.length === 0) { box.innerHTML = '<div style="color:var(--muted);font-size:13px;">There are no notices.</div>'; return; }
-box.innerHTML = list.map(n => `<div class="admin-file-item"><div style="flex:1;min-width:0;"><div style="font-weight:800;color:var(--text);">${esc(n.title)}</div><div style="font-size:12px;color:var(--muted);">${esc(n.date)} • ${esc(n.priority || 'normal')}</div></div><button type="button" class="calc-mini-btn danger-btn" style="min-height:32px!important;padding:0 10px!important;" onclick="adminDeleteNotice('${esc(n.id)}')">Delete</button></div>`).join('');
-}
-async function adminAddAndPushNotice() {
-const titleEl = document.getElementById('adminNoticeTitle');
-const bodyEl = document.getElementById('adminNoticeBody');
-const prioEl = document.getElementById('adminNoticePriority');
-const title = (titleEl?.value || '').trim();
-const body = (bodyEl?.value || '').trim();
-const priority = prioEl?.value || 'normal';
-if (!title || !body) { showToast('Enter the notice title and details!', 'warn'); return; }
-const list = [...(await loadNoticesData())];
-const newNotice = { id: 'n' + Date.now(), title, body, date: new Date().toISOString().slice(0, 10), priority };
-list.unshift(newNotice);
-noticesData = list;
-try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
-if (titleEl) titleEl.value = '';
-if (bodyEl) bodyEl.value = '';
-renderAdminNoticesList(); renderNoticesHome();
-try {
-const jsonStr = JSON.stringify({ notices: noticesData }, null, 2);
-await githubPutFile('notices.json', utf8ToBase64(jsonStr), `Publish notice: ${title}`);
-showToast('New notice published on the RPPF Cloud Server', 'success');
-} catch (err) { showToast(`Notice saved in the app, but set the Server Access Key to upload it to the server`, 'warn'); }
-}
-async function adminDeleteNotice(noticeId) {
-openConfirmModal('Are you sure you want to delete this notice?', async () => {
-const list = (await loadNoticesData()).filter(n => n.id !== noticeId);
-noticesData = list;
-try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
-renderAdminNoticesList(); renderNoticesHome();
-try {
-const jsonStr = JSON.stringify({ notices: noticesData }, null, 2);
-await githubPutFile('notices.json', utf8ToBase64(jsonStr), `Delete notice ${noticeId}`);
-showToast('Notice deleted', 'success');
-} catch (err) { showToast('Notice deleted locally.', 'info'); }
-});
-}
-async function adminSaveAndTestGhToken() {
-const inp = document.getElementById('adminGhTokenInput');
-const resEl = document.getElementById('adminGhTokenTestResult');
-const statusTxt = document.getElementById('adminTokenStatusText');
-const raw = (inp?.value || '').trim();
-if (!raw) { showToast('Paste the Server Access Key', 'warn'); return; }
-setGhToken(raw);
-if (resEl) { resEl.style.color = 'var(--brand-text)'; resEl.textContent = 'Checking RPPF Cloud Server connection...'; }
-try {
-const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}`;
-const resp = await fetch(apiUrl, { headers: { 'Authorization': `token ${raw}`, 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' });
-if (!resp.ok) throw new Error(`HTTP ${resp.status} - Server Access Key is incorrect or has expired`);
-const repoInfo = await resp.json();
-const canPush = repoInfo?.permissions?.push;
-if (!canPush) throw new Error('This Server Access Key does not have Write permission.');
-if (resEl) { resEl.style.color = 'var(--success)'; resEl.textContent = `Connection successful! (RPPF Cloud Server - Write Access Active)`; }
-if (statusTxt) statusTxt.innerHTML = 'RPPF Cloud Server is connected - files and IDs can now be uploaded directly.';
-showToast('RPPF Cloud Server connection is active', 'success');
-} catch (err) {
-if (resEl) { resEl.style.color = 'var(--danger)'; resEl.textContent = `Problem: ${err.message}`; }
-showToast(err.message, 'error');
-}
-}
-function adminClearGhToken() {
-setGhToken('');
-const inp = document.getElementById('adminGhTokenInput');
-const resEl = document.getElementById('adminGhTokenTestResult');
-if (inp) inp.value = '';
-if (resEl) resEl.textContent = 'Server Access Key was removed.';
-initAdminPage();
-showToast('Server Access Key removed', 'info');
-}
 initYearDropdown();
 setDefaultMonth();
 initLbTabs();
@@ -10795,11 +9950,25 @@ step7.style.display = 'block';
 const idBadge = document.getElementById('reportEmpIdBadge');
 const nameLbl = document.getElementById('reportEmpNameLbl');
 const subLbl = document.getElementById('reportEmpSubLbl');
+const monthLbl = document.getElementById('reportStripMonthLbl');
 if (idBadge) idBadge.textContent = currentSearchId;
 if (nameLbl) nameLbl.textContent = currentResult.name || currentSearchId;
 const rawArea = currentResult.isRppf !== false ? getAreaForId(currentSearchId, true) : 'Other facility';
 const areaName = rawArea === OVERALL_AREA ? 'Executives' : rawArea;
-if (subLbl) subLbl.textContent = `${currentMonth || getCurrentMonth()} • ${areaName}`;
+const ym = currentMonth || getCurrentMonth();
+const [yy, mm] = String(ym).split('-');
+const mIdx = (parseInt(mm, 10) || 1) - 1;
+const niceMonth = `${BN_MONTHS[mIdx] || mm} ${yy}`;
+if (subLbl) subLbl.textContent = `${areaName}${currentResult.grade ? ' • ' + currentResult.grade : ''}`;
+if (monthLbl) monthLbl.textContent = `${niceMonth} (${ym})`;
+if (currentPermanentPage === 'report' && window._rptCtx && window._rptCtx.emp) {
+const h = document.getElementById('rptPreviewHost');
+if (h && h.style.display !== 'block') toggleReportPreview();
+else if (h && h.style.display === 'block') {
+const wrap = document.getElementById('rptInnerScaleWrap');
+if (wrap) wrap.innerHTML = _rptHtml(window._rptCtx, false);
+}
+}
 } else {
 strip.style.display = 'none';
 emptyCard.style.display = 'block';
@@ -10835,100 +10004,41 @@ let availableServerMonths = null;
 let probingMonthsPromise = null;
 async function probeAvailableMonths() {
 if (availableServerMonths) return availableServerMonths;
-if (probingMonthsPromise) return probingMonthsPromise;
-probingMonthsPromise = (async () => {
-const now = new Date();
-const currY = now.getFullYear();
-const currM = now.getMonth() + 1;
-const candidates = [];
-let y = currY, m = currM;
-for (let i = 0; i < 18; i++) {
-candidates.push(`${y}-${String(m).padStart(2, '0')}`);
-m -= 1;
-if (m < 1) { m = 12; y -= 1; }
-}
+// Build clean 12-month continuity list for selected year without flooding 18 full JSON downloads!
+const cur = getCurrentMonth();
+const [cy, cm] = cur.split('-').map(Number);
+const year = (cy >= 2020 && cy <= 2032) ? cy : new Date().getFullYear();
 const found = new Set();
+for (let m = 1; m <= 12; m++) {
+found.add(`${year}-${String(m).padStart(2, '0')}`);
+}
 Object.keys(monthIndexMemoryCache).forEach(k => {
 if (Array.isArray(monthIndexMemoryCache[k]) && monthIndexMemoryCache[k].length > 0) found.add(k);
 });
-try {
-for (let i = 0; i < localStorage.length; i++) {
-const k = localStorage.key(i) || '';
-if (k.startsWith(MONTH_DATA_CACHE_PREFIX)) found.add(k.slice(MONTH_DATA_CACHE_PREFIX.length));
-}
-} catch (e) {}
-await Promise.all(candidates.map(async (ym) => {
-if (found.has(ym)) return;
-try {
-const list = await fetchMonthPreIndexedData(ym, false);
-if (list && list.length > 0) found.add(ym);
-} catch (e) {}
-}));
-if (found.size === 0) {
-const cur = getCurrentMonth();
-const [cy, cm] = cur.split('-').map(Number);
-let py = cy || 2026, pm = cm || 10;
-for (let i = 0; i < 6; i++) {
-found.add(`${py}-${String(pm).padStart(2, '0')}`);
-pm -= 1;
-if (pm < 1) { pm = 12; py -= 1; }
-}
-}
 availableServerMonths = Array.from(found).sort();
-if (iccDrillOpen) renderIccPeriodStrip();
 return availableServerMonths;
-})();
-return probingMonthsPromise;
 }
 function updateRankHubCards(filteredList) {
-const list = Array.isArray(filteredList) ? filteredList : (currentLeaderboardResult?.allEmployees || []);
 const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
-const inc = getAppMode() === 'incharge';
+const inc = getAppMode() === 'incharge' || isAdminLoggedIn();
 const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
 if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
 if (segBar) segBar.classList.toggle('has-exec', inc);
-if (!list.length) {
-['hubValDuty','hubValOt','hubValEarned','hubValPlain','hubValLessDuty','hubValLessOt','hubValPunch'].forEach(id => setTxt(id, '—'));
-if (iccDrillOpen) renderIccDrillList();
-return;
-}
-const byDuty = [...list].sort((a,b) => (b.totalDuty || 0) - (a.totalDuty || 0));
-const byOt = [...list].sort((a,b) => (b.otHours || 0) - (a.otHours || 0));
-const byEarned = [...list].filter(e => !isNoRateCat(e.category)).sort((a,b) => (b.totalEarned || 0) - (a.totalEarned || 0));
-const byPlain = [...list].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-const byLessDuty = [...list].sort((a,b) => ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
-const byLessOt = [...list].sort((a,b) => ((a.otHours || 0) - (b.otHours || 0)) || ((a.totalDuty || 0) - (b.totalDuty || 0)));
-const byPunch = list.filter(e => getPunchProblemCount(e) > 0);
-if (byDuty[0]) {
-setTxt('hubValDuty', `${byDuty[0].totalDuty} hrs`);
-setTxt('hubSubDuty', `#1 ${byDuty[0].name || byDuty[0].id} (${byDuty[0].id})`);
-}
-if (byOt[0]) {
-setTxt('hubValOt', `${byOt[0].otHours} hrs`);
-setTxt('hubSubOt', `#1 ${byOt[0].name || byOt[0].id} (${byOt[0].id})`);
-}
-if (byEarned[0]) {
-setTxt('hubValEarned', `৳ ${Math.round(byEarned[0].totalEarned).toLocaleString('en-IN')}`);
-setTxt('hubSubEarned', `#1 ${byEarned[0].name || byEarned[0].id} (${byEarned[0].id})`);
-} else {
-setTxt('hubValEarned', 'Hours only');
-setTxt('hubSubEarned', 'No fixed rate for this selection');
-}
-if (byPlain[0]) {
-setTxt('hubValPlain', `${byPlain[0].plainDaysCount || 0} days`);
-setTxt('hubSubPlain', `#1 ${byPlain[0].name || byPlain[0].id} (${byPlain[0].id})`);
-}
-if (byLessDuty[0]) {
-setTxt('hubValLessDuty', `${byLessDuty[0].totalDuty} hrs`);
-setTxt('hubSubLessDuty', `#1 ${byLessDuty[0].name || byLessDuty[0].id} (${byLessDuty[0].id})`);
-}
-if (byLessOt[0]) {
-setTxt('hubValLessOt', `${byLessOt[0].otHours} hrs`);
-setTxt('hubSubLessOt', `#1 ${byLessOt[0].name || byLessOt[0].id} (${byLessOt[0].id})`);
-}
-setTxt('hubValPunch', byPunch.length > 0 ? `${byPunch.length} emp` : 'All OK');
-setTxt('hubSubPunch', byPunch.length > 0 ? `${byPunch.length} employee(s) with missing In/Out punch` : 'Zero missing punches in this selection');
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.style.display = inc ? '' : 'none';
+});
+// Keep Rank Hub cards clean by default (do not display #1 employee name on the hub)
+setTxt('hubSubDuty', 'Highest Duty Hours');
+setTxt('hubSubOt', 'Highest Overtime Hours');
+setTxt('hubSubEarned', 'Highest OT Allowance');
+setTxt('hubSubPlain', 'Most 4:30 pm Regular Days');
+setTxt('hubSubLessDuty', 'Lowest Total Duty Hours');
+setTxt('hubSubLessOt', 'Lowest Overtime Hours');
+setTxt('hubSubPunch', 'Missing In/Out Punch List');
+setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
+setTxt('hubSubAvgInOut', 'Average In-Time & Out-Time');
 if (iccDrillOpen) renderIccDrillList();
 }
 function toggleIccSearchInput() {
@@ -10944,32 +10054,11 @@ setTimeout(() => document.getElementById('iccSearchInput')?.focus(), 80);
 function getIccPeriodOptions() {
 const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const curYear = document.getElementById('yearSelect')?.value || '2026';
-const curMonth = document.getElementById('monthSelect')?.value || '10';
-const curYm = `${curYear}-${curMonth}`;
-let monthList = [];
-if (Array.isArray(availableServerMonths) && availableServerMonths.length > 0) {
-monthList = [...availableServerMonths];
-} else {
-let y = parseInt(curYear, 10) || 2026;
-let m = parseInt(curMonth, 10) || 10;
-for (let i = 0; i < 10; i++) {
-monthList.unshift(`${y}-${String(m).padStart(2, '0')}`);
-m -= 1;
-if (m < 1) { m = 12; y -= 1; }
+const opts = [];
+for (let m = 1; m <= 12; m++) {
+const mStr = String(m).padStart(2, '0');
+opts.push({ key: `month:${curYear}-${mStr}`, label: shortMonths[m - 1], mode: 'monthly', month: mStr, year: curYear, ym: `${curYear}-${mStr}` });
 }
-}
-if (!monthList.includes(curYm)) {
-monthList.push(curYm);
-monthList.sort();
-}
-const yearsInList = new Set(monthList.map(ym => ym.split('-')[0]));
-const multiYear = yearsInList.size > 1;
-const opts = monthList.map(ym => {
-const [y, m] = ym.split('-');
-const mIdx = (parseInt(m, 10) || 1) - 1;
-const lbl = multiYear ? `${shortMonths[mIdx]} '${y.slice(-2)}` : shortMonths[mIdx];
-return { key: `month:${ym}`, label: lbl, mode: 'monthly', month: m, year: y, ym };
-});
 opts.push({ key: 'mode:3m', label: 'Last 3M', mode: '3m' });
 opts.push({ key: 'mode:6m', label: 'Last 6M', mode: '6m' });
 opts.push({ key: 'mode:alltime', label: 'All-Time', mode: 'alltime' });
@@ -11078,13 +10167,20 @@ btn.classList.toggle('active', btn.getAttribute('data-icc-area') === areaVal);
 renderIccDrillList();
 }
 function openRankDrillDown(criterion) {
+const wasAlreadyOpen = iccDrillOpen;
 activeIccCriterion = criterion || 'duty';
 iccDrillOpen = true;
-if (typeof pushAppNavState === 'function') pushAppNavState('rank-drill:' + activeIccCriterion);
-document.body.classList.remove('nav-scroll-hidden');
-document.body.classList.add('drawer-fullscreen-active');
+if (currentSideDrawerPage !== 'leaderboard') {
+initSideDrawerClasses();
+currentSideDrawerPage = 'leaderboard';
+}
+document.body.classList.remove('nav-scroll-hidden', 'drawer-open-right');
+document.body.classList.add('drawer-open-left', 'drawer-fullscreen-active');
 const lbPage = document.getElementById('page-leaderboard');
-if (lbPage) lbPage.classList.add('full-screen-drawer');
+if (lbPage) {
+lbPage.classList.add('drawer-active', 'active', 'full-screen-drawer');
+if (!wasAlreadyOpen) lbPage.scrollTop = 0;
+}
 syncIccAdminToggleBtn();
 probeAvailableMonths();
 activateLbCriteriaTab(activeIccCriterion);
@@ -11093,6 +10189,8 @@ const hub = document.getElementById('lbHubMenuWrap');
 const resCard = document.getElementById('lbResultCard');
 const quickCard = document.getElementById('inchargeQuickCard');
 const appHdr = document.getElementById('lbMainAppHeader');
+const initCard = document.getElementById('lbInitialCard');
+const scanCard = document.getElementById('lbScanCard');
 if (view) {
 view.classList.add('active');
 view.classList.remove('filters-scroll-hidden');
@@ -11101,6 +10199,8 @@ if (hub) hub.style.display = 'none';
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'none';
 if (appHdr) appHdr.style.display = 'none';
+if (initCard) initCard.style.display = 'none';
+if (scanCard) scanCard.style.display = 'none';
 const inc = getAppMode() === 'incharge';
 const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
@@ -11113,6 +10213,8 @@ earned: 'Best Earning RPPF',
 plain: 'Top 4:30pm RPPF',
 lessDuty: 'Less Duty RPPF',
 lessOt: 'Less OT RPPF',
+avgDuty: 'Average Duty Hour RPPF',
+avgInOut: 'Avg In & Out Time RPPF',
 punch: 'Punch Problem RPPF'
 };
 const colHeaders = {
@@ -11122,6 +10224,8 @@ earned: 'Earning',
 plain: '4:30pm Days',
 lessDuty: 'Duty Hrs',
 lessOt: 'OT Hrs',
+avgDuty: 'Avg Duty/Day',
+avgInOut: 'Avg In / Out',
 punch: 'Missing'
 };
 const titleEl = document.getElementById('iccDrillTitle');
@@ -11143,7 +10247,7 @@ const curArea = document.getElementById('areaFilter')?.value || 'all';
 document.querySelectorAll('.icc-area-btn').forEach(btn => {
 btn.classList.toggle('active', btn.getAttribute('data-icc-area') === curArea);
 });
-renderIccPeriodStrip();
+if (!wasAlreadyOpen || !document.getElementById('iccYearSelect')) renderIccPeriodStrip();
 renderIccDrillList();
 }
 function closeRankDrillDown() {
@@ -11172,6 +10276,22 @@ if (crit === 'earned') return f.sortedByEarned || [];
 if (crit === 'plain') return f.sortedByPlain || [];
 if (crit === 'lessDuty') return f.sortedByLessDuty || [];
 if (crit === 'lessOt') return f.sortedByLessOT || [];
+if (crit === 'avgDuty') {
+if (!f.sortedByAvgDuty || !f.sortedByAvgDuty.length) {
+const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
+ensureEmpAvgStats(base);
+f.sortedByAvgDuty = [...base].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDutyPerDay || 0)) || (b.totalDuty - a.totalDuty));
+}
+return f.sortedByAvgDuty;
+}
+if (crit === 'avgInOut') {
+if (!f.sortedByAvgInOut || !f.sortedByAvgInOut.length) {
+const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
+ensureEmpAvgStats(base);
+f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
+}
+return f.sortedByAvgInOut;
+}
 if (crit === 'punch') return f.sortedByPunch || [];
 return f.sortedByDuty || [];
 }
@@ -11180,7 +10300,59 @@ if (crit === 'duty' || crit === 'lessDuty') return `${e.totalDuty || 0} hrs`;
 if (crit === 'ot' || crit === 'lessOt') return `${e.otHours || 0} hrs`;
 if (crit === 'earned') return `৳ ${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
 if (crit === 'plain') return `${e.plainDaysCount || 0}d`;
+if (crit === 'avgDuty') return `${e.avgDutyPerDay || Number(((e.totalDuty || 0) / 26).toFixed(1))} h/d`;
+if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}–${e.avgOutTimeStr || '17:00'}`;
 return `${getPunchProblemCount(e)}d miss`;
+}
+const ICC_RENDER_BATCH_SIZE = 60;
+let _iccCurrentFilteredList = [];
+let _iccRenderedCount = 0;
+function buildIccRowHtml(e, myId, adminActive) {
+const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
+const rk = e._iccRank;
+const isMine = e.id === myId;
+const initials = String(e.name || e.id || 'R').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'RP';
+const mainVal = formatIccMainMetric(e, activeIccCriterion);
+const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
+const holNum = Number(e.holidayCount || 0);
+const ngtNum = Number(e.nightCount || 0);
+const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
+const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (rk <= 3 ? `icc-rank-${rk}` : '');
+const desig = getDesignation(e);
+const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
+const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
+const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
+return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
+<div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
+<div class="icc-emp-col">
+<div class="icc-avatar">${esc(initials)}</div>
+<div class="icc-emp-text">
+<div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
+<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>
+</div>
+${adminCatBtnHtml}
+</div>
+<div class="icc-val-col">
+<div class="icc-val-main">${mainVal}</div>
+<div class="icc-val-sub">${subVal}</div>
+</div>
+</div>`;
+}
+function loadMoreIccRows() {
+const body = document.getElementById('iccDrillListBody');
+if (!body || _iccRenderedCount >= _iccCurrentFilteredList.length) return;
+const moreBtn = document.getElementById('iccLoadMoreBtnWrap');
+if (moreBtn) moreBtn.remove();
+const myId = getMyId();
+const adminActive = isIccAdminCatModeActive();
+const nextBatch = _iccCurrentFilteredList.slice(_iccRenderedCount, _iccRenderedCount + ICC_RENDER_BATCH_SIZE);
+_iccRenderedCount += nextBatch.length;
+const chunkHtml = nextBatch.map(e => buildIccRowHtml(e, myId, adminActive)).join('');
+const remaining = _iccCurrentFilteredList.length - _iccRenderedCount;
+const moreHtml = remaining > 0
+? `<div id="iccLoadMoreBtnWrap" style="padding:10px;text-align:center;"><button type="button" class="btn-secondary" style="min-height:34px;font-size:12px;" onclick="loadMoreIccRows()">Show more (${remaining} remaining)</button></div>`
+: '';
+body.insertAdjacentHTML('beforeend', chunkHtml + moreHtml);
 }
 function renderIccDrillList() {
 const body = document.getElementById('iccDrillListBody');
@@ -11213,42 +10385,21 @@ const q = (document.getElementById('iccSearchInput')?.value || '').trim().toUppe
 const indexed = list.map((e, idx) => ({ ...e, _iccRank: idx + 1 }));
 const filtered = q ? indexed.filter(e => String(e.id || '').toUpperCase().includes(q) || String(e.name || '').toUpperCase().includes(q)) : indexed;
 if (!filtered.length) {
+_iccCurrentFilteredList = [];
+_iccRenderedCount = 0;
 body.innerHTML = `<div class="empty-msg">${activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : 'No matching employees found.'}</div>`;
 return;
 }
-const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
 const adminActive = isIccAdminCatModeActive();
 syncIccAdminToggleBtn();
-body.innerHTML = filtered.map(e => {
-const rk = e._iccRank;
-const isMine = e.id === myId;
-const initials = String(e.name || e.id || 'R').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'RP';
-const mainVal = formatIccMainMetric(e, activeIccCriterion);
-const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
-const holNum = Number(e.holidayCount || 0);
-const ngtNum = Number(e.nightCount || 0);
-const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
-const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (rk <= 3 ? `icc-rank-${rk}` : '');
-const desig = getDesignation(e);
-const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
-const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
-const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
-return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
-<div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
-<div class="icc-emp-col">
-<div class="icc-avatar">${esc(initials)}</div>
-<div class="icc-emp-text">
-<div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
-<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>
-</div>
-${adminCatBtnHtml}
-</div>
-<div class="icc-val-col">
-<div class="icc-val-main">${mainVal}</div>
-<div class="icc-val-sub">${subVal}</div>
-</div>
-</div>`;
-}).join('');
+_iccCurrentFilteredList = filtered;
+const firstBatch = filtered.slice(0, ICC_RENDER_BATCH_SIZE);
+_iccRenderedCount = firstBatch.length;
+const remaining = filtered.length - _iccRenderedCount;
+const moreHtml = remaining > 0
+? `<div id="iccLoadMoreBtnWrap" style="padding:10px;text-align:center;"><button type="button" class="btn-secondary" style="min-height:34px;font-size:12px;" onclick="loadMoreIccRows()">Show more (${remaining} remaining)</button></div>`
+: '';
+body.innerHTML = firstBatch.map(e => buildIccRowHtml(e, myId, adminActive)).join('') + moreHtml;
 }
 /* Interactive Partial-Drag Swipe on ICC Drill-Down List & Freeze Header / Auto-Hide Filters on Scroll */
 (function initIccSwipeAndScrollHide() {
@@ -11351,6 +10502,11 @@ lbPage.addEventListener('scroll', () => {
 const curY = Math.max(0, lbPage.scrollTop || 0);
 handleScrollDelta(curY, lastLbY);
 lastLbY = curY;
+if (iccDrillOpen && _iccRenderedCount < _iccCurrentFilteredList.length) {
+if (lbPage.scrollTop + lbPage.clientHeight >= lbPage.scrollHeight - 260) {
+loadMoreIccRows();
+}
+}
 }, { passive: true });
 }
 }
@@ -11359,6 +10515,326 @@ setTimeout(wireLeaderboardScroll, 120);
 })();
 
 /* ===== ROUND 4: Admin Categories on Ranking, Pull-to-Refresh & Back-Button / Miss-Touch Guard ===== */
+/* ===== ROUND 5: Unified Single-ID Role Login (Hidden In-Charge, Manager & Admin Modes) ===== */
+const SPECIAL_ROLE_IDS = {
+'RF8941': {
+id: 'RF8941',
+name: 'Debashish Mitra',
+mode: 'incharge',
+roleTitle: 'In-Charge (Solid)',
+defaultArea: 'Solid Production',
+isAdmin: false,
+pins: ['2026', '8941', '1234', 'admin1234']
+},
+'RF20716': {
+id: 'RF20716',
+name: 'Milon Ahamed',
+mode: 'incharge',
+roleTitle: 'In-Charge (SG)',
+defaultArea: 'Softgel Production',
+isAdmin: false,
+pins: ['2026', '20716', '1234', 'admin1234']
+},
+'RF5473': {
+id: 'RF5473',
+name: 'Rabiul Alam',
+mode: 'incharge',
+roleTitle: 'Production Manager',
+defaultArea: 'all',
+isAdmin: false,
+pins: ['2026', '5473', '1234', 'admin1234']
+},
+'RF20850': {
+id: 'RF20850',
+name: 'Md. Ariful Islam',
+mode: 'incharge',
+roleTitle: 'System Admin',
+defaultArea: 'all',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '20850', '1234']
+},
+'RF22111': {
+id: 'RF22111',
+name: 'Mr. Md. Sohel Mia',
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: 'Solid Production',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '22111', '1234']
+},
+'CF5242': {
+id: 'CF5242',
+name: 'Mr. Md. Shohidul Islam',
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: 'Solid Production',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '5242', '1234']
+},
+'CF8355': {
+id: 'CF8355',
+name: 'Mr. Johirul Islam Porag',
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: 'Solid Production',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '8355', '1234']
+},
+'RF21561': {
+id: 'RF21561',
+name: 'Mr. MD. Rahid Hossain',
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: 'Packing Hall',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '21561', '1234']
+},
+'RF22849': {
+id: 'RF22849',
+name: 'Mr. Md. Ashraful Alam',
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: 'Softgel Production',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '22849', '1234']
+},
+'ADMIN': {
+id: 'ADMIN',
+name: 'Md. Ariful Islam (Admin)',
+mode: 'incharge',
+roleTitle: 'System Admin',
+defaultArea: 'all',
+isAdmin: true,
+pins: ['admin1234', '2026', '1234']
+}
+};
+function getSpecialRoleSpec(rawId) {
+const clean = String(rawId || '').trim().toUpperCase().replace(/\s+/g, '');
+if (!clean) return null;
+if (SPECIAL_ROLE_IDS[clean]) return SPECIAL_ROLE_IDS[clean];
+// Also dynamically recognize any member added to ERP Team (team.json / teamData) as ERP Team Admin!
+if (Array.isArray(teamData)) {
+const tm = teamData.find(m => m && String(m.id || '').trim().toUpperCase() === clean);
+if (tm && clean !== '—') {
+const numPart = clean.replace(/[^0-9]/g, '');
+return {
+id: clean,
+name: tm.name || clean,
+mode: 'incharge',
+roleTitle: 'ERP Team Admin',
+defaultArea: (tm.area && tm.area !== 'All') ? tm.area : 'all',
+isAdmin: true,
+allowNormalBypass: true,
+pins: ['admin1234', '2026', '1234', ...(numPart ? [numPart] : [])]
+};
+}
+}
+return null;
+}
+function syncPrivilegedUI() {
+const mode = getAppMode();
+const admin = isAdminLoggedIn();
+const isPriv = (mode === 'incharge') || admin;
+// Show ⚙ Cat button in Ranking ONLY for Admin / In-Charge / Manager
+const catBtn = document.getElementById('iccAdminCatToggleBtn');
+if (catBtn) catBtn.style.display = isPriv ? 'inline-flex' : 'none';
+// Show Mode row & Area row in Settings ONLY for In-Charge / Manager / Admin
+const modeRow = document.getElementById('settingsModeRow');
+if (modeRow) modeRow.style.display = isPriv ? 'flex' : 'none';
+const incAreaRow = document.getElementById('settingsInchargeAreaRow');
+if (incAreaRow) incAreaRow.style.display = isPriv ? 'flex' : 'none';
+// Update Ranking Hub In-Charge items visibility
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.style.display = isPriv ? '' : 'none';
+});
+}
+function onRegEmpIdInputChange() {
+const inp = document.getElementById('regEmpIdInput');
+const raw = String(inp?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+const spec = getSpecialRoleSpec(raw);
+const authBox = document.getElementById('specialRoleAuthBox');
+const badgeEl = document.getElementById('specialRoleBadgeText');
+const personEl = document.getElementById('specialRolePersonName');
+const skipBtn = document.getElementById('regSkipAdminNormalBtn');
+const errEl = document.getElementById('specialRolePinError');
+if (errEl) errEl.classList.remove('show');
+if (spec) {
+if (authBox) authBox.classList.add('show');
+if (badgeEl) badgeEl.textContent = spec.roleTitle;
+if (personEl) personEl.textContent = `${spec.name} (${spec.id})`;
+if (skipBtn) skipBtn.style.display = spec.allowNormalBypass ? 'inline-flex' : 'none';
+} else {
+if (authBox) authBox.classList.remove('show');
+if (skipBtn) skipBtn.style.display = 'none';
+}
+}
+function saveNormalEmployeeBypass() {
+const inp = document.getElementById('regEmpIdInput');
+const raw = String(inp?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+if (!raw) return;
+setAdminLoggedIn(false);
+setPreferredId(raw);
+setAppMode('employee');
+updateModeUI();
+syncPrivilegedUI();
+closeModeSetupModal();
+showToast(`Saved ID: ${raw}`, 'success');
+const empInput = document.getElementById('employeeId');
+if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
+switchPage('search');
+findReport();
+}
+// Override openModeSetupModal, saveEmployeeModeSetup, savePermanentIdFromSettings, deletePermanentIdFromSettings, and updateModeUI
+const _origUpdateModeUI = updateModeUI;
+updateModeUI = function() {
+_origUpdateModeUI();
+syncPrivilegedUI();
+};
+openModeSetupModal = function() {
+const modal = document.getElementById('modeSetupModal');
+if (!modal) return;
+if (typeof pushAppNavState === 'function') pushAppNavState('modal:modeSetup');
+const myId = getPreferredId();
+const regInp = document.getElementById('regEmpIdInput');
+const hint = document.getElementById('regCurrentSavedHint');
+const passInp = document.getElementById('specialRolePassInput');
+if (regInp) regInp.value = myId || '';
+if (passInp) passInp.value = '';
+if (hint) {
+if (myId) { hint.style.display = 'block'; hint.textContent = `Current saved ID: ${myId}`; }
+else hint.style.display = 'none';
+}
+onRegEmpIdInputChange();
+modal.classList.add('open');
+document.body.style.overflow = 'hidden';
+setTimeout(() => regInp?.focus(), 100);
+};
+saveEmployeeModeSetup = function() {
+const inp = document.getElementById('regEmpIdInput');
+const raw = String(inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
+if (!raw) {
+showToast('Please enter your ID number', 'warn');
+inp?.focus();
+return;
+}
+const spec = getSpecialRoleSpec(raw);
+if (!spec) {
+// Normal Employee: No password required!
+setAdminLoggedIn(false);
+setPreferredId(raw);
+setAppMode('employee');
+updateModeUI();
+closeModeSetupModal();
+showToast(`Saved ID (${raw})`, 'success');
+const empInput = document.getElementById('employeeId');
+if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
+switchPage('search');
+findReport();
+return;
+}
+// Special Role ID: Verify Password / PIN
+const authBox = document.getElementById('specialRoleAuthBox');
+if (authBox && !authBox.classList.contains('show')) {
+onRegEmpIdInputChange();
+document.getElementById('specialRolePassInput')?.focus();
+return;
+}
+const passInp = document.getElementById('specialRolePassInput');
+const rawPass = String(passInp ? passInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+// If this ID allows normal employee bypass (e.g. RF20850 or ERP Team member) and password was left blank, log in directly as Normal Employee!
+if (!rawPass && spec.allowNormalBypass) {
+saveNormalEmployeeBypass();
+return;
+}
+const validPins = [...(spec.pins || []), getAdminPassword(), DEFAULT_ADMIN_PASS, INCHARGE_PIN_CODE];
+if (!rawPass || !validPins.includes(rawPass)) {
+document.getElementById('specialRolePinError')?.classList.add('show');
+showToast('Enter the valid password/PIN for ' + spec.name, 'error');
+passInp?.focus();
+return;
+}
+// Authenticated for Special Role inside index.html (In-Charge / Manager / Admin Ranking privileges)
+const savedId = spec.id === 'ADMIN' ? (getPreferredId() || 'RF20850') : spec.id;
+setPreferredId(savedId);
+setAppMode(spec.mode);
+setAdminLoggedIn(Boolean(spec.isAdmin || rawPass === getAdminPassword() || rawPass === DEFAULT_ADMIN_PASS));
+try {
+localStorage.setItem(INCHARGE_ROLE_KEY, `${spec.roleTitle} • ${spec.name}`);
+localStorage.setItem(INCHARGE_AREA_KEY, spec.defaultArea || 'all');
+} catch (e) {}
+window._memInchargeRole = `${spec.roleTitle} • ${spec.name}`;
+window._memInchargeArea = spec.defaultArea || 'all';
+updateModeUI();
+closeModeSetupModal();
+showToast(`Welcome ${spec.name} (${spec.roleTitle})`, 'success');
+const areaFilter = document.getElementById('areaFilter');
+if (areaFilter && spec.defaultArea) areaFilter.value = spec.defaultArea;
+if (savedId && savedId !== 'ADMIN') {
+const empInput = document.getElementById('employeeId');
+if (empInput) { empInput.value = savedId; toggleClearIdBtn(); }
+findReport();
+}
+switchPage('leaderboard', true);
+};
+const _origGetInchargeRoleLabel = getInchargeRoleLabel;
+getInchargeRoleLabel = function() {
+if (window._memInchargeRole) return window._memInchargeRole;
+return _origGetInchargeRoleLabel();
+};
+const _origGetInchargeDefaultArea = getInchargeDefaultArea;
+getInchargeDefaultArea = function() {
+if (window._memInchargeArea) return window._memInchargeArea;
+return _origGetInchargeDefaultArea();
+};
+savePermanentIdFromSettings = function() {
+const inp = document.getElementById('settingsNewIdInput');
+const raw = String(inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
+if (!raw) {
+showToast('Enter an ID number', 'warn');
+inp?.focus();
+return;
+}
+const spec = getSpecialRoleSpec(raw);
+if (spec) {
+if (inp) inp.value = '';
+openModeSetupModal();
+const regInp = document.getElementById('regEmpIdInput');
+if (regInp) {
+regInp.value = raw;
+onRegEmpIdInputChange();
+setTimeout(() => document.getElementById('specialRolePassInput')?.focus(), 120);
+}
+return;
+}
+setAdminLoggedIn(false);
+setPreferredId(raw);
+setAppMode('employee');
+if (inp) inp.value = '';
+updateModeUI();
+showToast(`Saved ID "${raw}"`, 'success');
+const empInput = document.getElementById('employeeId');
+if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
+};
+const _origDeletePermanentId = deletePermanentIdFromSettings;
+deletePermanentIdFromSettings = function() {
+setAdminLoggedIn(false);
+window._memInchargeRole = null;
+window._memInchargeArea = null;
+_origDeletePermanentId();
+syncPrivilegedUI();
+};
+document.getElementById('specialRolePassInput')?.addEventListener('keydown', e => {
+if (e.key === 'Enter') saveEmployeeModeSetup();
+});
+setTimeout(syncPrivilegedUI, 50);
+
 let _adminLoggedInMem = false;
 const _origIsAdminLoggedIn = isAdminLoggedIn;
 isAdminLoggedIn = function() {
@@ -11373,6 +10849,7 @@ _origSetAdminLoggedIn(val);
 let _iccAdminCatModeManual = false;
 function isIccAdminCatModeActive() {
 if (window._iccAdminForceHide) return false;
+if (getAppMode() !== 'incharge' && !isAdminLoggedIn()) return false;
 return Boolean(_iccAdminCatModeManual || isAdminLoggedIn());
 }
 function syncIccAdminToggleBtn() {
@@ -11572,9 +11049,7 @@ showToast('ERP Team list refreshed', 'success');
 } else if (activePage === 'history') {
 renderHistory();
 showToast('History refreshed', 'success');
-} else if (activePage === 'admin') {
-initAdminPage();
-showToast('Admin panel refreshed', 'success');
+
 } else if (activePage === 'settings' || activePage === 'more') {
 await loadAreaMap();
 updateSettingsAreaCount();
@@ -11699,10 +11174,7 @@ lastNavClickTs = now;
 let _lastHardwareBackTs = 0;
 let _suppressHistoryPush = false;
 function pushAppNavState(label) {
-if (_suppressHistoryPush) return;
-try {
-history.pushState({ renataGuard: true, view: label || 'app', ts: Date.now() }, '');
-} catch (e) {}
+// Zero-cost no-op: hardware back-button guard maintains a single startup history entry re-pushed only on popstate
 }
 (function initHardwareBackButtonGuard() {
 try {
@@ -11896,7 +11368,7 @@ const containerStyle = forExport
 : 'background:#fff;color:#0f172a;font-family:"Hind Siliguri",Arial,Helvetica,sans-serif;padding:10px 6px;width:100%;min-width:540px;box-sizing:border-box;';
 return `<div style="${containerStyle}">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:7px;margin-bottom:7px;">
-<div style="min-width:0;"><div style="font-size:${forExport ? '19px' : '16px'};font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RENATA PLC</div><div style="font-size:${forExport ? '12.5px' : '11.5px'};font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${_rptHideEmptyDays ? ' (Duty Days)' : ''}</div></div>
+<div style="min-width:0;"><div style="font-size:${forExport ? '19px' : '16px'};font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RPPF</div><div style="font-size:${forExport ? '12.5px' : '11.5px'};font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${_rptHideEmptyDays ? ' (Duty Days)' : ''}</div></div>
 <div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
 <div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${chip(issues ? 'Punch Fix: ' + issues : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
@@ -11905,7 +11377,7 @@ return `<div style="${containerStyle}">
 <tbody>${body}</tbody>
 <tfoot><tr style="background:#0f172a;color:#fff;font-weight:900;height:30px;"><td colspan="3" style="${tdBase}padding-left:6px;font-size:${fsSmall};color:#fff;border-color:#0f172a;">Total (${present}d present)</td>${sum.map(x => `<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${_rN(x)}</td>`).join('')}<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${nights || ''}</td><td style="${tdBase}border-color:#0f172a;"></td></tr></tfoot></table>
 <div style="margin-top:7px;font-size:12px;font-weight:800;color:${issues ? '#b91c1c' : '#15803d'};">${issues ? 'Punch problem on ' + issues + ' day(s): ' + issueDates.join(', ') : 'No missing In/Out punch found in this report.'}</div>
-<div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RENATA PLC Overtime Report App</div></div>`;
+<div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
 }
 function _rptReset() { const h = document.getElementById('rptPreviewHost'); if (h) { h.style.display = 'none'; h.innerHTML = ''; } const b = document.getElementById('rptPreviewBtn'); if (b) b.textContent = 'Preview daily report ▼'; }
 function toggleReportPreview() {
@@ -11947,6 +11419,41 @@ showToast('Could not create the PNG. Check your internet connection and try agai
 } finally { box.remove(); btns.forEach(b => b.disabled = false); }
 }
 (function () { const b = document.getElementById('pngShareBtn'); if (b && typeof navigator.canShare === 'function') b.style.display = ''; })();
+
+
+/* ===== Cross-Tab Live Sync with Standalone admin.html ===== */
+function openStandaloneAdminFile() {
+  const targetUrl = (location.protocol === 'http:' || location.protocol === 'https:')
+    ? new URL('admin.html', location.href).href
+    : (REMOTE_BASE_URL + 'admin.html');
+  window.open(targetUrl, '_blank', 'noopener');
+}
+(function initCrossTabAdminSync() {
+  const refreshFromAdminSync = () => {
+    AREA_MAP_LOADED = false;
+    Object.keys(monthIndexMemoryCache).forEach(k => delete monthIndexMemoryCache[k]);
+    loadAreaMap().then(() => {
+      updateSettingsAreaCount();
+      populateAreaDropdown();
+      if (currentSearchId) findReport();
+      if (currentSideDrawerPage === 'leaderboard' || iccDrillOpen) startLeaderboardScan(true);
+      renderNoticesHome();
+    });
+  };
+  window.addEventListener('storage', (e) => {
+    if (!e || !e.key) return;
+    if (e.key === 'rppf_last_admin_sync_ts' || e.key === AREA_MAP_CACHE_KEY || e.key === NOTICES_CACHE_KEY || e.key === TEAM_CACHE_KEY) {
+      refreshFromAdminSync();
+    }
+  });
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      const ch = new BroadcastChannel('rppf_admin_sync');
+      ch.onmessage = () => refreshFromAdminSync();
+    } catch (e) {}
+  }
+})();
+
 </script>
 </body>
 </html>
