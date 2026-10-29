@@ -6769,6 +6769,280 @@ body[data-page="search"] .wa-float {
   }
 </style>
 
+
+<style id="smartSpaceResponsiveStyles">
+  /* ==========================================================================
+     SMART SPACE MANAGEMENT & MOBILE/DESKTOP RESPONSIVE LAYOUT (RPPF)
+     ========================================================================== */
+  :root {
+    --space-1: 3px;
+    --space-2: 6px;
+    --space-3: 10px;
+    --space-4: 14px;
+    --space-5: 18px;
+    --r-card: 12px;
+    --r-btn: 8px;
+  }
+
+  /* Compact Card Padding & Snug Margins */
+  .card, .collapse-card {
+    border-radius: var(--r-card) !important;
+    margin-bottom: 8px !important;
+  }
+  .card {
+    padding: 12px 14px !important;
+  }
+  @media (min-width: 900px) {
+    .card {
+      padding: 16px 20px !important;
+    }
+    .page {
+      max-width: 1180px !important;
+      margin: 0 auto !important;
+    }
+  }
+
+  /* Smart Search Form: Power-bar on Desktop, Snug Ergonomic on Mobile */
+  #searchFormCard {
+    padding: 10px 12px !important;
+  }
+  #searchFormCard label {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    margin: 0 0 2px 0 !important;
+    color: var(--muted) !important;
+  }
+  #searchFormCard select,
+  #searchFormCard input {
+    min-height: 36px !important;
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+  }
+  #searchBtn {
+    min-height: 38px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    padding: 0 16px !important;
+    border-radius: 8px !important;
+  }
+
+  @media (min-width: 780px) {
+    #searchFormCard {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: flex-end !important;
+      gap: 8px !important;
+      padding: 12px 16px !important;
+    }
+    #searchFormCard > label[for="monthSelect"],
+    #searchFormCard > label[for="employeeId"] {
+      display: none !important;
+    }
+    #searchFormCard > .row {
+      display: flex !important;
+      gap: 6px !important;
+      flex: 0 0 auto !important;
+      width: auto !important;
+      margin: 0 !important;
+    }
+    #searchFormCard #yearSelect {
+      width: 90px !important;
+      margin: 0 !important;
+    }
+    #searchFormCard #monthSelect {
+      width: 120px !important;
+      margin: 0 !important;
+    }
+    #searchFormCard > .input-clear-wrap {
+      flex: 1 1 200px !important;
+      margin: 0 !important;
+    }
+    #searchFormCard #employeeId {
+      margin: 0 !important;
+    }
+    #searchFormCard > #searchBtn {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 160px !important;
+      margin: 0 !important;
+      height: 36px !important;
+    }
+    #searchFormCard > #recentSearchChips,
+    #searchFormCard > #spinner,
+    #searchFormCard > #status,
+    #searchFormCard > #progress {
+      flex: 1 1 100% !important;
+      margin-top: 4px !important;
+    }
+  }
+
+  /* In-Charge Home Overview: Sleek Spacing & Multi-Column Desktop Grid */
+  .inc-ov-hero {
+    padding: 12px 14px !important;
+    border-radius: var(--r-card) !important;
+  }
+  .inc-ov-hero-top {
+    gap: 8px !important;
+  }
+  .inc-ov-title {
+    font-size: 16px !important;
+    margin: 4px 0 2px 0 !important;
+  }
+  .inc-ov-sub {
+    font-size: 11.5px !important;
+  }
+  .inc-ov-total-pill {
+    padding: 6px 10px !important;
+    min-width: 90px !important;
+    border-radius: 8px !important;
+  }
+  .inc-ov-total-num {
+    font-size: 18px !important;
+  }
+  .inc-count-grid {
+    gap: 6px !important;
+    margin-top: 8px !important;
+  }
+  .inc-count-card {
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+  }
+  .inc-count-head {
+    font-size: 11px !important;
+  }
+  .inc-count-num {
+    font-size: 17px !important;
+    margin: 2px 0 1px 0 !important;
+  }
+  .inc-count-meta {
+    font-size: 9.5px !important;
+  }
+
+  /* In-Charge Desktop Split: Hero on Top, Absent and Toppers Side-by-Side */
+  @media (min-width: 900px) {
+    #inchargeHomeOverview {
+      display: grid !important;
+      grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.25fr) !important;
+      gap: 12px !important;
+      align-items: start !important;
+    }
+    #inchargeHomeOverview > .inc-ov-hero {
+      grid-column: 1 / -1 !important;
+    }
+    #inchargeHomeOverview > #incHomeAbsentCard {
+      grid-column: 1 !important;
+      margin: 0 !important;
+    }
+    #inchargeHomeOverview > #incHomeToppersCard {
+      grid-column: 2 !important;
+      margin: 0 !important;
+    }
+  }
+
+  /* Absent Card Spacing & Scrollable List */
+  .inc-absent-card, .inc-toppers-card {
+    padding: 10px 12px !important;
+    border-radius: var(--r-card) !important;
+    margin-bottom: 8px !important;
+  }
+  .inc-section-head {
+    margin-bottom: 6px !important;
+    gap: 6px !important;
+  }
+  .inc-section-title {
+    font-size: 13.5px !important;
+    gap: 6px !important;
+  }
+  .inc-absent-pill-bar, .inc-toppers-area-pills {
+    margin-bottom: 6px !important;
+    padding-bottom: 4px !important;
+    gap: 4px !important;
+  }
+  .inc-absent-filter-btn, .inc-topper-area-btn {
+    min-height: 25px !important;
+    padding: 2px 8px !important;
+    font-size: 10.5px !important;
+  }
+  .inc-absent-grid {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+    gap: 5px !important;
+    padding-right: 2px !important;
+    scrollbar-width: thin !important;
+  }
+  .inc-absent-item {
+    padding: 5px 8px !important;
+    border-radius: 6px !important;
+  }
+  .inc-topper-cat-box {
+    padding: 8px 10px !important;
+    gap: 4px !important;
+    border-radius: 8px !important;
+  }
+  .inc-topper-cat-title {
+    font-size: 11.5px !important;
+  }
+  .inc-topper-item {
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Calculations & Result Details Spacing */
+  .greeting-banner {
+    padding: 8px 12px !important;
+    margin-bottom: 8px !important;
+  }
+  .greet-text {
+    font-size: 13.5px !important;
+  }
+  .grand-total-block {
+    padding: 10px 14px !important;
+    margin: 8px 0 !important;
+  }
+  .grand-total-amount {
+    font-size: 24px !important;
+  }
+  .calc-mini-btn {
+    min-height: 28px !important;
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+  }
+  .btn-grid-2 {
+    gap: 6px !important;
+    margin-top: 6px !important;
+  }
+
+  /* VS Comparison Section: Compact Inputs */
+  .vs-inputs-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  @media (min-width: 768px) {
+    .vs-inputs-grid {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    }
+  }
+  .vs-slot-box {
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+  }
+  .vs-slot-box label {
+    font-size: 10.5px !important;
+    margin-bottom: 2px !important;
+  }
+  .vs-emp-id-input {
+    min-height: 32px !important;
+    font-size: 12px !important;
+    padding: 3px 6px !important;
+  }
+  #compareBtn {
+    min-height: 36px !important;
+    font-size: 12.5px !important;
+    margin-top: 8px !important;
+  }
+</style>
+
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
