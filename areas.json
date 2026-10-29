@@ -384,7 +384,8 @@
     },
     "RF8941": {
       "t": "EXEC",
-      "g": "M"
+      "g": "M",
+      "s": "Production Management"
     },
     "RF23849": {
       "t": "EXEC",
@@ -395,5 +396,79 @@
       "g": "M"
     }
   },
-  "subsections": {}
+  "subsections": {
+    "__custom_cats__": [
+      "Shift A",
+      "Shift B",
+      "Shift C",
+      "Line Leader",
+      "Senior Operator",
+      "Special OT"
+    ],
+    "Solid Production": [
+      "Granulation",
+      "Compression",
+      "Coating",
+      "Capsule Filling",
+      "Dispensing",
+      "Inspection"
+    ],
+    "Softgel Production": [
+      "Encapsulation",
+      "Gelatin Prep",
+      "Medicament Prep",
+      "Tumble Drying",
+      "Sorting & Inspection"
+    ],
+    "Packing Hall": [
+      "Blister Packing",
+      "Strip & Alu-Alu",
+      "Bottle Line",
+      "Cartoning",
+      "Secondary Packing",
+      "Labeling"
+    ],
+    "Overall": [
+      "Production Management",
+      "Section In-Charge",
+      "QA / Compliance",
+      "ERP & Planning"
+    ]
+  },
+  "designationRates": {},
+  "rateTable": {
+    "CF": {
+      "otRate": 38,
+      "nightRate": 300,
+      "holidayType": "hourly",
+      "holidayHours": 8,
+      "holidayFlat": 304,
+      "name": "৳৩৮/ঘণ্টা প্যাকেজ (Contractual / CF)"
+    },
+    "JO": {
+      "otRate": 40,
+      "nightRate": 400,
+      "holidayType": "flat",
+      "holidayHours": 8,
+      "holidayFlat": 300,
+      "name": "৳৪০/ঘণ্টা প্যাকেজ (JO C–F)"
+    },
+    "JO_B": {
+      "otRate": 45,
+      "nightRate": 500,
+      "holidayType": "flat",
+      "holidayHours": 8,
+      "holidayFlat": 350,
+      "name": "৳৪৫/ঘণ্টা প্যাকেজ (JO A/B)"
+    },
+    "UNSPEC": {
+      "otRate": 0,
+      "nightRate": 0,
+      "holidayType": "flat",
+      "holidayHours": 0,
+      "holidayFlat": 0,
+      "noRate": true,
+      "name": "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)"
+    }
+  }
 }
