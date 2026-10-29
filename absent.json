@@ -1,0 +1,19 @@
+{
+  "activeDate": "2026-10-29",
+  "updatedAt": "2026-10-29T01:08:00.798Z",
+  "updatedBy": "ERP Team",
+  "byDate": {
+    "2026-10-29": [
+      {
+        "id": "CF9381",
+        "name": "CF9381",
+        "area": "Solid Production",
+        "sub": "",
+        "designation": "Contractual",
+        "reason": "Absent",
+        "note": "",
+        "addedAt": "2026-10-29T01:08:00.798Z"
+      }
+    ]
+  }
+}
