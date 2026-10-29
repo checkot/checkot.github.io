@@ -9237,12 +9237,6 @@ const data = await fetchJsonResource(`data/${month}.json`);
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : null);
 if (list && list.length > 0) {
 await loadAreaMap();
-if (!isListedEmployeeId(searchId)) {
-  spinner.style.display = "none"; searchBtn.disabled = false;
-  updateMonthNavBar(month);
-  showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
-  return;
-}
 const normalized = list.map(e => ({
 ...e,
 id: String(e.id || '').toUpperCase().trim(),
@@ -10061,6 +10055,12 @@ spinner.style.display = "block";
 searchBtn.disabled = true;
 try {
 await loadAreaMap();
+if (!isListedEmployeeId(searchId)) {
+  spinner.style.display = "none"; searchBtn.disabled = false;
+  updateMonthNavBar(month);
+  showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
+  return;
+}
 const fastList = await fetchMonthPreIndexedData(month);
 if (myToken !== currentToken) return;
 if (!fastList || !Array.isArray(fastList) || fastList.length === 0) {
