@@ -6250,6 +6250,472 @@ body[data-page="search"] .wa-float {
     display: none !important;
   }
 </style>
+
+<style id="adminModernOrganizerStyles">
+  /* Modern Admin KPI & Section Cards */
+  .adm-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .adm-kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .adm-kpi-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-1px);
+  }
+  .adm-kpi-val {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--brand);
+    line-height: 1.1;
+  }
+  .adm-kpi-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .adm-sec-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    margin: 10px 0 14px 0;
+  }
+  .adm-sec-card-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+    box-shadow: none;
+  }
+  .adm-sec-card-btn:hover {
+    background: var(--surface-2);
+    border-color: var(--brand-light);
+  }
+  .adm-sec-card-btn.active {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 1px var(--brand);
+  }
+  .adm-sec-card-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .adm-sec-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+  }
+  .adm-sec-card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-sec-card-btn.active .adm-sec-card-title {
+    color: var(--brand);
+  }
+  .adm-sec-card-sub {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  /* Sub-section Filter Pills */
+  .adm-sub-pills-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 8px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .adm-sub-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: none;
+    min-height: 28px;
+  }
+  .adm-sub-pill-btn:hover {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--brand-soft-border);
+  }
+  .adm-sub-pill-btn.active {
+    background: var(--brand);
+    color: #FFFFFF;
+    border-color: var(--brand);
+  }
+  .adm-sub-pill-count {
+    background: rgba(0,0,0,0.08);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+  }
+  .adm-sub-pill-btn.active .adm-sub-pill-count {
+    background: rgba(255,255,255,0.25);
+    color: #FFFFFF;
+  }
+
+  /* Batch Operations Bar */
+  .adm-batch-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-soft-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+  }
+  .adm-batch-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--brand-text);
+  }
+  .adm-batch-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Employee Table */
+  .adm-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    max-height: 480px;
+  }
+  .adm-emp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .adm-emp-table th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-strong);
+    z-index: 10;
+  }
+  .adm-emp-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .adm-emp-table tr:hover td {
+    background: var(--surface-2);
+  }
+  .adm-emp-cell-id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .adm-emp-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    font-weight: 800;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .adm-emp-meta-name {
+    font-weight: 800;
+    color: var(--text);
+  }
+  .adm-emp-meta-id {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+  }
+  .adm-table-select {
+    padding: 3px 6px;
+    font-size: 11.5px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    min-height: 28px;
+    margin: 0;
+  }
+  .adm-table-select:focus {
+    border-color: var(--brand);
+  }
+  .adm-action-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+    min-height: 26px;
+    margin: 0;
+  }
+</style>
+
+
+<style id="smartSpaceAdminStyles">
+  /* ==========================================================================
+     SMART SPACE MANAGEMENT & MOBILE/DESKTOP RESPONSIVE LAYOUT (ADMIN)
+     ========================================================================== */
+  :root {
+    --r-card: 12px;
+    --r-btn: 8px;
+  }
+
+  /* Expand Page Container on Desktop */
+  @media (min-width: 900px) {
+    .page,
+    #page-admin,
+    #page-admin .card,
+    #page-admin .admin-hero-banner,
+    #page-admin .admin-nav-tabs {
+      max-width: 1180px !important;
+      width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+
+  /* Modern Horizontal Tab Pill Bar on Mobile, Snug Flex on Desktop */
+  @media (max-width: 768px) {
+    .admin-nav-tabs {
+      display: flex !important;
+      overflow-x: auto !important;
+      gap: 5px !important;
+      padding: 2px 2px 6px 2px !important;
+      margin-bottom: 8px !important;
+      scrollbar-width: none !important;
+      -webkit-overflow-scrolling: touch !important;
+      grid-template-columns: none !important;
+    }
+    .admin-nav-tabs::-webkit-scrollbar {
+      display: none !important;
+    }
+    .admin-tab-btn {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      white-space: nowrap !important;
+      min-height: 32px !important;
+      padding: 4px 12px !important;
+      font-size: 11.5px !important;
+      border-radius: 999px !important;
+    }
+  }
+  @media (min-width: 769px) {
+    .admin-nav-tabs {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+      margin-bottom: 12px !important;
+      grid-template-columns: none !important;
+    }
+    .admin-tab-btn {
+      flex: 1 1 calc(25% - 8px) !important;
+      min-height: 36px !important;
+      padding: 6px 10px !important;
+      font-size: 12px !important;
+    }
+  }
+
+  /* Admin Hero Banner: Compact & Snug */
+  .admin-hero-banner {
+    padding: 10px 14px !important;
+    margin-bottom: 8px !important;
+    border-radius: var(--r-card) !important;
+  }
+  .admin-hero-banner h3 {
+    font-size: 15px !important;
+    margin: 0 0 2px 0 !important;
+  }
+  .admin-hero-banner p {
+    font-size: 11.5px !important;
+  }
+
+  /* KPI Strip: 3-column on mobile, 6-column on desktop */
+  @media (max-width: 600px) {
+    .adm-kpi-strip {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 5px !important;
+      margin-bottom: 8px !important;
+    }
+    .adm-kpi-card {
+      padding: 6px 8px !important;
+      border-radius: 8px !important;
+    }
+    .adm-kpi-val {
+      font-size: 16px !important;
+    }
+    .adm-kpi-lbl {
+      font-size: 9px !important;
+      letter-spacing: 0.2px !important;
+    }
+  }
+  @media (min-width: 768px) {
+    .adm-kpi-strip {
+      grid-template-columns: repeat(6, 1fr) !important;
+      gap: 8px !important;
+      margin-bottom: 10px !important;
+    }
+  }
+
+  /* Section Switcher Cards: 2x2 on Mobile, 4-column on Desktop */
+  @media (max-width: 600px) {
+    .adm-sec-cards-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 5px !important;
+      margin: 6px 0 8px 0 !important;
+    }
+    .adm-sec-card-btn {
+      padding: 6px 8px !important;
+      gap: 6px !important;
+      min-height: 46px !important;
+      border-radius: 8px !important;
+    }
+    .adm-sec-card-icon {
+      font-size: 18px !important;
+    }
+    .adm-sec-card-title {
+      font-size: 11.5px !important;
+    }
+    .adm-sec-card-sub {
+      font-size: 10px !important;
+    }
+  }
+  @media (min-width: 768px) {
+    .adm-sec-cards-grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 8px !important;
+      margin: 8px 0 12px 0 !important;
+    }
+  }
+
+  /* Sub-section Pills: Snug & Horizontal Scroll Friendly */
+  .adm-sub-pills-bar {
+    gap: 4px !important;
+    margin: 6px 0 8px 0 !important;
+    padding-bottom: 6px !important;
+  }
+  .adm-sub-pill-btn {
+    min-height: 26px !important;
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    gap: 4px !important;
+  }
+
+  /* Batch Operations Bar: Compact & Responsive */
+  .adm-batch-bar {
+    padding: 6px 10px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+    border-radius: 8px !important;
+  }
+  .adm-batch-left {
+    font-size: 11.5px !important;
+    gap: 6px !important;
+  }
+  .adm-table-select {
+    min-height: 28px !important;
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+  .adm-action-btn {
+    min-height: 28px !important;
+    padding: 2px 8px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Interactive Employee Table: Clean, Sticky Header, Tight Cells */
+  .adm-table-wrap {
+    max-height: 520px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .adm-emp-table th {
+    padding: 6px 8px !important;
+    font-size: 10.5px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5 !important;
+    background: var(--surface-2) !important;
+  }
+  .adm-emp-table td {
+    padding: 5px 8px !important;
+    font-size: 11.5px !important;
+  }
+  .adm-emp-avatar {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 10px !important;
+  }
+  .adm-emp-meta-name {
+    font-size: 11.5px !important;
+  }
+  .adm-emp-meta-id {
+    font-size: 10px !important;
+  }
+
+  /* Modal Cards: Compact on Mobile */
+  .lb-modal-content {
+    max-width: 480px !important;
+    padding: 14px 16px !important;
+    border-radius: var(--r-card) !important;
+  }
+</style>
+
 </head>
 <body data-page="admin">
 <div class="page" id="page-admin">
@@ -6291,6 +6757,7 @@ body[data-page="search"] .wa-float {
 <div class="admin-nav-tabs" role="tablist">
 <button type="button" class="admin-tab-btn active" id="admTabBtnAbsent" onclick="switchAdminTab('absent')">Daily Absent (ERP)</button>
 <button type="button" class="admin-tab-btn" id="admTabBtnAreas" onclick="switchAdminTab('areas')">1. Areas and IDs</button>
+<button type="button" class="admin-tab-btn" id="admTabBtnUnassigned" onclick="switchAdminTab('unassigned')">Unassigned Queue (<span id="admNavUnassignedCount">0</span>)</button>
 <button type="button" class="admin-tab-btn" id="admTabBtnRates" onclick="switchAdminTab('rates')">2. Rates and packages</button>
 <button type="button" class="admin-tab-btn" id="admTabBtnData" onclick="switchAdminTab('data')">3. Data manager</button>
 <button type="button" class="admin-tab-btn" id="admTabBtnTeam" onclick="switchAdminTab('team')">4. ERP team</button>
@@ -6374,6 +6841,172 @@ body[data-page="search"] .wa-float {
 </div>
 
 <div class="admin-section-pane" id="admPaneAreas">
+
+<div class="card" style="padding:14px;margin-bottom:12px;">
+  <!-- Top Header with Actions -->
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+    <div>
+      <div class="card-title" style="display:flex;align-items:center;gap:6px;">
+        <span>Production Sections & Employee Organizer</span>
+        <span class="badge badge-success" style="font-size:10.5px;">Smart Manager</span>
+      </div>
+      <div class="card-sub" style="white-space:normal;">
+        Easily organize and move employees across Solid, Softgel, Packing and Executives, manage sub-sections, and batch-assign roles.
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button>
+      <button type="button" class="calc-mini-btn" onclick="adminDownloadAreasJson()">Backup</button>
+    </div>
+  </div>
+
+  <!-- KPI Cards Strip -->
+  <div class="adm-kpi-strip">
+    <div class="adm-kpi-card">
+      <span class="adm-kpi-val" id="admModTotalCount">0</span>
+      <span class="adm-kpi-lbl">Total Listed</span>
+    </div>
+    <div class="adm-kpi-card">
+      <span class="adm-kpi-val" id="admModSolidCount">0</span>
+      <span class="adm-kpi-lbl">Solid Production</span>
+    </div>
+    <div class="adm-kpi-card">
+      <span class="adm-kpi-val" id="admModSoftgelCount">0</span>
+      <span class="adm-kpi-lbl">Softgel Production</span>
+    </div>
+    <div class="adm-kpi-card">
+      <span class="adm-kpi-val" id="admModPackingCount">0</span>
+      <span class="adm-kpi-lbl">Packing Hall</span>
+    </div>
+    <div class="adm-kpi-card">
+      <span class="adm-kpi-val" id="admModExecCount">0</span>
+      <span class="adm-kpi-lbl">Executives</span>
+    </div>
+    <div class="adm-kpi-card" style="cursor:pointer;" onclick="switchAdminTab('unassigned')">
+      <span class="adm-kpi-val" id="admModUnassignedCount" style="color:var(--warn);">0</span>
+      <span class="adm-kpi-lbl">Unassigned (Month)</span>
+    </div>
+  </div>
+
+  <!-- Interactive Section Selector Cards -->
+  <label style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:4px;">Select Production Section:</label>
+  <div class="adm-sec-cards-grid">
+    <button type="button" class="adm-sec-card-btn active" id="secCardSolid" onclick="adminSelectSectionCard('Solid Production')">
+      <span class="adm-sec-card-icon">💊</span>
+      <div class="adm-sec-card-info">
+        <span class="adm-sec-card-title">Solid Production</span>
+        <span class="adm-sec-card-sub"><span id="secCardSolidCount">0</span> employees</span>
+      </div>
+    </button>
+    <button type="button" class="adm-sec-card-btn" id="secCardSoftgel" onclick="adminSelectSectionCard('Softgel Production')">
+      <span class="adm-sec-card-icon">💧</span>
+      <div class="adm-sec-card-info">
+        <span class="adm-sec-card-title">Softgel Production</span>
+        <span class="adm-sec-card-sub"><span id="secCardSoftgelCount">0</span> employees</span>
+      </div>
+    </button>
+    <button type="button" class="adm-sec-card-btn" id="secCardPacking" onclick="adminSelectSectionCard('Packing Hall')">
+      <span class="adm-sec-card-icon">📦</span>
+      <div class="adm-sec-card-info">
+        <span class="adm-sec-card-title">Packing Hall</span>
+        <span class="adm-sec-card-sub"><span id="secCardPackingCount">0</span> employees</span>
+      </div>
+    </button>
+    <button type="button" class="adm-sec-card-btn" id="secCardOverall" onclick="adminSelectSectionCard('Overall')">
+      <span class="adm-sec-card-icon">👔</span>
+      <div class="adm-sec-card-info">
+        <span class="adm-sec-card-title">Executives</span>
+        <span class="adm-sec-card-sub"><span id="secCardOverallCount">0</span> employees</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Sub-section Pills with Live Counts and Inline Adder -->
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;">
+    <span style="font-size:12px;font-weight:800;color:var(--text);">Sub-sections in <span id="admCurrentSecName">Solid Production</span>:</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <input type="text" id="adminQuickNewSubInput" placeholder="New sub-section name..." style="width:170px;min-height:30px;padding:3px 8px;font-size:12px;margin:0;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminQuickAddSubsection();}">
+      <button type="button" class="calc-mini-btn btn-secondary" onclick="adminQuickAddSubsection()" style="font-size:11.5px;">+ Add Sub-section</button>
+    </div>
+  </div>
+  <div class="adm-sub-pills-bar" id="admSubPillsContainer">
+    <!-- Populated dynamically -->
+  </div>
+
+  <!-- Search and Live Filter Controls -->
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+    <div style="flex:2;min-width:180px;">
+      <input type="text" id="admTableSearchInput" placeholder="Search by ID, name, or sub-section..." style="margin:0;min-height:34px;font-size:12.5px;" oninput="adminFilterEmployeeTable()">
+    </div>
+    <div style="flex:1;min-width:120px;">
+      <select id="admTableGenderFilter" style="margin:0;min-height:34px;font-size:12px;" onchange="adminFilterEmployeeTable()">
+        <option value="">All Genders</option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      </select>
+    </div>
+    <div style="flex:1;min-width:130px;">
+      <select id="admTableTypeFilter" style="margin:0;min-height:34px;font-size:12px;" onchange="adminFilterEmployeeTable()">
+        <option value="">All Categories</option>
+        <option value="CON">Contractual (CF)</option>
+        <option value="JO">Junior Operator (JO)</option>
+        <option value="REG">Regular / Staff (RF)</option>
+        <option value="CAS">Casual</option>
+        <option value="EXEC">Executive / Above</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Batch Action Toolbar (Appears when employees are selected) -->
+  <div class="adm-batch-bar" id="admBatchToolbar">
+    <div class="adm-batch-left">
+      <input type="checkbox" id="admMasterTableCheckbox" onchange="adminToggleSelectAllTable(this)" style="margin:0;cursor:pointer;">
+      <span><span id="admBatchSelectedCount">0</span> employees selected</span>
+    </div>
+    <div class="adm-batch-right">
+      <select id="admBatchTargetSubSelect" class="adm-table-select" style="min-width:120px;">
+        <option value="">Move to Sub-section...</option>
+        <option value="__none__">Clear Sub-section</option>
+      </select>
+      <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplySubMove()">Apply Sub-section</button>
+      <select id="admBatchTargetAreaSelect" class="adm-table-select" style="min-width:110px;">
+        <option value="">Move to Section...</option>
+        <option value="Solid Production">Solid</option>
+        <option value="Softgel Production">Softgel</option>
+        <option value="Packing Hall">Packing</option>
+        <option value="Overall">Executives</option>
+      </select>
+      <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAreaMove()">Move Section</button>
+      <button type="button" class="btn-secondary danger-btn adm-action-btn" onclick="adminBatchRemoveSelected()">Remove</button>
+    </div>
+  </div>
+
+  <!-- Interactive Employee Directory Table -->
+  <div class="adm-table-wrap">
+    <table class="adm-emp-table" id="admModernEmpTable">
+      <thead>
+        <tr>
+          <th style="width:36px;text-align:center;">
+            <input type="checkbox" id="admHeaderCheckbox" onchange="adminToggleSelectAllTable(this)" style="margin:0;cursor:pointer;">
+          </th>
+          <th>Employee (ID & Name)</th>
+          <th>Section</th>
+          <th>Sub-Section</th>
+          <th>Category / Gender</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="admModernEmpTableBody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11.5px;color:var(--muted);">
+    <span id="admTableShowingCount">Showing 0 employees</span>
+    <span>Click any Sub-section or Section dropdown in a row for 1-click update</span>
+  </div>
+</div>
+
 <div class="card" style="padding:14px;">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
 <div class="card-title">Area and ID management (areas.json)</div>
@@ -6457,6 +7090,72 @@ body[data-page="search"] .wa-float {
 <div id="adminAreaPushStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
 </div>
 </div>
+
+<div class="admin-section-pane" id="admPaneUnassigned">
+  <div class="card" style="padding:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <div>
+        <div class="card-title" style="display:flex;align-items:center;gap:6px;">
+          <span>Unassigned Monthly Employees Queue</span>
+          <span class="badge badge-warn" id="admUnassignedBadgeCount">0 Pending</span>
+        </div>
+        <div class="card-sub" style="white-space:normal;">
+          These employees exist in the latest uploaded monthly overtime dataset but are NOT yet listed in any RPPF Production Section. Easily assign them with 1 click.
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button type="button" class="calc-mini-btn" onclick="adminScanUnassignedMonthlyEmployees(true)">Rescan Month Data</button>
+        <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button>
+      </div>
+    </div>
+
+    <!-- Batch assign for unassigned -->
+    <div class="adm-batch-bar" id="admUnassignedBatchBar" style="background:var(--surface-2);border-color:var(--border);">
+      <div class="adm-batch-left">
+        <input type="checkbox" id="admUnassignedMasterCb" onchange="adminToggleSelectAllUnassigned(this)" style="margin:0;cursor:pointer;">
+        <span><span id="admUnassignedSelectedCount">0</span> unassigned selected</span>
+      </div>
+      <div class="adm-batch-right">
+        <select id="admBatchAssignAreaSelect" class="adm-table-select" style="min-width:140px;" onchange="adminPopulateBatchAssignSubs()">
+          <option value="">Select Section...</option>
+          <option value="Solid Production">Solid Production</option>
+          <option value="Softgel Production">Softgel Production</option>
+          <option value="Packing Hall">Packing Hall</option>
+          <option value="Overall">Executives</option>
+        </select>
+        <select id="admBatchAssignSubSelect" class="adm-table-select" style="min-width:130px;">
+          <option value="">Sub-section (Optional)...</option>
+        </select>
+        <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAssignUnassigned()">Assign Selected</button>
+      </div>
+    </div>
+
+    <!-- Table of Unassigned Employees -->
+    <div class="adm-table-wrap">
+      <table class="adm-emp-table" id="admUnassignedTable">
+        <thead>
+          <tr>
+            <th style="width:36px;text-align:center;">
+              <input type="checkbox" id="admUnassignedHeaderCb" onchange="adminToggleSelectAllUnassigned(this)" style="margin:0;cursor:pointer;">
+            </th>
+            <th>ID & Name</th>
+            <th>Designation / Grade</th>
+            <th>Total Duty</th>
+            <th>OT Hours</th>
+            <th style="text-align:right;">Quick 1-Click Assignment</th>
+          </tr>
+        </thead>
+        <tbody id="admUnassignedTableBody">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:8px;font-size:11.5px;color:var(--muted);" id="admUnassignedStatusLbl">
+      Ready.
+    </div>
+  </div>
+</div>
+
 <div class="admin-section-pane" id="admPaneRates">
 <div class="card" style="padding:14px;" id="admDesigRateBox">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -6659,6 +7358,67 @@ body[data-page="search"] .wa-float {
 </div>
 </div>
 </div>
+
+<div id="adminEmpEditModal" class="lb-modal" style="display:none;" onclick="if(event.target.id==='adminEmpEditModal')closeAdminEmpEditModal()">
+  <div class="lb-modal-content" style="max-width:480px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="adminEmpEditModalTitle">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3 id="adminEmpEditModalTitle" style="margin:0;font-size:16px;font-weight:800;color:var(--text);">Edit Employee Details</h3>
+      <button type="button" class="calc-mini-btn" onclick="closeAdminEmpEditModal()" title="Close">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div>
+        <label for="adminEditEmpId" style="font-size:12px;font-weight:700;">Employee ID</label>
+        <input type="text" id="adminEditEmpId" readonly style="background:var(--surface-2);font-weight:800;cursor:not-allowed;">
+      </div>
+      <div>
+        <label for="adminEditEmpName" style="font-size:12px;font-weight:700;">Employee Name</label>
+        <input type="text" id="adminEditEmpName" placeholder="Full name">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label for="adminEditEmpArea" style="font-size:12px;font-weight:700;">Section</label>
+          <select id="adminEditEmpArea" onchange="onAdminEditAreaChange()">
+            <option value="Solid Production">Solid Production</option>
+            <option value="Softgel Production">Softgel Production</option>
+            <option value="Packing Hall">Packing Hall</option>
+            <option value="Overall">Executives</option>
+          </select>
+        </div>
+        <div>
+          <label for="adminEditEmpSub" style="font-size:12px;font-weight:700;">Sub-section</label>
+          <select id="adminEditEmpSub">
+            <option value="">(None / General)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div>
+          <label for="adminEditEmpGender" style="font-size:12px;font-weight:700;">Gender</label>
+          <select id="adminEditEmpGender">
+            <option value="">Unspecified</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+        </div>
+        <div>
+          <label for="adminEditEmpType" style="font-size:12px;font-weight:700;">Employee Category</label>
+          <select id="adminEditEmpType">
+            <option value="CON">Contractual (CF)</option>
+            <option value="JO">Junior Operator (JO)</option>
+            <option value="REG">Regular / Staff (RF)</option>
+            <option value="CAS">Casual</option>
+            <option value="EXEC">Executive / Above</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+      <button type="button" class="btn-secondary" onclick="closeAdminEmpEditModal()" style="width:auto;min-width:80px;">Cancel</button>
+      <button type="button" class="btn-primary" onclick="saveAdminEmpEdit()" style="width:auto;min-width:110px;">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <div id="erpSupportModal" class="lb-modal" onclick="if(event.target.id==='erpSupportModal')closeErpSupportModal()">
 <div class="lb-modal-content" style="max-width:460px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="erpModalTitle">
 <div class="lb-modal-header">
@@ -9168,6 +9928,10 @@ if (pageName === 'team') renderTeamPage();
 if (pageName === 'notices') renderNoticesPage();
 if (pageName === 'settings') { updateSettingsAreaCount(); updateModeUI(); }
 if (pageName === 'admin') initAdminPage();
+setTimeout(() => {
+  adminSelectSectionCard('Solid Production');
+  adminScanUnassignedMonthlyEmployees();
+}, 60);
 });
 }
 function renderHistory() {
@@ -10841,23 +11605,51 @@ loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); adm
 renderAdminNoticesList();
 }
 function switchAdminTab(tab) {
-const map = {
-areas: ['admTabBtnAreas', 'admPaneAreas'],
-rates: ['admTabBtnRates', 'admPaneRates'],
-data: ['admTabBtnData', 'admPaneData'],
-team: ['admTabBtnTeam', 'admPaneTeam'],
-notices: ['admTabBtnNotices', 'admPaneNotices'],
-setup: ['admTabBtnSetup', 'admPaneSetup']
-};
-Object.keys(map).forEach(k => {
-const [btnId, paneId] = map[k];
-document.getElementById(btnId)?.classList.toggle('active', k === tab);
-document.getElementById(paneId)?.classList.toggle('active', k === tab);
-});
-if (tab === 'rates') adminRenderDesigRates();
-if (tab === 'data') adminCheckMonthData();
-if (tab === 'team') renderAdminTeamManager();
-if (tab === 'notices') renderAdminNoticesList();
+  document.querySelectorAll('.admin-nav-tabs .admin-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-section-pane').forEach(p => p.classList.remove('active'));
+
+  const tabBtnMap = {
+    'absent': 'admTabBtnAbsent',
+    'areas': 'admTabBtnAreas',
+    'unassigned': 'admTabBtnUnassigned',
+    'rates': 'admTabBtnRates',
+    'data': 'admTabBtnData',
+    'team': 'admTabBtnTeam',
+    'notices': 'admTabBtnNotices',
+    'setup': 'admTabBtnSetup'
+  };
+
+  const paneMap = {
+    'absent': 'admPaneAbsent',
+    'areas': 'admPaneAreas',
+    'unassigned': 'admPaneUnassigned',
+    'rates': 'admPaneRates',
+    'data': 'admPaneData',
+    'team': 'admPaneTeam',
+    'notices': 'admPaneNotices',
+    'setup': 'admPaneSetup'
+  };
+
+  const btn = document.getElementById(tabBtnMap[tab]);
+  const pane = document.getElementById(paneMap[tab]);
+  if (btn) btn.classList.add('active');
+  if (pane) pane.classList.add('active');
+
+  if (tab === 'areas') {
+    adminSelectSectionCard(_admCurrentActiveSection || 'Solid Production');
+  } else if (tab === 'unassigned') {
+    adminScanUnassignedMonthlyEmployees();
+  } else if (tab === 'absent') {
+    loadAbsentStore().then(() => renderAdminAbsentPane());
+  } else if (tab === 'rates') {
+    adminRenderDesigRates();
+  } else if (tab === 'data') {
+    adminCheckMonthData();
+  } else if (tab === 'team') {
+    renderAdminTeamManager();
+  } else if (tab === 'notices') {
+    renderAdminNoticesList();
+  }
 }
 function onAdminAreaChange() {
 renderAdminSubsList(); populateAdminSubSelect(); renderAdminAreaPreview();
@@ -14338,51 +15130,57 @@ function renderAdminAbsentPane() {
   }).join('');
 }
 
+
 /* ==========================================================================
-   UNIVERSAL LIVE EMPLOYEE AUTOCOMPLETE SUGGESTION ENGINE
+   STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+
+function isListedEmployeeId(id) {
+  if (!id) return false;
+  const upper = String(id).toUpperCase().trim();
+  const area = AREA_MAP[upper];
+  return Boolean(area && ALLOWED_SECTIONS.includes(area));
+}
+
+function getListedEmployeesCountBySection() {
+  const counts = {
+    'Solid Production': 0,
+    'Softgel Production': 0,
+    'Packing Hall': 0,
+    'Overall': 0,
+    'Total': 0
+  };
+  Object.keys(AREA_MAP || {}).forEach(rawId => {
+    const area = AREA_MAP[rawId];
+    if (area && ALLOWED_SECTIONS.includes(area)) {
+      counts[area] = (counts[area] || 0) + 1;
+      counts['Total']++;
+    }
+  });
+  return counts;
+}
+
 let _masterDirectoryCache = [];
 let _masterDirLastBuildTs = 0;
 
 function buildMasterEmployeeDirectory() {
   const now = Date.now();
-  if (_masterDirectoryCache.length > 50 && (now - _masterDirLastBuildTs < 8000)) {
+  if (_masterDirectoryCache.length > 0 && (now - _masterDirLastBuildTs < 5000)) {
     return _masterDirectoryCache;
   }
   const map = new Map();
-  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
-    const list = monthIndexMemoryCache[ym];
-    if (!Array.isArray(list)) return;
-    list.forEach(e => {
-      if (!e || !e.id) return;
-      const id = String(e.id).toUpperCase().trim();
-      const meta = getEmpMeta(id);
-      const area = getAreaForId(id, e.isRppf !== false);
-      const existing = map.get(id);
-      if (!existing || (!existing.name && e.name)) {
-        map.set(id, {
-          id,
-          name: e.name || id,
-          area: area === 'Not on the list' ? (e.area || 'RPPF') : area,
-          sub: meta.sub || e.sub || '',
-          designation: e.grade || getDesignation(e) || EMP_TYPE_LABELS[meta.type] || 'Employee',
-          type: meta.type || getAutoEmpType(id),
-          gender: meta.gender || '',
-          totalDuty: e.totalDuty || 0,
-          otHours: e.otHours || 0
-        });
-      }
-    });
-  });
 
+  // ONLY seed from AREA_MAP where area is in ALLOWED_SECTIONS
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const id = String(rawId).toUpperCase().trim();
-    if (!map.has(id)) {
+    const area = AREA_MAP[rawId];
+    if (area && ALLOWED_SECTIONS.includes(area)) {
       const meta = getEmpMeta(id);
       map.set(id, {
         id,
         name: id,
-        area: AREA_MAP[rawId] || 'RPPF',
+        area,
         sub: meta.sub || '',
         designation: EMP_TYPE_LABELS[meta.type] || getDesignation({ id }) || 'Employee',
         type: meta.type || getAutoEmpType(id),
@@ -14390,22 +15188,40 @@ function buildMasterEmployeeDirectory() {
         totalDuty: 0,
         otHours: 0
       });
-    } else {
-      const item = map.get(id);
-      const meta = getEmpMeta(id);
-      if (AREA_MAP[rawId]) item.area = AREA_MAP[rawId];
-      if (meta.sub) item.sub = meta.sub;
     }
   });
 
+  // Enrich names, duties, OT and designations from monthly caches ONLY for already listed employees
+  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
+    const list = monthIndexMemoryCache[ym];
+    if (!Array.isArray(list)) return;
+    list.forEach(e => {
+      if (!e || !e.id) return;
+      const id = String(e.id).toUpperCase().trim();
+      if (map.has(id)) {
+        const item = map.get(id);
+        if (e.name && (item.name === id || !item.name)) {
+          item.name = e.name;
+        }
+        if (e.grade && (!item.designation || item.designation === 'Employee')) {
+          item.designation = e.grade;
+        }
+        if (e.totalDuty) item.totalDuty = Math.max(item.totalDuty || 0, e.totalDuty);
+        if (e.otHours) item.otHours = Math.max(item.otHours || 0, e.otHours);
+      }
+    });
+  });
+
+  // Team data enrichment for listed members
   if (Array.isArray(teamData)) {
     teamData.forEach(t => {
       if (t && t.id && t.id !== '—') {
         const id = String(t.id).toUpperCase().trim();
-        const cur = map.get(id) || { id, area: t.area || 'RPPF', sub: '', type: getAutoEmpType(id), totalDuty: 0, otHours: 0 };
-        if (!cur.name || cur.name === id) cur.name = t.name || id;
-        if (!cur.designation) cur.designation = t.designation || 'ERP Team';
-        map.set(id, cur);
+        if (map.has(id)) {
+          const cur = map.get(id);
+          if (t.name && cur.name === id) cur.name = t.name;
+          if (t.designation) cur.designation = t.designation;
+        }
       }
     });
   }
@@ -14422,6 +15238,7 @@ function searchEmployeeDirectory(query, limit = 10) {
   const scored = [];
   for (let i = 0; i < all.length; i++) {
     const e = all[i];
+    if (!isListedEmployeeId(e.id)) continue;
     if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
     const idU = e.id.toUpperCase();
     const nameU = String(e.name || '').toUpperCase();
@@ -14444,6 +15261,7 @@ function searchEmployeeDirectory(query, limit = 10) {
   scored.sort((a, b) => (b.score - a.score) || a.e.id.localeCompare(b.e.id));
   return scored.slice(0, limit).map(x => x.e);
 }
+
 
 let _activeSuggestMenu = null;
 let _activeSuggestInput = null;
@@ -15037,6 +15855,633 @@ if (typeof switchAdminTab === 'function') {
     }
   };
 }
+
+
+/* ==========================================================================
+   MODERN ADMIN ORGANIZER & UNASSIGNED QUEUE JAVASCRIPT CONTROLLERS
+   ========================================================================== */
+let _admCurrentActiveSection = 'Solid Production';
+let _admCurrentActiveSub = ''; // '' means all
+let _admTableSelectedIds = new Set();
+let _admUnassignedList = [];
+let _admUnassignedSelectedIds = new Set();
+
+function adminSelectSectionCard(area) {
+  _admCurrentActiveSection = area;
+  _admCurrentActiveSub = '';
+  _admTableSelectedIds.clear();
+
+  document.querySelectorAll('.adm-sec-card-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === ('secCard' + (area === 'Solid Production' ? 'Solid' : area === 'Softgel Production' ? 'Softgel' : area === 'Packing Hall' ? 'Packing' : 'Overall')));
+  });
+
+  const titleEl = document.getElementById('admCurrentSecName');
+  if (titleEl) titleEl.textContent = area === 'Overall' ? 'Executives' : area;
+
+  // Also sync the legacy target area select so legacy handlers work
+  const legAreaSel = document.getElementById('adminTargetAreaSelect');
+  if (legAreaSel) {
+    legAreaSel.value = area;
+    populateAdminSubSelect();
+  }
+
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+  adminUpdateAllKpiCounters();
+}
+
+function adminRenderSubPills() {
+  const container = document.getElementById('admSubPillsContainer');
+  if (!container) return;
+
+  const area = _admCurrentActiveSection;
+  const subs = AREA_SUBS[area] || [];
+  
+  // Count total in section
+  const sectionIds = Object.keys(AREA_MAP || {}).filter(id => AREA_MAP[id] === area);
+  const totalCount = sectionIds.length;
+
+  let html = `<button type="button" class="adm-sub-pill-btn ${_admCurrentActiveSub === '' ? 'active' : ''}" onclick="adminFilterSubPill('')">
+    <span>All Sub-sections</span>
+    <span class="adm-sub-pill-count">${totalCount}</span>
+  </button>`;
+
+  let unassignedSubCount = 0;
+  sectionIds.forEach(id => {
+    const s = (AREA_DETAILS[id] || {}).s;
+    if (!s) unassignedSubCount++;
+  });
+
+  subs.forEach(subName => {
+    const count = sectionIds.filter(id => (AREA_DETAILS[id] || {}).s === subName).length;
+    html += `<button type="button" class="adm-sub-pill-btn ${_admCurrentActiveSub === subName ? 'active' : ''}" onclick="adminFilterSubPill('${esc(subName)}')">
+      <span>${esc(subName)}</span>
+      <span class="adm-sub-pill-count">${count}</span>
+      <span onclick="event.stopPropagation();adminDeleteSubConfirm('${esc(subName)}')" title="Delete sub-section" style="margin-left:3px;opacity:0.6;font-size:10px;">✕</span>
+    </button>`;
+  });
+
+  if (unassignedSubCount > 0) {
+    html += `<button type="button" class="adm-sub-pill-btn ${_admCurrentActiveSub === '__none__' ? 'active' : ''}" onclick="adminFilterSubPill('__none__')">
+      <span>General / Unassigned Sub</span>
+      <span class="adm-sub-pill-count">${unassignedSubCount}</span>
+    </button>`;
+  }
+
+  container.innerHTML = html;
+
+  // Also populate batch sub-section dropdown
+  const batchSubSel = document.getElementById('admBatchTargetSubSelect');
+  if (batchSubSel) {
+    batchSubSel.innerHTML = '<option value="">Move to Sub-section...</option><option value="__none__">Clear Sub-section</option>' +
+      subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  }
+}
+
+function adminFilterSubPill(subName) {
+  _admCurrentActiveSub = subName;
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+}
+
+function adminQuickAddSubsection() {
+  const inp = document.getElementById('adminQuickNewSubInput');
+  const val = (inp?.value || '').trim();
+  if (!val) { showToast("Enter a sub-section name", "warn"); return; }
+  const area = _admCurrentActiveSection;
+  AREA_SUBS[area] = AREA_SUBS[area] || [];
+  if (AREA_SUBS[area].includes(val)) {
+    showToast("This sub-section already exists in " + area, "warn");
+    return;
+  }
+  AREA_SUBS[area].push(val);
+  persistAreaSubs();
+  inp.value = '';
+  showToast(`Added sub-section "${val}" to ${area}`, "success");
+  adminRenderSubPills();
+  populateAdminSubSelect();
+}
+
+function adminDeleteSubConfirm(subName) {
+  // Canvas does not allow confirm(); proceed directly with toast confirmation
+  const area = _admCurrentActiveSection;
+  AREA_SUBS[area] = (AREA_SUBS[area] || []).filter(s => s !== subName);
+  // Clear from employees
+  Object.keys(AREA_MAP || {}).forEach(id => {
+    if (AREA_MAP[id] === area && (AREA_DETAILS[id] || {}).s === subName) {
+      delete AREA_DETAILS[id].s;
+    }
+  });
+  persistAreaSubs();
+  persistAreaDetails();
+  showToast(`Removed sub-section "${subName}"`, "success");
+  if (_admCurrentActiveSub === subName) _admCurrentActiveSub = '';
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+  populateAdminSubSelect();
+}
+
+function adminFilterEmployeeTable() {
+  const tbody = document.getElementById('admModernEmpTableBody');
+  const showingEl = document.getElementById('admTableShowingCount');
+  if (!tbody) return;
+
+  const area = _admCurrentActiveSection;
+  const subFilter = _admCurrentActiveSub;
+  const searchQ = (document.getElementById('admTableSearchInput')?.value || '').trim().toUpperCase();
+  const genderFilter = document.getElementById('admTableGenderFilter')?.value || '';
+  const typeFilter = document.getElementById('admTableTypeFilter')?.value || '';
+
+  // Get all master directory employees or AREA_MAP IDs in this area
+  const dir = buildMasterEmployeeDirectory();
+  const dirMap = new Map();
+  dir.forEach(e => dirMap.set(e.id, e));
+
+  let idsInArea = Object.keys(AREA_MAP || {}).filter(id => AREA_MAP[id] === area);
+
+  // Filter by sub-section
+  if (subFilter === '__none__') {
+    idsInArea = idsInArea.filter(id => !(AREA_DETAILS[id] || {}).s);
+  } else if (subFilter) {
+    idsInArea = idsInArea.filter(id => (AREA_DETAILS[id] || {}).s === subFilter);
+  }
+
+  // Filter by search query, gender, type
+  const filtered = idsInArea.filter(id => {
+    const meta = getEmpMeta(id);
+    const empInfo = dirMap.get(id) || { id, name: id, designation: 'Employee' };
+    
+    if (genderFilter && meta.gender !== genderFilter) return false;
+    if (typeFilter && meta.type !== typeFilter) return false;
+
+    if (searchQ) {
+      const matchId = id.includes(searchQ);
+      const matchName = String(empInfo.name || '').toUpperCase().includes(searchQ);
+      const matchSub = String(meta.sub || '').toUpperCase().includes(searchQ);
+      const matchDesig = String(empInfo.designation || '').toUpperCase().includes(searchQ);
+      if (!matchId && !matchName && !matchSub && !matchDesig) return false;
+    }
+    return true;
+  }).sort();
+
+  if (showingEl) showingEl.textContent = `Showing ${filtered.length} employees (filtered from ${idsInArea.length})`;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted);">No matching employees found in ${area}.</td></tr>`;
+    return;
+  }
+
+  const subsInCurrentArea = AREA_SUBS[area] || [];
+
+  tbody.innerHTML = filtered.map(id => {
+    const meta = getEmpMeta(id);
+    const empInfo = dirMap.get(id) || { id, name: id, designation: 'Employee' };
+    const dispName = (empInfo.name && empInfo.name !== id) ? empInfo.name : id;
+    const isChecked = _admTableSelectedIds.has(id);
+    const initials = dispName.slice(0, 2).toUpperCase();
+
+    // Section dropdown
+    const secSelect = `<select class="adm-table-select" onchange="adminTableChangeSection('${esc(id)}', this.value)">
+      <option value="Solid Production" ${area === 'Solid Production' ? 'selected' : ''}>Solid</option>
+      <option value="Softgel Production" ${area === 'Softgel Production' ? 'selected' : ''}>Softgel</option>
+      <option value="Packing Hall" ${area === 'Packing Hall' ? 'selected' : ''}>Packing</option>
+      <option value="Overall" ${area === 'Overall' ? 'selected' : ''}>Executives</option>
+    </select>`;
+
+    // Sub-section dropdown
+    const curSub = meta.sub || '';
+    const subSelect = `<select class="adm-table-select" onchange="adminTableChangeSub('${esc(id)}', this.value)">
+      <option value="" ${!curSub ? 'selected' : ''}>(None / General)</option>` +
+      subsInCurrentArea.map(s => `<option value="${esc(s)}" ${curSub === s ? 'selected' : ''}>${esc(s)}</option>`).join('') +
+    `</select>`;
+
+    const catBadge = meta.type ? `<span class="badge" style="font-size:10.5px;">${esc(EMP_TYPE_LABELS[meta.type] || meta.type)}</span>` : '';
+    const genderBadge = meta.gender ? `<span class="badge" style="font-size:10px;margin-left:3px;">${meta.gender === 'M' ? '♂ M' : '♀ F'}</span>` : '';
+
+    return `<tr>
+      <td style="text-align:center;">
+        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="adminToggleRowSelect('${esc(id)}', this.checked)" style="margin:0;cursor:pointer;">
+      </td>
+      <td>
+        <div class="adm-emp-cell-id">
+          <div class="adm-emp-avatar">${esc(initials)}</div>
+          <div>
+            <div class="adm-emp-meta-name">${esc(dispName)}</div>
+            <div class="adm-emp-meta-id">${esc(id)}</div>
+          </div>
+        </div>
+      </td>
+      <td>${secSelect}</td>
+      <td>${subSelect}</td>
+      <td>${catBadge}${genderBadge}</td>
+      <td style="text-align:right;">
+        <button type="button" class="calc-mini-btn" onclick="openAdminEmpEditModal('${esc(id)}')" style="font-size:11px;">Edit</button>
+        <button type="button" class="calc-mini-btn danger-btn" onclick="adminRemoveSingleId('${esc(id)}')" title="Remove" style="font-size:11px;margin-left:3px;">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function adminToggleRowSelect(id, isChecked) {
+  if (isChecked) {
+    _admTableSelectedIds.add(id);
+  } else {
+    _admTableSelectedIds.delete(id);
+  }
+  adminUpdateBatchToolbar();
+}
+
+function adminToggleSelectAllTable(masterCb) {
+  const checked = masterCb.checked;
+  const tbody = document.getElementById('admModernEmpTableBody');
+  if (!tbody) return;
+  tbody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = checked;
+  });
+  if (checked) {
+    const area = _admCurrentActiveSection;
+    Object.keys(AREA_MAP || {}).forEach(id => {
+      if (AREA_MAP[id] === area) _admTableSelectedIds.add(id);
+    });
+  } else {
+    _admTableSelectedIds.clear();
+  }
+  adminUpdateBatchToolbar();
+}
+
+function adminUpdateBatchToolbar() {
+  const countEl = document.getElementById('admBatchSelectedCount');
+  if (countEl) countEl.textContent = _admTableSelectedIds.size;
+}
+
+function adminTableChangeSection(empId, newArea) {
+  if (!empId || !newArea) return;
+  AREA_MAP[empId] = newArea;
+  // If moved section, clear or adjust sub-section
+  if (AREA_DETAILS[empId] && AREA_DETAILS[empId].s) {
+    const targetSubs = AREA_SUBS[newArea] || [];
+    if (!targetSubs.includes(AREA_DETAILS[empId].s)) {
+      delete AREA_DETAILS[empId].s;
+    }
+  }
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0; // invalidate cache
+  showToast(`Moved ${empId} to ${newArea}`, "success");
+  adminFilterEmployeeTable();
+  adminRenderSubPills();
+  adminUpdateAllKpiCounters();
+}
+
+function adminTableChangeSub(empId, newSub) {
+  if (!empId) return;
+  AREA_DETAILS[empId] = AREA_DETAILS[empId] || {};
+  if (newSub && newSub !== '__none__') {
+    AREA_DETAILS[empId].s = newSub;
+  } else {
+    delete AREA_DETAILS[empId].s;
+  }
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+  showToast(`Updated sub-section for ${empId}`, "success");
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+}
+
+function adminBatchApplySubMove() {
+  const subSel = document.getElementById('admBatchTargetSubSelect');
+  const targetSub = subSel?.value;
+  if (!targetSub) { showToast("Select a sub-section to apply", "warn"); return; }
+  if (_admTableSelectedIds.size === 0) { showToast("No employees selected", "warn"); return; }
+
+  _admTableSelectedIds.forEach(id => {
+    AREA_DETAILS[id] = AREA_DETAILS[id] || {};
+    if (targetSub === '__none__') {
+      delete AREA_DETAILS[id].s;
+    } else {
+      AREA_DETAILS[id].s = targetSub;
+    }
+  });
+
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+  showToast(`Updated sub-section for ${_admTableSelectedIds.size} employees`, "success");
+  _admTableSelectedIds.clear();
+  adminUpdateBatchToolbar();
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+}
+
+function adminBatchApplyAreaMove() {
+  const areaSel = document.getElementById('admBatchTargetAreaSelect');
+  const targetArea = areaSel?.value;
+  if (!targetArea) { showToast("Select a section to move to", "warn"); return; }
+  if (_admTableSelectedIds.size === 0) { showToast("No employees selected", "warn"); return; }
+
+  _admTableSelectedIds.forEach(id => {
+    AREA_MAP[id] = targetArea;
+    if (AREA_DETAILS[id] && AREA_DETAILS[id].s) {
+      const targetSubs = AREA_SUBS[targetArea] || [];
+      if (!targetSubs.includes(AREA_DETAILS[id].s)) {
+        delete AREA_DETAILS[id].s;
+      }
+    }
+  });
+
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+  showToast(`Moved ${_admTableSelectedIds.size} employees to ${targetArea}`, "success");
+  _admTableSelectedIds.clear();
+  adminUpdateBatchToolbar();
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+  adminUpdateAllKpiCounters();
+}
+
+function adminBatchRemoveSelected() {
+  if (_admTableSelectedIds.size === 0) { showToast("No employees selected", "warn"); return; }
+  // Canvas does not allow confirm(); proceed directly with toast confirmation
+  _admTableSelectedIds.forEach(id => {
+    delete AREA_MAP[id];
+    delete AREA_DETAILS[id];
+  });
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+  showToast(`Removed ${_admTableSelectedIds.size} employees`, "success");
+  _admTableSelectedIds.clear();
+  adminUpdateBatchToolbar();
+  adminRenderSubPills();
+  adminFilterEmployeeTable();
+  adminUpdateAllKpiCounters();
+}
+
+function adminUpdateAllKpiCounters() {
+  const counts = getListedEmployeesCountBySection();
+  const setEl = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  setEl('admModTotalCount', counts['Total']);
+  setEl('admModSolidCount', counts['Solid Production']);
+  setEl('admModSoftgelCount', counts['Softgel Production']);
+  setEl('admModPackingCount', counts['Packing Hall']);
+  setEl('admModExecCount', counts['Overall']);
+
+  setEl('secCardSolidCount', counts['Solid Production']);
+  setEl('secCardSoftgelCount', counts['Softgel Production']);
+  setEl('secCardPackingCount', counts['Packing Hall']);
+  setEl('secCardOverallCount', counts['Overall']);
+
+  // Sync legacy stat numbers
+  setEl('admCountSolid', counts['Solid Production']);
+  setEl('admCountSoftgel', counts['Softgel Production']);
+  setEl('admCountPacking', counts['Packing Hall']);
+  setEl('admCountTotal', counts['Total']);
+}
+
+/* --- Employee Edit Modal --- */
+let _admEditingEmpId = null;
+
+function openAdminEmpEditModal(empId) {
+  _admEditingEmpId = empId;
+  const modal = document.getElementById('adminEmpEditModal');
+  if (!modal) return;
+
+  const idInp = document.getElementById('adminEditEmpId');
+  const nameInp = document.getElementById('adminEditEmpName');
+  const areaSel = document.getElementById('adminEditEmpArea');
+  const subSel = document.getElementById('adminEditEmpSub');
+  const genderSel = document.getElementById('adminEditEmpGender');
+  const typeSel = document.getElementById('adminEditEmpType');
+
+  const meta = getEmpMeta(empId);
+  const currentArea = AREA_MAP[empId] || 'Solid Production';
+
+  if (idInp) idInp.value = empId;
+  if (nameInp) {
+    const all = buildMasterEmployeeDirectory();
+    const item = all.find(x => x.id === empId);
+    nameInp.value = (item && item.name !== empId) ? item.name : '';
+  }
+  if (areaSel) areaSel.value = currentArea;
+  if (genderSel) genderSel.value = meta.gender || '';
+  if (typeSel) typeSel.value = meta.type || '';
+
+  onAdminEditAreaChange();
+  if (subSel) subSel.value = meta.sub || '';
+
+  modal.style.display = 'flex';
+}
+
+function closeAdminEmpEditModal() {
+  const modal = document.getElementById('adminEmpEditModal');
+  if (modal) modal.style.display = 'none';
+  _admEditingEmpId = null;
+}
+
+function onAdminEditAreaChange() {
+  const area = document.getElementById('adminEditEmpArea')?.value || 'Solid Production';
+  const subSel = document.getElementById('adminEditEmpSub');
+  if (!subSel) return;
+  const subs = AREA_SUBS[area] || [];
+  subSel.innerHTML = '<option value="">(None / General)</option>' + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+}
+
+function saveAdminEmpEdit() {
+  const empId = _admEditingEmpId;
+  if (!empId) return;
+
+  const area = document.getElementById('adminEditEmpArea')?.value || 'Solid Production';
+  const sub = document.getElementById('adminEditEmpSub')?.value || '';
+  const gender = document.getElementById('adminEditEmpGender')?.value || '';
+  const type = document.getElementById('adminEditEmpType')?.value || '';
+  const name = (document.getElementById('adminEditEmpName')?.value || '').trim();
+
+  AREA_MAP[empId] = area;
+  AREA_DETAILS[empId] = AREA_DETAILS[empId] || {};
+  if (sub) AREA_DETAILS[empId].s = sub; else delete AREA_DETAILS[empId].s;
+  if (gender) AREA_DETAILS[empId].g = gender; else delete AREA_DETAILS[empId].g;
+  if (type) AREA_DETAILS[empId].t = type; else delete AREA_DETAILS[empId].t;
+
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+
+  showToast(`Updated employee ${empId}`, "success");
+  closeAdminEmpEditModal();
+  adminFilterEmployeeTable();
+  adminRenderSubPills();
+  adminUpdateAllKpiCounters();
+}
+
+/* --- Unassigned Employees Queue Manager --- */
+async function adminScanUnassignedMonthlyEmployees(forceRescan = false) {
+  const badge = document.getElementById('admUnassignedBadgeCount');
+  const navBadge = document.getElementById('admNavUnassignedCount');
+  const kpiBadge = document.getElementById('admModUnassignedCount');
+  const statusLbl = document.getElementById('admUnassignedStatusLbl');
+
+  if (statusLbl) statusLbl.textContent = 'Scanning monthly overtime records for unassigned employees...';
+
+  // Gather all unique employees across month caches or latest month
+  const unassignedMap = new Map();
+  const cachedMonths = Object.keys(monthIndexMemoryCache || {});
+
+  if (cachedMonths.length === 0 || forceRescan) {
+    try {
+      const now = new Date();
+      for (let i = 0; i < 4; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const list = await fetchMonthPreIndexedData(m);
+        if (Array.isArray(list) && list.length > 0) break;
+      }
+    } catch (e) {
+      console.warn("Scan month data err:", e);
+    }
+  }
+
+  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
+    const list = monthIndexMemoryCache[ym];
+    if (!Array.isArray(list)) return;
+    list.forEach(e => {
+      if (!e || !e.id) return;
+      const id = String(e.id).toUpperCase().trim();
+      if (!isListedEmployeeId(id)) {
+        if (!unassignedMap.has(id)) {
+          unassignedMap.set(id, {
+            id,
+            name: e.name || id,
+            designation: e.grade || getDesignation(e) || 'Employee',
+            totalDuty: e.totalDuty || 0,
+            otHours: e.otHours || 0
+          });
+        }
+      }
+    });
+  });
+
+  _admUnassignedList = Array.from(unassignedMap.values()).sort((a,b) => a.id.localeCompare(b.id));
+  const count = _admUnassignedList.length;
+
+  if (badge) badge.textContent = `${count} Pending`;
+  if (navBadge) navBadge.textContent = count;
+  if (kpiBadge) kpiBadge.textContent = count;
+  if (statusLbl) statusLbl.textContent = `Found ${count} unassigned employees in uploaded overtime data.`;
+
+  adminRenderUnassignedTable();
+}
+
+function adminRenderUnassignedTable() {
+  const tbody = document.getElementById('admUnassignedTableBody');
+  if (!tbody) return;
+
+  if (_admUnassignedList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--success);font-weight:700;">✓ All employees in uploaded monthly files are listed in RPPF sections!</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = _admUnassignedList.map(e => {
+    const isChecked = _admUnassignedSelectedIds.has(e.id);
+    return `<tr>
+      <td style="text-align:center;">
+        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="adminToggleUnassignedRow('${esc(e.id)}', this.checked)" style="margin:0;cursor:pointer;">
+      </td>
+      <td>
+        <div style="font-weight:800;color:var(--text);">${esc(e.name)}</div>
+        <div style="font-size:11px;color:var(--muted);font-family:monospace;">${esc(e.id)}</div>
+      </td>
+      <td>${esc(e.designation)}</td>
+      <td>${e.totalDuty}h</td>
+      <td>${e.otHours}h</td>
+      <td style="text-align:right;">
+        <div style="display:inline-flex;gap:4px;">
+          <button type="button" class="calc-mini-btn" onclick="adminAssignSingleUnassigned('${esc(e.id)}', 'Solid Production')">+ Solid</button>
+          <button type="button" class="calc-mini-btn" onclick="adminAssignSingleUnassigned('${esc(e.id)}', 'Softgel Production')">+ Softgel</button>
+          <button type="button" class="calc-mini-btn" onclick="adminAssignSingleUnassigned('${esc(e.id)}', 'Packing Hall')">+ Packing</button>
+          <button type="button" class="calc-mini-btn" onclick="adminAssignSingleUnassigned('${esc(e.id)}', 'Overall')">+ Exec</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function adminToggleUnassignedRow(id, isChecked) {
+  if (isChecked) _admUnassignedSelectedIds.add(id); else _admUnassignedSelectedIds.delete(id);
+  const countEl = document.getElementById('admUnassignedSelectedCount');
+  if (countEl) countEl.textContent = _admUnassignedSelectedIds.size;
+}
+
+function adminToggleSelectAllUnassigned(masterCb) {
+  const checked = masterCb.checked;
+  _admUnassignedSelectedIds.clear();
+  if (checked) {
+    _admUnassignedList.forEach(e => _admUnassignedSelectedIds.add(e.id));
+  }
+  const countEl = document.getElementById('admUnassignedSelectedCount');
+  if (countEl) countEl.textContent = _admUnassignedSelectedIds.size;
+  adminRenderUnassignedTable();
+}
+
+function adminPopulateBatchAssignSubs() {
+  const area = document.getElementById('admBatchAssignAreaSelect')?.value;
+  const subSel = document.getElementById('admBatchAssignSubSelect');
+  if (!subSel) return;
+  if (!area) { subSel.innerHTML = '<option value="">Sub-section (Optional)...</option>'; return; }
+  const subs = AREA_SUBS[area] || [];
+  subSel.innerHTML = '<option value="">Sub-section (Optional)...</option>' + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+}
+
+function adminAssignSingleUnassigned(empId, targetArea, targetSub = '') {
+  if (!empId || !targetArea) return;
+  AREA_MAP[empId] = targetArea;
+  if (targetSub) {
+    AREA_DETAILS[empId] = AREA_DETAILS[empId] || {};
+    AREA_DETAILS[empId].s = targetSub;
+  }
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+  _admUnassignedList = _admUnassignedList.filter(x => x.id !== empId);
+  _admUnassignedSelectedIds.delete(empId);
+  showToast(`Assigned ${empId} to ${targetArea}`, "success");
+  adminRenderUnassignedTable();
+  adminUpdateAllKpiCounters();
+}
+
+function adminBatchApplyAssignUnassigned() {
+  const area = document.getElementById('admBatchAssignAreaSelect')?.value;
+  const sub = document.getElementById('admBatchAssignSubSelect')?.value || '';
+  if (!area) { showToast("Select a section to assign to", "warn"); return; }
+  if (_admUnassignedSelectedIds.size === 0) { showToast("No employees selected", "warn"); return; }
+
+  _admUnassignedSelectedIds.forEach(id => {
+    AREA_MAP[id] = area;
+    if (sub) {
+      AREA_DETAILS[id] = AREA_DETAILS[id] || {};
+      AREA_DETAILS[id].s = sub;
+    }
+  });
+
+  persistAreaMap();
+  persistAreaDetails();
+  _masterDirLastBuildTs = 0;
+
+  const count = _admUnassignedSelectedIds.size;
+  showToast(`Assigned ${count} employees to ${area}`, "success");
+  _admUnassignedList = _admUnassignedList.filter(x => !_admUnassignedSelectedIds.has(x.id));
+  _admUnassignedSelectedIds.clear();
+
+  const countEl = document.getElementById('admUnassignedSelectedCount');
+  if (countEl) countEl.textContent = 0;
+
+  adminRenderUnassignedTable();
+  adminUpdateAllKpiCounters();
+}
+
 
 // Start directly on #page-admin in standalone admin.html
 
