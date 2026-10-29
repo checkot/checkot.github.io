@@ -372,7 +372,8 @@
     },
     "RF20716": {
       "t": "EXEC",
-      "g": "M"
+      "g": "M",
+      "s": "Production Management"
     },
     "RF22690": {
       "t": "EXEC",
