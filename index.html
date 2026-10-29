@@ -1,5 +1,4 @@
 
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6518,6 +6517,258 @@ body[data-page="search"] .wa-float {
   }
 
 </style>
+
+<style id="adminModernOrganizerStyles">
+  /* Modern Admin KPI & Section Cards */
+  .adm-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .adm-kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .adm-kpi-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-1px);
+  }
+  .adm-kpi-val {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--brand);
+    line-height: 1.1;
+  }
+  .adm-kpi-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .adm-sec-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    margin: 10px 0 14px 0;
+  }
+  .adm-sec-card-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+    box-shadow: none;
+  }
+  .adm-sec-card-btn:hover {
+    background: var(--surface-2);
+    border-color: var(--brand-light);
+  }
+  .adm-sec-card-btn.active {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 1px var(--brand);
+  }
+  .adm-sec-card-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .adm-sec-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+  }
+  .adm-sec-card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-sec-card-btn.active .adm-sec-card-title {
+    color: var(--brand);
+  }
+  .adm-sec-card-sub {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  /* Sub-section Filter Pills */
+  .adm-sub-pills-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 8px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .adm-sub-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: none;
+    min-height: 28px;
+  }
+  .adm-sub-pill-btn:hover {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--brand-soft-border);
+  }
+  .adm-sub-pill-btn.active {
+    background: var(--brand);
+    color: #FFFFFF;
+    border-color: var(--brand);
+  }
+  .adm-sub-pill-count {
+    background: rgba(0,0,0,0.08);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+  }
+  .adm-sub-pill-btn.active .adm-sub-pill-count {
+    background: rgba(255,255,255,0.25);
+    color: #FFFFFF;
+  }
+
+  /* Batch Operations Bar */
+  .adm-batch-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-soft-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+  }
+  .adm-batch-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--brand-text);
+  }
+  .adm-batch-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Modern Employee Table */
+  .adm-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    max-height: 480px;
+  }
+  .adm-emp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .adm-emp-table th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-strong);
+    z-index: 10;
+  }
+  .adm-emp-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .adm-emp-table tr:hover td {
+    background: var(--surface-2);
+  }
+  .adm-emp-cell-id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .adm-emp-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    font-weight: 800;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .adm-emp-meta-name {
+    font-weight: 800;
+    color: var(--text);
+  }
+  .adm-emp-meta-id {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+  }
+  .adm-table-select {
+    padding: 3px 6px;
+    font-size: 11.5px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    min-height: 28px;
+    margin: 0;
+  }
+  .adm-table-select:focus {
+    border-color: var(--brand);
+  }
+  .adm-action-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+    min-height: 26px;
+    margin: 0;
+  }
+</style>
+
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
@@ -8712,6 +8963,12 @@ const data = await fetchJsonResource(`data/${month}.json`);
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : null);
 if (list && list.length > 0) {
 await loadAreaMap();
+if (!isListedEmployeeId(searchId)) {
+  spinner.style.display = "none"; searchBtn.disabled = false;
+  updateMonthNavBar(month);
+  showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
+  return;
+}
 const normalized = list.map(e => ({
 ...e,
 id: String(e.id || '').toUpperCase().trim(),
@@ -9911,6 +10168,16 @@ const id1 = (inp1El && inp1El.value.trim() ? inp1El.value.trim() : (currentSearc
 const id2 = (document.getElementById('compareId')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
 if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
 if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
+const _cmpIds = [id1, id2];
+if (currentVsMode === 3) {
+  const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+  if (id3) _cmpIds.push(id3);
+}
+const _unlisted = _cmpIds.filter(id => !isListedEmployeeId(id));
+if (_unlisted.length > 0) {
+  showToast(`${_unlisted.join(', ')} আইডিটি অনুমোদিত আরপিবিএফ সেকশনে তালিকাভুক্ত নয়।`, "warn");
+  return;
+}
 let ids = [id1, id2];
 if (currentVsMode === 3) {
 const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
@@ -13617,51 +13884,57 @@ function renderAdminAbsentPane() {
   }).join('');
 }
 
+
 /* ==========================================================================
-   UNIVERSAL LIVE EMPLOYEE AUTOCOMPLETE SUGGESTION ENGINE
+   STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+
+function isListedEmployeeId(id) {
+  if (!id) return false;
+  const upper = String(id).toUpperCase().trim();
+  const area = AREA_MAP[upper];
+  return Boolean(area && ALLOWED_SECTIONS.includes(area));
+}
+
+function getListedEmployeesCountBySection() {
+  const counts = {
+    'Solid Production': 0,
+    'Softgel Production': 0,
+    'Packing Hall': 0,
+    'Overall': 0,
+    'Total': 0
+  };
+  Object.keys(AREA_MAP || {}).forEach(rawId => {
+    const area = AREA_MAP[rawId];
+    if (area && ALLOWED_SECTIONS.includes(area)) {
+      counts[area] = (counts[area] || 0) + 1;
+      counts['Total']++;
+    }
+  });
+  return counts;
+}
+
 let _masterDirectoryCache = [];
 let _masterDirLastBuildTs = 0;
 
 function buildMasterEmployeeDirectory() {
   const now = Date.now();
-  if (_masterDirectoryCache.length > 50 && (now - _masterDirLastBuildTs < 8000)) {
+  if (_masterDirectoryCache.length > 0 && (now - _masterDirLastBuildTs < 5000)) {
     return _masterDirectoryCache;
   }
   const map = new Map();
-  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
-    const list = monthIndexMemoryCache[ym];
-    if (!Array.isArray(list)) return;
-    list.forEach(e => {
-      if (!e || !e.id) return;
-      const id = String(e.id).toUpperCase().trim();
-      const meta = getEmpMeta(id);
-      const area = getAreaForId(id, e.isRppf !== false);
-      const existing = map.get(id);
-      if (!existing || (!existing.name && e.name)) {
-        map.set(id, {
-          id,
-          name: e.name || id,
-          area: area === 'Not on the list' ? (e.area || 'RPPF') : area,
-          sub: meta.sub || e.sub || '',
-          designation: e.grade || getDesignation(e) || EMP_TYPE_LABELS[meta.type] || 'Employee',
-          type: meta.type || getAutoEmpType(id),
-          gender: meta.gender || '',
-          totalDuty: e.totalDuty || 0,
-          otHours: e.otHours || 0
-        });
-      }
-    });
-  });
 
+  // ONLY seed from AREA_MAP where area is in ALLOWED_SECTIONS
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const id = String(rawId).toUpperCase().trim();
-    if (!map.has(id)) {
+    const area = AREA_MAP[rawId];
+    if (area && ALLOWED_SECTIONS.includes(area)) {
       const meta = getEmpMeta(id);
       map.set(id, {
         id,
         name: id,
-        area: AREA_MAP[rawId] || 'RPPF',
+        area,
         sub: meta.sub || '',
         designation: EMP_TYPE_LABELS[meta.type] || getDesignation({ id }) || 'Employee',
         type: meta.type || getAutoEmpType(id),
@@ -13669,22 +13942,40 @@ function buildMasterEmployeeDirectory() {
         totalDuty: 0,
         otHours: 0
       });
-    } else {
-      const item = map.get(id);
-      const meta = getEmpMeta(id);
-      if (AREA_MAP[rawId]) item.area = AREA_MAP[rawId];
-      if (meta.sub) item.sub = meta.sub;
     }
   });
 
+  // Enrich names, duties, OT and designations from monthly caches ONLY for already listed employees
+  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
+    const list = monthIndexMemoryCache[ym];
+    if (!Array.isArray(list)) return;
+    list.forEach(e => {
+      if (!e || !e.id) return;
+      const id = String(e.id).toUpperCase().trim();
+      if (map.has(id)) {
+        const item = map.get(id);
+        if (e.name && (item.name === id || !item.name)) {
+          item.name = e.name;
+        }
+        if (e.grade && (!item.designation || item.designation === 'Employee')) {
+          item.designation = e.grade;
+        }
+        if (e.totalDuty) item.totalDuty = Math.max(item.totalDuty || 0, e.totalDuty);
+        if (e.otHours) item.otHours = Math.max(item.otHours || 0, e.otHours);
+      }
+    });
+  });
+
+  // Team data enrichment for listed members
   if (Array.isArray(teamData)) {
     teamData.forEach(t => {
       if (t && t.id && t.id !== '—') {
         const id = String(t.id).toUpperCase().trim();
-        const cur = map.get(id) || { id, area: t.area || 'RPPF', sub: '', type: getAutoEmpType(id), totalDuty: 0, otHours: 0 };
-        if (!cur.name || cur.name === id) cur.name = t.name || id;
-        if (!cur.designation) cur.designation = t.designation || 'ERP Team';
-        map.set(id, cur);
+        if (map.has(id)) {
+          const cur = map.get(id);
+          if (t.name && cur.name === id) cur.name = t.name;
+          if (t.designation) cur.designation = t.designation;
+        }
       }
     });
   }
@@ -13701,6 +13992,7 @@ function searchEmployeeDirectory(query, limit = 10) {
   const scored = [];
   for (let i = 0; i < all.length; i++) {
     const e = all[i];
+    if (!isListedEmployeeId(e.id)) continue;
     if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
     const idU = e.id.toUpperCase();
     const nameU = String(e.name || '').toUpperCase();
@@ -13723,6 +14015,7 @@ function searchEmployeeDirectory(query, limit = 10) {
   scored.sort((a, b) => (b.score - a.score) || a.e.id.localeCompare(b.e.id));
   return scored.slice(0, limit).map(x => x.e);
 }
+
 
 let _activeSuggestMenu = null;
 let _activeSuggestInput = null;
