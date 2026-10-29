@@ -1,3 +1,4 @@
+
  
 <!DOCTYPE html>
 <html lang="en">
@@ -5962,6 +5963,560 @@ body[data-page="search"] .wa-float {
     color: var(--brand-text);
     border: 1px solid var(--brand-soft-border);
   }
+
+  /* ==========================================================================
+     16. ROUND 6 UPGRADES: IN-CHARGE HOME OVERVIEW, LIVE EMPLOYEE AUTOCOMPLETE,
+         SUB-SECTION FILTER, EARNING HIDE IN IN-CHARGE & SMART ADMIN ABSENT HUB
+     ========================================================================== */
+  /* Hide Earning Ranking Options in In-Charge Mode */
+  body.incharge-mode-active .rank-hub-item[onclick*="openRankDrillDown('earned')"],
+  body.incharge-mode-active .icc-crit-tab[data-icc-crit="earned"],
+  body.incharge-mode-active #lbTabEarnedBtn,
+  body.incharge-mode-active .lb-panel[data-lb-panel="earned"],
+  body.incharge-mode-active .lb-modal-crit-btn[data-modal-crit="earned"] {
+    display: none !important;
+  }
+
+  /* In-Charge Home Overview Dashboard (#inchargeHomeOverview) */
+  .inc-home-overview {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 14px;
+    order: 1;
+  }
+  body.incharge-mode-active:not(.has-result) .inc-home-overview {
+    display: flex;
+    animation: pageIn 0.22s ease;
+  }
+  body.incharge-mode-active:not(.has-result):not(.inc-search-expanded) #welcomeBanner,
+  body.incharge-mode-active:not(.has-result):not(.inc-search-expanded) #quickActionsGrid {
+    display: none !important;
+  }
+  .inc-ov-hero {
+    background: linear-gradient(135deg, #1E1B4B 0%, #312E81 52%, #4338CA 100%);
+    color: #FFFFFF;
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .inc-ov-hero::after {
+    content: "";
+    position: absolute;
+    right: -28px;
+    top: -28px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+  }
+  .inc-ov-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .inc-ov-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .inc-ov-title {
+    margin: 6px 0 2px 0;
+    font-size: clamp(17px, 2.2vw, 20px);
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.25;
+  }
+  .inc-ov-sub {
+    margin: 0;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .inc-ov-total-pill {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 12px;
+    padding: 8px 14px;
+    text-align: right;
+    min-width: 110px;
+  }
+  .inc-ov-total-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+  .inc-ov-total-lbl {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+  }
+
+  /* Active Employee Count Breakdown Grid (Solid, SG, Pack, Executives) */
+  .inc-count-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  @media (min-width: 560px) {
+    .inc-count-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .inc-count-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 11px;
+    padding: 10px 11px;
+    cursor: pointer;
+    transition: transform 0.14s ease, background-color 0.14s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+  }
+  .inc-count-card:hover {
+    background: rgba(255, 255, 255, 0.20);
+    transform: translateY(-1px);
+  }
+  .inc-count-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.90);
+  }
+  .inc-count-num {
+    font-size: 21px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 4px 0 2px 0;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .inc-count-meta {
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.78);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Today's Absent Employee List Card (Synced from Admin ERP) */
+  .inc-absent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .inc-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .inc-section-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+  }
+  .inc-absent-pill-bar {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .inc-absent-pill-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .inc-absent-filter-btn {
+    width: auto;
+    min-height: 28px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--surface-2);
+    color: var(--text-2);
+    border: 1px solid var(--border-strong);
+    white-space: nowrap;
+    box-shadow: none;
+  }
+  .inc-absent-filter-btn.active {
+    background: var(--danger);
+    color: #FFFFFF;
+    border-color: var(--danger);
+  }
+  .inc-absent-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    max-height: 290px;
+    overflow-y: auto;
+  }
+  @media (min-width: 640px) {
+    .inc-absent-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .inc-absent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: var(--radius-sm);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    cursor: pointer;
+    transition: transform 0.12s ease;
+  }
+  .inc-absent-item:hover {
+    transform: translateY(-1px);
+  }
+  .inc-absent-emp {
+    min-width: 0;
+    flex: 1;
+  }
+  .inc-absent-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inc-absent-sub {
+    font-size: 11.5px;
+    color: var(--text-2);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inc-absent-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Category Toppers Showcase Grid on In-Charge Home */
+  .inc-toppers-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .inc-toppers-area-pills {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    scrollbar-width: none;
+  }
+  .inc-toppers-area-pills::-webkit-scrollbar {
+    display: none;
+  }
+  .inc-topper-area-btn {
+    width: auto;
+    min-height: 28px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--surface-2);
+    color: var(--text-2);
+    border: 1px solid var(--border-strong);
+    white-space: nowrap;
+    box-shadow: none;
+  }
+  .inc-topper-area-btn.active {
+    background: var(--indigo);
+    color: #FFFFFF;
+    border-color: var(--indigo);
+  }
+  .inc-toppers-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 600px) {
+    .inc-toppers-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .inc-topper-cat-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .inc-topper-cat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed var(--border-strong);
+  }
+  .inc-topper-cat-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--brand-text);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .inc-topper-more-btn {
+    width: auto;
+    min-height: 22px;
+    height: 22px;
+    padding: 0 7px;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-strong);
+    box-shadow: none;
+  }
+  .inc-topper-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 6px;
+    border-radius: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+  .inc-topper-row:hover {
+    background: var(--brand-soft);
+  }
+  .inc-topper-medal {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .inc-topper-medal.m-1 { background: var(--gold); color: #3A2800; }
+  .inc-topper-medal.m-2 { background: var(--silver); color: #0D1A2E; }
+  .inc-topper-medal.m-3 { background: var(--bronze); color: #FFFFFF; }
+  .inc-topper-info {
+    min-width: 0;
+    flex: 1;
+  }
+  .inc-topper-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .inc-topper-meta {
+    font-size: 10.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .inc-topper-val {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--brand-text);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Universal Live Employee Autocomplete Suggestion Dropdown */
+  .emp-suggest-host {
+    position: relative;
+  }
+  .emp-suggest-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 9950;
+    background: var(--surface);
+    border: 1px solid var(--brand-soft-border);
+    border-radius: 11px;
+    box-shadow: var(--shadow-lg);
+    max-height: 270px;
+    overflow-y: auto;
+    display: none;
+    padding: 4px;
+  }
+  .emp-suggest-menu.open {
+    display: block;
+    animation: pageIn 0.14s ease;
+  }
+  .emp-suggest-header {
+    padding: 5px 9px;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .emp-suggest-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    border-bottom: 1px solid var(--border);
+  }
+  .emp-suggest-item:last-child {
+    border-bottom: none;
+  }
+  .emp-suggest-item:hover,
+  .emp-suggest-item.active-item {
+    background: var(--brand-soft);
+  }
+  .emp-suggest-left {
+    min-width: 0;
+    flex: 1;
+  }
+  .emp-suggest-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .emp-suggest-id-pill {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--brand);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .emp-suggest-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+  .emp-suggest-tag {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--text-2);
+    border: 1px solid var(--border-strong);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .emp-suggest-tag.sub-tag {
+    background: var(--indigo-soft);
+    color: var(--indigo);
+    border-color: rgba(79, 70, 229, 0.3);
+  }
+  .emp-suggest-right {
+    text-align: right;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand-text);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Smart Admin Absent Manager & Quick Bar */
+  .admin-quick-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
+  }
+  .admin-absent-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  @media (min-width: 720px) {
+    .admin-nav-tabs {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+  }
+
 </style>
 </head>
 <body data-page="search">
@@ -6189,6 +6744,145 @@ body[data-page="search"] .wa-float {
 <span>ERP Help</span>
 </button>
 </div>
+
+<section class="inc-home-overview" id="inchargeHomeOverview" aria-label="In-Charge Overview Dashboard">
+  <div class="inc-ov-hero">
+    <div class="inc-ov-hero-top">
+      <div>
+        <span class="inc-ov-badge" id="incOvRoleBadge">In-Charge Mode • Live Overview</span>
+        <h3 class="inc-ov-title" id="incOvMainTitle">RPPF Production Overview</h3>
+        <p class="inc-ov-sub" id="incOvSubText">Active strength by section, today's ERP absent list &amp; category toppers</p>
+      </div>
+      <div class="inc-ov-total-pill" onclick="switchPage('leaderboard')" style="cursor:pointer;" title="View full ranking">
+        <span class="inc-ov-total-num" id="incOvTotalActive">0</span>
+        <span class="inc-ov-total-lbl">Total Active RPPF</span>
+      </div>
+    </div>
+    <div class="inc-count-grid">
+      <div class="inc-count-card" onclick="openInchargeAreaRanking('Solid Production')">
+        <div class="inc-count-head"><span>Solid Production</span><span>›</span></div>
+        <div class="inc-count-num" id="incCountSolid">0</div>
+        <div class="inc-count-meta" id="incMetaSolid">Active in section</div>
+      </div>
+      <div class="inc-count-card" onclick="openInchargeAreaRanking('Softgel Production')">
+        <div class="inc-count-head"><span>SG Production</span><span>›</span></div>
+        <div class="inc-count-num" id="incCountSg">0</div>
+        <div class="inc-count-meta" id="incMetaSg">Active in section</div>
+      </div>
+      <div class="inc-count-card" onclick="openInchargeAreaRanking('Packing Hall')">
+        <div class="inc-count-head"><span>Packing Hall</span><span>›</span></div>
+        <div class="inc-count-num" id="incCountPack">0</div>
+        <div class="inc-count-meta" id="incMetaPack">Active in section</div>
+      </div>
+      <div class="inc-count-card" onclick="openInchargeAreaRanking('Overall')">
+        <div class="inc-count-head"><span>Executives</span><span>›</span></div>
+        <div class="inc-count-num" id="incCountExec">0</div>
+        <div class="inc-count-meta" id="incMetaExec">Executive / Above</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Today's Absent Employee List (Updated from Admin Corner by ERP) -->
+  <div class="inc-absent-card" id="incHomeAbsentCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Today's Absent Employee List</span>
+          <span class="badge warn" id="incAbsentCountBadge">0</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incAbsentDateMeta">Updated from Admin Corner by ERP</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="date" id="incAbsentDatePicker" onchange="onIncAbsentDateChange(this.value)" style="width:auto;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
+        <button type="button" class="calc-mini-btn" id="incQuickEditAbsentBtn" onclick="openQuickAbsentModal()" style="display:none;">+ Update</button>
+      </div>
+    </div>
+    <div class="inc-absent-pill-bar" id="incAbsentAreaFilterBar">
+      <button type="button" class="inc-absent-filter-btn active" data-abs-area="all" onclick="filterIncHomeAbsent('all')">All Sections</button>
+      <button type="button" class="inc-absent-filter-btn" data-abs-area="Solid Production" onclick="filterIncHomeAbsent('Solid Production')">Solid</button>
+      <button type="button" class="inc-absent-filter-btn" data-abs-area="Softgel Production" onclick="filterIncHomeAbsent('Softgel Production')">SG</button>
+      <button type="button" class="inc-absent-filter-btn" data-abs-area="Packing Hall" onclick="filterIncHomeAbsent('Packing Hall')">Pack</button>
+      <button type="button" class="inc-absent-filter-btn" data-abs-area="Overall" onclick="filterIncHomeAbsent('Overall')">Executives</button>
+    </div>
+    <div class="inc-absent-grid" id="incHomeAbsentList">
+      <div class="empty-msg" style="padding:14px 8px;grid-column:1/-1;">No absent employees recorded for today.</div>
+    </div>
+  </div>
+
+  <!-- Category Toppers Info (Without Earning Categories in In-Charge Mode) -->
+  <div class="inc-toppers-card" id="incHomeToppersCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">Category Toppers Overview</h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incToppersMonthSub">Top performers across duty &amp; attendance categories</div>
+      </div>
+      <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Full Ranking ›</button>
+    </div>
+    <div class="inc-toppers-area-pills" id="incToppersAreaBar">
+      <button type="button" class="inc-topper-area-btn active" data-top-area="all" onclick="setIncToppersArea('all')">All RPPF</button>
+      <button type="button" class="inc-topper-area-btn" data-top-area="Solid Production" onclick="setIncToppersArea('Solid Production')">Solid</button>
+      <button type="button" class="inc-topper-area-btn" data-top-area="Softgel Production" onclick="setIncToppersArea('Softgel Production')">SG</button>
+      <button type="button" class="inc-topper-area-btn" data-top-area="Packing Hall" onclick="setIncToppersArea('Packing Hall')">Packing</button>
+      <button type="button" class="inc-topper-area-btn" data-top-area="Overall" onclick="setIncToppersArea('Overall')">Executives</button>
+    </div>
+    <div class="inc-toppers-grid" id="incHomeToppersGrid">
+      <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading category toppers...</div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Absent Update Modal for ERP / Admin / In-Charge -->
+<div id="quickAbsentModal" class="lb-modal" onclick="if(event.target.id==='quickAbsentModal')closeQuickAbsentModal()">
+  <div class="lb-modal-content" style="max-width:520px;" onclick="event.stopPropagation()">
+    <div class="lb-modal-header">
+      <div class="lb-modal-title-wrap">
+        <div class="lb-modal-title">ERP Daily Absent List Manager</div>
+        <div class="lb-modal-subtitle">Add or remove today's absent employees (syncs with Home Overview)</div>
+      </div>
+      <button type="button" class="lb-modal-close" onclick="closeQuickAbsentModal()">✕</button>
+    </div>
+    <div class="lb-modal-body">
+      <div class="row" style="margin-top:0;margin-bottom:8px;">
+        <div style="flex:1;">
+          <label style="margin-top:0;font-size:12px;">Absent Date</label>
+          <input type="date" id="qmAbsentDateInp" onchange="renderQuickAbsentModalList()" style="margin-top:4px;min-height:38px;">
+        </div>
+        <div style="flex:1;">
+          <label style="margin-top:0;font-size:12px;">Reason / Shift Note</label>
+          <select id="qmAbsentReasonSel" style="margin-top:4px;min-height:38px;">
+            <option value="Absent">Absent (Uninformed)</option>
+            <option value="Casual Leave (CL)">Casual Leave (CL)</option>
+            <option value="Sick Leave (SL)">Sick Leave (SL)</option>
+            <option value="Earned Leave (EL)">Earned Leave (EL)</option>
+            <option value="Shift Off / DO">Shift Off / DO</option>
+          </select>
+        </div>
+      </div>
+      <label style="margin-top:6px;font-size:12px;">Search Employee (Type ID, Name, Sub-section or Area):</label>
+      <div class="incharge-search-row" style="margin-top:4px;">
+        <input type="text" id="qmAbsentEmpInput" placeholder="Type ID or name (e.g. CF8355 or Ariful)..." autocomplete="off">
+        <button type="button" class="btn-primary" style="width:auto;min-height:38px;padding:0 14px;" onclick="addAbsentFromQuickModal()">+ Add</button>
+      </div>
+      <label style="margin-top:10px;font-size:12px;">Or Paste Multiple IDs (comma / space separated):</label>
+      <div class="incharge-search-row" style="margin-top:4px;">
+        <input type="text" id="qmAbsentBulkInput" placeholder="e.g. CF8355, RF20850, CF5242..." autocomplete="off">
+        <button type="button" class="btn-secondary" style="width:auto;min-height:38px;padding:0 12px;" onclick="addBulkAbsentFromQuickModal()">Bulk Add</button>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:12.5px;font-weight:800;color:var(--text);" id="qmAbsentCountTitle">Absent List (0)</span>
+          <button type="button" class="calc-mini-btn danger-btn" onclick="clearDateAbsentList()">Clear Date</button>
+        </div>
+        <div id="qmAbsentCurrentList" style="max-height:200px;overflow-y:auto;"></div>
+      </div>
+      <div class="btn-grid-2" style="margin-top:12px;">
+        <button type="button" class="btn-primary" style="margin-top:0;" onclick="saveAbsentAndPushServer()">Save &amp; Sync Server</button>
+        <button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeQuickAbsentModal()">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="card" id="searchFormCard">
 <label for="monthSelect">Which month of overtime do you want to see?</label>
 <div class="row">
@@ -6262,7 +6956,7 @@ body[data-page="search"] .wa-float {
 <div class="inc-kpi-sub">Per Present Duty Day</div>
 </div>
 <div class="inc-kpi-box">
-<div class="inc-kpi-lbl">Avg Punch In / Out</div>
+<div class="inc-kpi-lbl">Avg Punch In</div>
 <div class="inc-kpi-val" id="incKpiAvgInOut">—</div>
 <div class="inc-kpi-sub" id="incKpiPunchStatus">—</div>
 </div>
@@ -6300,7 +6994,7 @@ body[data-page="search"] .wa-float {
 <th>Duty Hrs</th>
 <th>OT Hrs</th>
 <th>Avg Duty/d</th>
-<th>Avg In–Out</th>
+<th>Avg In</th>
 <th>4:30pm</th>
 <th>Hol/Night</th>
 <th>Punch</th>
@@ -6665,8 +7359,8 @@ body[data-page="search"] .wa-float {
 <div class="rank-hub-left">
 <span class="rank-hub-icon">⏱</span>
 <div>
-<div class="rank-hub-title">Avg In &amp; Out Time</div>
-<div class="rank-hub-sub" id="hubSubAvgInOut">Average In-Time &amp; Out-Time</div>
+<div class="rank-hub-title">Avg In Time</div>
+<div class="rank-hub-sub" id="hubSubAvgInOut">Average In-Time (Punch In)</div>
 </div>
 </div>
 <div class="rank-hub-right">
@@ -6692,7 +7386,7 @@ body[data-page="search"] .wa-float {
 <button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
-<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">Avg In/Out</button>
+<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">AVG IN</button>
 </div>
 </div>
 <div class="icc-collapsible-filters" id="iccCollapsibleFilters">
@@ -6706,14 +7400,14 @@ body[data-page="search"] .wa-float {
 <button type="button" class="icc-area-btn" id="iccAreaExecBtn" data-icc-area="Overall" style="display:none;" onclick="selectIccArea('Overall')">Exec</button>
 </div>
 <div class="area-filter-row" id="iccExtraFiltersRow">
-<select id="subFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Sub-section" style="display:none;"><option value="all">All sub-sections</option></select>
+<select id="subFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Sub-section"><option value="all">All sub-sections</option></select>
 <select id="genderFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Male / Female">
 <option value="all">Male + Female</option><option value="M">Male only</option><option value="F">Female only</option>
 </select>
 <select id="typeFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Employee type">
 <option value="all">All types</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option>
 </select>
-<select id="customCatFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Additional Category">
+<select id="customCatFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Additional Category" style="display:none;">
 <option value="all">All categories</option>
 </select>
 </div>
@@ -7240,6 +7934,71 @@ const AREA_MAP_CACHE_KEY = 'renata_area_map_v1';
 const PREFERRED_ID_KEY = 'renata_preferred_id_v1';
 const SALARY_KEY = 'renata_salary_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const NIGHT_REST_CREDIT_HOURS = 8;
+function _parseEmpDayNo(d) {
+if (typeof d === 'number') return Math.floor(d);
+const s = String(d == null ? '' : d).trim();
+const iso = s.match(/^\d{4}-\d{1,2}-(\d{1,2})$/);
+if (iso) return parseInt(iso[1], 10);
+return parseInt(s, 10);
+}
+function _buildEmpDayMap(e) {
+const byDay = {};
+if (!e) return { byDay, hasDaily: false, activeDays: 0 };
+const daily = Array.isArray(e.daily) ? e.daily : [];
+let activeDays = 0;
+daily.forEach(r => {
+if (!r) return;
+const k = _parseEmpDayNo(r[0]);
+const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
+const inStr = String(r[2] || '').trim();
+const outStr = String(r[3] || '').trim();
+const isNight = !!r[10];
+if (dHrs > 0 || inStr || outStr || isNight) {
+activeDays++;
+if (k >= 1) byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true };
+}
+});
+if (!daily.length) {
+(e.holidayDays || []).forEach(h => {
+if (!h) return;
+const k = _parseEmpDayNo(typeof h === 'string' ? h : h.date);
+if (!k || k < 1) return;
+byDay[k] = Object.assign(byDay[k] || { rec: true }, { v: [0, 0, h.doDuty, h.doExtra, h.holDuty, h.holExtra], inn: '', out: '' });
+});
+(e.nightDays || []).forEach(n => {
+if (!n) return;
+const k = _parseEmpDayNo(typeof n === 'string' ? n : n.date);
+if (!k || k < 1) return;
+(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).night = true;
+});
+(e.punchProblems || []).forEach(p => {
+if (!p) return;
+const k = _parseEmpDayNo(typeof p === 'string' ? p : p.date);
+if (!k || k < 1) return;
+(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).forceMiss = true;
+});
+}
+return { byDay, hasDaily: daily.length > 0, activeDays };
+}
+function getNightRestDays(emp) {
+if (!emp) return 0;
+const { byDay, hasDaily } = _buildEmpDayMap(emp);
+const dayKeys = Object.keys(byDay).map(Number).filter(k => k >= 1).sort((a, b) => a - b);
+if (dayKeys.length > 0) {
+let restDays = 0;
+dayKeys.forEach(d => {
+if (byDay[d] && byDay[d].night && !byDay[d + 1]) restDays++;
+});
+return restDays;
+}
+if (!hasDaily && (!Array.isArray(emp.nightDays) || emp.nightDays.length === 0) && Number(emp.nightCount) > 0) {
+return Math.max(0, Math.round(Number(emp.nightCount) || 0));
+}
+return 0;
+}
+window.NIGHT_REST_CREDIT_HOURS = NIGHT_REST_CREDIT_HOURS;
+window.getNightRestDays = getNightRestDays;
 let _lbView = false;
 let currentFileName = "";
 let currentSearchId = "";
@@ -9340,11 +10099,10 @@ const raw = (inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
 if (!raw) { showToast('Enter employee ID number (e.g. CF8355)', 'warn'); if (inp) inp.focus(); return; }
 viewEmployeeFromLeaderboard(raw);
 }
-function buildLeaderboardPayloadFromList(month, allList) {
-const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id));
 function computeEmpAvgDutyAndInOut(e) {
 const daily = Array.isArray(e.daily) ? e.daily : [];
 let inMinsSum = 0, inCnt = 0, outMinsSum = 0, outCnt = 0, activeDays = 0;
+let nightOutSum = 0, nightOutCnt = 0, dayOutSum = 0, dayOutCnt = 0;
 daily.forEach(r => {
 if (!r) return;
 const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
@@ -9354,10 +10112,28 @@ if (dHrs > 0 || inStr || outStr) activeDays++;
 const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
 if (mIn) { inMinsSum += (+mIn[1]) * 60 + (+mIn[2]); inCnt++; }
 const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
-if (mOut) { outMinsSum += (+mOut[1]) * 60 + (+mOut[2]); outCnt++; }
+if (mOut) {
+  // Shift-aware Out: a night shift (or an Out earlier than In in the morning) ends on the NEXT calendar day,
+  // so it is placed on a continuous timeline (+24h). 05:00 after a night = 29:00, i.e. later than 19:00.
+  const inM = mIn ? (+mIn[1]) * 60 + (+mIn[2]) : null;
+  let om = (+mOut[1]) * 60 + (+mOut[2]);
+  const isNightRow = !!r[10] || (inM != null && om <= inM && om < 720);
+  if (isNightRow && inM != null && om <= inM) om += 1440;
+  else if (isNightRow && inM == null) om += 1440;
+  if (inM != null && om <= inM) return; // bad punch (Out before In, not a night) - skip from average
+  outMinsSum += om; outCnt++;
+  if (isNightRow) { nightOutSum += om; nightOutCnt++; } else { dayOutSum += om; dayOutCnt++; }
+}
 });
-const fallbackDays = Math.max(1, activeDays, Number(e.regularDaysCount || 0) + Number(e.holidayCount || 0), Math.round((Number(e.totalDuty || 0)) / 12));
-const avgDutyPerDay = Number(((Number(e.totalDuty || 0)) / fallbackDays).toFixed(2));
+const presentDaysCount = (daily.length > 0 && activeDays > 0)
+  ? activeDays
+  : Math.max(1, Number(e.regularDaysCount || 0) + Number(e.holidayCount || 0), Math.round((Number(e.totalDuty || 0)) / 12));
+const totalDutyNum = Number(e.totalDuty || 0);
+const avgDutyPerDay = Number((totalDutyNum / presentDaysCount).toFixed(2));
+const nightRestDays = getNightRestDays(e);
+const nightRestCredit = Number((nightRestDays * NIGHT_REST_CREDIT_HOURS).toFixed(2));
+const adjustedDuty = Number((totalDutyNum + nightRestCredit).toFixed(2));
+const adjustedAvgDuty = Number((adjustedDuty / Math.max(1, presentDaysCount + nightRestDays)).toFixed(2));
 const fmtM = (mins) => {
 if (mins == null) return '—';
 const norm = ((Math.round(mins) % 1440) + 1440) % 1440;
@@ -9367,38 +10143,59 @@ return `${hh}:${mm}`;
 };
 const avgInMins = inCnt > 0 ? (inMinsSum / inCnt) : 480; // default 08:00 when daily log not embedded
 const avgOutMins = outCnt > 0 ? (outMinsSum / outCnt) : Math.min(1380, Math.round(480 + avgDutyPerDay * 60));
+const fmtOut = (mins) => (mins == null) ? '—' : (fmtM(mins) + (mins >= 1440 ? ' (+1)' : ''));
+const avgDayOutMins = dayOutCnt ? dayOutSum / dayOutCnt : null;
+const avgNightOutMins = nightOutCnt ? nightOutSum / nightOutCnt : null;
+// Ranking score: average presence span (Out - In) on a continuous timeline. Night shifts are not penalised.
+const avgSpanMins = Math.max(0, avgOutMins - avgInMins);
 return {
-presentDaysCount: fallbackDays,
+presentDaysCount,
 avgDutyPerDay,
+nightRestDays,
+nightRestCredit,
+adjustedDuty,
+adjustedAvgDuty,
 avgInMins,
 avgOutMins,
+avgSpanMins,
+avgDayOutMins,
+avgNightOutMins,
+nightOutCount: nightOutCnt,
+dayOutCount: dayOutCnt,
 avgInTimeStr: fmtM(avgInMins),
-avgOutTimeStr: fmtM(avgOutMins)
+avgOutTimeStr: fmtOut(avgOutMins),
+avgOutDetailStr: (nightOutCnt && dayOutCnt)
+  ? `Day ${fmtM(avgDayOutMins)} ×${dayOutCnt} · Night ${fmtM(avgNightOutMins)} (+1) ×${nightOutCnt}`
+  : (nightOutCnt ? `Night ${fmtM(avgNightOutMins)} (+1) ×${nightOutCnt}` : '')
 };
 }
 window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
-window.ensureEmpAvgStats = function(list) {
+function ensureEmpAvgStats(list) {
 (list || []).forEach(e => {
-if (!e || e._avgComputed) return;
+if (!e || (e._avgComputed && e.adjustedDuty != null && e.adjustedAvgDuty != null && e.nightRestDays != null)) return;
 const st = computeEmpAvgDutyAndInOut(e);
 Object.assign(e, st, { _avgComputed: true });
 });
 return list;
 }
+window.ensureEmpAvgStats = ensureEmpAvgStats;
+function buildLeaderboardPayloadFromList(month, allList) {
+const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id));
 const normalized = rppfEmployees.map(e => ({
 ...e,
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
 area: getAreaForId(e.id, true),
 punchProblemsCount: getPunchProblemCount(e)
 }));
-const sortedByDuty = [...normalized].sort((a,b) => b.totalDuty - a.totalDuty);
+ensureEmpAvgStats(normalized);
+const sortedByDuty = [...normalized].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...normalized].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...normalized].sort((a,b) => b.totalEarned - a.totalEarned);
 const sortedByPlain = [...normalized].sort((a,b) => (b.plainDaysCount - a.plainDaysCount) || (b.totalDuty - a.totalDuty));
 const sortedByLessDuty = [...normalized].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
 const sortedByLessOT = [...normalized].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
-const sortedByAvgDuty = [];
-const sortedByAvgInOut = [];
+const sortedByAvgDuty = [...normalized].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
+const sortedByAvgInOut = [...normalized].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 return {
 month,
 allEmployees: normalized,
@@ -9466,6 +10263,7 @@ list.forEach(e => {
 if (!e || e.isRppf === false || e.valid === false || !isMappedAreaId(e.id)) return;
 const cur = map.get(e.id);
 const pArr = Array.isArray(e.punchProblems) ? e.punchProblems : [];
+const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
 if (!cur) {
 map.set(e.id, {
 ...e,
@@ -9476,7 +10274,10 @@ holidayCount: Number(e.holidayCount || 0),
 nightCount: Number(e.nightCount || 0),
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
 totalEarned: Number(e.totalEarned || 0),
-punchProblems: [...pArr]
+punchProblems: [...pArr],
+_sumPresentDays: st.presentDaysCount || 0,
+_sumNightRestDays: st.nightRestDays || 0,
+_sumInMins: (st.avgInMins != null ? st.avgInMins : 480)
 });
 } else {
 cur.monthsCount += 1;
@@ -9487,14 +10288,35 @@ cur.nightCount += Number(e.nightCount || 0);
 cur.plainDaysCount = (cur.plainDaysCount || 0) + Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0);
 cur.totalEarned = Number((cur.totalEarned + Number(e.totalEarned || 0)).toFixed(2));
 cur.punchProblems.push(...pArr);
+cur._sumPresentDays = (cur._sumPresentDays || 0) + (st.presentDaysCount || 0);
+cur._sumNightRestDays = (cur._sumNightRestDays || 0) + (st.nightRestDays || 0);
+cur._sumInMins = (cur._sumInMins || 0) + (st.avgInMins != null ? st.avgInMins : 480);
 if (!cur.name && e.name) cur.name = e.name;
 }
 });
 });
 const merged = Array.from(map.values()).map(e => {
 const mc = Math.max(1, e.monthsCount || 1);
+const presentDaysCount = Math.max(1, e._sumPresentDays || 1);
+const nightRestDays = e._sumNightRestDays || 0;
+const nightRestCredit = Number((nightRestDays * NIGHT_REST_CREDIT_HOURS).toFixed(2));
+const adjustedDuty = Number((e.totalDuty + nightRestCredit).toFixed(2));
+const avgDutyPerDay = Number((e.totalDuty / presentDaysCount).toFixed(2));
+const adjustedAvgDuty = Number((adjustedDuty / Math.max(1, presentDaysCount + nightRestDays)).toFixed(2));
+const avgInMins = (e._sumInMins || (480 * mc)) / mc;
+const normIn = ((Math.round(avgInMins) % 1440) + 1440) % 1440;
+const avgInTimeStr = `${String(Math.floor(normIn / 60)).padStart(2, '0')}:${String(normIn % 60).padStart(2, '0')}`;
 return {
 ...e,
+presentDaysCount,
+avgDutyPerDay,
+nightRestDays,
+nightRestCredit,
+adjustedDuty,
+adjustedAvgDuty,
+avgInMins,
+avgInTimeStr,
+_avgComputed: true,
 avgDuty: Number((e.totalDuty / mc).toFixed(1)),
 avgOt: Number((e.otHours / mc).toFixed(1)),
 avgNight: Number((e.nightCount / mc).toFixed(1)),
@@ -9609,7 +10431,13 @@ const isMulti = currentLbTimeMode !== 'monthly' && (e.monthsCount || 1) >= 1 && 
 const commonMeta = isMulti
 ? `Duty ${e.totalDuty}h • OT ${e.otHours}h • Avg OT ${e.avgOt}h/m`
 : `Duty: ${e.totalDuty}h | OT: ${e.otHours}h | Hol: ${e.holidayCount} | Night: ${e.nightCount}${punchTag}`;
-if (type === 'duty') { valueStr = `${e.totalDuty} hrs`; metaStr = commonMeta; rawMetric = Number(e.totalDuty) || 0; }
+const nRest = Number(e.nightRestDays || 0);
+const nCred = Number(e.nightRestCredit != null ? e.nightRestCredit : nRest * NIGHT_REST_CREDIT_HOURS);
+let creditLineHtml = '';
+if (type === 'duty') {
+valueStr = `${e.totalDuty} hrs`; metaStr = commonMeta; rawMetric = Number(e.adjustedDuty ?? e.totalDuty) || 0;
+if (nRest > 0) creditLineHtml = `<div class="rank-meta" style="font-size:10px;opacity:0.85;">+${nCred}h night-rest credit (${nRest}d)</div>`;
+}
 else if (type === 'ot') { valueStr = `${e.otHours} hrs`; metaStr = commonMeta; rawMetric = Number(e.otHours) || 0; }
 else if (type === 'earned') { valueStr = `৳ ${Number(e.totalEarned || 0).toFixed(0)}`; metaStr = commonMeta; rawMetric = Number(e.totalEarned) || 0; }
 else if (type === 'punch') { valueStr = `${bn(pCount)} days missing`; metaStr = `Duty: ${e.totalDuty}h | OT: ${e.otHours}h` + (isNoRateCat(e.category) ? '' : ` | ৳${Math.round(e.totalEarned || 0)}`); rawMetric = pCount; }
@@ -9627,7 +10455,7 @@ return `<div class="rank-item ${rowClass} ${isMine ? 'mine' : ''}" onclick="view
 <div class="rank-id-line"><span class="rank-id">${esc(e.id)}</span>${desig ? `<span class="${desigClass}">${desig}</span>` : ''}${areaBadge}</div>
 ${progHtml}
 </div>
-<div><div class="rank-value">${valueStr}</div><div class="rank-meta">${metaStr}</div></div>
+<div><div class="rank-value">${valueStr}</div>${creditLineHtml}<div class="rank-meta">${metaStr}</div></div>
 </div>`;
 }
 function updateLbSummaryMetrics(filteredList) {
@@ -9732,7 +10560,7 @@ if (podiumBox) {
 podiumBox.style.display = 'grid';
 podiumBox.innerHTML = buildPodiumShowcaseHTML(list, type);
 }
-const maxVal = type === 'duty' ? (list[0]?.totalDuty || 1) : type === 'ot' ? (list[0]?.otHours || 1) : (list[0]?.totalEarned || 1);
+const maxVal = type === 'duty' ? (list[0]?.adjustedDuty || list[0]?.totalDuty || 1) : type === 'ot' ? (list[0]?.otHours || 1) : (list[0]?.totalEarned || 1);
 const myId = getMyId();
 box.innerHTML = list.slice(0, 5).map((e, i) => buildRankItemHTML(e, i, type, e.id === myId, maxVal)).join('');
 }
@@ -9815,19 +10643,15 @@ const filtered = allEmps.filter(e =>
 (st.gender === 'all' || e.gender === st.gender) &&
 (st.type === 'all' || e.empType === st.type) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
-const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
+ensureEmpAvgStats(filtered);
+const sortedByDuty = [...filtered].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
 const sortedByPlain = [...filtered].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
 const sortedByLessDuty = [...filtered].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
 const sortedByLessOT = [...filtered].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
-let sortedByAvgDuty = [];
-let sortedByAvgInOut = [];
-if (typeof activeIccCriterion !== 'undefined' && (activeIccCriterion === 'avgDuty' || activeIccCriterion === 'avgInOut')) {
-ensureEmpAvgStats(filtered);
-sortedByAvgDuty = [...filtered].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDutyPerDay || 0)) || (b.totalDuty - a.totalDuty));
-sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
-}
+const sortedByAvgDuty = [...filtered].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
+const sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, area };
 updateLbSummaryMetrics(filtered);
@@ -9954,7 +10778,7 @@ if (!body) return;
 if (!list || list.length === 0) { body.innerHTML = '<div class="lb-modal-empty">No one found in this filter/month.</div>'; return; }
 const t = currentLbListType || 'duty';
 const first = currentLbModalList[0] || list[0];
-const maxVal = t === 'duty' ? (first?.totalDuty || 1) : t === 'ot' ? (first?.otHours || 1) : (first?.totalEarned || 1);
+const maxVal = t === 'duty' ? (first?.adjustedDuty || first?.totalDuty || 1) : t === 'ot' ? (first?.otHours || 1) : (first?.totalEarned || 1);
 body.innerHTML = list.map((e, i) => buildRankItemHTML(e, i, t, e.id === getMyId(), maxVal)).join('');
 }
 function filterLbModalList() {
@@ -10458,7 +11282,7 @@ setTxt('hubSubLessDuty', 'Lowest Total Duty Hours');
 setTxt('hubSubLessOt', 'Lowest Overtime Hours');
 setTxt('hubSubPunch', 'Missing In/Out Punch List');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
-setTxt('hubSubAvgInOut', 'Average In-Time & Out-Time');
+setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
 if (iccDrillOpen) renderIccDrillList();
 }
 function toggleIccSearchInput() {
@@ -10646,7 +11470,7 @@ plain: 'Top 4:30pm RPPF',
 lessDuty: 'Less Duty RPPF',
 lessOt: 'Less OT RPPF',
 avgDuty: 'Average Duty Hour RPPF',
-avgInOut: 'Avg In & Out Time RPPF',
+avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF'
 };
 const colHeaders = {
@@ -10657,7 +11481,7 @@ plain: '4:30pm Days',
 lessDuty: 'Duty Hrs',
 lessOt: 'OT Hrs',
 avgDuty: 'Avg Duty/Day',
-avgInOut: 'Avg In / Out',
+avgInOut: 'Avg In',
 punch: 'Missing'
 };
 const titleEl = document.getElementById('iccDrillTitle');
@@ -10702,7 +11526,14 @@ if (appHdr) appHdr.style.display = 'flex';
 }
 function getCriterionListFromSource(f, crit) {
 if (!f) return [];
-if (crit === 'duty') return f.sortedByDuty || [];
+if (crit === 'duty') {
+if (!f.sortedByDuty || !f.sortedByDuty.length) {
+const base = f._rawFiltered || f.allEmployees || [];
+ensureEmpAvgStats(base);
+f.sortedByDuty = [...base].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
+}
+return f.sortedByDuty || [];
+}
 if (crit === 'ot') return f.sortedByOT || [];
 if (crit === 'earned') return f.sortedByEarned || [];
 if (crit === 'plain') return f.sortedByPlain || [];
@@ -10712,7 +11543,7 @@ if (crit === 'avgDuty') {
 if (!f.sortedByAvgDuty || !f.sortedByAvgDuty.length) {
 const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
 ensureEmpAvgStats(base);
-f.sortedByAvgDuty = [...base].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDutyPerDay || 0)) || (b.totalDuty - a.totalDuty));
+f.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
 }
 return f.sortedByAvgDuty;
 }
@@ -10720,7 +11551,7 @@ if (crit === 'avgInOut') {
 if (!f.sortedByAvgInOut || !f.sortedByAvgInOut.length) {
 const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
 ensureEmpAvgStats(base);
-f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
+f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 }
 return f.sortedByAvgInOut;
 }
@@ -10732,8 +11563,11 @@ if (crit === 'duty' || crit === 'lessDuty') return `${e.totalDuty || 0} hrs`;
 if (crit === 'ot' || crit === 'lessOt') return `${e.otHours || 0} hrs`;
 if (crit === 'earned') return `৳ ${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
 if (crit === 'plain') return `${e.plainDaysCount || 0}d`;
-if (crit === 'avgDuty') return `${e.avgDutyPerDay || Number(((e.totalDuty || 0) / 26).toFixed(1))} h/d`;
-if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}–${e.avgOutTimeStr || '17:00'}`;
+if (crit === 'avgDuty') {
+const adj = e.adjustedAvgDuty != null ? e.adjustedAvgDuty : (e.avgDutyPerDay || Number(((e.totalDuty || 0) / 26).toFixed(1)));
+return `${adj} h/d`;
+}
+if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}`;
 return `${getPunchProblemCount(e)}d miss`;
 }
 const ICC_RENDER_BATCH_SIZE = 25;
@@ -10787,6 +11621,7 @@ ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
 <div class="icc-val-col">
 <div class="icc-val-main">${mainVal}</div>
+${activeIccCriterion === 'duty' && (e.nightRestDays || 0) > 0 ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">+${e.nightRestCredit || (e.nightRestDays * NIGHT_REST_CREDIT_HOURS)}h night-rest credit (${e.nightRestDays}d)</div>` : activeIccCriterion === 'avgDuty' ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">(raw ${Number(e.avgDutyPerDay || 0).toFixed(1)})</div>` : ''}
 <div class="icc-val-sub">${subVal}</div>
 </div>
 </div>`;
@@ -11721,20 +12556,19 @@ const mm = String(ctx.month || '').match(/(\d{4})-(\d{2})/);
 if (mm) { y = +mm[1]; m = +mm[2]; }
 else { const q = String((daily[0] && daily[0][0]) || '').match(/^(\d{2})-([A-Z]{3})-(\d{4})$/i); if (q) { y = +q[3]; m = _RMON.findIndex(x => x.toUpperCase() === q[2].toUpperCase()) + 1; } }
 if (!y || m < 1) { const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1; }
-const byDay = {}, dayNo = d => parseInt(String(d), 10);
-daily.forEach(r => { byDay[dayNo(r[0])] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: !!r[10], rec: true }; });
-if (!daily.length) {   // old months saved without the full daily log
-(e.holidayDays || []).forEach(h => { byDay[dayNo(h.date)] = Object.assign(byDay[dayNo(h.date)] || { rec: true }, { v: [0, 0, h.doDuty, h.doExtra, h.holDuty, h.holExtra], inn: '', out: '' }); });
-(e.nightDays || []).forEach(n => { const k = dayNo(typeof n === 'string' ? n : n.date); (byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).night = true; });
-(e.punchProblems || []).forEach(p => { const k = dayNo(typeof p === 'string' ? p : p.date); (byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).forceMiss = true; });
-}
+const { byDay } = _buildEmpDayMap(e);
 const rows = [], last = new Date(y, m, 0).getDate();
 const mNumStr = String(m).padStart(2, '0');
 for (let d = 1; d <= last; d++) {
 const dn = _RDAY[new Date(y, m - 1, d).getDay()], o = byDay[d];
 const dStr = String(d).padStart(2, '0');
 const row = { date: dStr + '/' + mNumStr, dayNum: dStr, monthNum: mNumStr, day: dn, v: [0, 0, 0, 0, 0, 0], inn: '', out: '', night: false, tone: '', note: '' };
-if (!o) { const wk = dn === 'Thu' || dn === 'Fri'; row.tone = wk ? 'off' : 'none'; row.note = wk ? 'Weekend' : 'No record'; }
+if (!o) {
+const wk = dn === 'Thu' || dn === 'Fri';
+const afterNight = d > 1 && byDay[d - 1] && byDay[d - 1].night;   // previous day was a night duty -> auto day off
+if (afterNight) { row.tone = 'offn'; row.note = 'Day off after night' + (wk ? ' (Weekend)' : ''); row.afterNight = true; }
+else { row.tone = wk ? 'off' : 'none'; row.note = wk ? 'Weekend' : 'No record'; }
+}
 else {
 Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night });
 const mi = o.forceMiss || (daily.length && isPunchMissing(o.inn)), mo = o.forceMiss || (daily.length && isPunchMissing(o.out));
@@ -11778,12 +12612,12 @@ btn.classList.toggle('active', (btn.getAttribute('data-hide-empty') === '1') ===
 }
 function _rptHtml(ctx, forExport) {
 const e = ctx.emp, { rows, y, m } = _rptRows(ctx);
-const sum = [0, 0, 0, 0, 0, 0]; let present = 0, nights = 0, issues = 0;
-rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) present++; if (r.night) nights++; if (r.tone === 'bad') issues++; });
+const sum = [0, 0, 0, 0, 0, 0]; let present = 0, nights = 0, issues = 0, offAfterNight = 0;
+rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) present++; if (r.night) nights++; if (r.afterNight) offAfterNight++; if (r.tone === 'bad') issues++; });
 const displayRows = _rptHideEmptyDays
 ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
 : rows;
-const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9' };
+const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff' };
 const fsCell = forExport ? '12.5px' : '11px';
 const fsSmall = forExport ? '11.5px' : '10.5px';
 const fsHead = forExport ? '11.5px' : '10px';
@@ -11805,7 +12639,7 @@ const colHeaders = [
 { label: 'Status /<br>Remark', w: '18.5%' }
 ];
 const body = displayRows.map(r => {
-const bad = r.tone === 'bad', col = r.tone === 'none' || r.tone === 'off' ? '#64748b' : '#0f172a';
+const bad = r.tone === 'bad', col = r.tone === 'none' || r.tone === 'off' || r.tone === 'offn' ? '#64748b' : '#0f172a';
 const cell = (v) => `<td style="${tdBase}text-align:center;font-weight:700;${v ? 'color:#0f172a;' : 'color:#94a3b8;'}">${_rN(v)}</td>`;
 const fmtTime = (t) => String(t || '').replace(/^(\d{2}:\d{2}):\d{2}$/, '$1');
 const pc = (txt, miss) => `<td style="${tdBase}text-align:center;font-size:${fsSmall};font-weight:${miss ? '800' : '600'};${miss ? 'background:#f87171;color:#7f1d1d;' : ''}">${_rE(miss ? 'MISS' : fmtTime(txt))}</td>`;
@@ -11824,7 +12658,7 @@ return `<div style="${containerStyle}">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:7px;margin-bottom:7px;">
 <div style="min-width:0;"><div style="font-size:${forExport ? '19px' : '16px'};font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RPPF</div><div style="font-size:${forExport ? '12.5px' : '11.5px'};font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${_rptHideEmptyDays ? ' (Duty Days)' : ''}</div></div>
 <div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
-<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${chip(issues ? 'Punch Fix: ' + issues : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}</div>
+<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}${chip(issues ? 'Punch Fix: ' + issues : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
 <colgroup>${colHeaders.map(c => `<col style="width:${c.w};">`).join('')}</colgroup>
 <thead><tr style="height:40px;">${colHeaders.map(c => `<th style="${thBase}">${c.label}</th>`).join('')}</tr></thead>
@@ -11905,13 +12739,15 @@ async function renderInchargeEmployeeProfile(emp, month, searchId) {
   setT('incKpiDutyHrs', `${totalDuty} hrs`);
   setT('incKpiPresentDays', `${presentDays} Present Duty Days`);
   setT('incKpiAvgDuty', `${avgDutyDay} hrs/day`);
-  setT('incKpiAvgInOut', `${avgInStr} – ${avgOutStr}`);
+  setT('incKpiAvgInOut', `${avgInStr}`);
   setT('incKpiPunchStatus', pCount > 0 ? `⚠ ${pCount} day(s) punch missing` : '✓ All In/Out punches OK');
   setT('incKpiOtHrs', `${otHours} hrs`);
   setT('incKpiAvgOtDay', `Avg ${avgOtDay} hrs OT / day`);
   setT('incKpiPlainDays', `${Number(emp.plainDaysCount || emp.plainDays || 0)} days`);
   setT('incKpiRegDays', `Regular duty: ${Number(emp.regularDaysCount || 0)} days`);
   setT('incKpiHolNight', `Hol: ${Number(emp.holidayCount || 0)}d • Night: ${Number(emp.nightCount || 0)}n`);
+  const holSubEl = document.getElementById('incKpiHolNight')?.nextElementSibling;
+  if (holSubEl) holSubEl.textContent = (avgStats.nightRestDays || 0) > 0 ? `Night rest days: ${avgStats.nightRestDays}` : 'Month Shift Summary';
 
   // Build Month-Wise History & This Year Totals for this Employee
   const [yrStr, curMStr] = String(month || getCurrentMonth()).split('-');
@@ -11969,7 +12805,7 @@ async function renderInchargeEmployeeProfile(emp, month, searchId) {
         <td><b>${Number(e.totalDuty || 0)}h</b></td>
         <td style="color:var(--brand-text);font-weight:700;">${Number(e.otHours || 0)}h</td>
         <td>${st.avgDutyPerDay || '—'}h/d</td>
-        <td>${st.avgInTimeStr || '08:00'}–${st.avgOutTimeStr || '17:00'}</td>
+        <td>${st.avgInTimeStr || '08:00'}</td>
         <td>${Number(e.plainDaysCount || e.plainDays || 0)}d</td>
         <td>H:${Number(e.holidayCount || 0)} | N:${Number(e.nightCount || 0)}</td>
         <td style="color:${pIssues > 0 ? 'var(--danger)' : 'var(--success)'};font-weight:700;">${pIssues > 0 ? pIssues + ' miss' : 'OK'}</td>
@@ -12033,6 +12869,1453 @@ function openStandaloneAdminFile() {
     } catch (e) {}
   }
 })();
+
+
+/* ==========================================================================
+   ROUND 6 CORE MODULE:
+   1. Default Sub-sections & Ranking Sub-section Filter (#subFilter)
+   2. Daily Absent List Engine (absent.json + localStorage + ERP Admin Sync)
+   3. In-Charge Home Default Overview (Active Counts, Absent List, Category Toppers)
+   4. Earning Category Removal in In-Charge Ranking View
+   5. Live Employee Autocomplete Suggestion Dropdown across all Search Inputs
+   6. Native HTML5 Canvas 2D Report PNG & VS Comparison PNG Generator (Fixes Download Failure)
+   ========================================================================== */
+
+function _el(id) { return document['getElementById'](id); }
+
+const ABSENT_CACHE_KEY = 'renata_absent_data_v1';
+const DEFAULT_AREA_SUBSECTIONS = {
+  'Solid Production': ['Granulation', 'Compression', 'Coating', 'Capsule Filling', 'Dispensing', 'Inspection'],
+  'Softgel Production': ['Encapsulation', 'Gelatin Prep', 'Medicament Prep', 'Tumble Drying', 'Sorting & Inspection'],
+  'Packing Hall': ['Blister Packing', 'Strip & Alu-Alu', 'Bottle Line', 'Cartoning', 'Secondary Packing', 'Labeling'],
+  'Overall': ['Production Management', 'Section In-Charge', 'QA / Compliance', 'ERP & Planning']
+};
+
+function ensureDefaultSubsections() {
+  if (!AREA_SUBS || typeof AREA_SUBS !== 'object') AREA_SUBS = {};
+  Object.keys(DEFAULT_AREA_SUBSECTIONS).forEach(area => {
+    const existing = Array.isArray(AREA_SUBS[area]) ? AREA_SUBS[area] : [];
+    const merged = [...new Set([...existing, ...DEFAULT_AREA_SUBSECTIONS[area]].filter(Boolean))];
+    AREA_SUBS[area] = merged;
+  });
+}
+
+function getAllSubsectionsForArea(area) {
+  ensureDefaultSubsections();
+  const fromDetails = [];
+  Object.keys(AREA_DETAILS || {}).forEach(id => {
+    const d = AREA_DETAILS[id];
+    const empArea = AREA_MAP[id];
+    if (d && d.s && (area === 'all' || empArea === area)) {
+      fromDetails.push(String(d.s).trim());
+    }
+  });
+  if (area === 'all') {
+    const allSubs = [];
+    Object.keys(AREA_SUBS).forEach(k => {
+      if (k === '__custom_cats__') return;
+      if (Array.isArray(AREA_SUBS[k])) allSubs.push(...AREA_SUBS[k]);
+    });
+    return [...new Set([...allSubs, ...fromDetails].filter(Boolean))];
+  }
+  return [...new Set([...(AREA_SUBS[area] || []), ...fromDetails].filter(Boolean))];
+}
+
+// Override refreshSubFilter so Sub-section filter is ALWAYS visible in Ranking instead of Category
+refreshSubFilter = function() {
+  const sel = _el('subFilter');
+  const catSel = _el('customCatFilter');
+  if (catSel) catSel.style.display = 'none'; // Replaced by Sub-section per user request
+  if (!sel) return;
+  const area = _el('areaFilter')?.value || 'all';
+  const subs = getAllSubsectionsForArea(area);
+  const prev = sel.value || 'all';
+  const defaultLbl = area === 'all' ? 'All sub-sections' : `${area === OVERALL_AREA ? 'Exec' : area.split(' ')[0]} sub-sections`;
+  sel.innerHTML = `<option value="all">${esc(defaultLbl)}</option>` + subs.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
+  sel.style.display = '';
+};
+
+// Also allow sub-section filter even when area === 'all'
+getLbFilterState = function() {
+  return {
+    area: _el('areaFilter')?.value || 'all',
+    sub: _el('subFilter')?.value || 'all',
+    gender: _el('genderFilter')?.value || 'all',
+    type: _el('typeFilter')?.value || 'all',
+    customCat: 'all'
+  };
+};
+
+describeLbFilter = function() {
+  const st = getLbFilterState();
+  const parts = [st.area === 'all' ? 'All areas' : (st.area === OVERALL_AREA ? 'Executives' : st.area)];
+  if (st.sub !== 'all') parts.push(`Sub: ${st.sub}`);
+  if (st.gender !== 'all') parts.push(GENDER_LABELS[st.gender] || st.gender);
+  if (st.type !== 'all') parts.push(EMP_TYPE_LABELS[st.type] || st.type);
+  return parts.join(' • ');
+};
+
+// Update applyAreaFilter so st.sub works across all areas or specific area
+const _prevApplyAreaFilter = applyAreaFilter;
+applyAreaFilter = function() {
+  if (!currentLeaderboardResult) return;
+  _prevApplyAreaFilter();
+  const st = getLbFilterState();
+  if (st.sub !== 'all' && st.area === 'all' && currentLeaderboardResult.filtered) {
+    const base = (currentLeaderboardResult.filtered._rawFiltered || []).filter(e => e.sub === st.sub);
+    ensureEmpAvgStats(base);
+    currentLeaderboardResult.filtered._rawFiltered = base;
+    currentLeaderboardResult.filtered.sortedByDuty = [...base].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByOT = [...base].sort((a,b) => b.otHours - a.otHours);
+    currentLeaderboardResult.filtered.sortedByEarned = [...base].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
+    currentLeaderboardResult.filtered.sortedByPlain = [...base].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByLessDuty = [...base].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
+    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+    updateLbSummaryMetrics(base);
+  }
+};
+
+// Block 'earned' criterion in In-Charge mode
+const _prevOpenRankDrillDown = openRankDrillDown;
+openRankDrillDown = function(criterion) {
+  if (getAppMode() === 'incharge' && criterion === 'earned') {
+    criterion = 'duty';
+  }
+  return _prevOpenRankDrillDown(criterion);
+};
+
+// Show Sub-section badge on ICC Ranking rows & update button label to "+Sub"
+const _prevBuildIccRowHtml = buildIccRowHtml;
+buildIccRowHtml = function(e, myId, adminActive) {
+  let html = _prevBuildIccRowHtml(e, myId, adminActive);
+  const subName = e.sub || getEmpMeta(e.id).sub || '';
+  if (subName) {
+    const subBadge = `<span class="icc-cat-badge" style="background:var(--brand-soft);color:var(--brand-text);border-color:var(--brand-soft-border);">${esc(subName)}</span>`;
+    html = html.replace('<div class="icc-emp-sub">', `<div class="icc-emp-sub">${subBadge} `);
+  }
+  html = html.replace('>+Cat</button>', '>+Sub</button>');
+  return html;
+};
+
+/* ==========================================================================
+   DAILY ABSENT LIST ENGINE (ERP Admin <-> In-Charge Home Overview Sync)
+   ========================================================================== */
+let ABSENT_STORE = {
+  activeDate: new Date().toISOString().slice(0, 10),
+  updatedAt: new Date().toISOString(),
+  updatedBy: 'ERP Team',
+  byDate: {}
+};
+let _absentLoaded = false;
+let _incAbsentAreaFilter = 'all';
+let _incToppersAreaFilter = 'all';
+
+function getTodayDateStr() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function saveAbsentCache() {
+  try {
+    localStorage.setItem(ABSENT_CACHE_KEY, JSON.stringify({
+      ts: Date.now(),
+      store: ABSENT_STORE
+    }));
+  } catch (e) {}
+}
+
+async function loadAbsentStore(forceFresh = false) {
+  if (_absentLoaded && !forceFresh) return ABSENT_STORE;
+  try {
+    const raw = localStorage.getItem(ABSENT_CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.store && typeof parsed.store === 'object') {
+        ABSENT_STORE = Object.assign({ activeDate: getTodayDateStr(), byDate: {} }, parsed.store);
+        if (!ABSENT_STORE.byDate || typeof ABSENT_STORE.byDate !== 'object') ABSENT_STORE.byDate = {};
+      }
+    }
+  } catch (e) {}
+  try {
+    const remote = await fetchJsonResource('absent.json', 5000);
+    if (remote && typeof remote === 'object') {
+      const rStore = remote.byDate ? remote : { activeDate: remote.date || getTodayDateStr(), updatedAt: remote.updatedAt, byDate: { [remote.date || getTodayDateStr()]: Array.isArray(remote.list) ? remote.list : [] } };
+      Object.keys(rStore.byDate || {}).forEach(dt => {
+        if (!ABSENT_STORE.byDate[dt] || forceFresh) {
+          ABSENT_STORE.byDate[dt] = rStore.byDate[dt];
+        }
+      });
+      if (rStore.activeDate) ABSENT_STORE.activeDate = rStore.activeDate;
+      if (rStore.updatedAt) ABSENT_STORE.updatedAt = rStore.updatedAt;
+      saveAbsentCache();
+    }
+  } catch (e) {}
+  _absentLoaded = true;
+  if (!ABSENT_STORE.activeDate) ABSENT_STORE.activeDate = getTodayDateStr();
+  return ABSENT_STORE;
+}
+
+function getSelectedAbsentDate() {
+  const picker = _el('incAbsentDatePicker') || _el('admAbsentDateInput') || _el('qmAbsentDateInp');
+  return (picker && picker.value) ? picker.value : (ABSENT_STORE.activeDate || getTodayDateStr());
+}
+
+function getAbsentListForDate(dateStr) {
+  const dt = dateStr || getSelectedAbsentDate();
+  if (!ABSENT_STORE.byDate) ABSENT_STORE.byDate = {};
+  const list = ABSENT_STORE.byDate[dt];
+  return Array.isArray(list) ? list : [];
+}
+
+function resolveEmployeeDirectoryRecord(rawIdOrQuery) {
+  const clean = String(rawIdOrQuery || '').trim().toUpperCase();
+  if (!clean) return null;
+  const master = buildMasterEmployeeDirectory();
+  let found = master.find(e => e.id === clean);
+  if (!found) {
+    const idToken = clean.split(/[\s—\-•(]+/)[0].trim();
+    if (idToken) found = master.find(e => e.id === idToken);
+  }
+  if (!found) {
+    found = master.find(e => e.name && e.name.toUpperCase() === clean);
+  }
+  if (found) return found;
+  if (/^(?:CF|RF|CL)\d{2,6}$|^\d{5,8}$/.test(clean)) {
+    const meta = getEmpMeta(clean);
+    const area = getAreaForId(clean, true);
+    return {
+      id: clean,
+      name: clean,
+      area: area === 'Not on the list' ? 'Packing Hall' : area,
+      sub: meta.sub || '',
+      designation: EMP_TYPE_LABELS[meta.type] || getDesignation({ id: clean }) || 'Employee',
+      type: meta.type || getAutoEmpType(clean)
+    };
+  }
+  return null;
+}
+
+function upsertAbsentEmployee(dateStr, empInput, reason = 'Absent', note = '') {
+  const rec = typeof empInput === 'string' ? resolveEmployeeDirectoryRecord(empInput) : empInput;
+  if (!rec || !rec.id) return false;
+  const dt = dateStr || getSelectedAbsentDate();
+  if (!ABSENT_STORE.byDate) ABSENT_STORE.byDate = {};
+  if (!Array.isArray(ABSENT_STORE.byDate[dt])) ABSENT_STORE.byDate[dt] = [];
+  const list = ABSENT_STORE.byDate[dt];
+  const existingIdx = list.findIndex(x => String(x.id).toUpperCase() === String(rec.id).toUpperCase());
+  const meta = getEmpMeta(rec.id);
+  const rawArea = rec.area && rec.area !== 'Not on the list' ? rec.area : getAreaForId(rec.id, true);
+  const entry = {
+    id: String(rec.id).toUpperCase(),
+    name: rec.name && rec.name !== rec.id ? rec.name : (resolveEmployeeDirectoryRecord(rec.id)?.name || rec.id),
+    area: rawArea === 'Not on the list' ? 'Packing Hall' : rawArea,
+    sub: rec.sub || meta.sub || '',
+    designation: rec.designation || rec.grade || EMP_TYPE_LABELS[meta.type] || 'Employee',
+    reason: reason || 'Absent',
+    note: note || '',
+    addedAt: new Date().toISOString()
+  };
+  if (existingIdx >= 0) list[existingIdx] = entry;
+  else list.unshift(entry);
+  ABSENT_STORE.activeDate = dt;
+  ABSENT_STORE.updatedAt = new Date().toISOString();
+  saveAbsentCache();
+  return true;
+}
+
+function removeAbsentEmployee(dateStr, empId) {
+  const dt = dateStr || getSelectedAbsentDate();
+  const cleanId = String(empId || '').trim().toUpperCase();
+  if (!ABSENT_STORE.byDate || !Array.isArray(ABSENT_STORE.byDate[dt])) return;
+  ABSENT_STORE.byDate[dt] = ABSENT_STORE.byDate[dt].filter(x => String(x.id).toUpperCase() !== cleanId);
+  ABSENT_STORE.updatedAt = new Date().toISOString();
+  saveAbsentCache();
+  renderInchargeHomeAbsentList();
+  renderQuickAbsentModalList();
+  if (typeof renderAdminAbsentPane === 'function') renderAdminAbsentPane();
+}
+
+function clearDateAbsentList() {
+  const dt = _el('admAbsentDateInput')?.value || _el('qmAbsentDateInp')?.value || getSelectedAbsentDate();
+  if (!ABSENT_STORE.byDate) ABSENT_STORE.byDate = {};
+  ABSENT_STORE.byDate[dt] = [];
+  ABSENT_STORE.updatedAt = new Date().toISOString();
+  saveAbsentCache();
+  renderInchargeHomeAbsentList();
+  renderQuickAbsentModalList();
+  if (typeof renderAdminAbsentPane === 'function') renderAdminAbsentPane();
+  showToast(`Cleared absent list for ${dt}`, 'info');
+}
+
+async function saveAbsentAndPushServer() {
+  saveAbsentCache();
+  renderInchargeHomeAbsentList();
+  renderQuickAbsentModalList();
+  if (typeof renderAdminAbsentPane === 'function') renderAdminAbsentPane();
+  const statusEl = _el('admAbsentSyncStatus');
+  if (statusEl) {
+    statusEl.style.color = 'var(--brand-text)';
+    statusEl.textContent = 'Saving absent.json to RPPF Cloud Server...';
+  }
+  try {
+    if (getGhToken()) {
+      const jsonStr = JSON.stringify(ABSENT_STORE, null, 2);
+      await githubPutFile('absent.json', utf8ToBase64(jsonStr), `Update daily absent list (${ABSENT_STORE.activeDate}) via ERP Admin`);
+      if (statusEl) {
+        statusEl.style.color = 'var(--success)';
+        statusEl.textContent = 'Daily absent list synced to RPPF Cloud Server (absent.json).';
+      }
+      showToast('Daily absent list saved & synced to server', 'success');
+    } else {
+      if (statusEl) {
+        statusEl.style.color = 'var(--success)';
+        statusEl.textContent = 'Saved locally in browser (set Server Access Key in Setup tab to push to cloud).';
+      }
+      showToast('Daily absent list updated & saved', 'success');
+    }
+    try {
+      localStorage.setItem('rppf_last_admin_sync_ts', String(Date.now()));
+      if (typeof BroadcastChannel !== 'undefined') {
+        const ch = new BroadcastChannel('rppf_admin_sync');
+        ch.postMessage({ path: 'absent.json', ts: Date.now() });
+      }
+    } catch (e) {}
+  } catch (err) {
+    if (statusEl) {
+      statusEl.style.color = 'var(--danger)';
+      statusEl.textContent = `Saved locally; server sync error: ${err.message}`;
+    }
+    showToast(`Saved locally (${err.message})`, 'warn');
+  }
+}
+
+/* ==========================================================================
+   IN-CHARGE HOME OVERVIEW DASHBOARD
+   ========================================================================== */
+function openInchargeAreaRanking(areaVal) {
+  const areaSel = _el('areaFilter');
+  if (areaSel) {
+    if (![...areaSel.options].some(o => o.value === areaVal)) {
+      const opt = document.createElement('option');
+      opt.value = areaVal;
+      opt.textContent = areaVal === OVERALL_AREA ? 'Executives' : areaVal;
+      areaSel.appendChild(opt);
+    }
+    areaSel.value = areaVal;
+  }
+  switchPage('leaderboard', true);
+  setTimeout(() => {
+    selectIccArea(areaVal);
+    openRankDrillDown('duty');
+  }, 80);
+}
+
+function onIncAbsentDateChange(val) {
+  if (!val) return;
+  ABSENT_STORE.activeDate = val;
+  renderInchargeHomeAbsentList();
+}
+
+function filterIncHomeAbsent(areaVal) {
+  _incAbsentAreaFilter = areaVal || 'all';
+  document.querySelectorAll('#incAbsentAreaFilterBar .inc-absent-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-abs-area') === _incAbsentAreaFilter);
+  });
+  renderInchargeHomeAbsentList();
+}
+
+function renderInchargeHomeAbsentList() {
+  const listEl = _el('incHomeAbsentList');
+  const badgeEl = _el('incAbsentCountBadge');
+  const metaEl = _el('incAbsentDateMeta');
+  const datePicker = _el('incAbsentDatePicker');
+  const editBtn = _el('incQuickEditAbsentBtn');
+  if (!listEl) return;
+
+  const dt = (datePicker && datePicker.value) ? datePicker.value : (ABSENT_STORE.activeDate || getTodayDateStr());
+  if (datePicker && !datePicker.value) datePicker.value = dt;
+  if (editBtn) {
+    editBtn.style.display = (getAppMode() === 'incharge' || isAdminLoggedIn()) ? 'inline-flex' : 'none';
+  }
+
+  const allDateList = getAbsentListForDate(dt);
+  const filtered = _incAbsentAreaFilter === 'all'
+    ? allDateList
+    : allDateList.filter(x => x.area === _incAbsentAreaFilter);
+
+  if (badgeEl) badgeEl.textContent = `${filtered.length} Absent`;
+  if (metaEl) {
+    const solidCnt = allDateList.filter(x => x.area === 'Solid Production').length;
+    const sgCnt = allDateList.filter(x => x.area === 'Softgel Production').length;
+    const packCnt = allDateList.filter(x => x.area === 'Packing Hall').length;
+    const execCnt = allDateList.filter(x => x.area === OVERALL_AREA).length;
+    metaEl.textContent = allDateList.length > 0
+      ? `Date: ${dt} • Solid: ${solidCnt} | SG: ${sgCnt} | Pack: ${packCnt}${execCnt ? ' | Exec: ' + execCnt : ''}`
+      : `Date: ${dt} • Updated from Admin Corner by ERP`;
+  }
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty-msg" style="padding:14px 8px;grid-column:1/-1;">No absent employees recorded for ${esc(dt)}${_incAbsentAreaFilter !== 'all' ? ' in this section' : ''}.</div>`;
+    return;
+  }
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Pack' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'SG' : a === OVERALL_AREA ? 'Exec' : (a || 'RPPF');
+  listEl.innerHTML = filtered.map(item => {
+    const dirRec = resolveEmployeeDirectoryRecord(item.id);
+    const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
+    const subTxt = item.sub || dirRec?.sub ? ` • ${item.sub || dirRec.sub}` : '';
+    const noteTxt = item.note ? ` (${item.note})` : '';
+    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
+      <div class="inc-absent-emp">
+        <div class="inc-absent-name">${esc(dispName)} <span style="color:var(--danger);font-size:12px;">(${esc(item.id)})</span></div>
+        <div class="inc-absent-sub">${esc(areaShort(item.area))}${esc(subTxt)} • ${esc(item.designation || 'Employee')}</div>
+      </div>
+      <span class="inc-absent-tag">${esc((item.reason || 'Absent') + noteTxt)}</span>
+    </div>`;
+  }).join('');
+}
+
+function setIncToppersArea(areaVal) {
+  _incToppersAreaFilter = areaVal || 'all';
+  document.querySelectorAll('#incToppersAreaBar .inc-topper-area-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-top-area') === _incToppersAreaFilter);
+  });
+  renderInchargeHomeToppers();
+}
+
+function renderInchargeHomeToppers() {
+  const grid = _el('incHomeToppersGrid');
+  const subEl = _el('incToppersMonthSub');
+  if (!grid) return;
+
+  const month = getCurrentMonth();
+  const list = monthIndexMemoryCache[month] || (currentLeaderboardResult && currentLeaderboardResult.allEmployees) || [];
+  if (!list || list.length === 0) {
+    grid.innerHTML = `<div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading ${esc(month)} toppers...</div>`;
+    return;
+  }
+
+  const rppfActive = list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id));
+  enrichLbEmployees(rppfActive);
+  ensureEmpAvgStats(rppfActive);
+
+  const areaFiltered = _incToppersAreaFilter === 'all'
+    ? rppfActive
+    : rppfActive.filter(e => e.area === _incToppersAreaFilter);
+
+  if (subEl) {
+    const areaLbl = _incToppersAreaFilter === 'all' ? 'All RPPF Sections' : (_incToppersAreaFilter === OVERALL_AREA ? 'Executives' : _incToppersAreaFilter);
+    subEl.textContent = `${month} • ${areaLbl} (${areaFiltered.length} active employees)`;
+  }
+
+  if (areaFiltered.length === 0) {
+    grid.innerHTML = `<div class="empty-msg" style="padding:14px;grid-column:1/-1;">No employee records found in this section for ${esc(month)}.</div>`;
+    return;
+  }
+
+  // Categories for In-Charge Toppers (Strictly NO Earning categories!)
+  const topperCategories = [
+    {
+      key: 'duty',
+      title: 'Best Duty Hours',
+      sortFn: (a, b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty),
+      valFn: e => `${e.totalDuty || 0}h`
+    },
+    {
+      key: 'ot',
+      title: 'Highest Overtime (OT)',
+      sortFn: (a, b) => (b.otHours || 0) - (a.otHours || 0),
+      valFn: e => `${e.otHours || 0}h OT`
+    },
+    {
+      key: 'avgDuty',
+      title: 'Best Avg Duty / Day',
+      sortFn: (a, b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty),
+      valFn: e => `${e.adjustedAvgDuty ?? e.avgDutyPerDay ?? 0}h/d`
+    },
+    {
+      key: 'plain',
+      title: 'Top 4:30pm Regular Days',
+      sortFn: (a, b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty),
+      valFn: e => `${e.plainDaysCount || 0} days`
+    },
+    {
+      key: 'avgInOut',
+      title: 'Earliest Avg Punch-In',
+      sortFn: (a, b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)),
+      valFn: e => `${e.avgInTimeStr || '08:00'}`
+    },
+    {
+      key: 'night',
+      title: 'Most Night Shifts',
+      sortFn: (a, b) => ((b.nightCount || 0) - (a.nightCount || 0)) || (b.totalDuty - a.totalDuty),
+      valFn: e => `${e.nightCount || 0} nights`,
+      drillKey: 'duty'
+    }
+  ];
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Pack' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'SG' : a === OVERALL_AREA ? 'Exec' : (a || 'RPPF');
+
+  grid.innerHTML = topperCategories.map(cat => {
+    const top3 = [...areaFiltered].sort(cat.sortFn).slice(0, 3);
+    const rowsHtml = top3.map((e, idx) => {
+      const subBadge = e.sub ? ` • ${e.sub}` : '';
+      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
+        <span class="inc-topper-medal m-${idx + 1}">${idx + 1}</span>
+        <div class="inc-topper-info">
+          <div class="inc-topper-name">${esc(e.name || e.id)}</div>
+          <div class="inc-topper-meta">${esc(e.id)} • ${esc(areaShort(e.area))}${esc(subBadge)}</div>
+        </div>
+        <span class="inc-topper-val">${esc(cat.valFn(e))}</span>
+      </div>`;
+    }).join('');
+    const targetCrit = cat.drillKey || cat.key;
+    return `<div class="inc-topper-cat-box">
+      <div class="inc-topper-cat-head">
+        <span class="inc-topper-cat-title">${esc(cat.title)}</span>
+        <button type="button" class="inc-topper-more-btn" onclick="switchPage('leaderboard', true); setTimeout(()=>openRankDrillDown('${esc(targetCrit)}'), 60);">All ›</button>
+      </div>
+      ${rowsHtml}
+    </div>`;
+  }).join('');
+}
+
+async function renderInchargeHomeOverview() {
+  const box = _el('inchargeHomeOverview');
+  if (!box) return;
+  const isInc = getAppMode() === 'incharge';
+  document.body.classList.toggle('incharge-mode-active', isInc);
+  if (!isInc) return;
+
+  await loadAreaMap();
+  await loadAbsentStore();
+
+  const roleLabel = getInchargeRoleLabel();
+  const badgeEl = _el('incOvRoleBadge');
+  if (badgeEl) badgeEl.textContent = `${roleLabel} • Overview`;
+
+  const month = getCurrentMonth();
+  let monthList = monthIndexMemoryCache[month];
+  if (!monthList) {
+    monthList = await fetchMonthPreIndexedData(month, false, true);
+  }
+  const activeRppf = Array.isArray(monthList)
+    ? monthList.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id))
+    : [];
+
+  const useMonth = activeRppf.length > 0;
+  let solidCnt = 0, sgCnt = 0, packCnt = 0, execCnt = 0;
+
+  if (useMonth) {
+    activeRppf.forEach(e => {
+      const a = getAreaForId(e.id, true);
+      const m = getEmpMeta(e.id);
+      if (a === 'Solid Production') solidCnt++;
+      else if (a === 'Softgel Production') sgCnt++;
+      else if (a === 'Packing Hall') packCnt++;
+      else if (a === OVERALL_AREA || e.kind === 'EXEC' || m.type === 'EXEC') execCnt++;
+    });
+  } else {
+    Object.keys(AREA_MAP || {}).forEach(id => {
+      const a = AREA_MAP[id];
+      const m = getEmpMeta(id);
+      if (a === 'Solid Production') solidCnt++;
+      else if (a === 'Softgel Production') sgCnt++;
+      else if (a === 'Packing Hall') packCnt++;
+      else if (a === OVERALL_AREA || m.type === 'EXEC') execCnt++;
+    });
+  }
+
+  const totalActive = solidCnt + sgCnt + packCnt + execCnt;
+  const setT = (id, t) => { const el = _el(id); if (el) el.textContent = String(t); };
+  setT('incOvTotalActive', totalActive);
+  setT('incCountSolid', solidCnt);
+  setT('incCountSg', sgCnt);
+  setT('incCountPack', packCnt);
+  setT('incCountExec', execCnt);
+  setT('incMetaSolid', `${(AREA_SUBS['Solid Production'] || []).length} sub-sections • Active`);
+  setT('incMetaSg', `${(AREA_SUBS['Softgel Production'] || []).length} sub-sections • Active`);
+  setT('incMetaPack', `${(AREA_SUBS['Packing Hall'] || []).length} sub-sections • Active`);
+  setT('incMetaExec', `Management & Officers`);
+
+  renderInchargeHomeAbsentList();
+  renderInchargeHomeToppers();
+}
+
+/* Quick Absent Modal Handlers */
+function openQuickAbsentModal() {
+  const modal = _el('quickAbsentModal');
+  if (!modal) return;
+  const dtInp = _el('qmAbsentDateInp');
+  const homePicker = _el('incAbsentDatePicker');
+  if (dtInp) dtInp.value = (homePicker && homePicker.value) ? homePicker.value : (ABSENT_STORE.activeDate || getTodayDateStr());
+  renderQuickAbsentModalList();
+  modal.classList.add('open');
+}
+
+function closeQuickAbsentModal() {
+  _el('quickAbsentModal')?.classList.remove('open');
+}
+
+function addAbsentFromQuickModal() {
+  const inp = _el('qmAbsentEmpInput');
+  const dt = _el('qmAbsentDateInp')?.value || getTodayDateStr();
+  const reason = _el('qmAbsentReasonSel')?.value || 'Absent';
+  const raw = (inp?.value || '').trim();
+  if (!raw) { showToast('Enter an employee ID or name', 'warn'); inp?.focus(); return; }
+  const ok = upsertAbsentEmployee(dt, raw, reason, '');
+  if (!ok) {
+    showToast('Could not find matching employee ID', 'warn');
+    return;
+  }
+  if (inp) inp.value = '';
+  const homePicker = _el('incAbsentDatePicker');
+  if (homePicker) homePicker.value = dt;
+  renderQuickAbsentModalList();
+  renderInchargeHomeAbsentList();
+  showToast('Added to absent list', 'success');
+}
+
+function addBulkAbsentFromQuickModal() {
+  const inp = _el('qmAbsentBulkInput');
+  const dt = _el('qmAbsentDateInp')?.value || getTodayDateStr();
+  const reason = _el('qmAbsentReasonSel')?.value || 'Absent';
+  const ids = extractEmployeeIdsFromText(inp?.value || '');
+  if (!ids.length) { showToast('Paste valid employee IDs', 'warn'); return; }
+  ids.forEach(id => upsertAbsentEmployee(dt, id, reason, ''));
+  if (inp) inp.value = '';
+  const homePicker = _el('incAbsentDatePicker');
+  if (homePicker) homePicker.value = dt;
+  renderQuickAbsentModalList();
+  renderInchargeHomeAbsentList();
+  showToast(`${ids.length} employee(s) added to absent list`, 'success');
+}
+
+function renderQuickAbsentModalList() {
+  const box = _el('qmAbsentCurrentList');
+  const titleEl = _el('qmAbsentCountTitle');
+  const dt = _el('qmAbsentDateInp')?.value || getSelectedAbsentDate();
+  if (!box) return;
+  const list = getAbsentListForDate(dt);
+  if (titleEl) titleEl.textContent = `Absent List for ${dt} (${list.length})`;
+  if (!list.length) {
+    box.innerHTML = '<div class="empty-msg" style="padding:12px;">No absent employees on this date.</div>';
+    return;
+  }
+  box.innerHTML = list.map(item => `<div class="admin-absent-list-item">
+    <div style="min-width:0;flex:1;">
+      <div style="font-weight:800;font-size:13px;color:var(--text);">${esc(item.name || item.id)} <span class="admin-tag">${esc(item.id)}</span></div>
+      <div style="font-size:11.5px;color:var(--muted);">${esc(item.area || '')}${item.sub ? ' • ' + esc(item.sub) : ''} • ${esc(item.reason || 'Absent')}</div>
+    </div>
+    <button type="button" class="calc-mini-btn danger-btn" onclick="removeAbsentEmployee('${esc(dt)}', '${esc(item.id)}')">Remove</button>
+  </div>`).join('');
+}
+
+/* ==========================================================================
+   ADMIN PANEL ABSENT TAB HANDLERS (for admin.html)
+   ========================================================================== */
+function onAdmAbsentDateChange(val) {
+  if (!val) return;
+  ABSENT_STORE.activeDate = val;
+  renderAdminAbsentPane();
+}
+
+function admAddSingleAbsentEmployee() {
+  const inp = _el('admAbsentSingleInp');
+  const dt = _el('admAbsentDateInput')?.value || getTodayDateStr();
+  const reason = _el('admAbsentReasonInput')?.value || 'Absent';
+  const note = (_el('admAbsentShiftInput')?.value || '').trim();
+  const raw = (inp?.value || '').trim();
+  if (!raw) { showToast('Enter an employee ID or select from suggestions', 'warn'); inp?.focus(); return; }
+  const ok = upsertAbsentEmployee(dt, raw, reason, note);
+  if (!ok) {
+    showToast('Employee ID not recognized. Enter a valid ID (e.g. CF8355)', 'warn');
+    return;
+  }
+  if (inp) inp.value = '';
+  renderAdminAbsentPane();
+  renderInchargeHomeAbsentList();
+  showToast(`Added to ${dt} absent list`, 'success');
+}
+
+function admAddBulkAbsentEmployees() {
+  const ta = _el('admAbsentBulkTextarea');
+  const dt = _el('admAbsentDateInput')?.value || getTodayDateStr();
+  const reason = _el('admAbsentReasonInput')?.value || 'Absent';
+  const note = (_el('admAbsentShiftInput')?.value || '').trim();
+  const ids = extractEmployeeIdsFromText(ta?.value || '');
+  if (!ids.length) { showToast('No valid employee IDs found in text box', 'warn'); ta?.focus(); return; }
+  ids.forEach(id => upsertAbsentEmployee(dt, id, reason, note));
+  if (ta) ta.value = '';
+  renderAdminAbsentPane();
+  renderInchargeHomeAbsentList();
+  showToast(`${ids.length} employee(s) added to ${dt} absent list`, 'success');
+}
+
+function copyAbsentSummaryText() {
+  const dt = _el('admAbsentDateInput')?.value || getSelectedAbsentDate();
+  const list = getAbsentListForDate(dt);
+  if (!list.length) { showToast('Absent list is empty for this date', 'warn'); return; }
+  const lines = list.map((x, i) => `${i + 1}. ${x.name || x.id} (${x.id}) — ${x.area}${x.sub ? ' [' + x.sub + ']' : ''} — ${x.reason || 'Absent'}${x.note ? ' (' + x.note + ')' : ''}`);
+  const txt = `RPPF Daily Absent Report (${dt})\nTotal Absent: ${list.length}\n\n${lines.join('\n')}`;
+  fallbackCopyText(txt);
+}
+
+function renderAdminAbsentPane() {
+  const container = _el('admAbsentItemsContainer');
+  const dtInp = _el('admAbsentDateInput');
+  if (!container) return;
+  const dt = (dtInp && dtInp.value) ? dtInp.value : (ABSENT_STORE.activeDate || getTodayDateStr());
+  if (dtInp && !dtInp.value) dtInp.value = dt;
+
+  const allList = getAbsentListForDate(dt);
+  const solidCnt = allList.filter(x => x.area === 'Solid Production').length;
+  const sgCnt = allList.filter(x => x.area === 'Softgel Production').length;
+  const packCnt = allList.filter(x => x.area === 'Packing Hall').length;
+  const setN = (id, v) => { const el = _el(id); if (el) el.textContent = String(v); };
+  setN('admAbsCountTotal', allList.length);
+  setN('admAbsCountSolid', solidCnt);
+  setN('admAbsCountSg', sgCnt);
+  setN('admAbsCountPack', packCnt);
+
+  const hdr = _el('admAbsentListHeaderTitle');
+  if (hdr) hdr.textContent = `Absent Employees on ${dt} (${allList.length}):`;
+
+  const areaFilter = _el('admAbsentFilterArea')?.value || 'all';
+  const q = (_el('admAbsentSearchFilter')?.value || '').trim().toUpperCase();
+  const filtered = allList.filter(x => {
+    if (areaFilter !== 'all' && x.area !== areaFilter) return false;
+    if (q) {
+      const hay = `${x.id} ${x.name || ''} ${x.area || ''} ${x.sub || ''} ${x.reason || ''} ${x.note || ''}`.toUpperCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-msg" style="padding:18px;">No absent employees listed for ${esc(dt)}${areaFilter !== 'all' || q ? ' matching filter' : ''}.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => {
+    const dirRec = resolveEmployeeDirectoryRecord(item.id);
+    const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
+    return `<div class="admin-absent-list-item">
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:800;font-size:14px;color:var(--text);">${esc(dispName)} <span class="admin-tag">${esc(item.id)}</span> <span class="admin-tag" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">${esc(item.reason || 'Absent')}</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Area: <b>${esc(item.area || 'RPPF')}</b>${item.sub ? ' • Sub: <b>' + esc(item.sub) + '</b>' : ''} • ${esc(item.designation || 'Employee')}${item.note ? ' • Note: ' + esc(item.note) : ''}</div>
+      </div>
+      <button type="button" class="calc-mini-btn danger-btn" onclick="removeAbsentEmployee('${esc(dt)}', '${esc(item.id)}')">✕ Remove</button>
+    </div>`;
+  }).join('');
+}
+
+/* ==========================================================================
+   UNIVERSAL LIVE EMPLOYEE AUTOCOMPLETE SUGGESTION ENGINE
+   ========================================================================== */
+let _masterDirectoryCache = [];
+let _masterDirLastBuildTs = 0;
+
+function buildMasterEmployeeDirectory() {
+  const now = Date.now();
+  if (_masterDirectoryCache.length > 50 && (now - _masterDirLastBuildTs < 8000)) {
+    return _masterDirectoryCache;
+  }
+  const map = new Map();
+  Object.keys(monthIndexMemoryCache || {}).forEach(ym => {
+    const list = monthIndexMemoryCache[ym];
+    if (!Array.isArray(list)) return;
+    list.forEach(e => {
+      if (!e || !e.id) return;
+      const id = String(e.id).toUpperCase().trim();
+      const meta = getEmpMeta(id);
+      const area = getAreaForId(id, e.isRppf !== false);
+      const existing = map.get(id);
+      if (!existing || (!existing.name && e.name)) {
+        map.set(id, {
+          id,
+          name: e.name || id,
+          area: area === 'Not on the list' ? (e.area || 'RPPF') : area,
+          sub: meta.sub || e.sub || '',
+          designation: e.grade || getDesignation(e) || EMP_TYPE_LABELS[meta.type] || 'Employee',
+          type: meta.type || getAutoEmpType(id),
+          gender: meta.gender || '',
+          totalDuty: e.totalDuty || 0,
+          otHours: e.otHours || 0
+        });
+      }
+    });
+  });
+
+  Object.keys(AREA_MAP || {}).forEach(rawId => {
+    const id = String(rawId).toUpperCase().trim();
+    if (!map.has(id)) {
+      const meta = getEmpMeta(id);
+      map.set(id, {
+        id,
+        name: id,
+        area: AREA_MAP[rawId] || 'RPPF',
+        sub: meta.sub || '',
+        designation: EMP_TYPE_LABELS[meta.type] || getDesignation({ id }) || 'Employee',
+        type: meta.type || getAutoEmpType(id),
+        gender: meta.gender || '',
+        totalDuty: 0,
+        otHours: 0
+      });
+    } else {
+      const item = map.get(id);
+      const meta = getEmpMeta(id);
+      if (AREA_MAP[rawId]) item.area = AREA_MAP[rawId];
+      if (meta.sub) item.sub = meta.sub;
+    }
+  });
+
+  if (Array.isArray(teamData)) {
+    teamData.forEach(t => {
+      if (t && t.id && t.id !== '—') {
+        const id = String(t.id).toUpperCase().trim();
+        const cur = map.get(id) || { id, area: t.area || 'RPPF', sub: '', type: getAutoEmpType(id), totalDuty: 0, otHours: 0 };
+        if (!cur.name || cur.name === id) cur.name = t.name || id;
+        if (!cur.designation) cur.designation = t.designation || 'ERP Team';
+        map.set(id, cur);
+      }
+    });
+  }
+
+  _masterDirectoryCache = Array.from(map.values());
+  _masterDirLastBuildTs = now;
+  return _masterDirectoryCache;
+}
+
+function searchEmployeeDirectory(query, limit = 10) {
+  const q = String(query || '').trim().toUpperCase();
+  if (!q) return [];
+  const all = buildMasterEmployeeDirectory();
+  const scored = [];
+  for (let i = 0; i < all.length; i++) {
+    const e = all[i];
+    if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
+    const idU = e.id.toUpperCase();
+    const nameU = String(e.name || '').toUpperCase();
+    const areaU = String(e.area || '').toUpperCase();
+    const subU = String(e.sub || '').toUpperCase();
+    const desigU = String(e.designation || '').toUpperCase();
+
+    let score = 0;
+    if (idU === q) score = 1000;
+    else if (idU.startsWith(q)) score = 800;
+    else if (idU.includes(q)) score = 650;
+    else if (nameU.startsWith(q)) score = 600;
+    else if (nameU.includes(q)) score = 480;
+    else if (subU && subU.includes(q)) score = 350;
+    else if (areaU.includes(q)) score = 260;
+    else if (desigU.includes(q)) score = 200;
+
+    if (score > 0) scored.push({ e, score });
+  }
+  scored.sort((a, b) => (b.score - a.score) || a.e.id.localeCompare(b.e.id));
+  return scored.slice(0, limit).map(x => x.e);
+}
+
+let _activeSuggestMenu = null;
+let _activeSuggestInput = null;
+
+function closeAllEmpSuggestMenus() {
+  document.querySelectorAll('.emp-suggest-menu.open').forEach(m => m.classList.remove('open'));
+  _activeSuggestMenu = null;
+}
+
+function attachEmployeeAutocompleteToInput(inputEl, onSelectCallback) {
+  if (!inputEl || inputEl._empSuggestWired) return;
+  inputEl._empSuggestWired = true;
+
+  const parent = inputEl.parentElement;
+  if (!parent) return;
+  if (getComputedStyle(parent).position === 'static') {
+    parent.classList.add('emp-suggest-host');
+  }
+
+  const menu = document.createElement('div');
+  menu.className = 'emp-suggest-menu';
+  parent.appendChild(menu);
+
+  const renderSuggestions = () => {
+    const rawVal = inputEl.value || '';
+    const q = rawVal.trim();
+    if (q.length < 1) {
+      menu.classList.remove('open');
+      return;
+    }
+    const matches = searchEmployeeDirectory(q, 10);
+    if (!matches.length) {
+      menu.classList.remove('open');
+      return;
+    }
+    const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'SG' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
+    menu.innerHTML = `<div class="emp-suggest-header">
+      <span>Matching Employees (${matches.length})</span>
+      <span>Tap to select</span>
+    </div>` + matches.map(emp => {
+      const dispName = (emp.name && emp.name !== emp.id) ? emp.name : 'Listed Employee';
+      const subBadge = emp.sub ? `<span class="emp-suggest-tag sub-tag">${esc(emp.sub)}</span>` : '';
+      const areaBadge = emp.area ? `<span class="emp-suggest-tag">${esc(areaShort(emp.area))}</span>` : '';
+      const desigBadge = emp.designation ? `<span class="emp-suggest-tag">${esc(emp.designation)}</span>` : '';
+      const rightStat = emp.totalDuty > 0 ? `Duty: ${emp.totalDuty}h<br><span style="color:var(--muted);font-weight:600;">OT: ${emp.otHours || 0}h</span>` : `<span style="color:var(--muted);">Select</span>`;
+      return `<div class="emp-suggest-item" data-emp-id="${esc(emp.id)}" data-emp-name="${esc(emp.name || emp.id)}">
+        <div class="emp-suggest-left">
+          <div class="emp-suggest-name">
+            <span class="emp-suggest-id-pill">${esc(emp.id)}</span>
+            <span>${esc(dispName)}</span>
+          </div>
+          <div class="emp-suggest-meta">${areaBadge}${subBadge}${desigBadge}</div>
+        </div>
+        <div class="emp-suggest-right">${rightStat}</div>
+      </div>`;
+    }).join('');
+
+    menu.querySelectorAll('.emp-suggest-item').forEach(item => {
+      item.addEventListener('mousedown', (ev) => {
+        ev.preventDefault();
+        const chosenId = item.getAttribute('data-emp-id');
+        inputEl.value = chosenId;
+        menu.classList.remove('open');
+        if (typeof onSelectCallback === 'function') {
+          onSelectCallback(chosenId, item.getAttribute('data-emp-name'));
+        } else {
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+      item.addEventListener('touchstart', (ev) => {
+        ev.stopPropagation();
+      }, { passive: true });
+      item.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const chosenId = item.getAttribute('data-emp-id');
+        inputEl.value = chosenId;
+        menu.classList.remove('open');
+        if (typeof onSelectCallback === 'function') {
+          onSelectCallback(chosenId, item.getAttribute('data-emp-name'));
+        } else {
+          inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+    });
+
+    closeAllEmpSuggestMenus();
+    menu.classList.add('open');
+    _activeSuggestMenu = menu;
+    _activeSuggestInput = inputEl;
+  };
+
+  inputEl.addEventListener('input', renderSuggestions);
+  inputEl.addEventListener('focus', () => {
+    if ((inputEl.value || '').trim().length >= 1) renderSuggestions();
+  });
+}
+
+function wireAllAutocompleteSearchInputs() {
+  attachEmployeeAutocompleteToInput(_el('employeeId'), (id) => {
+    toggleClearIdBtn();
+    findReport();
+  });
+  attachEmployeeAutocompleteToInput(_el('lbQuickSearchInput'), (id) => {
+    viewEmployeeFromLeaderboard(id);
+  });
+  attachEmployeeAutocompleteToInput(_el('iccSearchInput'), () => {
+    renderIccDrillList();
+  });
+  attachEmployeeAutocompleteToInput(_el('lbModalSearchInput'), () => {
+    filterLbModalList();
+  });
+  attachEmployeeAutocompleteToInput(_el('reportQuickIdInput'), () => {
+    searchFromReportPage();
+  });
+  attachEmployeeAutocompleteToInput(_el('regEmpIdInput'), () => {
+    onRegEmpIdInputChange();
+  });
+  attachEmployeeAutocompleteToInput(_el('settingsNewIdInput'));
+  attachEmployeeAutocompleteToInput(_el('qmAbsentEmpInput'));
+  attachEmployeeAutocompleteToInput(_el('admAbsentSingleInp'));
+  attachEmployeeAutocompleteToInput(_el('admFilterIdsInput'), () => {
+    if (typeof renderAdminAreaPreview === 'function') renderAdminAreaPreview();
+  });
+  attachEmployeeAutocompleteToInput(_el('admTeamId'));
+
+  document.querySelectorAll('#vsInputsGrid input.vs-emp-id-input').forEach(inp => {
+    attachEmployeeAutocompleteToInput(inp);
+  });
+}
+
+const _prevRenderExtraVsSlots = renderExtraVsSlots;
+renderExtraVsSlots = function() {
+  _prevRenderExtraVsSlots();
+  setTimeout(wireAllAutocompleteSearchInputs, 30);
+};
+
+document.addEventListener('click', (e) => {
+  if (_activeSuggestMenu && !e.target.closest('.emp-suggest-menu') && e.target !== _activeSuggestInput) {
+    closeAllEmpSuggestMenus();
+  }
+});
+
+/* ==========================================================================
+   NATIVE HTML5 CANVAS 2D REPORT PNG & VS COMPARISON PNG GENERATOR
+   (100% Reliable Offline & Mobile — Fixes html2canvas PNG Download Failure)
+   ========================================================================== */
+async function generateWorkLogCanvas2D(ctx) {
+  await ensurePayslipFonts();
+  const e = ctx.emp || {};
+  const { rows, y, m } = _rptRows(ctx);
+  const sum = [0, 0, 0, 0, 0, 0];
+  let present = 0, nights = 0, issues = 0, offAfterNight = 0;
+  rows.forEach(r => {
+    r.v.forEach((x, i) => sum[i] += x);
+    if (r.inn || r.out) present++;
+    if (r.night) nights++;
+    if (r.afterNight) offAfterNight++;
+    if (r.tone === 'bad') issues++;
+  });
+
+  const displayRows = _rptHideEmptyDays
+    ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
+    : rows;
+
+  const W = 1440;
+  const PAD = 36;
+  const TABLE_W = W - PAD * 2;
+  const HEADER_H = 152;
+  const TABLE_HEAD_H = 54;
+  const ROW_H = 38;
+  const FOOT_H = 44;
+  const BOTTOM_NOTE_H = 86;
+  const H = HEADER_H + TABLE_HEAD_H + (displayRows.length * ROW_H) + FOOT_H + BOTTOM_NOTE_H;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const g = canvas.getContext('2d');
+  g.textBaseline = 'middle';
+
+  g.fillStyle = '#FFFFFF';
+  g.fillRect(0, 0, W, H);
+
+  g.fillStyle = '#0F172A';
+  g.fillRect(PAD, 24, TABLE_W, 4);
+
+  g.fillStyle = '#0F172A';
+  g.font = `900 32px ${PAY_FONT}`;
+  g.textAlign = 'left';
+  g.fillText('RPPF — Monthly Work Log', PAD, 54);
+
+  const subTitle = `${_RMON[m - 1]} ${y}${_rptHideEmptyDays ? ' (Duty Days Only)' : ' (Full Month)'}`;
+  g.fillStyle = '#475569';
+  g.font = `700 20px ${PAY_FONT}`;
+  g.fillText(subTitle, PAD, 86);
+
+  g.textAlign = 'right';
+  g.fillStyle = '#0F172A';
+  g.font = `800 26px ${PAY_FONT}`;
+  g.fillText(`${ctx.id} — ${e.name || ctx.id}`, W - PAD, 54);
+
+  const metaLine = [e.grade, e.area === OVERALL_AREA ? 'Executives' : e.area, getEmpMeta(ctx.id).sub].filter(Boolean).join('  •  ');
+  g.fillStyle = '#475569';
+  g.font = `700 18px ${PAY_FONT}`;
+  g.fillText(metaLine || 'RPPF Production', W - PAD, 86);
+
+  const totalOt = Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100;
+  const pills = [
+    { text: `Present: ${present}d`, fg: '#1D4ED8', bg: '#DBEAFE' },
+    { text: `Total OT: ${totalOt}h`, fg: '#15803D', bg: '#DCFCE7' },
+    { text: `Night: ${nights}`, fg: '#6D28D9', bg: '#EDE9FE' }
+  ];
+  if (offAfterNight > 0) pills.push({ text: `Day off after night: ${offAfterNight}`, fg: '#4338CA', bg: '#E0E7FF' });
+  pills.push({
+    text: issues > 0 ? `Punch Fix: ${issues}d` : 'Punch OK',
+    fg: issues > 0 ? '#B91C1C' : '#15803D',
+    bg: issues > 0 ? '#FEE2E2' : '#DCFCE7'
+  });
+
+  let pillX = PAD;
+  const pillY = 110;
+  g.font = `800 17px ${PAY_FONT}`;
+  g.textAlign = 'left';
+  pills.forEach(p => {
+    const tw = g.measureText(p.text).width;
+    const pw = tw + 24;
+    g.fillStyle = p.bg;
+    _rr(g, pillX, pillY, pw, 30, 15);
+    g.fill();
+    g.fillStyle = p.fg;
+    g.fillText(p.text, pillX + 12, pillY + 15);
+    pillX += pw + 10;
+  });
+
+  const cols = [
+    { label1: 'Date / Day', w: 0.135, align: 'left' },
+    { label1: 'In Time', w: 0.085, align: 'center' },
+    { label1: 'Out Time', w: 0.085, align: 'center' },
+    { label1: 'Reg Duty', w: 0.078, align: 'center' },
+    { label1: 'Reg OT', w: 0.068, align: 'center' },
+    { label1: 'DO Duty', w: 0.078, align: 'center' },
+    { label1: 'DO OT', w: 0.068, align: 'center' },
+    { label1: 'Hol Duty', w: 0.078, align: 'center' },
+    { label1: 'Hol OT', w: 0.068, align: 'center' },
+    { label1: 'Night', w: 0.062, align: 'center' },
+    { label1: 'Status / Remark', w: 0.195, align: 'left' }
+  ];
+
+  let curY = HEADER_H;
+  g.fillStyle = '#0F172A';
+  g.fillRect(PAD, curY, TABLE_W, TABLE_HEAD_H);
+
+  let colX = PAD;
+  cols.forEach(c => {
+    const cw = Math.round(c.w * TABLE_W);
+    c._x = colX;
+    c._w = cw;
+    g.fillStyle = '#FFFFFF';
+    g.font = `800 16px ${PAY_FONT}`;
+    g.textAlign = 'center';
+    g.fillText(c.label1, colX + cw / 2, curY + TABLE_HEAD_H / 2);
+    g.strokeStyle = '#334155';
+    g.lineWidth = 1;
+    g.strokeRect(colX, curY, cw, TABLE_HEAD_H);
+    colX += cw;
+  });
+  curY += TABLE_HEAD_H;
+
+  const BG_MAP = { bad: '#FECACA', hol: '#FFF6E6', do: '#F3EFFC', none: '#F8FAFC', off: '#F1F5F9', offn: '#EEF2FF' };
+  const fmtTime = (t) => String(t || '').replace(/^(\d{2}:\d{2}):\d{2}$/, '$1');
+
+  displayRows.forEach(r => {
+    const bg = BG_MAP[r.tone] || '#FFFFFF';
+    g.fillStyle = bg;
+    g.fillRect(PAD, curY, TABLE_W, ROW_H);
+
+    const isBad = r.tone === 'bad';
+    const isMuted = r.tone === 'none' || r.tone === 'off' || r.tone === 'offn';
+    const baseFg = isBad ? '#B91C1C' : (isMuted ? '#64748B' : '#0F172A');
+
+    const c0 = cols[0];
+    g.font = `800 16px ${PAY_FONT}`;
+    g.fillStyle = baseFg;
+    g.textAlign = 'left';
+    g.fillText(r.date, c0._x + 10, curY + ROW_H / 2);
+    g.font = `700 15px ${PAY_FONT}`;
+    g.fillStyle = isBad ? '#B91C1C' : ((r.day === 'Thu' || r.day === 'Fri') ? '#DC2626' : '#475569');
+    g.textAlign = 'right';
+    g.fillText(r.day, c0._x + c0._w - 10, curY + ROW_H / 2);
+
+    [[r.inn, r.missIn, cols[1]], [r.out, r.missOut, cols[2]]].forEach(([val, miss, col]) => {
+      if (miss) {
+        g.fillStyle = '#F87171';
+        g.fillRect(col._x + 1, curY + 1, col._w - 2, ROW_H - 2);
+        g.fillStyle = '#7F1D1D';
+        g.font = `800 15px ${PAY_FONT}`;
+        g.textAlign = 'center';
+        g.fillText('MISS', col._x + col._w / 2, curY + ROW_H / 2);
+      } else {
+        g.fillStyle = baseFg;
+        g.font = `600 15.5px ${PAY_FONT}`;
+        g.textAlign = 'center';
+        g.fillText(fmtTime(val), col._x + col._w / 2, curY + ROW_H / 2);
+      }
+    });
+
+    for (let i = 0; i < 6; i++) {
+      const col = cols[3 + i];
+      const v = r.v[i];
+      const txt = _rN(v);
+      if (txt) {
+        g.fillStyle = '#0F172A';
+        g.font = `700 16px ${PAY_FONT}`;
+        g.textAlign = 'center';
+        g.fillText(txt, col._x + col._w / 2, curY + ROW_H / 2);
+      }
+    }
+
+    const c9 = cols[9];
+    if (r.night) {
+      g.fillStyle = '#6D28D9';
+      g.font = `800 15.5px ${PAY_FONT}`;
+      g.textAlign = 'center';
+      g.fillText('Yes', c9._x + c9._w / 2, curY + ROW_H / 2);
+    }
+
+    const c10 = cols[10];
+    if (r.note) {
+      g.fillStyle = isBad ? '#B91C1C' : '#334155';
+      g.font = `${isBad ? 800 : 600} 15px ${PAY_FONT}`;
+      g.textAlign = 'left';
+      g.fillText(String(r.note).slice(0, 32), c10._x + 10, curY + ROW_H / 2);
+    }
+
+    cols.forEach(c => {
+      g.strokeStyle = '#CBD5E1';
+      g.lineWidth = 1;
+      g.strokeRect(c._x, curY, c._w, ROW_H);
+    });
+
+    curY += ROW_H;
+  });
+
+  g.fillStyle = '#0F172A';
+  g.fillRect(PAD, curY, TABLE_W, FOOT_H);
+  g.fillStyle = '#FFFFFF';
+  g.font = `800 16.5px ${PAY_FONT}`;
+  g.textAlign = 'left';
+  g.fillText(`Total (${present}d present)`, PAD + 12, curY + FOOT_H / 2);
+
+  for (let i = 0; i < 6; i++) {
+    const col = cols[3 + i];
+    const txt = _rN(sum[i]);
+    g.textAlign = 'center';
+    g.fillText(txt || '0', col._x + col._w / 2, curY + FOOT_H / 2);
+  }
+  if (nights > 0) {
+    const c9 = cols[9];
+    g.textAlign = 'center';
+    g.fillText(String(nights), c9._x + c9._w / 2, curY + FOOT_H / 2);
+  }
+  curY += FOOT_H;
+
+  const issueDates = rows.filter(r => r.tone === 'bad').map(r => r.date);
+  g.textAlign = 'left';
+  g.font = `800 18px ${PAY_FONT}`;
+  g.fillStyle = issues > 0 ? '#B91C1C' : '#15803D';
+  g.fillText(
+    issues > 0 ? `Punch problem on ${issues} day(s): ${issueDates.join(', ')}` : 'All In/Out punches verified OK in this report.',
+    PAD,
+    curY + 28
+  );
+
+  g.font = `600 15px ${PAY_FONT}`;
+  g.fillStyle = '#64748B';
+  g.fillText(`Generated from RPPF Overtime Report App  •  ${new Date().toLocaleDateString('en-GB')}`, PAD, curY + 58);
+
+  return canvas;
+}
+
+downloadReportPNG = async function(share) {
+  const ctx = window._rptCtx;
+  if (!ctx || !ctx.emp) {
+    showToast('Search a report first', 'warn');
+    return;
+  }
+  const btns = ['pngDlBtn', 'pngShareBtn'].map(i => _el(i)).filter(Boolean);
+  btns.forEach(b => b.disabled = true);
+  showToast(share ? 'Preparing report image...' : 'Creating PNG...', 'info');
+  try {
+    const canvas = await generateWorkLogCanvas2D(ctx);
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('Canvas blob failed')), 'image/png');
+    });
+    const { y, m } = _rptRows(ctx);
+    const name = `WorkLog_${ctx.id}_${y}-${String(m).padStart(2, '0')}.png`;
+    const file = new File([blob], name, { type: 'image/png' });
+    if (share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: name });
+        showToast('Report shared', 'success');
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    showToast('Report PNG downloaded!', 'success');
+  } catch (err) {
+    console.error('PNG generation error:', err);
+    showToast('Could not create PNG: ' + (err.message || 'Unknown error'), 'error');
+  } finally {
+    btns.forEach(b => b.disabled = false);
+  }
+};
+
+const _origDownloadVsPNG = downloadVsComparisonPNG;
+downloadVsComparisonPNG = async function(share = false) {
+  const target = _el('vsExportTarget');
+  if (!target) return;
+  try {
+    showToast(share ? 'Preparing comparison image...' : 'Downloading comparison PNG...', 'info');
+    const table = target.querySelector('table.compare-table');
+    if (!table) return _origDownloadVsPNG(share);
+    await ensurePayslipFonts();
+    const trs = Array.from(table.querySelectorAll('tr'));
+    const colCount = Math.max(2, trs[0] ? trs[0].children.length : 2);
+    const W = Math.max(960, colCount * 260);
+    const PAD = 40;
+    const ROW_H = 54;
+    const H = 150 + trs.length * ROW_H + 90;
+    const c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const g = c.getContext('2d');
+    g.fillStyle = '#F8FAFC';
+    g.fillRect(0, 0, W, H);
+    g.fillStyle = '#1E3A8A';
+    g.fillRect(0, 0, W, 96);
+    g.fillStyle = '#FFFFFF';
+    g.font = `800 30px ${PAY_FONT}`;
+    g.textAlign = 'left';
+    g.textBaseline = 'middle';
+    g.fillText(`RPPF — VS Overtime Comparison (${currentMonth || getCurrentMonth()})`, PAD, 48);
+
+    const tableW = W - PAD * 2;
+    const firstColW = Math.round(tableW * 0.28);
+    const otherColW = Math.floor((tableW - firstColW) / Math.max(1, colCount - 1));
+    let curY = 120;
+
+    trs.forEach((tr, rIdx) => {
+      const isHead = rIdx === 0;
+      const isTotal = tr.classList.contains('total-row');
+      g.fillStyle = isHead ? '#0F172A' : isTotal ? '#DCFCE7' : (rIdx % 2 === 0 ? '#FFFFFF' : '#F1F5F9');
+      g.fillRect(PAD, curY, tableW, ROW_H);
+      const cells = Array.from(tr.children);
+      let cx = PAD;
+      cells.forEach((td, cIdx) => {
+        const cw = cIdx === 0 ? firstColW : otherColW;
+        const txt = String(td.innerText || td.textContent || '').replace(/\s+/g, ' ').trim();
+        g.fillStyle = isHead ? '#FFFFFF' : isTotal ? '#15803D' : (td.classList.contains('win-cell') ? '#1D4ED8' : '#0F172A');
+        g.font = `${(isHead || isTotal || td.classList.contains('win-cell')) ? 800 : 600} 18px ${PAY_FONT}`;
+        g.textAlign = cIdx === 0 ? 'left' : 'right';
+        g.fillText(txt.slice(0, 32), cIdx === 0 ? cx + 14 : cx + cw - 14, curY + ROW_H / 2);
+        g.strokeStyle = '#CBD5E1';
+        g.strokeRect(cx, curY, cw, ROW_H);
+        cx += cw;
+      });
+      curY += ROW_H;
+    });
+
+    const diffEl = target.querySelector('.compare-diff');
+    if (diffEl) {
+      g.fillStyle = '#0F172A';
+      g.font = `800 20px ${PAY_FONT}`;
+      g.textAlign = 'center';
+      g.fillText(diffEl.innerText.trim(), W / 2, curY + 42);
+    }
+
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    const fname = `VS_Compare_${currentMonth || getCurrentMonth()}.png`;
+    const file = new File([blob], fname, { type: 'image/png' });
+    if (share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: fname });
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    showToast('VS comparison PNG downloaded!', 'success');
+  } catch (e) {
+    if (e && e.name !== 'AbortError') showToast('Could not export image', 'error');
+  }
+};
+
+/* ==========================================================================
+   STARTUP & MODE ROUTING OVERRIDES
+   (In-Charge Mode opens Home Overview by default instead of jumping to Ranking)
+   ========================================================================== */
+const _prevSyncPrivilegedUI = syncPrivilegedUI;
+syncPrivilegedUI = function() {
+  _prevSyncPrivilegedUI();
+  const isInc = getAppMode() === 'incharge';
+  document.body.classList.toggle('incharge-mode-active', isInc);
+  if (isInc) {
+    renderInchargeHomeOverview();
+  }
+};
+
+initAppModeOnStartup = function() {
+  ensureDefaultSubsections();
+  updateModeUI();
+  wireAllAutocompleteSearchInputs();
+  loadAbsentStore().then(() => {
+    renderInchargeHomeAbsentList();
+    if (typeof renderAdminAbsentPane === 'function') renderAdminAbsentPane();
+  });
+  const mode = getAppMode();
+  const myId = getPreferredId();
+  if (mode === 'incharge') {
+    switchPage('search');
+    renderInchargeHomeOverview();
+    startLeaderboardScan(false);
+  } else if (mode === 'employee' && myId) {
+    const inp = _el('employeeId');
+    if (inp) { inp.value = myId; toggleClearIdBtn(); }
+    setTimeout(() => { findReport(); }, 100);
+  } else {
+    setTimeout(() => { openModeSetupModal('employee'); }, 350);
+  }
+};
+
+const _prevSaveInchargeModeSetup = saveInchargeModeSetup;
+saveInchargeModeSetup = function() {
+  _prevSaveInchargeModeSetup();
+  if (getAppMode() === 'incharge') {
+    switchPage('search');
+    renderInchargeHomeOverview();
+  }
+};
+
+const _prevSaveEmployeeModeSetup = saveEmployeeModeSetup;
+saveEmployeeModeSetup = function() {
+  const inp = _el('regEmpIdInput');
+  const raw = String(inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
+  const spec = getSpecialRoleSpec(raw);
+  _prevSaveEmployeeModeSetup();
+  if (spec && getAppMode() === 'incharge') {
+    resetAll();
+    switchPage('search');
+    renderInchargeHomeOverview();
+    startLeaderboardScan(false);
+  }
+};
+
+_el('yearSelect')?.addEventListener('change', () => {
+  if (getAppMode() === 'incharge' && !document.body.classList.contains('has-result')) {
+    renderInchargeHomeOverview();
+  }
+});
+_el('monthSelect')?.addEventListener('change', () => {
+  if (getAppMode() === 'incharge' && !document.body.classList.contains('has-result')) {
+    renderInchargeHomeOverview();
+  }
+});
+
+if (typeof switchAdminTab === 'function') {
+  const _origSwitchAdminTab = switchAdminTab;
+  switchAdminTab = function(tab) {
+    _origSwitchAdminTab(tab);
+    const absBtn = _el('admTabBtnAbsent');
+    const absPane = _el('admPaneAbsent');
+    if (absBtn) absBtn.classList.toggle('active', tab === 'absent');
+    if (absPane) absPane.classList.toggle('active', tab === 'absent');
+    if (tab === 'absent') {
+      loadAbsentStore().then(() => renderAdminAbsentPane());
+      setTimeout(wireAllAutocompleteSearchInputs, 50);
+    }
+  };
+}
 
 /* Startup runs last, after every top-level declaration and override above has been evaluated. */
 initAppModeOnStartup();
