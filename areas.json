@@ -400,6 +400,72 @@
       "g": "M",
       "t": "JO",
       "s": "ERP"
+    },
+    "CF8510": {
+      "s": "pri- packaging"
+    },
+    "CF10277": {
+      "s": "pri- packaging"
+    },
+    "CF4558": {
+      "s": "pri- packaging"
+    },
+    "CF8371": {
+      "s": "pri- packaging"
+    },
+    "CF8207": {
+      "s": "pri- packaging"
+    },
+    "CF2792": {
+      "s": "pri- packaging"
+    },
+    "CF8353": {
+      "s": "pri- packaging"
+    },
+    "CF10280": {
+      "s": "pri- packaging"
+    },
+    "CF9405": {
+      "s": "pri- packaging"
+    },
+    "CF2694": {
+      "s": "pri- packaging"
+    },
+    "CF3665": {
+      "s": "pri- packaging"
+    },
+    "CF2701": {
+      "s": "pri- packaging"
+    },
+    "CF8261": {
+      "s": "pri- packaging"
+    },
+    "CF4743": {
+      "s": "pri- packaging"
+    },
+    "RF8366": {
+      "s": "pri- packaging"
+    },
+    "RF20177": {
+      "s": "pri- packaging"
+    },
+    "RF8372": {
+      "s": "pri- packaging"
+    },
+    "RF20855": {
+      "s": "pri- packaging"
+    },
+    "RF21560": {
+      "s": "pri- packaging"
+    },
+    "RF20179": {
+      "s": "pri- packaging"
+    },
+    "RF22059": {
+      "s": "pri- packaging"
+    },
+    "RF22878": {
+      "s": "pri- packaging"
     }
   },
   "subsections": {
@@ -418,7 +484,8 @@
       "Capsule Filling",
       "Dispensing",
       "Inspection",
-      "ERP"
+      "ERP",
+      "pri- packaging"
     ],
     "Softgel Production": [
       "Encapsulation",
