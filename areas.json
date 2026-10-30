@@ -560,38 +560,32 @@
     "CF4995": {
       "s": "Granulation"
     },
-    "CF10274": {
-      "s": "Coating"
+    "RF22023": {
+      "s": "Iron"
     },
-    "CF8362": {
-      "s": "Coating"
+    "RF22108": {
+      "s": "Iron"
     },
-    "CF8018": {
-      "s": "Coating"
+    "CF8359": {
+      "s": "Iron"
     },
-    "CF10275": {
-      "s": "Coating"
+    "CF8393": {
+      "s": "Iron"
     },
-    "CF8328": {
-      "s": "Coating"
+    "CF8285": {
+      "s": "Iron"
     },
-    "CF8513": {
-      "s": "Coating"
+    "CF5124": {
+      "s": "Iron"
     },
-    "CF9381": {
-      "s": "Coating"
+    "CF3778": {
+      "s": "Iron"
     },
-    "RF8374": {
-      "s": "Coating"
+    "CF4990": {
+      "s": "Iron"
     },
-    "RF20850": {
-      "s": "Coating"
-    },
-    "RF20852": {
-      "s": "Coating"
-    },
-    "CF3563": {
-      "s": "Coating"
+    "CF8188": {
+      "s": "Iron"
     }
   },
   "subsections": {
@@ -611,7 +605,8 @@
       "Dispensing",
       "Inspection",
       "ERP",
-      "pri- packaging"
+      "pri- packaging",
+      "Iron"
     ],
     "Softgel Production": [
       "Encapsulation",
