@@ -506,11 +506,59 @@
     "RF22034": {
       "s": "Granulation"
     },
-    "CF8176": {
-      "s": "Bin-Washing"
+    "CF5101": {
+      "s": "Dispensing"
     },
-    "CF8451": {
-      "s": "Bin-Washing"
+    "CF9370": {
+      "s": "Dispensing"
+    },
+    "CF9385": {
+      "s": "Dispensing"
+    },
+    "CF5176": {
+      "s": "Dispensing"
+    },
+    "CF10276": {
+      "s": "Dispensing"
+    },
+    "RF8327": {
+      "s": "Dispensing"
+    },
+    "CF3036": {
+      "s": "Dispensing"
+    },
+    "RF22855": {
+      "s": "Granulation"
+    },
+    "RF22858": {
+      "s": "Granulation"
+    },
+    "RF22022": {
+      "s": "Granulation"
+    },
+    "RF20851": {
+      "s": "Granulation"
+    },
+    "RF8368": {
+      "s": "Granulation"
+    },
+    "CF8572": {
+      "s": "Granulation"
+    },
+    "CF8189": {
+      "s": "Granulation"
+    },
+    "CF8352": {
+      "s": "Granulation"
+    },
+    "CF8350": {
+      "s": "Granulation"
+    },
+    "CF3077": {
+      "s": "Granulation"
+    },
+    "CF4995": {
+      "s": "Granulation"
     }
   },
   "subsections": {
@@ -530,8 +578,7 @@
       "Dispensing",
       "Inspection",
       "ERP",
-      "pri- packaging",
-      "Bin-Washing"
+      "pri- packaging"
     ],
     "Softgel Production": [
       "Encapsulation",
