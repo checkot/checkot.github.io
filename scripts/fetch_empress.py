@@ -24,54 +24,39 @@ with sync_playwright() as p:
         
         try:
             print("-> Opening login page...")
-            page.goto(BASE, wait_until="domcontentloaded")
-            
-            # অপেক্ষা করবে যতক্ষণ না লগইন ইনপুট বক্সটা স্ক্রিনে আসে
-            page.wait_for_selector('input[placeholder*="login ID"]', timeout=20000)
-            page.wait_for_timeout(2000)
+            page.goto(BASE, wait_until="networkidle") # পুরো পেজ লোড হওয়া পর্যন্ত অপেক্ষা করবে
+            page.wait_for_timeout(3000)
             shot(page, f"{acc['name']}_01_login_page")
 
             print("-> Filling credentials...")
-            # সরাসরি input এর ভেতরের placeholder টেক্সট দিয়ে খোঁজা হচ্ছে
-            page.locator('input[placeholder*="login ID"]').first.fill(acc["user"])
-            page.locator('input[placeholder*="password"]').first.fill(acc["pass"])
-
-            print("-> Clicking Login button...")
-            # লগইন বাটন খোঁজার ৩টি আলাদা উপায় (একটা কাজ করবেই)
-            try:
-                page.locator('button:has-text("Login")').first.click(timeout=5000)
-            except:
-                try:
-                    page.locator('div:has-text("Login")').last.click(timeout=5000)
-                except:
-                    # যদি বাটন না পায়, তবে পাসওয়ার্ড বক্সে Enter চাপবে
-                    page.locator('input[placeholder*="password"]').first.press("Enter")
-
-            print("-> Waiting for login to complete...")
-            # অপেক্ষা করবে লগইন পেজ থেকে ড্যাশবোর্ডে চলে যাওয়া পর্যন্ত
-            try:
-                page.wait_for_url(lambda url: "login" not in url.lower(), timeout=30000)
-            except:
-                pass
+            # সরাসরি ইনপুট বক্সের ধরন (type) দিয়ে খুঁজে বের করবে
+            text_input = page.locator('input[type="text"]').first
+            pass_input = page.locator('input[type="password"]').first
             
+            text_input.fill(acc["user"])
+            pass_input.fill(acc["pass"])
+
+            print("-> Logging in...")
+            # বাটন খোঁজার ঝামেলা এড়াতে পাসওয়ার্ড বক্সে Enter চাপবে
+            pass_input.press("Enter")
+            
+            print("-> Waiting for dashboard...")
             page.wait_for_load_state("networkidle", timeout=30000)
+            page.wait_for_timeout(4000)
             shot(page, f"{acc['name']}_02_after_login")
 
-            if "login" in page.url.lower() or page.locator('input[placeholder*="login ID"]').is_visible():
-                raise Exception("লগইন ব্যর্থ! হয়তো পাসওয়ার্ড ভুল, অথবা ওয়েবসাইট সিকিউরিটি ব্লক করেছে।")
+            if "login" in page.url.lower():
+                raise Exception("লগইন ব্যর্থ! পাসওয়ার্ড চেক করুন।")
 
             print("-> Opening Report page...")
-            page.goto(REPORT, wait_until="domcontentloaded")
-            page.wait_for_load_state("networkidle", timeout=60000)
-            page.wait_for_timeout(5000)
+            page.goto(REPORT, wait_until="networkidle", timeout=60000)
+            page.wait_for_timeout(4000)
             shot(page, f"{acc['name']}_03_report_page")
 
             print("-> Clicking Export Excel...")
             with page.expect_download(timeout=300_000) as dl:
-                try:
-                    page.locator('button:has-text("Export Excel")').first.click()
-                except:
-                    page.locator('text="Export Excel"').first.click()
+                # বাটন বা টেক্সট যা-ই হোক, খুঁজে বের করবে
+                page.locator('button:has-text("Export Excel"), a:has-text("Export Excel"), text="Export Excel"').first.click()
             
             d = dl.value
             print("-> File downloaded:", d.suggested_filename)
@@ -90,4 +75,4 @@ with sync_playwright() as p:
     browser.close()
 
 if not all_ok:
-    sys.exit(1) # ফেইল করলে লাল ক্রস দেখাবে
+    sys.exit(1)
