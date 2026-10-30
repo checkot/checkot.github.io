@@ -1,6 +1,6 @@
 {
   "month": "2026-10",
-  "updatedAt": "2026-10-30T15:24:02.661957Z",
+  "updatedAt": "2026-10-30T19:09:18.073787Z",
   "employees": [
     {
       "valid": false,
@@ -7247,12 +7247,12 @@
       "category": null,
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 214.06,
+      "totalDuty": 228.11,
       "otHours": 41.0,
-      "holidayCount": 2,
+      "holidayCount": 3,
       "nightCount": 4,
       "regularDaysCount": 13,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -7267,6 +7267,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.05,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -7275,9 +7282,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -7493,10 +7498,10 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.05,
           0.0,
           0.0,
           0.0,
@@ -9410,12 +9415,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 281.79,
+      "totalDuty": 284.37,
       "otHours": 49.0,
       "holidayCount": 7,
       "nightCount": 6,
       "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -9461,7 +9466,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.5,
+          "doDuty": 14.08,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -9475,9 +9480,7 @@
         "22-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -9749,10 +9752,10 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
+          "22:03",
           0.0,
           0.0,
-          11.5,
+          14.08,
           0.0,
           0.0,
           0.0,
@@ -9775,12 +9778,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 266.42,
+      "totalDuty": 280.55,
       "otHours": 52.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 5,
       "regularDaysCount": 16,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "15-OCT-2026",
@@ -9802,6 +9805,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.13,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -9811,9 +9821,7 @@
         "20-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -10085,10 +10093,10 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.13,
           0.0,
           0.0,
           0.0,
@@ -10097,9 +10105,9 @@
         ]
       ],
       "otAmount": 1976.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1500,
-      "totalEarned": 4388.0,
+      "totalEarned": 4692.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -12114,12 +12122,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 264.91,
+      "totalDuty": 279.23,
       "otHours": 58.0,
-      "holidayCount": 7,
+      "holidayCount": 8,
       "nightCount": 7,
       "regularDaysCount": 10,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -12169,6 +12177,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.32,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -12180,9 +12195,7 @@
         "21-OCT-2026",
         "25-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -12426,10 +12439,10 @@
           "30-OCT-2026",
           "Fri",
           "07:47",
-          "",
+          "22:06",
           0.0,
           0.0,
-          0.0,
+          14.32,
           0.0,
           0.0,
           0.0,
@@ -12438,9 +12451,9 @@
         ]
       ],
       "otAmount": 2204.0,
-      "holidayAmount": 2128,
+      "holidayAmount": 2432,
       "nightAmount": 2100,
-      "totalEarned": 6432.0,
+      "totalEarned": 6736.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -14542,12 +14555,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 269.67,
+      "totalDuty": 271.89,
       "otHours": 48.0,
       "holidayCount": 6,
       "nightCount": 7,
       "regularDaysCount": 12,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -14586,7 +14599,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.8,
+          "doDuty": 14.02,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -14601,9 +14614,7 @@
         "19-OCT-2026",
         "22-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -14847,10 +14858,10 @@
           "30-OCT-2026",
           "Fri",
           "07:59",
-          "",
+          "22:00",
           0.0,
           0.0,
-          11.8,
+          14.02,
           0.0,
           0.0,
           0.0,
@@ -29745,12 +29756,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 279.47,
+      "totalDuty": 281.99,
       "otHours": 54.0,
       "holidayCount": 6,
       "nightCount": 10,
       "regularDaysCount": 9,
-      "plainDaysCount": 1,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -29789,7 +29800,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.68,
+          "doDuty": 14.2,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -29807,9 +29818,7 @@
         "25-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -30011,10 +30020,10 @@
           "30-OCT-2026",
           "Fri",
           "07:51",
-          "",
+          "22:03",
           0.0,
           0.0,
-          11.68,
+          14.2,
           0.0,
           0.0,
           0.0,
@@ -31366,12 +31375,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 239.38,
+      "totalDuty": 253.63,
       "otHours": 53.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 8,
       "regularDaysCount": 10,
-      "plainDaysCount": 0,
+      "plainDaysCount": 1,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -31393,6 +31402,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.25,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -31405,9 +31421,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -31595,10 +31609,10 @@
           "30-OCT-2026",
           "Fri",
           "07:49",
-          "",
+          "22:04",
           0.0,
           0.0,
-          0.0,
+          14.25,
           0.0,
           0.0,
           0.0,
@@ -31607,9 +31621,9 @@
         ]
       ],
       "otAmount": 2014.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 2400,
-      "totalEarned": 5326.0,
+      "totalEarned": 5630.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -34300,12 +34314,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 265.26,
+      "totalDuty": 267.49,
       "otHours": 49.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 12,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -34351,7 +34365,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.87,
+          "doDuty": 14.1,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -34364,9 +34378,7 @@
         "20-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -34624,10 +34636,10 @@
           "30-OCT-2026",
           "Fri",
           "07:55",
-          "",
+          "22:01",
           0.0,
           0.0,
-          11.87,
+          14.1,
           0.0,
           0.0,
           0.0,
@@ -40212,12 +40224,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 196.99,
+      "totalDuty": 210.96,
       "otHours": 35.0,
       "holidayCount": 2,
       "nightCount": 6,
-      "regularDaysCount": 11,
-      "plainDaysCount": 4,
+      "regularDaysCount": 12,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -40242,9 +40254,7 @@
         "18-OCT-2026",
         "24-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -40432,8 +40442,8 @@
           "30-OCT-2026",
           "Fri",
           "07:52",
-          "",
-          0.0,
+          "21:50",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -45046,12 +45056,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 259.51,
+      "totalDuty": 273.56,
       "otHours": 47.0,
       "holidayCount": 4,
       "nightCount": 9,
-      "regularDaysCount": 11,
-      "plainDaysCount": 1,
+      "regularDaysCount": 12,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -45093,9 +45103,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -45311,8 +45319,8 @@
           "30-OCT-2026",
           "Fri",
           "07:49",
-          "",
-          0.0,
+          "21:52",
+          14.05,
           0.0,
           0.0,
           0.0,
@@ -47042,12 +47050,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 258.77,
+      "totalDuty": 272.75,
       "otHours": 50.0,
       "holidayCount": 6,
       "nightCount": 7,
-      "regularDaysCount": 11,
-      "plainDaysCount": 3,
+      "regularDaysCount": 12,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -47101,9 +47109,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -47347,8 +47353,8 @@
           "30-OCT-2026",
           "Fri",
           "07:50",
-          "",
-          0.0,
+          "21:49",
+          13.98,
           0.0,
           0.0,
           0.0,
@@ -55366,12 +55372,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 281.39,
+      "totalDuty": 295.32,
       "otHours": 49.0,
       "holidayCount": 7,
       "nightCount": 8,
-      "regularDaysCount": 11,
-      "plainDaysCount": 4,
+      "regularDaysCount": 12,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -55433,9 +55439,7 @@
         "24-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -55693,8 +55697,8 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
-          0.0,
+          "21:54",
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -56869,12 +56873,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 287.27,
+      "totalDuty": 301.45,
       "otHours": 51.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 7,
       "regularDaysCount": 11,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -56917,6 +56921,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.18,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -56928,9 +56939,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "05-OCT-2026",
@@ -57174,10 +57183,10 @@
           "30-OCT-2026",
           "Fri",
           "07:57",
-          "",
+          "22:08",
           0.0,
           0.0,
-          0.0,
+          14.18,
           0.0,
           0.0,
           0.0,
@@ -57186,9 +57195,9 @@
         ]
       ],
       "otAmount": 1938.0,
-      "holidayAmount": 1824,
+      "holidayAmount": 2128,
       "nightAmount": 2100,
-      "totalEarned": 5862.0,
+      "totalEarned": 6166.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -67142,12 +67151,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 219.53,
+      "totalDuty": 221.98,
       "otHours": 38.0,
       "holidayCount": 5,
       "nightCount": 4,
       "regularDaysCount": 11,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -67179,7 +67188,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.87,
+          "doDuty": 14.32,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -67192,8 +67201,7 @@
         "26-OCT-2026"
       ],
       "punchProblems": [
-        "04-OCT-2026",
-        "30-OCT-2026"
+        "04-OCT-2026"
       ],
       "daily": [
         [
@@ -67424,10 +67432,10 @@
           "30-OCT-2026",
           "Fri",
           "07:43",
-          "",
+          "22:02",
           0.0,
           0.0,
-          11.87,
+          14.32,
           0.0,
           0.0,
           0.0,
@@ -68523,12 +68531,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 274.45,
+      "totalDuty": 276.83,
       "otHours": 49.0,
       "holidayCount": 5,
       "nightCount": 7,
       "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -68560,7 +68568,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.72,
+          "doDuty": 14.1,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -68575,9 +68583,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -68821,10 +68827,10 @@
           "30-OCT-2026",
           "Fri",
           "07:57",
-          "",
+          "22:03",
           0.0,
           0.0,
-          11.72,
+          14.1,
           0.0,
           0.0,
           0.0,
@@ -69389,12 +69395,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 203.05,
+      "totalDuty": 217.2,
       "otHours": 39.0,
-      "holidayCount": 2,
+      "holidayCount": 3,
       "nightCount": 7,
       "regularDaysCount": 10,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -69409,6 +69415,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.15,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -69420,9 +69433,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -69596,10 +69607,10 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
+          "22:07",
           0.0,
           0.0,
-          0.0,
+          14.15,
           0.0,
           0.0,
           0.0,
@@ -69608,9 +69619,9 @@
         ]
       ],
       "otAmount": 1482.0,
-      "holidayAmount": 608,
+      "holidayAmount": 912,
       "nightAmount": 2100,
-      "totalEarned": 4190.0,
+      "totalEarned": 4494.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -73318,12 +73329,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 290.84,
+      "totalDuty": 293.24,
       "otHours": 51.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 14,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -73369,7 +73380,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.92,
+          "doDuty": 14.32,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -73382,9 +73393,7 @@
         "17-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -73670,10 +73679,10 @@
           "30-OCT-2026",
           "Fri",
           "07:38",
-          "",
+          "21:57",
           0.0,
           0.0,
-          11.92,
+          14.32,
           0.0,
           0.0,
           0.0,
@@ -78389,12 +78398,12 @@
       "category": "CF",
       "area": "Softgel Production",
       "isRppf": true,
-      "totalDuty": 280.28,
+      "totalDuty": 285.48,
       "otHours": 52.0,
       "holidayCount": 5,
       "nightCount": 5,
       "regularDaysCount": 16,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -78426,7 +78435,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 8.73,
+          "doDuty": 13.93,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -78439,9 +78448,7 @@
         "19-OCT-2026",
         "22-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -78727,10 +78734,10 @@
           "30-OCT-2026",
           "Fri",
           "07:57",
-          "",
+          "21:53",
           0.0,
           0.0,
-          8.73,
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -80373,12 +80380,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 259.19,
+      "totalDuty": 273.32,
       "otHours": 44.0,
       "holidayCount": 6,
       "nightCount": 7,
-      "regularDaysCount": 11,
-      "plainDaysCount": 3,
+      "regularDaysCount": 12,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -80432,9 +80439,7 @@
         "25-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -80678,8 +80683,8 @@
           "30-OCT-2026",
           "Fri",
           "07:56",
-          "",
-          0.0,
+          "22:04",
+          14.13,
           0.0,
           0.0,
           0.0,
@@ -87710,12 +87715,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 242.87,
+      "totalDuty": 245.42,
       "otHours": 44.0,
       "holidayCount": 6,
       "nightCount": 3,
       "regularDaysCount": 12,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -87754,7 +87759,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.67,
+          "doDuty": 14.22,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -87765,9 +87770,7 @@
         "16-OCT-2026",
         "25-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -88011,10 +88014,10 @@
           "30-OCT-2026",
           "Fri",
           "07:48",
-          "",
+          "22:01",
           0.0,
           0.0,
-          11.67,
+          14.22,
           0.0,
           0.0,
           0.0,
@@ -92666,12 +92669,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 190.47,
+      "totalDuty": 204.54,
       "otHours": 43.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 6,
       "regularDaysCount": 8,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -92693,6 +92696,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.07,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -92703,9 +92713,7 @@
         "24-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "05-OCT-2026",
@@ -92865,10 +92873,10 @@
           "30-OCT-2026",
           "Fri",
           "08:00",
-          "",
+          "22:04",
           0.0,
           0.0,
-          0.0,
+          14.07,
           0.0,
           0.0,
           0.0,
@@ -92877,9 +92885,9 @@
         ]
       ],
       "otAmount": 1634.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1800,
-      "totalEarned": 4346.0,
+      "totalEarned": 4650.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -97694,12 +97702,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 270.73,
+      "totalDuty": 284.55,
       "otHours": 52.0,
       "holidayCount": 5,
       "nightCount": 8,
-      "regularDaysCount": 12,
-      "plainDaysCount": 3,
+      "regularDaysCount": 13,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -97747,9 +97755,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -97993,8 +97999,8 @@
           "30-OCT-2026",
           "Fri",
           "07:54",
-          "",
-          0.0,
+          "21:43",
+          13.82,
           0.0,
           0.0,
           0.0,
@@ -102149,12 +102155,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 228.6,
+      "totalDuty": 234.01,
       "otHours": 42.0,
       "holidayCount": 6,
       "nightCount": 6,
       "regularDaysCount": 10,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "16-OCT-2026",
@@ -102193,7 +102199,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 8.77,
+          "doDuty": 14.18,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -102207,9 +102213,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -102425,10 +102429,10 @@
           "30-OCT-2026",
           "Fri",
           "07:52",
-          "",
+          "22:03",
           0.0,
           0.0,
-          8.77,
+          14.18,
           0.0,
           0.0,
           0.0,
@@ -103185,12 +103189,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 290.97,
+      "totalDuty": 293.47,
       "otHours": 56.0,
       "holidayCount": 9,
       "nightCount": 1,
       "regularDaysCount": 15,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -103250,7 +103254,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.8,
+          "doDuty": 14.3,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -103259,9 +103263,7 @@
       "nightDays": [
         "20-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "06-OCT-2026",
@@ -103589,10 +103591,10 @@
           "30-OCT-2026",
           "Fri",
           "07:46",
-          "",
+          "22:04",
           0.0,
           0.0,
-          11.8,
+          14.3,
           0.0,
           0.0,
           0.0,
@@ -126555,12 +126557,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 252.36,
+      "totalDuty": 266.66,
       "otHours": 52.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 8,
       "regularDaysCount": 11,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -126589,6 +126591,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.3,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -126601,9 +126610,7 @@
         "21-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -126819,10 +126826,10 @@
           "30-OCT-2026",
           "Fri",
           "07:46",
-          "",
+          "22:04",
           0.0,
           0.0,
-          0.0,
+          14.3,
           0.0,
           0.0,
           0.0,
@@ -126831,9 +126838,9 @@
         ]
       ],
       "otAmount": 1976.0,
-      "holidayAmount": 1216,
+      "holidayAmount": 1520,
       "nightAmount": 2400,
-      "totalEarned": 5592.0,
+      "totalEarned": 5896.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -133129,12 +133136,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 272.69,
+      "totalDuty": 275.29,
       "otHours": 45.0,
       "holidayCount": 8,
       "nightCount": 2,
       "regularDaysCount": 15,
-      "plainDaysCount": 9,
+      "plainDaysCount": 10,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -133187,7 +133194,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.57,
+          "doDuty": 14.17,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -133197,9 +133204,7 @@
         "15-OCT-2026",
         "22-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "06-OCT-2026",
@@ -133513,10 +133518,10 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
+          "22:08",
           0.0,
           0.0,
-          11.57,
+          14.17,
           0.0,
           0.0,
           0.0,
@@ -150443,12 +150448,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 269.18,
+      "totalDuty": 283.65,
       "otHours": 57.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 9,
       "regularDaysCount": 12,
-      "plainDaysCount": 1,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -150470,6 +150475,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.47,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -150483,9 +150495,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -150701,10 +150711,10 @@
           "30-OCT-2026",
           "Fri",
           "07:37",
-          "",
+          "22:05",
           0.0,
           0.0,
-          0.0,
+          14.47,
           0.0,
           0.0,
           0.0,
@@ -150713,9 +150723,9 @@
         ]
       ],
       "otAmount": 2166.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 2700,
-      "totalEarned": 5778.0,
+      "totalEarned": 6082.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -163339,12 +163349,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 276.61,
+      "totalDuty": 279.23,
       "otHours": 50.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -163390,7 +163400,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.75,
+          "doDuty": 14.37,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -163404,8 +163414,7 @@
         "22-OCT-2026"
       ],
       "punchProblems": [
-        "25-OCT-2026",
-        "30-OCT-2026"
+        "25-OCT-2026"
       ],
       "daily": [
         [
@@ -163692,10 +163701,10 @@
           "30-OCT-2026",
           "Fri",
           "07:39",
-          "",
+          "22:01",
           0.0,
           0.0,
-          11.75,
+          14.37,
           0.0,
           0.0,
           0.0,
@@ -165772,12 +165781,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 299.59,
+      "totalDuty": 302.27,
       "otHours": 58.0,
       "holidayCount": 7,
       "nightCount": 6,
       "regularDaysCount": 14,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -165823,7 +165832,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.75,
+          "doDuty": 14.43,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -165837,9 +165846,7 @@
         "22-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -166125,10 +166132,10 @@
           "30-OCT-2026",
           "Fri",
           "07:35",
-          "",
+          "22:01",
           0.0,
           0.0,
-          11.75,
+          14.43,
           0.0,
           0.0,
           0.0,
@@ -172152,12 +172159,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 127.94,
+      "totalDuty": 141.92,
       "otHours": 0.0,
       "holidayCount": 1,
       "nightCount": 0,
-      "regularDaysCount": 14,
-      "plainDaysCount": 15,
+      "regularDaysCount": 15,
+      "plainDaysCount": 16,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -172168,9 +172175,7 @@
         }
       ],
       "nightDays": [],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "02-OCT-2026",
@@ -172386,8 +172391,8 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
-          0.0,
+          "21:57",
+          13.98,
           0.0,
           0.0,
           0.0,
@@ -175070,12 +175075,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 250.22,
+      "totalDuty": 264.49,
       "otHours": 47.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 8,
       "regularDaysCount": 11,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -175104,6 +175109,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.27,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -175116,9 +175128,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -175334,10 +175344,10 @@
           "30-OCT-2026",
           "Fri",
           "07:51",
-          "",
+          "22:07",
           0.0,
           0.0,
-          0.0,
+          14.27,
           0.0,
           0.0,
           0.0,
@@ -175346,9 +175356,9 @@
         ]
       ],
       "otAmount": 1786.0,
-      "holidayAmount": 1216,
+      "holidayAmount": 1520,
       "nightAmount": 2400,
-      "totalEarned": 5402.0,
+      "totalEarned": 5706.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -175930,12 +175940,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 274.64,
+      "totalDuty": 277.09,
       "otHours": 48.0,
       "holidayCount": 8,
       "nightCount": 7,
       "regularDaysCount": 10,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -175988,7 +175998,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.58,
+          "doDuty": 14.03,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -176003,9 +176013,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -176249,10 +176257,10 @@
           "30-OCT-2026",
           "Fri",
           "07:50",
-          "",
+          "21:52",
           0.0,
           0.0,
-          11.58,
+          14.03,
           0.0,
           0.0,
           0.0,
@@ -177734,12 +177742,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 272.5,
+      "totalDuty": 286.57,
       "otHours": 56.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 10,
       "regularDaysCount": 11,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -177768,6 +177776,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.07,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -177782,9 +177797,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -178000,10 +178013,10 @@
           "30-OCT-2026",
           "Fri",
           "08:03",
-          "",
+          "22:07",
           0.0,
           0.0,
-          0.0,
+          14.07,
           0.0,
           0.0,
           0.0,
@@ -178012,9 +178025,9 @@
         ]
       ],
       "otAmount": 2128.0,
-      "holidayAmount": 1216,
+      "holidayAmount": 1520,
       "nightAmount": 3000,
-      "totalEarned": 6344.0,
+      "totalEarned": 6648.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -178377,12 +178390,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 202.55,
+      "totalDuty": 204.92,
       "otHours": 6.0,
       "holidayCount": 6,
       "nightCount": 3,
       "regularDaysCount": 10,
-      "plainDaysCount": 10,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -178421,7 +178434,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.58,
+          "doDuty": 13.95,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -178432,9 +178445,7 @@
         "17-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "05-OCT-2026",
@@ -178650,10 +178661,10 @@
           "30-OCT-2026",
           "Fri",
           "08:04",
-          "",
+          "22:01",
           0.0,
           0.0,
-          11.58,
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -184166,12 +184177,12 @@
       "category": "CF",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 253.78,
+      "totalDuty": 256.3,
       "otHours": 47.0,
       "holidayCount": 8,
       "nightCount": 1,
       "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -184224,7 +184235,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.83,
+          "doDuty": 14.35,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -184233,9 +184244,7 @@
       "nightDays": [
         "17-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -184521,10 +184530,10 @@
           "30-OCT-2026",
           "Fri",
           "07:41",
-          "",
+          "22:02",
           0.0,
           0.0,
-          11.83,
+          14.35,
           0.0,
           0.0,
           0.0,
@@ -185097,12 +185106,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 266.55,
+      "totalDuty": 268.83,
       "otHours": 42.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 12,
-      "plainDaysCount": 8,
+      "plainDaysCount": 9,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -185148,7 +185157,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 12.05,
+          "doDuty": 14.33,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -185161,9 +185170,7 @@
         "25-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -185421,10 +185428,10 @@
           "30-OCT-2026",
           "Fri",
           "07:32",
-          "",
+          "21:52",
           0.0,
           0.0,
-          12.05,
+          14.33,
           0.0,
           0.0,
           0.0,
@@ -187473,12 +187480,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 278.92,
+      "totalDuty": 293.15,
       "otHours": 55.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 7,
       "regularDaysCount": 14,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "15-OCT-2026",
@@ -187507,6 +187514,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.23,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -187518,9 +187532,7 @@
         "22-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -187778,10 +187790,10 @@
           "30-OCT-2026",
           "Fri",
           "07:46",
-          "",
+          "22:00",
           0.0,
           0.0,
-          0.0,
+          14.23,
           0.0,
           0.0,
           0.0,
@@ -187790,9 +187802,9 @@
         ]
       ],
       "otAmount": 2090.0,
-      "holidayAmount": 1216,
+      "holidayAmount": 1520,
       "nightAmount": 2100,
-      "totalEarned": 5406.0,
+      "totalEarned": 5710.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -189880,12 +189892,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 255.94,
+      "totalDuty": 269.89,
       "otHours": 37.0,
       "holidayCount": 5,
       "nightCount": 6,
-      "regularDaysCount": 13,
-      "plainDaysCount": 6,
+      "regularDaysCount": 14,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -189932,8 +189944,7 @@
         "28-OCT-2026"
       ],
       "punchProblems": [
-        "24-OCT-2026",
-        "30-OCT-2026"
+        "24-OCT-2026"
       ],
       "daily": [
         [
@@ -190206,8 +190217,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "21:50",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -190232,12 +190243,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 247.38,
+      "totalDuty": 261.31,
       "otHours": 40.0,
       "holidayCount": 3,
       "nightCount": 7,
-      "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "regularDaysCount": 14,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -190270,9 +190281,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -190502,8 +190511,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "21:49",
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -192232,12 +192241,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 242.61,
+      "totalDuty": 256.43,
       "otHours": 43.0,
       "holidayCount": 3,
       "nightCount": 7,
-      "regularDaysCount": 13,
-      "plainDaysCount": 3,
+      "regularDaysCount": 14,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -192270,9 +192279,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -192502,8 +192509,8 @@
           "30-OCT-2026",
           "Fri",
           "08:01",
-          "",
-          0.0,
+          "21:50",
+          13.82,
           0.0,
           0.0,
           0.0,
@@ -195954,12 +195961,12 @@
       "category": "CF",
       "area": "Softgel Production",
       "isRppf": true,
-      "totalDuty": 261.64,
+      "totalDuty": 263.91,
       "otHours": 48.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 12,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -196005,7 +196012,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.55,
+          "doDuty": 13.82,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -196018,9 +196025,7 @@
         "22-OCT-2026",
         "26-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -196278,10 +196283,10 @@
           "30-OCT-2026",
           "Fri",
           "08:01",
-          "",
+          "21:50",
           0.0,
           0.0,
-          11.55,
+          13.82,
           0.0,
           0.0,
           0.0,
@@ -198784,12 +198789,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 243.41,
+      "totalDuty": 257.68,
       "otHours": 44.0,
       "holidayCount": 4,
       "nightCount": 6,
-      "regularDaysCount": 12,
-      "plainDaysCount": 1,
+      "regularDaysCount": 13,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -198828,9 +198833,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -199060,8 +199063,8 @@
           "30-OCT-2026",
           "Fri",
           "07:40",
-          "",
-          0.0,
+          "21:56",
+          14.27,
           0.0,
           0.0,
           0.0,
@@ -208455,12 +208458,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 287.29,
+      "totalDuty": 301.69,
       "otHours": 54.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 7,
       "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -208503,6 +208506,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.4,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -208514,9 +208524,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -208788,10 +208796,10 @@
           "30-OCT-2026",
           "Fri",
           "07:36",
-          "",
+          "22:00",
           0.0,
           0.0,
-          0.0,
+          14.4,
           0.0,
           0.0,
           0.0,
@@ -208800,9 +208808,9 @@
         ]
       ],
       "otAmount": 2052.0,
-      "holidayAmount": 1824,
+      "holidayAmount": 2128,
       "nightAmount": 2100,
-      "totalEarned": 5976.0,
+      "totalEarned": 6280.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -213698,12 +213706,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 243.69,
+      "totalDuty": 257.62,
       "otHours": 44.0,
-      "holidayCount": 5,
+      "holidayCount": 6,
       "nightCount": 7,
       "regularDaysCount": 9,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -213739,6 +213747,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 13.93,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -213750,9 +213765,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "02-OCT-2026",
@@ -213954,10 +213967,10 @@
           "30-OCT-2026",
           "Fri",
           "08:02",
-          "",
+          "21:58",
           0.0,
           0.0,
-          0.0,
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -213966,9 +213979,9 @@
         ]
       ],
       "otAmount": 1672.0,
-      "holidayAmount": 1520,
+      "holidayAmount": 1824,
       "nightAmount": 2100,
-      "totalEarned": 5292.0,
+      "totalEarned": 5596.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -224084,12 +224097,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 182.38,
+      "totalDuty": 196.11,
       "otHours": 25.0,
       "holidayCount": 3,
       "nightCount": 3,
-      "regularDaysCount": 12,
-      "plainDaysCount": 10,
+      "regularDaysCount": 13,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -224118,9 +224131,7 @@
         "10-OCT-2026",
         "25-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -224336,8 +224347,8 @@
           "30-OCT-2026",
           "Fri",
           "07:58",
-          "",
-          0.0,
+          "21:42",
+          13.73,
           0.0,
           0.0,
           0.0,
@@ -229575,12 +229586,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 270.89,
+      "totalDuty": 284.84,
       "otHours": 56.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 2,
       "regularDaysCount": 17,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -229623,15 +229634,20 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 13.95,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
         "07-OCT-2026",
         "20-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -229959,10 +229975,10 @@
           "30-OCT-2026",
           "Fri",
           "08:03",
-          "",
+          "22:00",
           0.0,
           0.0,
-          0.0,
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -229971,9 +229987,9 @@
         ]
       ],
       "otAmount": 2128.0,
-      "holidayAmount": 1824,
+      "holidayAmount": 2128,
       "nightAmount": 600,
-      "totalEarned": 4552.0,
+      "totalEarned": 4856.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -243724,12 +243740,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 252.4,
+      "totalDuty": 266.35,
       "otHours": 41.0,
       "holidayCount": 5,
       "nightCount": 7,
-      "regularDaysCount": 12,
-      "plainDaysCount": 5,
+      "regularDaysCount": 13,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -243776,9 +243792,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -244022,8 +244036,8 @@
           "30-OCT-2026",
           "Fri",
           "08:05",
-          "",
-          0.0,
+          "22:02",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -244862,12 +244876,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 242.04,
+      "totalDuty": 256.22,
       "otHours": 44.0,
       "holidayCount": 4,
       "nightCount": 7,
-      "regularDaysCount": 12,
-      "plainDaysCount": 3,
+      "regularDaysCount": 13,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -244907,9 +244921,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -245139,8 +245151,8 @@
           "30-OCT-2026",
           "Fri",
           "07:37",
-          "",
-          0.0,
+          "21:48",
+          14.18,
           0.0,
           0.0,
           0.0,
@@ -245452,12 +245464,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 251.57,
+      "totalDuty": 265.55,
       "otHours": 37.0,
       "holidayCount": 4,
       "nightCount": 7,
-      "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "regularDaysCount": 14,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -245497,9 +245509,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -245743,8 +245753,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "21:52",
+          13.98,
           0.0,
           0.0,
           0.0,
@@ -246079,12 +246089,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 234.29,
+      "totalDuty": 248.16,
       "otHours": 32.0,
       "holidayCount": 4,
       "nightCount": 5,
-      "regularDaysCount": 15,
-      "plainDaysCount": 10,
+      "regularDaysCount": 16,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -246122,9 +246132,7 @@
         "20-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -246396,8 +246404,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "21:45",
+          13.87,
           0.0,
           0.0,
           0.0,
@@ -247042,12 +247050,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 174.35,
+      "totalDuty": 188.32,
       "otHours": 24.0,
       "holidayCount": 2,
       "nightCount": 5,
-      "regularDaysCount": 10,
-      "plainDaysCount": 5,
+      "regularDaysCount": 11,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "21-OCT-2026",
@@ -247071,9 +247079,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -247247,8 +247253,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "21:51",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -256049,12 +256055,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 311.24,
+      "totalDuty": 325.47,
       "otHours": 60.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 9,
       "regularDaysCount": 12,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -256097,6 +256103,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.23,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -256110,9 +256123,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -256370,10 +256381,10 @@
           "30-OCT-2026",
           "Fri",
           "07:48",
-          "",
+          "22:02",
           0.0,
           0.0,
-          0.0,
+          14.23,
           0.0,
           0.0,
           0.0,
@@ -256382,9 +256393,9 @@
         ]
       ],
       "otAmount": 2280.0,
-      "holidayAmount": 1824,
+      "holidayAmount": 2128,
       "nightAmount": 2700,
-      "totalEarned": 6804.0,
+      "totalEarned": 7108.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -257935,12 +257946,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 282.77,
+      "totalDuty": 297.07,
       "otHours": 23.0,
-      "holidayCount": 5,
+      "holidayCount": 6,
       "nightCount": 9,
       "regularDaysCount": 10,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -257976,6 +257987,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.3,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -257989,9 +258007,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -258207,10 +258223,10 @@
           "30-OCT-2026",
           "Fri",
           "07:44",
-          "",
+          "22:02",
           0.0,
           0.0,
-          0.0,
+          14.3,
           0.0,
           0.0,
           0.0,
@@ -258219,9 +258235,9 @@
         ]
       ],
       "otAmount": 874.0,
-      "holidayAmount": 1520,
+      "holidayAmount": 1824,
       "nightAmount": 2700,
-      "totalEarned": 5094.0,
+      "totalEarned": 5398.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -258509,12 +258525,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 241.56,
+      "totalDuty": 255.73,
       "otHours": 49.0,
       "holidayCount": 3,
       "nightCount": 6,
-      "regularDaysCount": 13,
-      "plainDaysCount": 7,
+      "regularDaysCount": 14,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -258546,9 +258562,7 @@
         "17-OCT-2026",
         "25-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -258778,8 +258792,8 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
-          0.0,
+          "22:03",
+          14.17,
           0.0,
           0.0,
           0.0,
@@ -265419,12 +265433,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 201.54,
+      "totalDuty": 215.51,
       "otHours": 34.0,
       "holidayCount": 1,
       "nightCount": 1,
-      "regularDaysCount": 17,
-      "plainDaysCount": 9,
+      "regularDaysCount": 18,
+      "plainDaysCount": 10,
       "holidayDays": [
         {
           "date": "16-OCT-2026",
@@ -265437,9 +265451,7 @@
       "nightDays": [
         "13-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -265697,8 +265709,8 @@
           "30-OCT-2026",
           "Fri",
           "07:42",
-          "",
-          0.0,
+          "21:40",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -265742,7 +265754,9 @@
         "13-OCT-2026",
         "15-OCT-2026"
       ],
-      "punchProblems": [],
+      "punchProblems": [
+        "30-OCT-2026"
+      ],
       "daily": [
         [
           "03-OCT-2026",
@@ -265988,6 +266002,20 @@
           "07:37",
           "19:46",
           12.15,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "30-OCT-2026",
+          "Fri",
+          "23:31",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -276911,12 +276939,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 268.15,
+      "totalDuty": 282.28,
       "otHours": 41.0,
-      "holidayCount": 7,
+      "holidayCount": 8,
       "nightCount": 6,
       "regularDaysCount": 11,
-      "plainDaysCount": 8,
+      "plainDaysCount": 9,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -276966,6 +276994,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.13,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -276976,9 +277011,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -277236,10 +277269,10 @@
           "30-OCT-2026",
           "Fri",
           "07:53",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.13,
           0.0,
           0.0,
           0.0,
@@ -277248,9 +277281,9 @@
         ]
       ],
       "otAmount": 1558.0,
-      "holidayAmount": 2128,
+      "holidayAmount": 2432,
       "nightAmount": 1800,
-      "totalEarned": 5486.0,
+      "totalEarned": 5790.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -277262,12 +277295,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 305.5,
+      "totalDuty": 319.58,
       "otHours": 49.0,
       "holidayCount": 9,
       "nightCount": 6,
-      "regularDaysCount": 14,
-      "plainDaysCount": 13,
+      "regularDaysCount": 15,
+      "plainDaysCount": 14,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -277341,9 +277374,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -277671,8 +277702,8 @@
           "30-OCT-2026",
           "Fri",
           "07:59",
-          "",
-          0.0,
+          "22:04",
+          14.08,
           0.0,
           0.0,
           0.0,
@@ -278020,12 +278051,12 @@
       "category": "CF",
       "area": "Softgel Production",
       "isRppf": true,
-      "totalDuty": 278.6,
+      "totalDuty": 281.11,
       "otHours": 50.0,
       "holidayCount": 7,
       "nightCount": 7,
       "regularDaysCount": 11,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -278071,7 +278102,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.87,
+          "doDuty": 14.38,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -278086,9 +278117,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "05-OCT-2026",
@@ -278332,10 +278361,10 @@
           "30-OCT-2026",
           "Fri",
           "07:42",
-          "",
+          "22:05",
           0.0,
           0.0,
-          11.87,
+          14.38,
           0.0,
           0.0,
           0.0,
@@ -278358,12 +278387,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 200.14,
+      "totalDuty": 214.19,
       "otHours": 39.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 2,
       "regularDaysCount": 13,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -278385,15 +278414,20 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.05,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
         "08-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -278623,10 +278657,10 @@
           "30-OCT-2026",
           "Fri",
           "07:55",
-          "",
+          "21:58",
           0.0,
           0.0,
-          0.0,
+          14.05,
           0.0,
           0.0,
           0.0,
@@ -278635,9 +278669,9 @@
         ]
       ],
       "otAmount": 1482.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 600,
-      "totalEarned": 2994.0,
+      "totalEarned": 3298.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -281128,12 +281162,12 @@
       "category": "CF",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 280.51,
+      "totalDuty": 294.23,
       "otHours": 56.0,
       "holidayCount": 6,
       "nightCount": 3,
-      "regularDaysCount": 17,
-      "plainDaysCount": 9,
+      "regularDaysCount": 18,
+      "plainDaysCount": 10,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -281183,9 +281217,7 @@
         "14-OCT-2026",
         "17-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -281513,8 +281545,8 @@
           "30-OCT-2026",
           "Fri",
           "07:59",
-          "",
-          0.0,
+          "21:42",
+          13.72,
           0.0,
           0.0,
           0.0,
@@ -285967,12 +285999,12 @@
       "category": "JO_B",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 241.97,
+      "totalDuty": 256.07,
       "otHours": 45.0,
       "holidayCount": 3,
       "nightCount": 6,
-      "regularDaysCount": 13,
-      "plainDaysCount": 3,
+      "regularDaysCount": 14,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -286004,9 +286036,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -286236,8 +286266,8 @@
           "30-OCT-2026",
           "Fri",
           "07:42",
-          "",
-          0.0,
+          "21:48",
+          14.1,
           0.0,
           0.0,
           0.0,
@@ -288758,12 +288788,12 @@
       "category": "JO",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 287.98,
+      "totalDuty": 302.08,
       "otHours": 57.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 8,
       "regularDaysCount": 14,
-      "plainDaysCount": 2,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -288792,6 +288822,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.1,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -288804,9 +288841,7 @@
         "22-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -289064,10 +289099,10 @@
           "30-OCT-2026",
           "Fri",
           "08:00",
-          "",
+          "22:06",
           0.0,
           0.0,
-          0.0,
+          14.1,
           0.0,
           0.0,
           0.0,
@@ -289076,9 +289111,9 @@
         ]
       ],
       "otAmount": 2280.0,
-      "holidayAmount": 1200,
+      "holidayAmount": 1500,
       "nightAmount": 3200,
-      "totalEarned": 6680.0,
+      "totalEarned": 6980.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -289432,12 +289467,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 273.66,
+      "totalDuty": 276.13,
       "otHours": 48.0,
       "holidayCount": 6,
       "nightCount": 8,
       "regularDaysCount": 11,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -289476,7 +289511,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 11.5,
+          "doDuty": 13.97,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -289492,9 +289527,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -289724,10 +289757,10 @@
           "30-OCT-2026",
           "Fri",
           "08:02",
-          "",
+          "22:00",
           0.0,
           0.0,
-          11.5,
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -297778,12 +297811,12 @@
       "category": "JO",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 228.06,
+      "totalDuty": 233.46,
       "otHours": 35.0,
       "holidayCount": 7,
       "nightCount": 5,
       "regularDaysCount": 10,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "09-OCT-2026",
@@ -297829,7 +297862,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 8.8,
+          "doDuty": 14.2,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -297842,9 +297875,7 @@
         "19-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "07-OCT-2026",
@@ -298074,10 +298105,10 @@
           "30-OCT-2026",
           "Fri",
           "07:55",
-          "",
+          "22:07",
           0.0,
           0.0,
-          8.8,
+          14.2,
           0.0,
           0.0,
           0.0,
@@ -304286,12 +304317,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 289.05,
+      "totalDuty": 294.6,
       "otHours": 50.0,
       "holidayCount": 7,
       "nightCount": 8,
       "regularDaysCount": 12,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -304337,7 +304368,7 @@
         },
         {
           "date": "30-OCT-2026",
-          "doDuty": 8.67,
+          "doDuty": 14.22,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -304353,9 +304384,7 @@
         "24-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -304613,10 +304642,10 @@
           "30-OCT-2026",
           "Fri",
           "07:48",
-          "",
+          "22:01",
           0.0,
           0.0,
-          8.67,
+          14.22,
           0.0,
           0.0,
           0.0,
@@ -305181,12 +305210,12 @@
       "category": "JO",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 282.58,
+      "totalDuty": 296.73,
       "otHours": 53.0,
-      "holidayCount": 5,
+      "holidayCount": 6,
       "nightCount": 8,
       "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -305222,6 +305251,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.15,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -305234,9 +305270,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -305494,10 +305528,10 @@
           "30-OCT-2026",
           "Fri",
           "07:55",
-          "",
+          "22:04",
           0.0,
           0.0,
-          0.0,
+          14.15,
           0.0,
           0.0,
           0.0,
@@ -305506,9 +305540,9 @@
         ]
       ],
       "otAmount": 2120.0,
-      "holidayAmount": 1500,
+      "holidayAmount": 1800,
       "nightAmount": 3200,
-      "totalEarned": 6820.0,
+      "totalEarned": 7120.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -307287,12 +307321,12 @@
       "category": "JO",
       "area": "Solid Production",
       "isRppf": true,
-      "totalDuty": 240.31,
+      "totalDuty": 254.73,
       "otHours": 59.0,
-      "holidayCount": 5,
+      "holidayCount": 6,
       "nightCount": 6,
       "regularDaysCount": 10,
-      "plainDaysCount": 1,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -307328,6 +307362,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.42,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -307338,9 +307379,7 @@
         "19-OCT-2026",
         "24-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "03-OCT-2026",
@@ -307556,10 +307595,10 @@
           "30-OCT-2026",
           "Fri",
           "07:43",
-          "",
+          "22:08",
           0.0,
           0.0,
-          0.0,
+          14.42,
           0.0,
           0.0,
           0.0,
@@ -307568,9 +307607,9 @@
         ]
       ],
       "otAmount": 2360.0,
-      "holidayAmount": 1500,
+      "holidayAmount": 1800,
       "nightAmount": 2400,
-      "totalEarned": 6260.0,
+      "totalEarned": 6560.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -311487,12 +311526,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 238.49,
+      "totalDuty": 252.61,
       "otHours": 43.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 8,
       "regularDaysCount": 10,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -311521,6 +311560,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.12,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -311533,9 +311579,7 @@
         "24-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "08-OCT-2026",
@@ -311737,10 +311781,10 @@
           "30-OCT-2026",
           "Fri",
           "07:54",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.12,
           0.0,
           0.0,
           0.0,
@@ -311749,9 +311793,9 @@
         ]
       ],
       "otAmount": 1720.0,
-      "holidayAmount": 1200,
+      "holidayAmount": 1500,
       "nightAmount": 3200,
-      "totalEarned": 6120.0,
+      "totalEarned": 6420.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -312994,12 +313038,12 @@
       "category": null,
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 193.14,
+      "totalDuty": 207.24,
       "otHours": 29.0,
       "holidayCount": 6,
       "nightCount": 2,
-      "regularDaysCount": 11,
-      "plainDaysCount": 7,
+      "regularDaysCount": 12,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -313048,9 +313092,7 @@
         "06-OCT-2026",
         "17-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -313294,8 +313336,8 @@
           "30-OCT-2026",
           "Fri",
           "07:59",
-          "",
-          0.0,
+          "22:05",
+          14.1,
           0.0,
           0.0,
           0.0,
@@ -313596,12 +313638,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 230.95,
+      "totalDuty": 245.1,
       "otHours": 21.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 6,
       "regularDaysCount": 9,
-      "plainDaysCount": 8,
+      "plainDaysCount": 9,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -313644,6 +313686,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.15,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -313654,9 +313703,7 @@
         "23-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "02-OCT-2026",
@@ -313872,10 +313919,10 @@
           "30-OCT-2026",
           "Fri",
           "07:52",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.15,
           0.0,
           0.0,
           0.0,
@@ -313884,9 +313931,9 @@
         ]
       ],
       "otAmount": 840.0,
-      "holidayAmount": 1800,
+      "holidayAmount": 2100,
       "nightAmount": 2400,
-      "totalEarned": 5040.0,
+      "totalEarned": 5340.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -316618,12 +316665,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 229.03,
+      "totalDuty": 242.91,
       "otHours": 34.0,
       "holidayCount": 3,
       "nightCount": 6,
-      "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "regularDaysCount": 14,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -316655,9 +316702,7 @@
         "25-OCT-2026",
         "27-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -316887,8 +316932,8 @@
           "30-OCT-2026",
           "Fri",
           "07:56",
-          "",
-          0.0,
+          "21:49",
+          13.88,
           0.0,
           0.0,
           0.0,
@@ -320216,12 +320261,12 @@
       "category": "JO",
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 209.71,
+      "totalDuty": 224.01,
       "otHours": 35.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 6,
       "regularDaysCount": 8,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -320250,6 +320295,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "30-OCT-2026",
+          "doDuty": 14.3,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -320260,9 +320312,7 @@
         "26-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "02-OCT-2026",
@@ -320436,10 +320486,10 @@
           "30-OCT-2026",
           "Fri",
           "07:43",
-          "",
+          "22:01",
           0.0,
           0.0,
-          0.0,
+          14.3,
           0.0,
           0.0,
           0.0,
@@ -320448,9 +320498,9 @@
         ]
       ],
       "otAmount": 1400.0,
-      "holidayAmount": 1200,
+      "holidayAmount": 1500,
       "nightAmount": 2400,
-      "totalEarned": 5000.0,
+      "totalEarned": 5300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -328922,12 +328972,12 @@
       "category": null,
       "area": "Packing Hall",
       "isRppf": true,
-      "totalDuty": 260.68,
+      "totalDuty": 274.85,
       "otHours": 36.0,
       "holidayCount": 6,
       "nightCount": 6,
-      "regularDaysCount": 14,
-      "plainDaysCount": 13,
+      "regularDaysCount": 15,
+      "plainDaysCount": 14,
       "holidayDays": [
         {
           "date": "01-OCT-2026",
@@ -328980,9 +329030,7 @@
         "25-OCT-2026",
         "28-OCT-2026"
       ],
-      "punchProblems": [
-        "30-OCT-2026"
-      ],
+      "punchProblems": [],
       "daily": [
         [
           "01-OCT-2026",
@@ -329268,8 +329316,8 @@
           "30-OCT-2026",
           "Fri",
           "07:54",
-          "",
-          0.0,
+          "22:04",
+          14.17,
           0.0,
           0.0,
           0.0,
