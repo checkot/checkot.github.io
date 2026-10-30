@@ -1,8 +1,15 @@
 name: Empress daily fetch
 on:
   schedule:
-    - cron: "0 20 * * *"   # 02:00 Bangladesh time (UTC+6)
-  workflow_dispatch:
+    # বাংলাদেশ সময় সকাল ৯টা (UTC 3:00 AM)
+    - cron: "0 3 * * *"
+    # বাংলাদেশ সময় বিকেল সাড়ে ৫টা (UTC 11:30 AM)
+    - cron: "30 11 * * *"
+    # বাংলাদেশ সময় রাত সাড়ে ৮টা (UTC 2:00 PM)
+    - cron: "0 14 * * *"
+    # বাংলাদেশ সময় রাত ১১টা (UTC 5:00 PM)
+    - cron: "0 17 * * *"
+  workflow_dispatch: # এটি রাখলে আপনি ম্যানুয়ালিও চাইলে রান করতে পারবেন
 
 permissions:
   contents: write
@@ -18,20 +25,16 @@ jobs:
         with: 
           python-version: "3.12"
           
-      # এখানে openpyxl যোগ করা হয়েছে
       - run: pip install playwright openpyxl && playwright install --with-deps chromium
       
-      # ধাপ ১: ডেটা ফেচ করা
       - name: Fetch Excel from Empress
         run: python scripts/fetch_empress.py
         env:
           EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_ACCOUNTS }}
           
-      # ধাপ ২: Excel থেকে JSON তৈরি করা
       - name: Convert Excel to JSON
         run: python scripts/to_json.py
           
-      # ধাপ ৩: JSON গিটহাবে পুশ করা
       - name: Commit JSON
         run: |
           git config user.name "github-actions[bot]"
