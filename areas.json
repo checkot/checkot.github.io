@@ -559,6 +559,33 @@
     },
     "CF4995": {
       "s": "Granulation"
+    },
+    "RF22023": {
+      "s": "Iron"
+    },
+    "RF22108": {
+      "s": "Iron"
+    },
+    "CF8359": {
+      "s": "Iron"
+    },
+    "CF8393": {
+      "s": "Iron"
+    },
+    "CF8285": {
+      "s": "Iron"
+    },
+    "CF5124": {
+      "s": "Iron"
+    },
+    "CF3778": {
+      "s": "Iron"
+    },
+    "CF4990": {
+      "s": "Iron"
+    },
+    "CF8188": {
+      "s": "Iron"
     }
   },
   "subsections": {
@@ -578,7 +605,8 @@
       "Dispensing",
       "Inspection",
       "ERP",
-      "pri- packaging"
+      "pri- packaging",
+      "Iron"
     ],
     "Softgel Production": [
       "Encapsulation",
