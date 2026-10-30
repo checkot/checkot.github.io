@@ -586,6 +586,12 @@
     },
     "CF8188": {
       "s": "Iron"
+    },
+    "CF8176": {
+      "s": "Bin Washing"
+    },
+    "CF8451": {
+      "s": "Bin Washing"
     }
   },
   "subsections": {
@@ -606,7 +612,8 @@
       "Inspection",
       "ERP",
       "pri- packaging",
-      "Iron"
+      "Iron",
+      "Bin Washing"
     ],
     "Softgel Production": [
       "Encapsulation",
