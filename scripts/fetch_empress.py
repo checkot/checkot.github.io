@@ -24,12 +24,11 @@ with sync_playwright() as p:
         
         try:
             print("-> Opening login page...")
-            page.goto(BASE, wait_until="networkidle") # পুরো পেজ লোড হওয়া পর্যন্ত অপেক্ষা করবে
+            page.goto(BASE, wait_until="networkidle")
             page.wait_for_timeout(3000)
             shot(page, f"{acc['name']}_01_login_page")
 
             print("-> Filling credentials...")
-            # সরাসরি ইনপুট বক্সের ধরন (type) দিয়ে খুঁজে বের করবে
             text_input = page.locator('input[type="text"]').first
             pass_input = page.locator('input[type="password"]').first
             
@@ -37,7 +36,6 @@ with sync_playwright() as p:
             pass_input.fill(acc["pass"])
 
             print("-> Logging in...")
-            # বাটন খোঁজার ঝামেলা এড়াতে পাসওয়ার্ড বক্সে Enter চাপবে
             pass_input.press("Enter")
             
             print("-> Waiting for dashboard...")
@@ -54,9 +52,12 @@ with sync_playwright() as p:
             shot(page, f"{acc['name']}_03_report_page")
 
             print("-> Clicking Export Excel...")
-            with page.expect_download(timeout=300_000) as dl:
-                # বাটন বা টেক্সট যা-ই হোক, খুঁজে বের করবে
-                page.locator('button:has-text("Export Excel"), a:has-text("Export Excel"), text="Export Excel"').first.click()
+            # এখানে অপেক্ষার সময় ৫ মিনিট থেকে বাড়িয়ে ১০ মিনিট (৬০০,০০০ মিলিসেকেন্ড) করা হয়েছে
+            with page.expect_download(timeout=600_000) as dl:
+                try:
+                    page.get_by_role("button", name="Export Excel").first.click(timeout=10000)
+                except:
+                    page.get_by_text("Export Excel").first.click(timeout=10000)
             
             d = dl.value
             print("-> File downloaded:", d.suggested_filename)
