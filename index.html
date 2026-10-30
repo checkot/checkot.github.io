@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14886,6 +14887,84 @@ if (typeof switchAdminTab === 'function') {
 
 /* Startup runs last, after every top-level declaration and override above has been evaluated. */
 initAppModeOnStartup();
+
+
+/* ===== Daily Automated Empress JSON Auto-Load Module ===== */
+async function autoLoad() {
+  try {
+    const r = await fetch('data/latest.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (!j || !j.month) return;
+    console.log('[AutoLoad] Latest month data found:', j.month, 'Updated:', j.updatedAt);
+
+    const list = Array.isArray(j.employees) ? j.employees : [];
+    if (list.length > 0) {
+      await loadAreaMap();
+      const normalized = list.map(e => ({
+        ...e,
+        id: String(e.id || '').toUpperCase().trim(),
+        isRppf: e.isRppf !== false,
+        area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facility')
+      }));
+      normalized.forEach(applyTypeOverride);
+      monthIndexMemoryCache[j.month] = normalized;
+
+      try {
+        localStorage.setItem(MONTH_DATA_CACHE_PREFIX + j.month, JSON.stringify({ ts: Date.now(), employees: normalized }));
+      } catch (e) {}
+
+      // Update dropdowns to the latest month if available
+      const [y, m] = j.month.split('-');
+      const ySel = document.getElementById('yearSelect');
+      const mSel = document.getElementById('monthSelect');
+      if (ySel && mSel) {
+        if (![...ySel.options].some(o => o.value === y)) {
+          const opt = document.createElement('option');
+          opt.value = y; opt.textContent = bn(y);
+          ySel.appendChild(opt);
+        }
+        ySel.value = y;
+        mSel.value = m;
+      }
+
+      const lbY = document.getElementById('lbYearSelect');
+      const lbM = document.getElementById('lbMonthSelect');
+      if (lbY && lbM) {
+        if (![...lbY.options].some(o => o.value === y)) {
+          const opt = document.createElement('option');
+          opt.value = y; opt.textContent = bn(y);
+          lbY.appendChild(opt);
+        }
+        lbY.value = y;
+        lbM.value = m;
+      }
+
+      // Automatically refresh active views with the latest data
+      const curMode = getAppMode();
+      const prefId = getPreferredId();
+      if (curMode === 'incharge') {
+        renderInchargeHomeOverview();
+        if (typeof currentSideDrawerPage !== 'undefined' && currentSideDrawerPage === 'leaderboard') {
+          startLeaderboardScan(false);
+        }
+      } else if (prefId && !document.body.classList.contains('has-result')) {
+        const empInp = document.getElementById('employeeId');
+        if (empInp && !empInp.value) {
+          empInp.value = prefId;
+          toggleClearIdBtn();
+        }
+        findReport();
+      } else if (document.body.classList.contains('has-result') && currentSearchId) {
+        findReport();
+      }
+    }
+  } catch (e) {
+    console.warn('[AutoLoad] Auto-load failed:', e);
+  }
+}
+
+autoLoad();
 
 </script>
 </body>
