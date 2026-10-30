@@ -505,6 +505,27 @@
     },
     "RF22034": {
       "s": "Granulation"
+    },
+    "CF5101": {
+      "s": "Dispensing"
+    },
+    "CF9370": {
+      "s": "Dispensing"
+    },
+    "CF9385": {
+      "s": "Dispensing"
+    },
+    "CF5176": {
+      "s": "Dispensing"
+    },
+    "CF10276": {
+      "s": "Dispensing"
+    },
+    "RF8327": {
+      "s": "Dispensing"
+    },
+    "CF3036": {
+      "s": "Dispensing"
     }
   },
   "subsections": {
