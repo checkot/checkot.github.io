@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16560,6 +16559,413 @@ loadAbsentStore().then(() => {
 closeModeSetupModal();
 document.body.setAttribute('data-page', 'admin');
 initAdminPage();
+</script>
+
+<!-- ===== Phase-1 Admin Add-on: Absent Rank (Beta) + Inbox + Change Log/Undo + ID Aliases ===== -->
+<script>
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+const LS = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+const SV = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const AREAS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const K_ALIAS = 'rppf_id_alias_v1', K_OV = 'rppf_daytype_ov_v1', K_LOG = 'rppf_admin_log_v1';
+const alias = id => { const a = LS(K_ALIAS, {}); let x = id, n = 0; while (a[x] && n++ < 5) x = a[x]; return x; };
+const dnum = s => parseInt(String(s).slice(0, 2), 10) || 0;
+const sumDuty = r => [4, 5, 6, 7, 8, 9].reduce((t, i) => t + (Number(r[i]) || 0), 0);
+const noPunch = r => { const m = typeof isPunchMissing === 'function' ? isPunchMissing : (v => !String(v || '').replace(/[-—:\s]/g, '')); return m(r[2]) && m(r[3]); };
+
+/* ---------- pure calculation (testable) ---------- */
+function calcMonth(list, ov, allow, prevNight, skipN) {
+  prevNight = prevNight || new Set();
+  const dt = {};
+  list.forEach(e => (e.daily || []).forEach(r => {
+    const d = dt[r[0]] || (dt[r[0]] = { n: 0, reg: 0, hol: 0 });
+    d.n++; if (+r[4] > 0) d.reg++; if (+r[8] > 0 || +r[9] > 0) d.hol++;
+  }));
+  const type = {};
+  Object.keys(dt).forEach(k => { const d = dt[k]; type[k] = ov[k] || (d.reg / d.n >= 0.55 ? 'R' : d.hol / d.n >= 0.3 ? 'H' : 'O'); });
+  const out = [];
+  list.forEach(e => {
+    const nights = new Set((e.daily || []).filter(r => +r[10] === 1).map(r => dnum(r[0])));
+    const afterNight = r => { const d = dnum(r[0]); return d > 1 ? nights.has(d - 1) : prevNight.has(alias(e.id)); };
+    const zeros = (e.daily || []).filter(r => type[r[0]] === 'R' && sumDuty(r) === 0 && noPunch(r) && !(skipN && afterNight(r))).map(r => r[0]).sort((a, b) => dnum(a) - dnum(b));
+    out.push({ id: e.id, name: e.name, area: e.area, zeros, adj: Math.max(0, zeros.length - allow) });
+  });
+  return { type, rows: out };
+}
+window.__rppfCalcMonth = calcMonth;
+
+/* ---------- Absent Rank tab ---------- */
+let _ar = { types: {} };
+async function runRank() {
+  const end = $('arMonth').value, span = +$('arSpan').value, allow = +$('arAllow').value || 0, skipN = $('arSkipNight').checked, ov = LS(K_OV, {});
+  if (!end) return;
+  $('arOut').innerHTML = '<div class="card-sub">Calculating...</div>';
+  const [y, m] = end.split('-').map(Number), agg = {}; _ar.types = {};
+  let found = 0, noDaily = false;
+  for (let i = 0; i < span; i++) {
+    const d = new Date(y, m - 1 - i, 1), ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    let list = []; try { list = await fetchMonthPreIndexedData(ym) || []; } catch (e) {}
+    list = list.filter(e => e.isRppf !== false);
+    if (!list.length) continue;
+    if (!list.some(e => (e.daily || []).length)) { noDaily = true; continue; }
+    found++;
+    const pd = new Date(y, m - 2 - i, 1), pym = pd.getFullYear() + '-' + String(pd.getMonth() + 1).padStart(2, '0');
+    let pl = []; if (skipN) { try { pl = await fetchMonthPreIndexedData(pym) || []; } catch (e) {} }
+    const prevNight = new Set(pl.filter(e => (e.daily || []).length).filter(e => { const last = e.daily.reduce((a, b) => dnum(b[0]) > dnum(a[0]) ? b : a); return +last[10] === 1; }).map(e => alias(e.id)));
+    const r = calcMonth(list, ov, allow, prevNight, skipN); Object.assign(_ar.types, r.type);
+    r.rows.forEach(x => {
+      const k = alias(x.id), a = agg[k] || (agg[k] = { id: k, name: x.name, area: x.area, adj: 0, zeros: [] });
+      a.adj += x.adj; a.zeros = a.zeros.concat(x.zeros);
+    });
+  }
+  if (!found) { $('arOut').innerHTML = '<div class="card-sub" style="color:var(--danger)">' + (noDaily ? 'These month files have no daily rows (re-upload the Excel to include them).' : 'No month data found.') + '</div>'; return; }
+  _ar.agg = Object.values(agg); renderRank();
+}
+function renderRank() {
+  const af = $('arArea').value, q = ($('arSearch').value || '').toLowerCase();
+  const rows = (_ar.agg || []).filter(x => x.adj > 0 && (af === 'all' || x.area === af) && (!q || (x.id + ' ' + x.name).toLowerCase().includes(q)))
+    .sort((a, b) => b.adj - a.adj || a.name.localeCompare(b.name));
+  const tot = rows.reduce((t, x) => t + x.adj, 0);
+  const T = Object.values(_ar.types), cnt = c => T.filter(t => t === c).length;
+  const chips = Object.keys(_ar.types).sort((a, b) => dnum(a) - dnum(b) || a.localeCompare(b)).map(d => {
+    const t = _ar.types[d], col = t === 'R' ? 'var(--success)' : t === 'H' ? 'var(--warning)' : 'var(--muted)';
+    return `<button type="button" class="calc-mini-btn" style="margin:2px;color:${col}" onclick="__arToggleDay('${d}')">${esc(d.slice(0, 6))} ${t}</button>`;
+  }).join('');
+  $('arOut').innerHTML = `<div class="admin-stat-grid" style="margin:8px 0">
+<div class="admin-stat-box"><span class="as-num">${rows.length}</span><span class="as-lbl">Employees with absence</span></div>
+<div class="admin-stat-box"><span class="as-num">${tot}</span><span class="as-lbl">Total absent days</span></div>
+<div class="admin-stat-box"><span class="as-num">${cnt('R')}</span><span class="as-lbl">General duty days</span></div>
+<div class="admin-stat-box"><span class="as-num">${cnt('H') + cnt('O')}</span><span class="as-lbl">Holiday/Off days (excluded)</span></div></div>
+<details style="margin:6px 0"><summary style="font-size:12.5px;font-weight:700;cursor:pointer">Day types (R = general duty, H = holiday, O = off). Tap a day to correct it</summary><div style="margin-top:6px">${chips}</div></details>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+<thead><tr style="text-align:left;border-bottom:1px solid var(--border-strong)"><th>#</th><th>Employee</th><th>Area</th><th>Absent</th><th>Dates</th></tr></thead><tbody>
+${rows.slice(0, 150).map((x, i) => `<tr style="border-bottom:1px solid var(--border)"><td>${i + 1}</td><td><b>${esc(x.name)}</b><br><small style="color:var(--muted)">${esc(x.id)}</small></td><td>${esc(x.area || '')}</td><td><b style="color:var(--danger)">${x.adj}</b></td><td style="font-size:11.5px;color:var(--text-2)">${x.zeros.map(d => esc(d.slice(0, 6))).join(', ')}</td></tr>`).join('') || '<tr><td colspan="5" style="padding:12px;color:var(--muted)">No absences found.</td></tr>'}
+</tbody></table></div>`;
+}
+window.__arToggleDay = d => { const ov = LS(K_OV, {}), c = { R: 'H', H: 'O', O: 'R' }; ov[d] = c[_ar.types[d]] || 'R'; SV(K_OV, ov); runRank(); };
+
+/* ---------- Change log + undo ---------- */
+const snap = id => ({ id, area: AREA_MAP[id], det: AREA_DETAILS[id] ? JSON.parse(JSON.stringify(AREA_DETAILS[id])) : undefined });
+const restore = s => { s.area === undefined ? delete AREA_MAP[s.id] : AREA_MAP[s.id] = s.area; s.det === undefined ? delete AREA_DETAILS[s.id] : AREA_DETAILS[s.id] = s.det; };
+function persist() { persistAreaMap(); persistAreaDetails(); try { _masterDirLastBuildTs = 0; } catch (e) {} }
+function logChange(desc, before, al) { const l = LS(K_LOG, []); l.unshift({ t: new Date().toISOString(), desc, before, al }); SV(K_LOG, l.slice(0, 100)); }
+window.__inbUndo = i => {
+  const l = LS(K_LOG, []), e = l[i]; if (!e) return;
+  e.before.forEach(restore);
+  if (e.al) { const a = LS(K_ALIAS, {}); delete a[e.al.old]; SV(K_ALIAS, a); }
+  l.splice(i, 1); SV(K_LOG, l); persist(); showToast('Undone: ' + e.desc, 'info'); renderInbox(false);
+};
+
+/* ---------- Inbox ---------- */
+let _inb = { latest: '', neu: [], missing: [], merge: [], pkg: [] };
+const nk = s => String(s || '').toLowerCase().replace(/[^a-z0-9\u0980-\u09FF]+/g, ' ').trim();
+async function loadInbox() {
+  const now = new Date(), got = [];
+  for (let i = 0; i < 6 && got.length < 2; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1), ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    let l = []; try { l = await fetchMonthPreIndexedData(ym) || []; } catch (e) {}
+    l = l.filter(e => e.isRppf !== false); if (l.length) got.push({ ym, l });
+  }
+  if (!got.length) { _inb = { latest: '', neu: [], missing: [], merge: [], pkg: [] }; return; }
+  const cur = got[0].l, ids = new Set(cur.map(e => e.id));
+  const neu = cur.filter(e => !isListedEmployeeId(e.id));
+  const missing = Object.keys(AREA_MAP).filter(id => !ids.has(id));
+  const names = {}; cur.forEach(e => names[nk(e.name)] = e);
+  const prevName = {}; (got[1] ? got[1].l : []).forEach(e => prevName[e.id] = e);
+  const merge = [];
+  neu.forEach(n => { const old = missing.find(id => prevName[id] && nk(prevName[id].name) === nk(n.name)); if (old) merge.push({ old, neu: n }); });
+  const mOld = new Set(merge.map(m => m.old)), mNew = new Set(merge.map(m => m.neu.id));
+  const pkg = got[1] ? cur.filter(e => prevName[e.id] && prevName[e.id].category && e.category && prevName[e.id].category !== e.category).map(e => ({ e, from: prevName[e.id].category })) : [];
+  _inb = { latest: got[0].ym, prev: got[1] && got[1].ym, neu: neu.filter(n => !mNew.has(n.id)), missing: missing.filter(id => !mOld.has(id)), merge, pkg };
+}
+function subOpts(area) { return '<option value="">(no sub-section)</option>' + ((typeof AREA_SUBS !== 'undefined' && AREA_SUBS[area]) || []).map(s => `<option>${esc(s)}</option>`).join(''); }
+window.__inbArea = () => { $('inbSub').innerHTML = subOpts($('inbArea').value); };
+window.__inbAssign = () => {
+  const a = $('inbArea').value, s = $('inbSub').value, ids = [...document.querySelectorAll('.inbChk:checked')].map(c => c.value);
+  if (!ids.length) return showToast('Select employees first', 'warn');
+  const before = ids.map(snap);
+  ids.forEach(id => { AREA_MAP[id] = a; AREA_DETAILS[id] = Object.assign(AREA_DETAILS[id] || {}, s ? { s } : {}); });
+  logChange(`Assigned ${ids.length} new → ${a}${s ? ' / ' + s : ''}`, before); persist(); renderInbox(true);
+};
+window.__inbMerge = (old, nw) => {
+  const before = [snap(old), snap(nw)], a = LS(K_ALIAS, {});
+  AREA_MAP[nw] = AREA_MAP[old]; if (AREA_DETAILS[old]) AREA_DETAILS[nw] = JSON.parse(JSON.stringify(AREA_DETAILS[old]));
+  delete AREA_MAP[old]; delete AREA_DETAILS[old]; a[old] = nw; SV(K_ALIAS, a);
+  logChange(`ID changed ${old} → ${nw}`, before, { old, nw }); persist(); renderInbox(true);
+};
+window.__inbRemove = id => { logChange('Removed ' + id, [snap(id)]); delete AREA_MAP[id]; delete AREA_DETAILS[id]; persist(); renderInbox(true); };
+async function renderInbox(reload) {
+  const box = $('inbOut'); if (reload !== false) { box.innerHTML = '<div class="card-sub">Scanning uploaded months...</div>'; await loadInbox(); }
+  const x = _inb, th = 'text-align:left;padding:4px 6px', td = 'padding:4px 6px';
+  const nb = $('admNavInboxCount'); if (nb) nb.textContent = x.neu.length + x.merge.length + x.pkg.length;
+  const sec = (t, n, body) => `<div style="margin-top:12px"><div style="font-weight:800;font-size:13.5px">${t} <span class="badge">${n}</span></div>${n ? body : '<div class="card-sub">Nothing to review.</div>'}</div>`;
+  const log = LS(K_LOG, []).slice(0, 8);
+  box.innerHTML = (x.latest ? `<div class="card-sub">Latest month: <b>${x.latest}</b>${x.prev ? ' (compared with ' + x.prev + ')' : ''}</div>` : '<div class="card-sub">No month data found.</div>') +
+    sec('New employees (not in any area)', x.neu.length, `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0"><select id="inbArea" onchange="__inbArea()" style="width:auto">${AREAS.map(a => `<option>${a}</option>`).join('')}</select><select id="inbSub" style="width:auto">${subOpts(AREAS[0])}</select><button class="calc-mini-btn btn-success-solid" onclick="__inbAssign()">Assign selected</button><label style="font-size:12px"><input type="checkbox" onchange="document.querySelectorAll('.inbChk').forEach(c=>c.checked=this.checked)"> All</label></div>
+<table style="width:100%;font-size:13px">${x.neu.map(e => `<tr><td style="${td}"><input type="checkbox" class="inbChk" value="${esc(e.id)}"></td><td style="${td}"><b>${esc(e.name)}</b><br><small style="color:var(--muted)">${esc(e.id)} · ${esc(e.grade || '')}</small></td></tr>`).join('')}</table>`) +
+    sec('Possible ID change (same name, new ID)', x.merge.length, `<table style="width:100%;font-size:13px">${x.merge.map(m => `<tr><td style="${td}"><b>${esc(m.neu.name)}</b><br><small style="color:var(--muted)">${esc(m.old)} → ${esc(m.neu.id)}</small></td><td style="${td}"><button class="calc-mini-btn btn-success-solid" onclick="__inbMerge('${esc(m.old)}','${esc(m.neu.id)}')">Merge (keep area &amp; history)</button></td></tr>`).join('')}</table>`) +
+    sec('Package/category changed vs previous month', x.pkg.length, `<table style="width:100%;font-size:13px">${x.pkg.map(p => `<tr><td style="${td}"><b>${esc(p.e.name)}</b> <small style="color:var(--muted)">${esc(p.e.id)}</small></td><td style="${td}">${esc(p.from)} → <b>${esc(p.e.category)}</b></td></tr>`).join('')}</table>`) +
+    sec('Listed but missing from latest month', x.missing.length, `<table style="width:100%;font-size:13px">${x.missing.map(id => `<tr><td style="${td}"><b>${esc(id)}</b> <small style="color:var(--muted)">${esc(AREA_MAP[id] || '')}</small></td><td style="${td}"><button class="calc-mini-btn danger-btn" onclick="__inbRemove('${esc(id)}')">Remove from list</button></td></tr>`).join('')}</table>`) +
+    `<div style="margin-top:14px;font-weight:800;font-size:13.5px">Change log</div>` + (log.length ? log.map((l, i) => `<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--border);font-size:12.5px"><span>${esc(l.desc)}<br><small style="color:var(--muted)">${new Date(l.t).toLocaleString()}</small></span><button class="calc-mini-btn" onclick="__inbUndo(${i})">Undo</button></div>`).join('') : '<div class="card-sub">No changes yet.</div>');
+}
+
+/* ---------- inject UI + hook tab switching ---------- */
+function init() {
+  const nav = document.querySelector('.admin-nav-tabs'), wrap = $('adminDashboardWrap');
+  if (!nav || !wrap || $('admTabBtnInbox')) return;
+  nav.insertAdjacentHTML('afterbegin', '<button type="button" class="admin-tab-btn" id="admTabBtnInbox" onclick="switchAdminTab(\'inbox\')">Inbox (<span id="admNavInboxCount">0</span>)</button><button type="button" class="admin-tab-btn" id="admTabBtnARank" onclick="switchAdminTab(\'arank\')">Absent Rank (Beta)</button>');
+  const cm = new Date(), ym = cm.getFullYear() + '-' + String(cm.getMonth() + 1).padStart(2, '0');
+  wrap.insertAdjacentHTML('beforeend', `
+<div class="admin-section-pane" id="admPaneInbox"><div class="card" style="padding:14px">
+<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><div class="card-title">Inbox: review the latest upload</div><div class="card-sub" style="white-space:normal">Detects new employees, ID changes, package changes and missing staff from the uploaded month files. Every change is logged and can be undone.</div></div>
+<div style="display:flex;gap:6px"><button class="calc-mini-btn" onclick="renderInboxRescan()">Rescan</button><button class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button></div></div>
+<div id="inbOut"></div></div></div>
+<div class="admin-section-pane" id="admPaneARank"><div class="card" style="padding:14px">
+<div class="card-title">Absent Ranking (Beta): from existing monthly data</div>
+<div class="card-sub" style="white-space:normal">A day counts as absent when it is a general-duty day (most staff worked regular duty), the employee has zero duty and no punch. Holiday/off days are never ranked. Needs month files with daily rows.</div>
+<div class="admin-meta-grid" style="margin-top:8px">
+<div><label style="font-size:12px;margin-top:0">Month (end)</label><input type="month" id="arMonth" value="${ym}" style="min-height:38px"></div>
+<div><label style="font-size:12px;margin-top:0">Period</label><select id="arSpan" style="min-height:38px"><option value="1">This month</option><option value="3">Last 3 months</option><option value="6">Last 6 months</option></select></div>
+<div><label style="font-size:12px;margin-top:0">Night shift</label><label style="font-size:12.5px;display:flex;gap:6px;align-items:center;min-height:38px"><input type="checkbox" id="arSkipNight" checked> Day after a night shift is not absent (also across months)</label></div>
+<div><label style="font-size:12px;margin-top:0">Forgive N zero-days / month (assumed weekly off)</label><input type="number" id="arAllow" value="0" min="0" style="min-height:38px"></div></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn-primary" style="width:auto" onclick="__arRun()">Calculate</button>
+<select id="arArea" onchange="__arRender()" style="width:auto"><option value="all">All Areas</option>${AREAS.map(a => `<option>${a}</option>`).join('')}</select>
+<input type="text" id="arSearch" placeholder="Search..." oninput="__arRender()" style="width:150px;margin:0"></div>
+<div id="arOut" style="margin-top:8px"></div></div></div>`);
+  window.__arRun = runRank; window.__arRender = renderRank; window.renderInboxRescan = () => renderInbox(true);
+  const orig = window.switchAdminTab;
+  window.switchAdminTab = function (t) {
+    if (t !== 'inbox' && t !== 'arank') return orig.apply(this, arguments);
+    document.querySelectorAll('.admin-nav-tabs .admin-tab-btn,.admin-section-pane').forEach(b => b.classList.remove('active'));
+    $(t === 'inbox' ? 'admTabBtnInbox' : 'admTabBtnARank').classList.add('active');
+    $(t === 'inbox' ? 'admPaneInbox' : 'admPaneARank').classList.add('active');
+    if (t === 'inbox') (typeof loadAreaMap === 'function' ? loadAreaMap() : Promise.resolve()).then(() => renderInbox(true));
+  };
+}
+init();
+})();
+</script>
+
+<!-- ===== Sub-section Tools: sheet export/import, group by designation, paste IDs, persist shims ===== -->
+<script>
+(function () {
+'use strict';
+const $ = id => document.getElementById(id);
+const LS = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+const K_LOG = 'rppf_admin_log_v1', ALLOWED = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+/* The page calls persistAreaMap/Details/Subs but they are not defined in this file; fall back to the area cache writer. */
+['Map', 'Details', 'Subs'].forEach(n => { if (typeof window['persistArea' + n] !== 'function') window['persistArea' + n] = () => { try { saveAreaCache(); } catch (e) {} }; });
+const persistAll = () => { persistAreaMap(); persistAreaDetails(); persistAreaSubs(); try { _masterDirLastBuildTs = 0; } catch (e) {} };
+const snap = id => ({ id, area: AREA_MAP[id], det: AREA_DETAILS[id] ? JSON.parse(JSON.stringify(AREA_DETAILS[id])) : undefined });
+const logChange = (desc, before) => { const l = LS(K_LOG, []); l.unshift({ t: new Date().toISOString(), desc, before }); try { localStorage.setItem(K_LOG, JSON.stringify(l.slice(0, 100))); } catch (e) {} };
+const canon = (area, s) => { s = String(s || '').trim(); const f = (AREA_SUBS[area] || []).find(x => x.toLowerCase() === s.toLowerCase()); return f || s; };
+let _areas = ALLOWED.slice(), _areasKey = '', _diag = '';
+const areaOf = s => _areas.find(a => a.toLowerCase() === String(s || '').trim().toLowerCase());
+let _dir = [], _groups = [], _imp = null;
+
+function applySubs(changes, desc) {
+  if (!changes.length) return showToast('Nothing to change', 'info');
+  const before = changes.map(c => snap(c.id));
+  changes.forEach(c => {
+    const a = c.area || AREA_MAP[c.id], s = c.sub ? canon(a, c.sub) : '';
+    AREA_MAP[c.id] = a; const d = AREA_DETAILS[c.id] = AREA_DETAILS[c.id] || {};
+    if (s) { d.s = s; AREA_SUBS[a] = AREA_SUBS[a] || []; if (!AREA_SUBS[a].includes(s)) AREA_SUBS[a].push(s); } else delete d.s;
+  });
+  logChange(desc + ` (${changes.length})`, before); persistAll(); showToast(desc + ` (${changes.length})`, 'success'); render();
+}
+async function loadDir() {
+  _diag = ''; const now = new Date();
+  for (let i = 0; i < 4; i++) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); let l = []; try { l = await fetchMonthPreIndexedData(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')) || []; } catch (e) {} if (l.length) break; }
+  try { await loadAreaMap(); } catch (e) { _diag = 'Area list error: ' + e.message + '. '; }
+  if (Object.keys(AREA_MAP).length < 2) {
+    try {
+      const r = await fetch(REMOTE_BASE_URL + 'areas.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json(); if (d && d.areas && Object.keys(d.areas).length) { AREA_MAP = d.areas; AREA_DETAILS = d.details || {}; AREA_SUBS = d.subsections || {}; }
+    } catch (e) { _diag += 'Could not load areas.json from the server (' + e.message + '). Open the app from its website link instead of a saved file, and check the internet. '; }
+  }
+  const nm = {}; Object.values(monthIndexMemoryCache || {}).forEach(l => (l || []).forEach(e => { if (e && e.id) nm[String(e.id).toUpperCase()] = e; }));
+  _dir = Object.keys(AREA_MAP).filter(id => AREA_MAP[id]).map(id => { const m = nm[id] || {}; return { id, name: m.name || id, designation: m.grade || '', area: AREA_MAP[id], sub: (AREA_DETAILS[id] || {}).s || '' }; });
+}
+const syncAreas = () => {
+  const as = [...new Set(ALLOWED.concat(_dir.map(e => e.area)))], key = as.join('|'); if (key === _areasKey) return;
+  _areasKey = key; _areas = as; const sel = $('subArea'), cur = sel.value; sel.innerHTML = as.map(a => `<option>${esc(a)}</option>`).join(''); if (as.includes(cur)) sel.value = cur;
+};
+const ensureXlsx = async () => { if (typeof XLSX === 'undefined') await _loadScript('https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js'); };
+
+/* ---- export / import ---- */
+const csvCell = v => { v = String(v == null ? '' : v); return /[",\n\t]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+function csvParse(text) {
+  text = String(text).replace(/^\uFEFF/, ''); const first = text.split(/\r?\n/)[0] || '';
+  const d = first.includes('\t') ? '\t' : (first.split(';').length > first.split(',').length ? ';' : ',');
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === d) { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); } return rows;
+}
+window.__subCsvParse = csvParse;
+async function sheetRows() {
+  await loadDir(); if (!_dir.length) throw new Error('No employees found. Open this after month data / area list has loaded.');
+  const rows = _dir.slice().sort((a, b) => a.area.localeCompare(b.area) || String(a.designation).localeCompare(String(b.designation)) || a.id.localeCompare(b.id));
+  return [['ID', 'Name', 'Designation', 'Area', 'Sub-section']].concat(rows.map(e => [e.id, e.name, e.designation, e.area, e.sub]));
+}
+window.__subExport = async () => {
+  try {
+    const rows = await sheetRows(), csv = '\uFEFF' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })), a = document.createElement('a');
+    a.href = url; a.download = 'subsection_sheet.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    showToast(`Sheet downloaded (${rows.length - 1} employees). If nothing saved, use "Copy for Excel".`, 'success');
+  } catch (e) { showToast('Export failed: ' + e.message, 'error'); }
+};
+window.__subCopy = async () => {
+  try {
+    const t = (await sheetRows()).map(r => r.map(c => String(c == null ? '' : c).replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+    try { await navigator.clipboard.writeText(t); } catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+    showToast('Copied. Paste into Excel / Google Sheets (cell A1).', 'success');
+  } catch (e) { showToast('Copy failed: ' + e.message, 'error'); }
+};
+function parseRows(rows) {
+  rows = rows.filter(r => r && r.some(c => String(c || '').trim()));
+  let ci = { id: 0, area: -1, sub: 1 }, start = 0; const h = (rows[0] || []).map(c => String(c || '').trim().toLowerCase());
+  if (h.some(c => /^(employee )?id$/.test(c))) {
+    start = 1; ci = { id: h.findIndex(c => /^(employee )?id$/.test(c)), area: h.findIndex(c => /^(area|section)$/.test(c)), sub: h.findIndex(c => /sub/.test(c)) };
+  } else if ((rows[0] || []).length >= 3) ci = { id: 0, area: 1, sub: 2 };
+  const out = { changes: [], unknown: [], badArea: [], newSubs: new Set(), same: 0 };
+  rows.slice(start).forEach(r => {
+    const id = String(r[ci.id] || '').trim().toUpperCase(), sub = ci.sub >= 0 ? String(r[ci.sub] || '').trim() : '', rawA = ci.area >= 0 ? String(r[ci.area] || '').trim() : '';
+    if (!id) return; if (!AREA_MAP[id]) return out.unknown.push(id);
+    const area = rawA ? areaOf(rawA) : AREA_MAP[id]; if (!area) return out.badArea.push(id);
+    const s = sub ? canon(area, sub) : ((AREA_DETAILS[id] || {}).s || '');
+    if (area === AREA_MAP[id] && s === ((AREA_DETAILS[id] || {}).s || '')) return out.same++;
+    if (s && !(AREA_SUBS[area] || []).includes(s)) out.newSubs.add(area + ' / ' + s);
+    out.changes.push({ id, area, sub: s });
+  });
+  return out;
+}
+window.__subParse = parseRows;
+function showPreview(p) {
+  _imp = p;
+  $('subImpOut').innerHTML = `<div class="card-sub" style="white-space:normal;margin-top:6px">To change: <b>${p.changes.length}</b> · unchanged: ${p.same} · unknown IDs: <b style="color:var(--warning)">${p.unknown.length}</b>${p.unknown.length ? ' (' + p.unknown.slice(0, 8).join(', ') + (p.unknown.length > 8 ? '…' : '') + ')' : ''} · invalid area: <b style="color:var(--danger)">${p.badArea.length}</b>${p.badArea.length ? ' (' + p.badArea.slice(0, 8).join(', ') + ')' : ''}<br>New sub-sections to create: ${p.newSubs.size ? [...p.newSubs].map(esc).join('; ') : 'none'}</div>
+<button class="btn-primary" style="width:auto;margin-top:6px" onclick="__subApplyImport()" ${p.changes.length ? '' : 'disabled'}>Apply ${p.changes.length} changes</button>`;
+}
+window.__subApplyImport = () => { if (_imp) { applySubs(_imp.changes, 'Sheet import'); _imp = null; $('subImpOut').innerHTML = ''; } };
+window.__subImportFile = async inp => {
+  const f = inp.files[0]; if (!f) return;
+  try {
+    await loadDir(); let rows;
+    if (/\.csv$|\.txt$/i.test(f.name)) rows = csvParse(await f.text());
+    else { await ensureXlsx(); const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' }); rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '' }); }
+    showPreview(parseRows(rows));
+  } catch (e) { showToast('Import failed: ' + e.message, 'error'); }
+  inp.value = '';
+};
+window.__subImportPaste = async () => {
+  await loadDir(); const t = $('subPaste').value;
+  showPreview(parseRows(t.split(/\r?\n/).map(l => l.split(l.includes('\t') ? '\t' : ','))));
+};
+
+/* ---- group by designation / paste IDs / fill ---- */
+const curArea = () => $('subArea').value;
+window.__subGroupApply = (i, onlyEmpty) => {
+  const g = _groups[i], sub = ($('subG' + i).value || '').trim(); if (!sub) return showToast('Type or pick a sub-section', 'warn');
+  applySubs((onlyEmpty ? g.empty : g.all).map(id => ({ id, sub })), `${g.name} → ${curArea()} / ${sub}`);
+};
+window.__subPasteIds = () => {
+  const ids = [...new Set(($('subIds').value.match(/[A-Za-z]{0,3}\d{3,8}/g) || []).map(x => x.toUpperCase()))].filter(id => AREA_MAP[id]);
+  const sub = ($('subIdsSub').value || '').trim(); if (!sub || !ids.length) return showToast('Need a sub-section and at least one listed ID', 'warn');
+  const mv = $('subMove').checked; applySubs(ids.map(id => ({ id, sub, area: mv ? curArea() : AREA_MAP[id] })), `IDs → ${sub}`); $('subIds').value = '';
+};
+window.__subFill = area => { const ids = _dir.filter(e => e.area === area && !e.sub).map(e => ({ id: e.id, sub: 'General' })); if (confirm(`Put ${ids.length} employees of ${area} without a sub-section into "General"?`)) applySubs(ids, area + ' → General'); };
+window.__subUndo = i => { window.__inbUndo ? window.__inbUndo(i) : 0; setTimeout(() => loadDir().then(render), 50); };
+
+let _qsel = new Set(), _qshown = [], _qOpts = [], _qTot = 0, _qNoSub = 0;
+function qmCount() { $('qmCount').textContent = `${_qshown.length} shown · ${_qsel.size} ticked · ${_qNoSub} without sub-section in ${curArea()}`; }
+function renderQM() {
+  if (!$('qmList')) return;
+  const a = curArea(), f = $('qmFilter').value, q = ($('qmSearch').value || '').trim().toLowerCase();
+  const all = _dir.filter(e => e.area === a).sort((x, y) => String(x.designation).localeCompare(String(y.designation)) || String(x.name).localeCompare(String(y.name)));
+  _qsel.forEach(id => { if (!all.some(e => e.id === id)) _qsel.delete(id); });
+  const shown = all.filter(e => (f === 'all' || !e.sub) && (!q || (e.id + ' ' + e.name + ' ' + e.designation).toLowerCase().includes(q)));
+  _qshown = shown.map(e => e.id); _qNoSub = all.filter(e => !e.sub).length;
+  $('qmList').innerHTML = shown.map(e => `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--border);cursor:pointer"><input type="checkbox" ${_qsel.has(e.id) ? 'checked' : ''} onchange="__qmToggle('${esc(e.id)}',this.checked)" style="width:20px;height:20px;margin:0"><span style="flex:1"><b>${esc(e.name)}</b> <small style="color:var(--muted)">${esc(e.id)}</small><br><small style="color:var(--muted)">${esc(e.designation || '')}${e.sub ? ' · ' + esc(e.sub) : ''}</small></span></label>`).join('') || `<div style="padding:12px;color:var(--muted)">${all.length ? 'Nobody matches this filter.' : 'No employees found in ' + esc(a) + '.'} Loaded: ${_dir.length} employees. Areas found: ${esc(_areas.join(', '))}. ${esc(_diag)}</div>`;
+  const t = $('qmTarget'), cur = t.value; _qOpts = (AREA_SUBS[a] || []).concat(['__new__']);
+  t.innerHTML = _qOpts.map(s => s === '__new__' ? '<option value="__new__">+ New sub-section…</option>' : `<option>${esc(s)}</option>`).join('');
+  if (_qOpts.includes(cur)) t.value = cur; __qmTargetChange(); qmCount();
+}
+window.__qmRender = renderQM;
+window.__qmReset = () => { _qsel.clear(); render(); };
+window.__qmToggle = (id, on) => { on ? _qsel.add(id) : _qsel.delete(id); qmCount(); };
+window.__qmAll = on => { if (on) _qshown.forEach(id => _qsel.add(id)); else _qsel.clear(); renderQM(); };
+window.__qmTargetChange = () => { $('qmNew').style.display = $('qmTarget').value === '__new__' ? '' : 'none'; };
+window.__qmMove = async () => {
+  const a = curArea(), ids = [..._qsel].filter(id => AREA_MAP[id] === a), tv = $('qmTarget').value, sub = String(tv === '__new__' ? $('qmNew').value : tv || '').trim();
+  const st = $('qmStatus'), btn = $('qmBtn');
+  if (!ids.length) return showToast('Tick at least one employee', 'warn');
+  if (!sub) return showToast('Choose or type a sub-section', 'warn');
+  btn.disabled = true; st.style.color = 'var(--brand-text)'; st.textContent = 'Saving… please wait';
+  applySubs(ids.map(id => ({ id, sub })), `Quick move → ${a} / ${sub}`); _qsel.clear(); $('qmNew').value = '';
+  try {
+    if (typeof getGhToken === 'function' && !getGhToken()) { st.style.color = 'var(--warning)'; st.textContent = `Done on this device (${ids.length} moved). Server key is not set, so it is not synced yet.`; }
+    else {
+      await githubPutFile('areas.json', utf8ToBase64(JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2)), 'Update sub-sections via Quick Move');
+      try { Object.keys(localStorage).forEach(k => { if (k.startsWith('renata_lb_') || k.startsWith('renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
+      st.style.color = 'var(--success)'; st.textContent = `Done ✓ ${ids.length} moved to "${sub}" and saved to the server.`;
+    }
+  } catch (e) { st.style.color = 'var(--danger)'; st.textContent = 'Moved here, but the server save failed: ' + e.message; }
+  btn.disabled = false;
+};
+async function render() {
+  if (!$('subOut')) return; await loadDir(); syncAreas(); renderQM();
+  const area = $('subArea') ? curArea() : ALLOWED[0], inA = _dir.filter(e => e.area === area), tot = _dir.length, done = _dir.filter(e => e.sub).length;
+  const kpi = _areas.map(a => { const l = _dir.filter(e => e.area === a), d = l.filter(e => e.sub).length; return `<div class="admin-stat-box"><span class="as-num">${d}/${l.length}</span><span class="as-lbl">${a}${l.length > d ? ` <a href="#" onclick="__subFill('${a}');return false">fill General</a>` : ''}</span></div>`; }).join('');
+  const gm = {}; inA.forEach(e => { const k = e.designation || '(none)', g = gm[k] || (gm[k] = { name: k, all: [], empty: [] }); g.all.push(e.id); if (!e.sub) g.empty.push(e.id); });
+  _groups = Object.values(gm).sort((a, b) => b.all.length - a.all.length);
+  $('subList').innerHTML = (AREA_SUBS[area] || []).map(s => `<option value="${esc(s)}">`).join('');
+  const log = LS(K_LOG, []).slice(0, 3);
+  $('subOut').innerHTML = `<div class="card-sub">With sub-section: <b>${done}</b> of ${tot} (${tot ? Math.round(done * 100 / tot) : 0}%)</div><div class="admin-stat-grid" style="margin:6px 0">${kpi}</div>
+<div style="font-weight:800;font-size:13.5px;margin-top:10px">C. By designation in ${esc(area)}</div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+${_groups.map((g, i) => `<tr style="border-bottom:1px solid var(--border)"><td style="padding:4px"><b>${esc(g.name)}</b><br><small style="color:var(--muted)">${g.all.length} people, ${g.empty.length} without sub</small></td><td><input id="subG${i}" list="subList" placeholder="Sub-section" style="min-width:130px;margin:0"></td><td style="white-space:nowrap"><button class="calc-mini-btn btn-success-solid" onclick="__subGroupApply(${i},true)">Unassigned only</button> <button class="calc-mini-btn" onclick="__subGroupApply(${i},false)">All</button></td></tr>`).join('') || '<tr><td style="padding:8px;color:var(--muted)">No employees in this area.</td></tr>'}</table></div>
+<div style="font-weight:800;font-size:13.5px;margin-top:12px">Recent changes</div>${log.map((l, i) => `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0"><span>${esc(l.desc)}</span><button class="calc-mini-btn" onclick="__subUndo(${i})">Undo</button></div>`).join('') || '<div class="card-sub">None yet.</div>'}`;
+}
+window.__subRender = render;
+
+function init() {
+  const nav = document.querySelector('.admin-nav-tabs'), wrap = $('adminDashboardWrap'); if (!nav || !wrap || $('admTabBtnSub')) return;
+  nav.insertAdjacentHTML('afterbegin', '<button type="button" class="admin-tab-btn" id="admTabBtnSub" onclick="switchAdminTab(\'subtool\')">Sub-sections (Easy)</button>');
+  wrap.insertAdjacentHTML('beforeend', `<div class="admin-section-pane" id="admPaneSub"><div class="card" style="padding:14px">
+<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><div><div class="card-title">Sub-section Easy Tools</div><div class="card-sub" style="white-space:normal">Sort everyone into sub-sections in minutes: fill an Excel sheet, group by designation, or paste ID lists. Every change is logged and can be undone.</div></div><button class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button></div>
+<div style="margin-top:8px"><label style="font-size:12px;margin-top:0">Area</label><select id="subArea" onchange="__qmReset()" style="max-width:260px">${ALLOWED.map(a => `<option>${a}</option>`).join('')}</select></div><datalist id="subList"></datalist>
+<div style="margin-top:10px;padding:10px;border:1px solid var(--border-strong);border-radius:12px">
+<div style="font-weight:800;font-size:13.5px">Quick Move: tick employees, choose a sub-section, done</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px"><select id="qmFilter" onchange="__qmRender()" style="width:auto;margin:0"><option value="empty">Without sub-section</option><option value="all">All in area</option></select><input type="text" id="qmSearch" placeholder="Search name / ID / designation" oninput="__qmRender()" style="flex:1;min-width:140px;margin:0"><button class="calc-mini-btn" onclick="__qmAll(true)">Tick all shown</button><button class="calc-mini-btn" onclick="__qmAll(false)">Untick all</button></div>
+<div id="qmCount" class="card-sub" style="margin:6px 0"></div>
+<div id="qmList" style="max-height:360px;overflow-y:auto;border:1px solid var(--border);border-radius:10px"></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px"><b style="font-size:13px">Move to:</b><select id="qmTarget" onchange="__qmTargetChange()" style="width:auto;margin:0"></select><input type="text" id="qmNew" placeholder="New sub-section name" style="display:none;width:180px;margin:0"><button class="btn-primary" id="qmBtn" style="width:auto" onclick="__qmMove()">Move &amp; Save</button></div>
+<div id="qmStatus" style="margin-top:6px;font-size:12.5px;font-weight:700"></div></div>
+<div id="subOut" style="margin-top:10px"></div>
+<div style="margin-top:12px;font-weight:800;font-size:13.5px">A. Excel sheet: export, fill the Sub-section column, import</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;align-items:center"><button class="calc-mini-btn btn-success-solid" onclick="__subExport()">Download sheet (.csv)</button><button class="calc-mini-btn" onclick="__subCopy()">Copy for Excel</button><input type="file" accept=".xlsx,.xls,.csv" onchange="__subImportFile(this)" style="width:auto;margin:0"></div>
+<textarea id="subPaste" class="admin-textarea" style="min-height:56px;margin-top:6px" placeholder="Or paste columns copied from Excel: ID, Sub-section (optionally ID, Area, Sub-section)"></textarea>
+<button class="calc-mini-btn" style="margin-top:4px" onclick="__subImportPaste()">Preview pasted data</button><div id="subImpOut"></div>
+<div style="margin-top:14px;font-weight:800;font-size:13.5px">D. Paste an ID list into one sub-section (e.g. a team list from an in-charge)</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><input id="subIdsSub" list="subList" placeholder="Sub-section" style="max-width:220px;margin:0"><label style="font-size:12.5px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="subMove"> also move them to the selected area</label></div>
+<textarea id="subIds" class="admin-textarea" style="min-height:56px;margin-top:6px" placeholder="CF8355, RF20850, CF5242..."></textarea><button class="btn-primary" style="width:auto;margin-top:4px" onclick="__subPasteIds()">Assign</button></div></div>`);
+  const orig = window.switchAdminTab;
+  window.switchAdminTab = function (t) {
+    if (t !== 'subtool') return orig.apply(this, arguments);
+    document.querySelectorAll('.admin-nav-tabs .admin-tab-btn,.admin-section-pane').forEach(b => b.classList.remove('active'));
+    $('admTabBtnSub').classList.add('active'); $('admPaneSub').classList.add('active'); render();
+  };
+}
+init();
+})();
 </script>
 
 </body>
