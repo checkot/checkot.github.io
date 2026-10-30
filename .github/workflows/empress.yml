@@ -1,4 +1,5 @@
 name: Empress daily fetch
+
 on:
   schedule:
     # বাংলাদেশ সময় সকাল ৯টা (UTC 3:00 AM)
@@ -9,7 +10,7 @@ on:
     - cron: "0 14 * * *"
     # বাংলাদেশ সময় রাত ১১টা (UTC 5:00 PM)
     - cron: "0 17 * * *"
-  workflow_dispatch: # এটি রাখলে আপনি ম্যানুয়ালিও চাইলে রান করতে পারবেন
+  workflow_dispatch: # ম্যানুয়ালি রান করার জন্য
 
 permissions:
   contents: write
@@ -18,6 +19,7 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -25,7 +27,8 @@ jobs:
         with: 
           python-version: "3.12"
           
-      - run: pip install playwright openpyxl && playwright install --with-deps chromium
+      # requests লাইব্রেরিটি এখানে যোগ করা হয়েছে
+      - run: pip install playwright openpyxl requests && playwright install --with-deps chromium
       
       - name: Fetch Excel from Empress
         run: python scripts/fetch_empress.py
@@ -34,6 +37,15 @@ jobs:
           
       - name: Convert Excel to JSON
         run: python scripts/to_json.py
+          
+      # হোয়াটসঅ্যাপ অ্যালার্ট পাঠানোর নতুন স্টেপ
+      - name: Analyze Punch & Send WhatsApp Alerts
+        env:
+          WA_RECIPIENTS: ${{ secrets.WA_RECIPIENTS }}
+          GREEN_ID_INSTANCE: ${{ secrets.GREEN_ID_INSTANCE }}
+          GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
+        run: |
+          python scripts/analyze_punch.py
           
       - name: Commit JSON
         run: |
