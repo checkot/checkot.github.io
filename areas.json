@@ -587,11 +587,35 @@
     "CF8188": {
       "s": "Iron"
     },
-    "CF8176": {
-      "s": "Bin Washing"
+    "CF10274": {
+      "s": "Coating"
     },
-    "CF8451": {
-      "s": "Bin Washing"
+    "CF3563": {
+      "s": "Coating"
+    },
+    "RF20852": {
+      "s": "Coating"
+    },
+    "RF20850": {
+      "s": "Coating"
+    },
+    "RF8374": {
+      "s": "Coating"
+    },
+    "CF9381": {
+      "s": "Coating"
+    },
+    "CF8513": {
+      "s": "Coating"
+    },
+    "CF8018": {
+      "s": "Coating"
+    },
+    "CF8362": {
+      "s": "Coating"
+    },
+    "CF10275": {
+      "s": "Coating"
     }
   },
   "subsections": {
@@ -612,8 +636,7 @@
       "Inspection",
       "ERP",
       "pri- packaging",
-      "Iron",
-      "Bin Washing"
+      "Iron"
     ],
     "Softgel Production": [
       "Encapsulation",
