@@ -1,25 +1,40 @@
-name: Empress test fetch
+name: Empress daily fetch
 on:
+  schedule:
+    - cron: "0 20 * * *"   # 02:00 Bangladesh time (UTC+6)
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install playwright && playwright install --with-deps chromium
-      - run: python scripts/fetch_empress.py
+        with: 
+          python-version: "3.12"
+          
+      # এখানে openpyxl যোগ করা হয়েছে
+      - run: pip install playwright openpyxl && playwright install --with-deps chromium
+      
+      # ধাপ ১: ডেটা ফেচ করা
+      - name: Fetch Excel from Empress
+        run: python scripts/fetch_empress.py
         env:
           EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_ACCOUNTS }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: empress-test-output
-          path: raw/
-          retention-days: 7
+          
+      # ধাপ ২: Excel থেকে JSON তৈরি করা
+      - name: Convert Excel to JSON
+        run: python scripts/to_json.py
+          
+      # ধাপ ৩: JSON গিটহাবে পুশ করা
+      - name: Commit JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          git diff --cached --quiet || git commit -m "Daily automated data update [$(date +'%Y-%m-%d')]" && git push
