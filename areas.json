@@ -401,38 +401,71 @@
       "t": "JO",
       "s": "ERP"
     },
-    "CF8401": {
-      "s": "Compression"
+    "CF8510": {
+      "s": "pri- packaging"
     },
-    "CF8351": {
-      "s": "Compression"
+    "CF10277": {
+      "s": "pri- packaging"
     },
-    "CF2705": {
-      "s": "Compression"
+    "CF4558": {
+      "s": "pri- packaging"
     },
-    "CF2781": {
-      "s": "Compression"
+    "CF8371": {
+      "s": "pri- packaging"
     },
-    "CF8583": {
-      "s": "Compression"
+    "CF8207": {
+      "s": "pri- packaging"
     },
-    "CF8407": {
-      "s": "Compression"
+    "CF2792": {
+      "s": "pri- packaging"
     },
-    "CF8325": {
-      "s": "Compression"
+    "CF8353": {
+      "s": "pri- packaging"
     },
-    "CF10279": {
-      "s": "Compression"
+    "CF10280": {
+      "s": "pri- packaging"
     },
-    "RF22105": {
-      "s": "Compression"
+    "CF9405": {
+      "s": "pri- packaging"
     },
-    "RF22017": {
-      "s": "Compression"
+    "CF2694": {
+      "s": "pri- packaging"
     },
-    "RF22034": {
-      "s": "Compression"
+    "CF3665": {
+      "s": "pri- packaging"
+    },
+    "CF2701": {
+      "s": "pri- packaging"
+    },
+    "CF8261": {
+      "s": "pri- packaging"
+    },
+    "CF4743": {
+      "s": "pri- packaging"
+    },
+    "RF8366": {
+      "s": "pri- packaging"
+    },
+    "RF20177": {
+      "s": "pri- packaging"
+    },
+    "RF8372": {
+      "s": "pri- packaging"
+    },
+    "RF20855": {
+      "s": "pri- packaging"
+    },
+    "RF21560": {
+      "s": "pri- packaging"
+    },
+    "RF20179": {
+      "s": "pri- packaging"
+    },
+    "RF22059": {
+      "s": "pri- packaging"
+    },
+    "RF22878": {
+      "s": "pri- packaging"
     }
   },
   "subsections": {
@@ -451,7 +484,8 @@
       "Capsule Filling",
       "Dispensing",
       "Inspection",
-      "ERP"
+      "ERP",
+      "pri- packaging"
     ],
     "Softgel Production": [
       "Encapsulation",
