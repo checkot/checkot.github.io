@@ -16561,6 +16561,13 @@ document.body.setAttribute('data-page', 'admin');
 initAdminPage();
 </script>
 
+<style id="rppf-chk-css">
+/* The app's global input{appearance:none} hides native tick marks, so checkboxes get their own look. */
+.admin-section-pane input[type="checkbox"]{-webkit-appearance:none;appearance:none;width:24px!important;height:24px!important;min-width:24px;min-height:24px!important;padding:0!important;margin:0!important;flex:0 0 24px;border:2px solid var(--border-strong);border-radius:6px;background-color:var(--surface);background-repeat:no-repeat;background-position:center;background-size:82%;cursor:pointer;vertical-align:middle;transition:background-color .12s,border-color .12s}
+.admin-section-pane input[type="checkbox"]:checked{background-color:var(--brand);border-color:var(--brand);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.admin-section-pane input[type="checkbox"]:focus-visible{box-shadow:0 0 0 3px var(--brand-soft-border)}
+.admin-section-pane input[type="checkbox"]:disabled{opacity:.5;cursor:not-allowed}
+</style>
 <!-- ===== Phase-1 Admin Add-on: Absent Rank (Beta) + Inbox + Change Log/Undo + ID Aliases ===== -->
 <script>
 (function () {
