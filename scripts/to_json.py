@@ -1,3 +1,4 @@
+```python
 #!/usr/bin/env python3
 """
 to_json.py - Converts Empress HRIS Monthly Work Log Excel exports into
@@ -268,7 +269,7 @@ def extract_ym_from_date(date_str):
             return f"{m.group(2)}-{mon_num:02d}"
     return None
 
-def finalize_excel_employee(c, source_name, area_map, rate_table):
+def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
     detection = detect_category(c["designation"], c["id"])
     valid = bool(detection["valid"] and detection["category"])
     category = detection["category"] if valid else None
@@ -311,6 +312,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table):
         "kind": kind,
         "category": category,
         "area": area,
+        "sub": (details.get(c["id"], {}).get("s", "") if details else ""),
         "isRppf": c["isRppf"],
         "totalDuty": total_duty,
         "otHours": ot_hours,
@@ -352,7 +354,7 @@ def pick_best_employee(a, b):
         return a if a.get("holidayCount", 0) > b.get("holidayCount", 0) else b
     return a
 
-def parse_workbook(wb, source_name, area_map, rate_table):
+def parse_workbook(wb, source_name, area_map, rate_table, details=None):
     sheet_name = "Work Log" if "Work Log" in wb.sheetnames else wb.sheetnames[0]
     ws = wb[sheet_name]
     rows = list(ws.iter_rows(values_only=True))
@@ -366,7 +368,7 @@ def parse_workbook(wb, source_name, area_map, rate_table):
     def flush():
         nonlocal cur
         if cur:
-            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table))
+            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details))
             cur = None
 
     def get_num(row, col_idx):
@@ -457,7 +459,14 @@ def parse_workbook(wb, source_name, area_map, rate_table):
             holOT = get_num(row, ci["holOT"])
 
             night_raw = get_val(row, ci["night"]).lower()
-            is_night = night_raw in ("yes", "1", "true", "y")
+            shift_upper = (shift_val or "").upper()
+            # 100% accurate night detection: checks Night column, Shift text (Night/C), or morning out with no in
+            is_night = (
+                night_raw in ("yes", "1", "true", "y") or
+                "NIGHT" in shift_upper or
+                shift_upper == "C" or
+                (out_val and miss_in and any(x in shift_upper for x in ("NS", "NIGHT", "C")))
+            )
 
             cur["daily"].append([
                 date_str, day_val, in_val, out_val,
@@ -514,7 +523,7 @@ def main():
         print(f"[INFO] Parsing '{fpath.name}'...")
         try:
             wb = openpyxl.load_workbook(fpath, data_only=True)
-            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table)
+            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -567,3 +576,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+```
