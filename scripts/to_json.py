@@ -548,29 +548,39 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
             # or 9:30 PM exit, or early morning OT), but total OT is 0.0!
             # -------------------------------------------------------------
             total_ot_today = regOT + doOT + holOT
-            if not is_night and total_ot_today == 0.0 and not miss_in and not miss_out:
+            total_duty_today = regDuty + doDuty + holDuty
+            if total_ot_today == 0.0 and not miss_in and not miss_out:
                 is_req_problem = False
                 expected_ot_str = ""
 
-                # Case A: Evening 3-Hour OT (Out 19:10 - 20:15 / around 7:30 PM)
-                if t_out_mins is not None and 1150 <= t_out_mins <= 1215:
+                # Case 1: Day/Evening Shift OT Missing (not night)
+                if not is_night:
+                    # Case A: Evening 3-Hour OT (Out 19:10 - 20:15 / around 7:30 PM)
+                    if t_out_mins is not None and 1150 <= t_out_mins <= 1215:
+                        is_req_problem = True
+                        expected_ot_str = "3.0h (04:30 - 07:30 PM)"
+                    # Case B: Evening 5-Hour OT (Out 21:10 - 22:30 / around 9:30 PM)
+                    elif t_out_mins is not None and 1216 <= t_out_mins <= 1350:
+                        is_req_problem = True
+                        expected_ot_str = "5.0h (04:30 - 09:30 PM)"
+                    # Case C: Morning Pre-shift OT (In <= 07:15 AM)
+                    elif t_in_mins is not None and t_in_mins <= 435:
+                        is_req_problem = True
+                        if t_in_mins <= 390:
+                            expected_ot_str = "2.5h Morning OT (06:00 - 08:30 AM)"
+                        else:
+                            expected_ot_str = "1.0h Morning OT (07:00 - 08:00 AM)"
+                    # Case D: General elapsed duration between 9.5h and 13.5h
+                    elif 9.5 <= elapsed_hrs <= 13.5 and (t_out_mins is not None and t_out_mins > 1035):
+                        is_req_problem = True
+                        expected_ot_str = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+
+                # Case 2: Night Shift OT Requisition Missing (Case: Numan)
+                # Night shift is recorded (Night=Yes/DN), but worked 11h-24h and OT is 0.0!
+                elif is_night and (elapsed_hrs >= 11.0 or total_duty_today >= 11.0):
                     is_req_problem = True
-                    expected_ot_str = "3.0h (04:30 - 07:30 PM)"
-                # Case B: Evening 5-Hour OT (Out 21:10 - 22:30 / around 9:30 PM)
-                elif t_out_mins is not None and 1216 <= t_out_mins <= 1350:
-                    is_req_problem = True
-                    expected_ot_str = "5.0h (04:30 - 09:30 PM)"
-                # Case C: Morning Pre-shift OT (In <= 07:15 AM)
-                elif t_in_mins is not None and t_in_mins <= 435:
-                    is_req_problem = True
-                    if t_in_mins <= 390:
-                        expected_ot_str = "2.5h Morning OT (06:00 - 08:30 AM)"
-                    else:
-                        expected_ot_str = "1.0h Morning OT (07:00 - 08:00 AM)"
-                # Case D: General elapsed duration between 9.5h and 13.5h
-                elif 9.5 <= elapsed_hrs <= 13.5 and (t_out_mins is not None and t_out_mins > 1035):
-                    is_req_problem = True
-                    expected_ot_str = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+                    expected_ot_hrs = min(7.0, max(4.0, round(max(elapsed_hrs, total_duty_today) - 8.5, 1)))
+                    expected_ot_str = f"{expected_ot_hrs}h (Night Shift OT Error / Missing)"
 
                 if is_req_problem:
                     cur["requisitionProblems"].append({
@@ -580,8 +590,9 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
                         "out": out_val,
                         "duty": round(regDuty + doDuty + holDuty, 2),
                         "elapsed": elapsed_hrs,
+                        "isNight": is_night,
                         "expectedOt": expected_ot_str,
-                        "reason": "Worked 9.2-13.5h but Empress OT is 0.0"
+                        "reason": "Night Shift OT Missing" if is_night else "Day/Evening OT Missing"
                     })
 
     flush()
