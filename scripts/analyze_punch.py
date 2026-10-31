@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python3
 """
 RPPF Attendance & Punch Analyzer (WhatsApp Alert & OT Requisition Engine)
@@ -13,7 +15,6 @@ RPPF Attendance & Punch Analyzer (WhatsApp Alert & OT Requisition Engine)
 - ERP OT Requisition Mismatch Detection:
   * Identifies workers who physically worked 9.2h to 13.5h (e.g. left at 7:30 PM or 9:30 PM)
     but have 0 OT in Empress because ERP team hasn't created the OT requisition yet!
-  * Identifies Night Shift workers (11h-21h duty) with 0 OT (Numan case)!
 - Generates an executive "Manager View" overview with counts for JO, CF, Executive
 - WhatsApp character limit safety with smart chunking
 """
@@ -267,13 +268,11 @@ def main():
 
         # Check 2: Night Shift Exemption (Including Month-End crossover)
         is_night_exempt = False
-        is_night_flag = False
-        shift_str = ""
 
         if yesterday_row:
             is_night_flag = int(yesterday_row[10]) == 1 if len(yesterday_row) > 10 and str(yesterday_row[10]).isdigit() else False
             shift_str = str(yesterday_row[11]).strip().upper() if len(yesterday_row) > 11 else ""
-            if is_night_flag or "NIGHT" in shift_str or "DN" in shift_str:
+            if is_night_flag or "NIGHT" in shift_str:
                 is_night_exempt = True
                 print(f"[EXEMPT - NIGHT REST] {emp_id} ({emp_name}) worked Night Shift yesterday ({yesterday_emp_format}).")
 
@@ -316,6 +315,7 @@ def main():
             total_duty_today = reg_duty + do_duty + hol_duty
             elapsed_hrs = calc_elapsed_hours(today_in, today_out)
 
+            # OT Package Recognition:
             is_physical_ot = False
             detected_ot_desc = ""
 
@@ -343,7 +343,37 @@ def main():
                 is_physical_ot = True
                 detected_ot_desc = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
 
-            if is_physical_ot:
+            # Check Weekend (Thu/Fri) DO Requisition Missing
+            today_day_name = now_bd.strftime("%a")
+            is_weekend_today = today_day_name in ("Thu", "Fri")
+            is_weekend_do_missing = is_weekend_today and (reg_duty > 0 or reg_ot > 0) and (do_duty == 0 and do_ot == 0)
+
+            # Check Govt Holiday Requisition Missing (with Admin Overrides)
+            holidays_cfg = areas_data.get("holidays", {})
+            cancelled_hols = set(holidays_cfg.get("cancelled", []))
+            custom_hols = set(holidays_cfg.get("custom", []))
+            base_govt_hols = {"20-OCT-2026", "21-OCT-2026", "21-FEB-2026", "26-MAR-2026", "14-APR-2026", "01-MAY-2026", "16-DEC-2026", "25-DEC-2026"}
+            active_hols = (base_govt_hols | custom_hols) - cancelled_hols
+
+            is_hol_missing = (today_emp_format in active_hols) and (reg_duty > 0 or reg_ot > 0) and (hol_duty == 0 and hol_ot == 0)
+
+            if is_hol_missing:
+                stats["ot_req_missing"] += 1
+                missing_ot_requisition_list.append({
+                    "id": emp_id, "name": emp_name, "area": area_name, "sub": emp_sub,
+                    "in": today_in, "out": today_out, "elapsed": elapsed_hrs,
+                    "expected_ot": "Govt Holiday Req Missing (recorded as Regular Duty)"
+                })
+                print(f"[REQUISITION MISSING - HOLIDAY] {emp_id} ({emp_name}): Worked on Holiday, but holDuty = 0.0")
+            elif is_weekend_do_missing:
+                stats["ot_req_missing"] += 1
+                missing_ot_requisition_list.append({
+                    "id": emp_id, "name": emp_name, "area": area_name, "sub": emp_sub,
+                    "in": today_in, "out": today_out, "elapsed": elapsed_hrs,
+                    "expected_ot": f"Weekend ({today_day_name}) DO Req Missing (recorded as Regular Duty)"
+                })
+                print(f"[REQUISITION MISSING - WEEKEND DO] {emp_id} ({emp_name}): Worked on {today_day_name}, but doDuty = 0.0")
+            elif is_physical_ot:
                 stats["ot_done_total"] += 1
                 if total_recorded_ot == 0.0:
                     stats["ot_req_missing"] += 1
@@ -504,6 +534,7 @@ def main():
 
     if not green_id or not green_token or not recipients_raw:
         print("[WARN] Green API secrets not found in environment.")
+        print("\n--- WHATSAPP MESSAGE PREVIEW ---\n" + messages_to_send[0] + "\n--------------------------------\n")
         return
 
     recipients = [r.strip() for r in re.split(r"[,;\n]+", recipients_raw) if r.strip()]
