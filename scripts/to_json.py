@@ -3,13 +3,17 @@
 #!/usr/bin/env python3
 """
 to_json.py - Converts Empress HRIS Monthly Work Log Excel exports into
-production-ready pre-indexed JSON for RPPF Admin Control Panel.
+production-ready pre-indexed JSON for RPPF Admin Control Panel & In-Charge Portal.
 
 Matches the exact parsing algorithms from RPPF_Dedicated_Admin_Control_Panel_v7-6.html:
 - Column heuristic detection (detectWorkLogColumns)
 - Summary sheet mapping (buildSummaryMap)
 - Punch problem & missing time validation (cleanPunchValue & isPunchMissing)
 - Regular/Holiday/DO/Night shift calculation
+- Robust Night Shift detection (checks Night column, Shift text, or 14h+ elapsed)
+- Requisition Problem Detection:
+  * Detects days where duty is between 9.2h and 13.5h (e.g. 7:30 PM / 9:30 PM exit)
+    but OT is 0.0 because ERP team hasn't created the OT requisition!
 - Category & grade detection (detectCategory)
 - Rate package computation (otAmount, holidayAmount, nightAmount, totalEarned)
 - Multi-account employee deduplication & merging (pickBestEmployee)
@@ -89,13 +93,13 @@ def clean_punch_value(val):
     if val is None:
         return ""
     s = str(val)
-    return re.sub(r'[\s\u00A0\u1680\u2000-\u200F\u2028-\u202F\u205F\u3000\uFEFF]+', '', s).strip()
+    return re.sub(r'[\s   -‏ -  　﻿]+', '', s).strip()
 
 def is_punch_missing(val):
     cleaned = clean_punch_value(val).upper()
     if not cleaned:
         return True
-    if cleaned in ("-", "--", "N/A", "NA", "NULL", "NONE", "MISSING"):
+    if cleaned in ("-", "--", "N/A", "NA", "NULL", "NONE", "MISSING", "0000", "000000"):
         return True
     if re.match(r'^0{1,2}:00(:00)?$', cleaned):
         return True
@@ -103,10 +107,35 @@ def is_punch_missing(val):
         return True
     return False
 
+def parse_time_mins(val):
+    if not val:
+        return None
+    s = re.sub(r'[^0-9:APM]', '', str(val).strip().upper())
+    if not s or s in ('-', '--', 'NA', 'NULL', '0000', '000000'):
+        return None
+    m = re.match(r'^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$', s)
+    if m:
+        hh, mm, ampm = int(m.group(1)), int(m.group(2)), m.group(3)
+        if ampm == 'PM' and hh < 12: hh += 12
+        elif ampm == 'AM' and hh == 12: hh = 0
+        return hh * 60 + mm
+    return None
+
+def calc_elapsed_hours(in_str, out_str):
+    t_in = parse_time_mins(in_str)
+    t_out = parse_time_mins(out_str)
+    if t_in is None or t_out is None:
+        return 0.0
+    if t_out < t_in:
+        diff_mins = (1440 - t_in) + t_out
+    else:
+        diff_mins = t_out - t_in
+    return round(diff_mins / 60.0, 2)
+
 def clean_emp_name(raw):
     if raw is None:
         return ""
-    n = re.sub(r'[\u00A0\u200B-\u200D\uFEFF]', ' ', str(raw))
+    n = re.sub(r'[ ​-‍﻿]', ' ', str(raw))
     n = re.sub(r'\s+', ' ', n).strip()
     while True:
         prev = n
@@ -118,20 +147,20 @@ def clean_emp_name(raw):
 def clean_designation(raw):
     if raw is None:
         return ""
-    n = re.sub(r'[\u00A0\u200B-\u200D\uFEFF]', ' ', str(raw))
+    n = re.sub(r'[ ​-‍﻿]', ' ', str(raw))
     return re.sub(r'\s+', ' ', n).strip()
 
 def parse_emp_header(col0, emp_id):
     rest = col0[len(emp_id):]
-    rest = re.sub(r'[\u00A0\u200B-\u200D\uFEFF]', ' ', rest).strip()
+    rest = re.sub(r'[ ​-‍﻿]', ' ', rest).strip()
     parts = [x.strip() for x in rest.split(',')]
     name_desig = rest
     if len(parts) >= 3:
-        name_desig = ', '.join(parts[:-2])  # Drop Department, Location
+        name_desig = ', '.join(parts[:-2])
     m = re.match(r'^(.*?)\s{2,}(.+)$', name_desig)
     if m:
         return clean_emp_name(m.group(1)), clean_designation(m.group(2))
-    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual)\b.*)$', name_desig, re.IGNORECASE)
+    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual).*)$', name_desig, re.IGNORECASE)
     if g:
         return clean_emp_name(g.group(1)), clean_designation(g.group(2))
     return clean_emp_name(name_desig), ""
@@ -139,12 +168,12 @@ def parse_emp_header(col0, emp_id):
 def detect_category(grade_text, emp_id):
     g = (grade_text or "").upper().strip()
     id_upper = (emp_id or "").upper().strip()
-    if id_upper.startswith("CF") or re.search(r'\bHELPER\b', g):
+    if id_upper.startswith("CF") or re.search(r'HELPER', g):
         return {"category": "CF", "valid": True, "reason": "Contractual", "gradeText": g or "CF"}
-    if re.search(r'\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b', g) and not re.search(r'JUNIOR\s+OFFICER', g):
+    if re.search(r'(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)', g) and not re.search(r'JUNIOR\s+OFFICER', g):
         return {"category": None, "valid": False, "reason": "Management/Executive", "gradeText": g}
-    grade_match = re.search(r'JUNIOR\s+OFFICER\s+([A-F])\b', g)
-    level_match = re.search(r'\bM(\d{2})\b', g)
+    grade_match = re.search(r'JUNIOR\s+OFFICER\s+([A-F])', g)
+    level_match = re.search(r'M(\d{2})', g)
     grade_letter = grade_match.group(1).upper() if grade_match else None
     level_num = int(level_match.group(1)) if level_match else None
     if grade_letter:
@@ -304,6 +333,9 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
 
     total_earned = round(ot_amount + holiday_amount + night_amount, 2)
     area = area_map.get(c["id"], "Packing Hall" if c["isRppf"] else "Other facility")
+    sub_val = details.get(c["id"], {}).get("s", "") if details else ""
+
+    req_problems = c.get("requisitionProblems", [])
 
     return {
         "valid": valid,
@@ -313,7 +345,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
         "kind": kind,
         "category": category,
         "area": area,
-        "sub": (details.get(c["id"], {}).get("s", "") if details else ""),
+        "sub": sub_val,
         "isRppf": c["isRppf"],
         "totalDuty": total_duty,
         "otHours": ot_hours,
@@ -324,6 +356,8 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
         "holidayDays": c["holidayDays"],
         "nightDays": c["nightDays"],
         "punchProblems": c["punchProblems"],
+        "requisitionProblems": req_problems,
+        "requisitionProblemCount": len(req_problems),
         "daily": c["daily"],
         "otAmount": ot_amount,
         "holidayAmount": holiday_amount,
@@ -395,7 +429,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
         formatted_date = format_date_str(raw_col0)
         is_date_row = bool(re.match(r'^\d{2}-[A-Za-z]{3}-\d{4}$', formatted_date))
         
-        col0_clean = re.sub(r'[\u00A0\u200B-\u200D\uFEFF]', ' ', str(raw_col0)).strip()
+        col0_clean = re.sub(r'[ ​-‍﻿]', ' ', str(raw_col0)).strip()
         
         id_match = re.match(r'^([A-Z]{2}\d{3,6}|\d{5,8})\s+', col0_clean, re.IGNORECASE)
         if id_match and not is_date_row:
@@ -418,6 +452,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
                 "holidayDays": [],
                 "nightDays": [],
                 "punchProblems": [],
+                "requisitionProblems": [],
                 "daily": []
             }
             continue
@@ -459,14 +494,23 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
             holDuty = get_num(row, ci["holDuty"])
             holOT = get_num(row, ci["holOT"])
 
+            elapsed_hrs = calc_elapsed_hours(in_val, out_val)
+            t_in_mins = parse_time_mins(in_val)
+            t_out_mins = parse_time_mins(out_val)
+
             night_raw = get_val(row, ci["night"]).lower()
             shift_upper = (shift_val or "").upper()
-            # 100% accurate night detection: checks Night column, Shift text (Night/C), or morning out with no in
+            
+            # Robust Night Shift Detection:
+            # 1. Night column is Yes/1
+            # 2. Shift text contains 'NIGHT' or 'C'
+            # 3. Elapsed hours is 14h+ (typical night 14-16h)
             is_night = (
                 night_raw in ("yes", "1", "true", "y") or
                 "NIGHT" in shift_upper or
                 shift_upper == "C" or
-                (out_val and miss_in and any(x in shift_upper for x in ("NS", "NIGHT", "C")))
+                elapsed_hrs >= 14.0 or
+                (out_val and miss_in and (t_out_mins is not None and 240 <= t_out_mins <= 435))
             )
 
             cur["daily"].append([
@@ -497,6 +541,48 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
                 cur["punchProblems"].append(date_str)
             elif (regDuty + doDuty + holDuty) > 0 and not is_night and (regOT + doOT + holOT) == 0:
                 cur["plainDaysCount"] += 1
+
+            # -------------------------------------------------------------
+            # REQUISITION PROBLEM DETECTION (ওভারটাইম রিকুইজিশন নেই)
+            # Rule: Not a night shift, duty is 9.2h to 13.5h (e.g. 7:30 PM
+            # or 9:30 PM exit, or early morning OT), but total OT is 0.0!
+            # -------------------------------------------------------------
+            total_ot_today = regOT + doOT + holOT
+            if not is_night and total_ot_today == 0.0 and not miss_in and not miss_out:
+                is_req_problem = False
+                expected_ot_str = ""
+
+                # Case A: Evening 3-Hour OT (Out 19:10 - 20:15 / around 7:30 PM)
+                if t_out_mins is not None and 1150 <= t_out_mins <= 1215:
+                    is_req_problem = True
+                    expected_ot_str = "3.0h (04:30 - 07:30 PM)"
+                # Case B: Evening 5-Hour OT (Out 21:10 - 22:30 / around 9:30 PM)
+                elif t_out_mins is not None and 1216 <= t_out_mins <= 1350:
+                    is_req_problem = True
+                    expected_ot_str = "5.0h (04:30 - 09:30 PM)"
+                # Case C: Morning Pre-shift OT (In <= 07:15 AM)
+                elif t_in_mins is not None and t_in_mins <= 435:
+                    is_req_problem = True
+                    if t_in_mins <= 390:
+                        expected_ot_str = "2.5h Morning OT (06:00 - 08:30 AM)"
+                    else:
+                        expected_ot_str = "1.0h Morning OT (07:00 - 08:00 AM)"
+                # Case D: General elapsed duration between 9.5h and 13.5h
+                elif 9.5 <= elapsed_hrs <= 13.5 and (t_out_mins is not None and t_out_mins > 1035):
+                    is_req_problem = True
+                    expected_ot_str = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+
+                if is_req_problem:
+                    cur["requisitionProblems"].append({
+                        "date": date_str,
+                        "day": day_val,
+                        "in": in_val,
+                        "out": out_val,
+                        "duty": round(regDuty + doDuty + holDuty, 2),
+                        "elapsed": elapsed_hrs,
+                        "expectedOt": expected_ot_str,
+                        "reason": "Worked 9.2-13.5h but Empress OT is 0.0"
+                    })
 
     flush()
     return out, month_counts
@@ -541,7 +627,6 @@ def main():
         print("[ERROR] No employee records could be parsed from raw files.")
         sys.exit(1)
 
-    # Determine dominant month
     if total_month_counts:
         detected_month = total_month_counts.most_common(1)[0][0]
     else:
@@ -553,6 +638,10 @@ def main():
 
     employees_list = sorted(all_employees_map.values(), key=lambda x: x["id"])
 
+    # Count total requisition problems across all employees
+    total_req_probs = sum(e.get("requisitionProblemCount", 0) for e in employees_list)
+    print(f"[INFO] Detected {total_req_probs} Overtime Requisition Problems across employees.")
+
     payload = {
         "month": detected_month,
         "updatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -561,13 +650,11 @@ def main():
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. Write data/{YYYY-MM}.json
     month_file = DATA_DIR / f"{detected_month}.json"
     with open(month_file, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
     print(f"[SUCCESS] Saved: {month_file} ({os.path.getsize(month_file):,} bytes)")
 
-    # 2. Write data/latest.json
     latest_file = DATA_DIR / "latest.json"
     with open(latest_file, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
@@ -577,4 +664,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
