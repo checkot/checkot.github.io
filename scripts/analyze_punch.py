@@ -307,13 +307,20 @@ def main():
 
             # Overtime & ERP Requisition Mismatch Detection
             total_recorded_ot = reg_ot + do_ot + hol_ot
+            total_duty_today = reg_duty + do_duty + hol_duty
             elapsed_hrs = calc_elapsed_hours(today_in, today_out)
 
             # OT Package Recognition:
             is_physical_ot = False
             detected_ot_desc = ""
 
-            if t_out_mins is not None and t_out_mins >= 1150: # Out at or after 07:10 PM
+            # Case A: Night Shift OT Missing Check (e.g. Numan case)
+            if is_night_flag or "NIGHT" in shift_str or "DN" in shift_str:
+                if elapsed_hrs >= 11.0 or total_duty_today >= 11.0:
+                    is_physical_ot = True
+                    expected_ot_hrs = min(7.0, max(4.0, round(max(elapsed_hrs, total_duty_today) - 8.5, 1)))
+                    detected_ot_desc = f"{expected_ot_hrs}h (Night Shift OT Error / Missing)"
+            elif t_out_mins is not None and t_out_mins >= 1150: # Out at or after 07:10 PM
                 is_physical_ot = True
                 if 1150 <= t_out_mins <= 1215:
                     detected_ot_desc = "3h Evening OT (04:30 - 07:30 PM)"
@@ -333,7 +340,6 @@ def main():
 
             if is_physical_ot:
                 stats["ot_done_total"] += 1
-                # USER RULE: If worked 9.2h to 13.5h but Empress OT is 0.0
                 if total_recorded_ot == 0.0:
                     stats["ot_req_missing"] += 1
                     missing_ot_requisition_list.append({
