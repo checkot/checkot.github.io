@@ -2,14 +2,21 @@
 
 #!/usr/bin/env python3
 """
-RPPF Attendance & Punch Analyzer (WhatsApp Alert Generator)
-==========================================================
-- Automatically detects employee punch status for today (Present vs Absent)
-- 100% EXCLUDES previous-day night shift workers (Night Rest / Day off after night)
+RPPF Attendance & Punch Analyzer (WhatsApp Alert & OT Requisition Engine)
+========================================================================
+- Automatically detects employee punch status for today (Present, Late, Absent)
+- 100% EXCLUDES previous-day night shift workers (including Month-End crossover to Day 1)
 - Automatically EXCLUDES employees on Approved Long-Term Leave (Maternity Leave, Sick Leave, etc.)
-- Groups absentees strictly by Area (Solid, Softgel, Packing, Executives) and Sub-sections
-- Generates an executive "Manager View" overview with counts for Junior Officer, Contractual & Executive
-- Protects against WhatsApp / Green API message character limits with smart chunking
+- General Shift Tracking: 08:00 AM - 04:30 PM (In: 07:20 - 08:10, Out: 16:20 - 17:15)
+- Intelligent Overtime (OT) Package Detection:
+  * 3-Hour Evening OT: 04:30 PM - 07:30 PM (Out: 19:10 - 20:15)
+  * 5-Hour Evening OT: 04:30 PM - 09:30 PM (Out: 21:10 - 22:30)
+  * Morning Pre-shift OT: 06:00 - 08:30 (2.5h) or 07:00 - 08:00 (1.0h)
+- ERP OT Requisition Mismatch Detection:
+  * Identifies workers who physically worked 9.2h to 13.5h (e.g. left at 7:30 PM or 9:30 PM)
+    but have 0 OT in Empress because ERP team hasn't created the OT requisition yet!
+- Generates an executive "Manager View" overview with counts for JO, CF, Executive
+- WhatsApp character limit safety with smart chunking
 """
 
 import os
@@ -47,6 +54,31 @@ def is_punch_missing(val):
         return True
     return False
 
+def parse_time_mins(val):
+    if not val:
+        return None
+    s = re.sub(r'[^0-9:APM]', '', str(val).strip().upper())
+    if not s or s in ('-', '--', 'NA', 'NULL', '0000', '000000'):
+        return None
+    m = re.match(r'^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$', s)
+    if m:
+        hh, mm, ampm = int(m.group(1)), int(m.group(2)), m.group(3)
+        if ampm == 'PM' and hh < 12: hh += 12
+        elif ampm == 'AM' and hh == 12: hh = 0
+        return hh * 60 + mm
+    return None
+
+def calc_elapsed_hours(in_str, out_str):
+    t_in = parse_time_mins(in_str)
+    t_out = parse_time_mins(out_str)
+    if t_in is None or t_out is None:
+        return 0.0
+    if t_out < t_in:
+        diff_mins = (1440 - t_in) + t_out
+    else:
+        diff_mins = t_out - t_in
+    return round(diff_mins / 60.0, 2)
+
 def get_category_type(emp_id, emp_grade="", emp_meta_type=""):
     u_id = normalize_id(emp_id)
     if emp_meta_type:
@@ -82,7 +114,7 @@ def main():
     yesterday_emp_format = yesterday_bd.strftime("%d-%b-%Y").upper()
     yesterday_month_str = yesterday_bd.strftime("%Y-%m")
 
-    print(f"=== RPPF Attendance Analysis ===")
+    print("=== RPPF Attendance & OT Analysis ===")
     print(f"Current BD Time: {now_bd.strftime('%Y-%m-%d %I:%M %p')}")
     print(f"Target Date: {today_emp_format} ({today_iso})")
     print(f"Yesterday: {yesterday_emp_format} ({yesterday_iso})")
@@ -91,7 +123,6 @@ def main():
     areas_data = load_json_file("areas.json", {})
     area_map = areas_data.get("areas", {})
     area_details = areas_data.get("details", {})
-    area_subsections = areas_data.get("subsections", {})
 
     if not area_map:
         print("[ERROR] areas.json is empty or missing! Cannot map employees to production areas.")
@@ -100,8 +131,6 @@ def main():
     # 2. Load approved long-term leaves (from absent.json or leaves.json)
     absent_data = load_json_file("absent.json", {})
     long_term_leaves = absent_data.get("longTermLeaves", [])
-    
-    # Also support standalone leaves.json if present
     standalone_leaves = load_json_file("leaves.json", {}).get("leaves", [])
     if standalone_leaves:
         long_term_leaves.extend(standalone_leaves)
@@ -125,28 +154,29 @@ def main():
     if isinstance(month_data, list) and not employees_list:
         employees_list = month_data
 
-    # Map by employee ID
     emp_records = {normalize_id(e.get("id")): e for e in employees_list if e.get("id")}
     print(f"Loaded {len(emp_records)} employee records from current month data.")
 
-    # If today is 1st day of month, load previous month data to check yesterday's night shifts
+    # Day 1 of Month Crossover Check: Load previous month data
     prev_month_records = {}
     if now_bd.day == 1 and yesterday_month_str != current_month_str:
         p_data = load_json_file(f"data/{yesterday_month_str}.json", {})
         p_list = p_data.get("employees", []) if isinstance(p_data, dict) else (p_data if isinstance(p_data, list) else [])
         prev_month_records = {normalize_id(e.get("id")): e for e in p_list if e.get("id")}
-        print(f"Loaded {len(prev_month_records)} records from previous month ({yesterday_month_str}) for night rest check.")
+        print(f"Loaded {len(prev_month_records)} records from previous month ({yesterday_month_str}) for month-end night rest check.")
 
-    # Target Allowed Sections in RPPF
     allowed_sections = ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]
 
-    # Tracking sets and structures
     stats = {
         "total_listed": 0,
         "present": 0,
+        "on_time": 0,
+        "late": 0,
         "absent": 0,
         "night_rest": 0,
         "approved_leave": 0,
+        "ot_done_total": 0,
+        "ot_req_missing": 0,
         "by_category": {
             "JO": {"total": 0, "present": 0, "absent": 0},
             "CON": {"total": 0, "present": 0, "absent": 0},
@@ -155,13 +185,15 @@ def main():
         }
     }
 
-    # Grouped absentees: area -> subsection -> list of employee info
     absent_by_area_sub = {
         "Solid Production": {},
         "Softgel Production": {},
         "Packing Hall": {},
         "Overall": {}
     }
+
+    late_employees = []
+    missing_ot_requisition_list = []
 
     for raw_id, area_name in area_map.items():
         emp_id = normalize_id(raw_id)
@@ -176,22 +208,20 @@ def main():
         emp_name = emp_rec.get("name") or emp_id
         emp_grade = emp_rec.get("grade") or ""
 
-        # Update category if grade provides better info
         if emp_type == "CON" and "JUNIOR OFFICER" in emp_grade.upper():
             emp_type = "JO"
 
         stats["total_listed"] += 1
         stats["by_category"][emp_type]["total"] += 1
 
-        # Check 1: Approved Long-Term Leave (Maternity Leave, Long-Term Medical, etc.)
+        # Check 1: Approved Long-Term Leave (Maternity Leave, Extended Medical, etc.)
         if emp_id in active_leaves_map:
             stats["approved_leave"] += 1
-            stats["by_category"][emp_type]["present"] += 1  # Not counted as unauthorized absent
+            stats["by_category"][emp_type]["present"] += 1
             leave_info = active_leaves_map[emp_id]
             print(f"[EXEMPT - LEAVE] {emp_id} ({emp_name}): {leave_info.get('type', 'Approved Leave')}")
             continue
 
-        # Check today's daily log
         daily_log = emp_rec.get("daily", [])
         today_row = None
         yesterday_row = None
@@ -205,7 +235,7 @@ def main():
             elif r_date == yesterday_emp_format and yesterday_row is None:
                 yesterday_row = row
 
-        # If yesterday not found in current daily log (e.g. Day 1 of month), check previous month data
+        # If Day 1 of month, check previous month file for yesterday's night shift
         if yesterday_row is None and prev_month_records.get(emp_id):
             p_daily = prev_month_records[emp_id].get("daily", [])
             for r in p_daily:
@@ -213,30 +243,27 @@ def main():
                     yesterday_row = r
                     break
 
-        # Check Today's Punch Activity
         is_present = False
         today_in = ""
         today_out = ""
+        reg_ot = 0.0
+        do_ot = 0.0
+        hol_ot = 0.0
 
         if today_row:
             today_in = str(today_row[2]).strip() if len(today_row) > 2 else ""
             today_out = str(today_row[3]).strip() if len(today_row) > 3 else ""
-            reg_duty = float(today_row[4]) if len(today_row) > 4 and str(today_row[4]).replace('.','',1).isdigit() else 0
-            reg_ot = float(today_row[5]) if len(today_row) > 5 and str(today_row[5]).replace('.','',1).isdigit() else 0
-            
-            # Present if punch in or punch out or duty logged
+            reg_duty = float(today_row[4]) if len(today_row) > 4 and str(today_row[4]).replace('.','',1).isdigit() else 0.0
+            reg_ot = float(today_row[5]) if len(today_row) > 5 and str(today_row[5]).replace('.','',1).isdigit() else 0.0
+            do_ot = float(today_row[7]) if len(today_row) > 7 and str(today_row[7]).replace('.','',1).isdigit() else 0.0
+            hol_ot = float(today_row[9]) if len(today_row) > 9 and str(today_row[9]).replace('.','',1).isdigit() else 0.0
+
             if (not is_punch_missing(today_in)) or (not is_punch_missing(today_out)) or (reg_duty > 0) or (reg_ot > 0):
                 is_present = True
 
-        if is_present:
-            stats["present"] += 1
-            stats["by_category"][emp_type]["present"] += 1
-            continue
-
-        # Check 2: Night Shift Exemption (Previous day was Night Shift OR today has morning Night Exit punch)
+        # Check 2: Night Shift Exemption (Including Month-End crossover)
         is_night_exempt = False
 
-        # Condition A: Yesterday was Night Shift (isNight flag or shift string or Night Allowance)
         if yesterday_row:
             is_night_flag = int(yesterday_row[10]) == 1 if len(yesterday_row) > 10 and str(yesterday_row[10]).isdigit() else False
             shift_str = str(yesterday_row[11]).strip().upper() if len(yesterday_row) > 11 else ""
@@ -244,17 +271,86 @@ def main():
                 is_night_exempt = True
                 print(f"[EXEMPT - NIGHT REST] {emp_id} ({emp_name}) worked Night Shift yesterday ({yesterday_emp_format}).")
 
-        # Condition B: Checkout this morning from night shift (e.g. Out punch exists between 04:00 - 09:30 AM without In punch)
+        # Night checkout morning punch (04:00 - 07:15 AM OUT without morning IN)
+        t_out_mins = parse_time_mins(today_out)
+        t_in_mins = parse_time_mins(today_in)
+
         if not is_night_exempt and today_row and not is_punch_missing(today_out) and is_punch_missing(today_in):
-            is_night_exempt = True
-            print(f"[EXEMPT - NIGHT EXIT] {emp_id} ({emp_name}) clocked out this morning ({today_out}).")
+            if t_out_mins is not None and (240 <= t_out_mins <= 435): # 04:00 AM - 07:15 AM
+                is_night_exempt = True
+                print(f"[EXEMPT - NIGHT EXIT] {emp_id} ({emp_name}) clocked out this morning at {today_out}.")
 
         if is_night_exempt:
             stats["night_rest"] += 1
-            stats["by_category"][emp_type]["present"] += 1  # Not unauthorized absent
+            stats["by_category"][emp_type]["present"] += 1
             continue
 
-        # Employee is ABSENT
+        if is_present:
+            stats["present"] += 1
+            stats["by_category"][emp_type]["present"] += 1
+
+            # On-Time vs Late Check
+            if t_in_mins is not None:
+                if t_in_mins <= 490: # <= 08:10 AM
+                    stats["on_time"] += 1
+                elif 491 <= t_in_mins <= 570: # 08:11 - 09:30 AM
+                    stats["late"] += 1
+                    late_employees.append({
+                        "id": emp_id,
+                        "name": emp_name,
+                        "area": area_name,
+                        "sub": emp_sub,
+                        "in": today_in
+                    })
+                else:
+                    stats["late"] += 1
+
+            # Overtime & ERP Requisition Mismatch Detection
+            total_recorded_ot = reg_ot + do_ot + hol_ot
+            elapsed_hrs = calc_elapsed_hours(today_in, today_out)
+
+            # OT Package Recognition:
+            is_physical_ot = False
+            detected_ot_desc = ""
+
+            if t_out_mins is not None and t_out_mins >= 1150: # Out at or after 07:10 PM
+                is_physical_ot = True
+                if 1150 <= t_out_mins <= 1215:
+                    detected_ot_desc = "3h Evening OT (04:30 - 07:30 PM)"
+                elif 1216 <= t_out_mins <= 1350:
+                    detected_ot_desc = "5h Evening OT (04:30 - 09:30 PM)"
+                else:
+                    detected_ot_desc = "Extended Night OT"
+            elif t_in_mins is not None and t_in_mins <= 435: # In at or before 07:15 AM
+                is_physical_ot = True
+                if t_in_mins <= 390:
+                    detected_ot_desc = "2.5h Morning OT (06:00 - 08:30 AM)"
+                else:
+                    detected_ot_desc = "1.0h Morning OT (07:00 - 08:00 AM)"
+            elif elapsed_hrs > 9.5 and (t_out_mins is not None and t_out_mins > 1035):
+                is_physical_ot = True
+                detected_ot_desc = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+
+            if is_physical_ot:
+                stats["ot_done_total"] += 1
+                # USER RULE: If worked 9.2h to 13.5h but Empress OT is 0.0
+                if total_recorded_ot == 0.0:
+                    stats["ot_req_missing"] += 1
+                    missing_ot_requisition_list.append({
+                        "id": emp_id,
+                        "name": emp_name,
+                        "area": area_name,
+                        "sub": emp_sub,
+                        "in": today_in,
+                        "out": today_out,
+                        "elapsed": elapsed_hrs,
+                        "expected_ot": detected_ot_desc
+                    })
+                    print(f"[REQUISITION MISSING] {emp_id} ({emp_name}): {detected_ot_desc} (Elapsed {elapsed_hrs}h), but Empress OT = 0.0")
+
+            continue
+
+        # Employee is Absent
         stats["absent"] += 1
         stats["by_category"][emp_type]["absent"] += 1
 
@@ -268,41 +364,65 @@ def main():
             "type": emp_type
         })
 
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     print(f"Total Listed: {stats['total_listed']}")
-    print(f"Present: {stats['present']}")
+    print(f"Present: {stats['present']} (On-time: {stats['on_time']}, Late: {stats['late']})")
     print(f"Absent: {stats['absent']}")
     print(f"Night Rest Exempt: {stats['night_rest']}")
     print(f"Approved Leave Exempt: {stats['approved_leave']}")
+    print(f"Physical OT Total: {stats['ot_done_total']} (ERP Requisition Missing: {stats['ot_req_missing']})")
 
-    # Build Organized WhatsApp Message (Manager View & Area-Subsection Breakdown)
     formatted_date_bd = now_bd.strftime("%d-%b-%Y")
     formatted_time_bd = now_bd.strftime("%I:%M %p")
 
-    # Header & Manager Overview Block
-    overview_text = (
-        f"📊 *RPPF DAILY ATTENDANCE & ABSENT REPORT*\n"
-        f"📅 *তারিখ:* {formatted_date_bd} | *সময়:* {formatted_time_bd}\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"👔 *MANAGER OVERVIEW (ম্যানেজার সামারি)*\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"👥 মোট সক্রিয় কর্মী: {stats['total_listed']} জন\n"
-        f"✅ উপস্থিত (Present): {stats['present']} জন\n"
-        f"❌ অনুপস্থিত (Absent): *{stats['absent']} জন*\n"
-        f"🌙 নাইট রেস্ট (Night Rest): {stats['night_rest']} জন (বাদ)\n"
-        f"🏥 মাতৃত্ব/অনুমোদিত ছুটি: {stats['approved_leave']} জন (বাদ)\n\n"
-        f"📌 *ক্যাটাগরি ভিত্তিক ওভারভিউ:*\n"
-        f"• *Junior Officer (JO):* উপস্থিত {stats['by_category']['JO']['present']} | অনুপস্থিত *{stats['by_category']['JO']['absent']}*\n"
-        f"• *Contractual (CF):* উপস্থিত {stats['by_category']['CON']['present']} | অনুপস্থিত *{stats['by_category']['CON']['absent']}*\n"
-        f"• *Executive / Staff:* উপস্থিত {stats['by_category']['EXEC']['present']} | অনুপস্থিত *{stats['by_category']['EXEC']['absent']}*\n"
-    )
+    # Manager Overview Header
+    overview_lines = [
+        "📊 *RPPF DAILY ATTENDANCE & SHIFT REPORT*",
+        f"📅 *তারিখ:* {formatted_date_bd} | *সময়:* {formatted_time_bd}",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "👔 *MANAGER OVERVIEW (ম্যানেজার সামারি)*",
+        "━━━━━━━━━━━━━━━━━━━━",
+        f"👥 মোট সক্রিয় কর্মী: {stats['total_listed']} জন",
+        f"✅ মোট উপস্থিত: {stats['present']} জন (সময়মতো: {stats['on_time']} | ⏰ লেট: {stats['late']})",
+        f"❌ অনুপস্থিত (Absent): *{stats['absent']} জন*",
+        f"🌙 নাইট রেস্ট (Night Rest): {stats['night_rest']} জন (বাদ)",
+        f"🏥 মাতৃত্ব/অনুমোদিত ছুটি: {stats['approved_leave']} জন (বাদ)",
+        "",
+        "📌 *ক্যাটাগরি ভিত্তিক ওভারভিউ:*",
+        f"• *Junior Officer (JO):* উপস্থিত {stats['by_category']['JO']['present']} | অনুপস্থিত *{stats['by_category']['JO']['absent']}*",
+        f"• *Contractual (CF):* উপস্থিত {stats['by_category']['CON']['present']} | অনুপস্থিত *{stats['by_category']['CON']['absent']}*",
+        f"• *Executive / Staff:* উপস্থিত {stats['by_category']['EXEC']['present']} | অনুপস্থিত *{stats['by_category']['EXEC']['absent']}*"
+    ]
 
-    if stats['by_category']['CAS']['total'] > 0:
-        overview_text += f"• *Casual:* উপস্থিত {stats['by_category']['CAS']['present']} | অনুপস্থিত *{stats['by_category']['CAS']['absent']}*\n"
+    if stats["ot_req_missing"] > 0:
+        overview_lines.append(f"⚠️ *ওটি রিকুইজিশন মিসিং:* *{stats['ot_req_missing']} জন* (পাঞ্চে ওটি আছে, কিন্তু ERP পেন্ডিং)")
 
-    overview_text += f"━━━━━━━━━━━━━━━━━━━━\n"
+    overview_lines.append("━━━━━━━━━━━━━━━━━━━━")
+    overview_text = "\n".join(overview_lines) + "\n"
 
-    # Area & Subsection Breakdown Blocks
+    # Missing OT Requisition Section
+    req_missing_lines = []
+    if missing_ot_requisition_list:
+        req_missing_lines = [
+            f"🚨 *ওভারটাইম রিকুইজিশন মিসিং অ্যালার্ট ({len(missing_ot_requisition_list)} জন)*",
+            "_(কর্মী ৯-১৩+ ঘণ্টা ওটি করেছেন, কিন্তু Empress-এ ওটি আওয়ার ০ দেখাচ্ছে)_"
+        ]
+        for r in missing_ot_requisition_list[:15]:
+            req_missing_lines.append(f"  • `{r['id']}` - {r['name']} ({r['area']})\n    └ পাঞ্চ: {r['in']} ➔ {r['out']} | {r['expected_ot']}")
+        if len(missing_ot_requisition_list) > 15:
+            req_missing_lines.append(f"  ...এবং আরও {len(missing_ot_requisition_list) - 15} জন।")
+        req_missing_lines.append("━━━━━━━━━━━━━━━━━━━━")
+    req_missing_block = ("\n".join(req_missing_lines) + "\n") if req_missing_lines else ""
+
+    # Late Arrival Section
+    late_lines = []
+    if late_employees and len(late_employees) <= 20:
+        late_lines = ["⏰ *দেরিতে উপস্থিত কর্মীবৃন্দ (০৮:১১ - ০৯:০০):*"]
+        for l in late_employees:
+            late_lines.append(f"  • `{l['id']}` - {l['name']} ({l['in']}) - {l['sub']}")
+        late_lines.append("━━━━━━━━━━━━━━━━━━━━")
+    late_block = ("\n".join(late_lines) + "\n") if late_lines else ""
+
     area_headers = {
         "Solid Production": "💊 *SOLID PRODUCTION*",
         "Softgel Production": "💧 *SOFTGEL PRODUCTION*",
@@ -330,31 +450,35 @@ def main():
         area_blocks[area_key] = block
 
     footer_text = (
-        f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"💡 *ফিল্টারিং রুলস:* আগের দিন নাইট ডিউটি করা ও ম্যাটারনিটি/অনুমোদিত ছুটিতে থাকা কর্মীরা এই অনুপস্থিত তালিকা থেকে সম্পূর্ণ মুক্ত।\n"
-        f"🤖 _RPPF Automated Production Attendance Engine_"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "💡 *ফিল্টারিং রুলস:* আগের দিন নাইট ডিউটি ও মেটারনিটি ছুটিতে থাকা কর্মীরা এই তালিকা থেকে সম্পূর্ণ মুক্ত।\n"
+        "🤖 _RPPF Automated Production & Shift Intelligence Engine_"
     )
 
-    # Check Message Size & Smart Chunking for WhatsApp Limits (Max 3,500 chars per message)
-    full_message = overview_text + "\n📋 *সেকশন ও সাব-সেকশন ভিত্তিক অনুপস্থিত তালিকা:*\n\n" + "".join(area_blocks.values()) + footer_text
+    full_message = (
+        overview_text + 
+        req_missing_block + 
+        late_block + 
+        "\n📋 *সেকশন ও সাব-সেকশন ভিত্তিক অনুপস্থিত তালিকা:*\n\n" + 
+        "".join(area_blocks.values()) + 
+        footer_text
+    )
 
     messages_to_send = []
     if len(full_message) <= 3400:
         messages_to_send.append(full_message)
     else:
-        # Split into 2 parts:
-        # Part 1: Overview + Solid & Softgel
         part1 = (
             overview_text + 
+            req_missing_block + 
             "\n📋 *অনুপস্থিত তালিকা (পর্ব ১/২):*\n\n" + 
             area_blocks["Solid Production"] + 
             area_blocks["Softgel Production"] + 
-            "_(বাকি অংশ প্যাকিং ও এক্সিকিউটিভ পরবর্তী মেসেজে...)_"
+            "_(বাকি অংশ পরবর্তী মেসেজে...)_"
         )
-        # Part 2: Packing Hall + Executives + Footer
         part2 = (
             f"📋 *অনুপস্থিত তালিকা (পর্ব ২/২) — {formatted_date_bd}*\n" +
-            f"━━━━━━━━━━━━━━━━━━━━\n" +
+            "━━━━━━━━━━━━━━━━━━━━\n" +
             area_blocks["Packing Hall"] + 
             area_blocks["Overall"] + 
             footer_text
@@ -362,26 +486,21 @@ def main():
         messages_to_send.extend([part1, part2])
 
     print(f"\nMessage prepared ({len(messages_to_send)} part(s)).")
-    print("--- Message Preview ---")
-    print(messages_to_send[0][:500] + "...\n")
 
-    # Send WhatsApp Message via Green API
     green_id = os.environ.get("GREEN_ID_INSTANCE", "").strip()
     green_token = os.environ.get("GREEN_API_TOKEN", "").strip()
     recipients_raw = os.environ.get("WA_RECIPIENTS", "").strip()
 
     if not green_id or not green_token or not recipients_raw:
-        print("[WARN] Green API secrets (GREEN_ID_INSTANCE, GREEN_API_TOKEN, WA_RECIPIENTS) not found in environment.")
-        print("[INFO] Skipping network send. (Message preview generated successfully).")
+        print("[WARN] Green API secrets not found in environment.")
+        print("\n--- WHATSAPP MESSAGE PREVIEW ---\n" + messages_to_send[0] + "\n--------------------------------\n")
         return
 
-    # Parse recipients (can be comma, semicolon or newline separated)
     recipients = [r.strip() for r in re.split(r"[,;\n]+", recipients_raw) if r.strip()]
     api_url = f"https://api.green-api.com/waInstance{green_id}/sendMessage/{green_token}"
 
     for recipient in recipients:
         chat_id = recipient
-        # If it's a regular phone number without suffix, format as @c.us
         if "@" not in chat_id:
             clean_num = re.sub(r"[^0-9]", "", chat_id)
             if clean_num:
@@ -396,15 +515,13 @@ def main():
             try:
                 resp = requests.post(api_url, json=payload, timeout=25)
                 if resp.status_code == 200:
-                    print(f"  ✓ Part {p_idx+1} sent successfully. Response: {resp.text}")
+                    print(f"  ✓ Part {p_idx+1} sent successfully.")
                 else:
-                    print(f"  ✗ Failed to send Part {p_idx+1}. HTTP {resp.status_code}: {resp.text}")
+                    print(f"  ✗ Failed Part {p_idx+1}. HTTP {resp.status_code}: {resp.text}")
             except Exception as e:
                 print(f"  ✗ Error sending WhatsApp message: {e}")
 
-    print("=== Attendance Alert Process Finished ===")
+    print("=== Attendance & OT Process Finished ===")
 
 if __name__ == "__main__":
     main()
-    
-
