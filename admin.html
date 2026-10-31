@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6227,6 +6228,16 @@ body[data-page="search"] .wa-float {
     }
   }
 
+
+.icc-row.icc-req-row {
+  border-left: 3.5px solid #f59e0b !important;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+.icc-row.icc-req-row .icc-val-main {
+  color: #d97706 !important;
+  font-weight: 900 !important;
+}
+
 </style>
 
 <style>
@@ -7312,6 +7323,42 @@ body[data-page="search"] .wa-float {
 <button type="button" class="btn-primary" id="adminUploadExcelBtn" onclick="processExcelUpload()">Upload Excel and save</button>
 <button type="button" class="btn-secondary" onclick="adminReoptimizeMonthData()">Re-optimize this month data</button>
 </div>
+
+<!-- ================================================================= -->
+<!-- PLANT HOLIDAY & DUTY COORDINATION MANAGER (ADMIN TICK/UNTICK)     -->
+<!-- ================================================================= -->
+<div class="card" id="admHolidayManagerCard" style="padding:14px;margin-top:14px;border:1.5px solid rgba(13,148,136,0.3);background:linear-gradient(180deg, rgba(13,148,136,0.03) 0%, rgba(255,255,255,0) 100%);">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+    <div>
+      <div class="card-title" style="display:flex;align-items:center;gap:6px;color:#0f766e;">
+        <span>📅</span> Plant Holiday &amp; Duty Coordination Manager (সরকারি ছুটি ও সমন্বয়)
+      </div>
+      <div class="card-sub" style="white-space:normal;">
+        Automatic rules apply by default (Excel consensus + National days). Admins can tick/untick below to cancel a holiday or schedule a compensatory working day.
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminSavePlantHolidays()">💾 Save Holidays &amp; Sync Server</button>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0;background:var(--card-bg, #fff);padding:10px;border-radius:8px;border:1px solid #e2e8f0;">
+    <div style="font-size:12px;font-weight:700;">+ Add Special Plant Holiday / Compensatory Day:</div>
+    <input type="date" id="admNewHolidayDateInp" style="padding:4px 8px;font-size:12px;min-height:32px;border:1px solid #cbd5e1;border-radius:6px;">
+    <input type="text" id="admNewHolidayTitleInp" placeholder="e.g. Special Plant Holiday / Eid Extra" style="padding:4px 8px;font-size:12px;min-height:32px;border:1px solid #cbd5e1;border-radius:6px;flex:1;min-width:180px;">
+    <button type="button" class="calc-mini-btn btn-brand" onclick="adminAddCustomHoliday()" style="min-height:32px;">+ Add Date</button>
+  </div>
+
+  <div style="font-size:12.5px;font-weight:700;margin:10px 0 6px 0;color:#0f172a;display:flex;justify-content:space-between;align-items:center;">
+    <span>Holidays &amp; Weekends for Selected Month (<span id="admHolidaySelectedMonthLbl">Active Month</span>):</span>
+    <span style="font-size:11px;font-weight:600;color:#64748b;">☑ Ticked = Active Holiday/DO | ☐ Unticked = Regular Working Day</span>
+  </div>
+
+  <div id="admHolidayDatesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:8px;margin-top:6px;">
+    <!-- Rendered dynamically -->
+  </div>
+</div>
+
 <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
 <div style="display:flex;justify-content:space-between;align-items:center;">
 <span style="font-size:12.5px;font-weight:800;color:var(--text);">Month files on the server:</span>
@@ -9568,7 +9615,11 @@ return null;
 function getRequisitionProblemCount(emp) {
   if (!emp) return 0;
   if (Array.isArray(emp.requisitionProblems)) return emp.requisitionProblems.length;
-  return Number(emp.requisitionProblemCount) || 0;
+  if (emp.requisitionProblemCount != null) return Number(emp.requisitionProblemCount) || 0;
+  const probs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : [];
+  emp.requisitionProblems = probs;
+  emp.requisitionProblemCount = probs.length;
+  return probs.length;
 }
 function getPunchProblemCount(emp) {
 if (!emp) return 0;
@@ -10515,7 +10566,14 @@ return `Hello, my ID: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, 
 }
 return `Hello, my ID: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, area: ${areaName}. In my ${currentMonth} report, I need help with grade/rate and punch (${datesStr}).`;
 }
+function buildSingleEmployeeReqErpMessage(empId, empName, reqProbs) {
+  const lines = reqProbs.map(p => `• ${p.date}: In ${p.in || '—'} ➔ Out ${p.out || '—'} (${p.duty || p.elapsed}h duty) | ${p.expectedOt || 'OT Missing'}`);
+  return `Dear ERP Team,\nEmployee ${empName || '—'} (${empId}) physically worked overtime on the following days, but Empress shows 0 OT (Requisition Missing):\n\n${lines.join('\n')}\n\nPlease allocate and approve the OT requisitions. Thank you!`;
+}
+
 function showRemarks(punchProblems, detection) {
+const curEmp = typeof currentResult !== 'undefined' ? currentResult : {};
+const rawReqProbs = Array.isArray(curEmp.requisitionProblems) ? curEmp.requisitionProblems : [];
 const box = document.getElementById('remarksBox');
 const pList = Array.isArray(punchProblems) ? punchProblems : [];
 const pCount = Array.isArray(punchProblems) ? punchProblems.length : (Number(punchProblems) || 0);
@@ -10528,9 +10586,22 @@ const isOwn = (ctx === 'own');
 const subj = isOwn ? 'Your report' : `Report of this employee (${esc(currentSearchId)})`;
 const isRppf = currentResult?.isRppf !== false;
 const facilityWarn = isRppf ? '' : '<div style="margin-top:8px;padding:8px 10px;background:var(--warning-bg);border:1px solid var(--border);border-radius:6px;color:var(--warning);font-weight:700;">This employee is not from RPPF - other facility</div>';
-if (detection.valid && !hasP) {
+const reqWarnHtml = rawReqProbs.length > 0 ? `
+<div style="margin-top:8px;padding:10px 12px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;color:#92400e;font-size:12px;line-height:1.4;">
+  <div style="font-weight:800;display:flex;align-items:center;gap:5px;color:#b45309;font-size:12.5px;">
+    <span>⚠️</span> Overtime Requisition Alert (${rawReqProbs.length} day${rawReqProbs.length > 1 ? 's' : ''})
+  </div>
+  <div style="margin-top:3px;font-size:11.5px;">Worked overtime on floor, but Empress shows 0 OT (ERP Requisition Missing):</div>
+  <div style="margin-top:4px;font-weight:700;">${rawReqProbs.map(p => `• ${p.date}: ${p.in || '—'} ➔ ${p.out || '—'} (${p.duty || p.elapsed}h) | ${p.expectedOt || 'OT'}`).join('<br>')}</div>
+  <button type="button" class="btn-secondary" style="margin-top:8px;background:#d97706;color:#fff;border-color:#b45309;font-weight:700;padding:5px 10px;font-size:11.5px;" onclick="openErpSupportModal(${esc(JSON.stringify(buildSingleEmployeeReqErpMessage(currentSearchId, currentResult?.name, rawReqProbs)))}, ${esc(JSON.stringify(areaName))})">Forward Missing Requisitions to ERP Team (WhatsApp)</button>
+</div>` : '';
+
+if (detection.valid && !hasP && rawReqProbs.length === 0) {
 box.className = "remarks-box remarks-ok";
 box.innerHTML = `${subj}: all In/Out punches are correct.${facilityWarn}`;
+} else if (detection.valid && !hasP && rawReqProbs.length > 0) {
+box.className = "remarks-box remarks-warn";
+box.innerHTML = `${subj}: all In/Out punches are correct, but <b>${rawReqProbs.length} Overtime Requisition(s)</b> are pending.${facilityWarn}${reqWarnHtml}`;
 } else if (detection.valid && hasP) {
 box.className = "remarks-box remarks-warn";
 box.innerHTML = `${subj}: punch missing on <b>${esc(dates)}</b> (${bn(pCount)} days).${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
@@ -10948,7 +11019,102 @@ avgOutTimeStr: fmtM(avgOutMins)
 };
 }
 window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
+function computeEmpRequisitionProblems(e) {
+  if (!e) return [];
+  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) return e.requisitionProblems;
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  const reqProbs = [];
+
+  const govtHols = ['20-OCT-2026', '21-OCT-2026', '21-FEB-2026', '26-MAR-2026', '14-APR-2026', '01-MAY-2026', '16-DEC-2026', '25-DEC-2026'];
+
+  daily.forEach(r => {
+    if (!r || !Array.isArray(r)) return;
+    const dateStr = String(r[0] || '').trim().toUpperCase();
+    const dayStr = String(r[1] || '').trim();
+    const inStr = String(r[2] || '').trim();
+    const outStr = String(r[3] || '').trim();
+
+    const regD = Number(r[4]) || 0;
+    const regO = Number(r[5]) || 0;
+    const doD = Number(r[6]) || 0;
+    const doO = Number(r[7]) || 0;
+    const holD = Number(r[8]) || 0;
+    const holO = Number(r[9]) || 0;
+    const isNight = Number(r[10]) === 1 || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+
+    const totOt = regO + doO + holO;
+    const totDuty = regD + doD + holD;
+
+    // 1. Govt Holiday Requisition Missing
+    if (govtHols.includes(dateStr) && (regD > 0 || regO > 0) && (holD === 0 && holO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: 'Govt Holiday Req Missing (Should be in Holiday Allowance)',
+        reason: 'Govt Holiday Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    // 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only)
+    if ((dayStr === 'Thu' || dayStr === 'Fri') && (regD > 0 || regO > 0) && (doD === 0 && doO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: `Weekend (${dayStr}) DO Req Missing`,
+        reason: 'Weekend Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    if (typeof isPunchMissing === 'function' && (isPunchMissing(inStr) || isPunchMissing(outStr))) return;
+
+    const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
+    const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
+    if (!mIn || !mOut) return;
+    const ti = (+mIn[1]) * 60 + (+mIn[2]);
+    const to = (+mOut[1]) * 60 + (+mOut[2]);
+    const diff = to < ti ? (1440 - ti) + to : to - ti;
+    const elHrs = Number((diff / 60).toFixed(2));
+
+    if (totOt === 0) {
+      if (isNight && (elHrs >= 11.0 || totDuty >= 11.0)) {
+        const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: true,
+          expectedOt: `${exp}.0h (Night Shift OT Error / Missing)`,
+          reason: 'Night Shift OT Missing'
+        });
+      } else if (!isNight && to >= 1150 && to <= 1215) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '3.0h (04:30 - 07:30 PM)',
+          reason: '3h Evening OT Missing'
+        });
+      } else if (!isNight && to >= 1216 && to <= 1350) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '5.0h (04:30 - 09:30 PM)',
+          reason: '5h Evening OT Missing'
+        });
+      } else if (!isNight && ti <= 435 && elHrs >= 9.5) {
+        const exp = ti <= 390 ? '2.5h Morning OT' : '1.0h Morning OT';
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: exp,
+          reason: 'Morning OT Missing'
+        });
+      }
+    }
+  });
+  return reqProbs;
+}
+
 window.ensureEmpAvgStats = function(list) {
+(list || []).forEach(e => {
+  if (!e) return;
+  const rps = computeEmpRequisitionProblems(e);
+  e.requisitionProblems = rps;
+  e.requisitionProblemCount = rps.length;
+});
 (list || []).forEach(e => {
 if (!e || e._avgComputed) return;
 const st = computeEmpAvgDutyAndInOut(e);
@@ -11248,6 +11414,7 @@ currentLeaderboardResult = result;
 const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id));
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
 const preferredArea = getAppMode() === 'incharge' ? getInchargeDefaultArea() : (getMyId() ? getAreaForId(getMyId(), true) : 'all');
@@ -11398,7 +11565,8 @@ sortedByAvgDuty = [...filtered].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDu
 sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
 }
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, area };
+const sortedByRequisition = [...filtered].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, area };
 updateLbSummaryMetrics(filtered);
 renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
 renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
@@ -12606,6 +12774,7 @@ if (btn) btn.disabled = false;
 }
 }
 async function adminCheckMonthData() {
+  try { adminRenderPlantHolidays(); } catch (e) {}
 const y = document.getElementById('adminPdfYear')?.value;
 const m = document.getElementById('adminPdfMonth')?.value;
 const box = document.getElementById('adminExistingDataStatus');
@@ -13190,6 +13359,9 @@ setTxt('hubSubPlain', 'Most 4:30 pm Regular Days');
 setTxt('hubSubLessDuty', 'Lowest Total Duty Hours');
 setTxt('hubSubLessOt', 'Lowest Overtime Hours');
 setTxt('hubSubPunch', 'Missing In/Out Punch List');
+const rCount = (filteredList || []).filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).length;
+setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
+setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time & Out-Time');
 if (iccDrillOpen) renderIccDrillList();
@@ -13449,11 +13621,9 @@ return f.sortedByAvgInOut;
 }
 if (crit === 'punch') return f.sortedByPunch || [];
 if (crit === 'requisition') {
-  if (!f.sortedByRequisition || !f.sortedByRequisition.length) {
-    const base = f._rawFiltered || f.allEmployees || [];
-    f.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
-  }
-  return f.sortedByRequisition || [];
+  if (Array.isArray(f.sortedByRequisition)) return f.sortedByRequisition;
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 }
 return f.sortedByDuty || [];
 }
@@ -13479,7 +13649,16 @@ const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
 const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
-const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (rk <= 3 ? `icc-rank-${rk}` : '');
+const isReqCrit = activeIccCriterion === 'requisition';
+const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (rk <= 3 ? `icc-rank-${rk}` : ''));
+let reqMetaUnderName = '';
+if (isReqCrit) {
+  const probs = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
+  if (probs.length > 0) {
+    const pDates = probs.map(p => `${p.date}`).join(', ');
+    reqMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(pDates)}</div>`;
+  }
+}
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
@@ -13490,7 +13669,7 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmp
 <div class="icc-avatar">${esc(initials)}</div>
 <div class="icc-emp-text">
 <div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
-<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>
+<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}
 </div>
 ${adminCatBtnHtml}
 </div>
@@ -13549,7 +13728,8 @@ const filtered = q ? indexed.filter(e => String(e.id || '').toUpperCase().includ
 if (!filtered.length) {
 _iccCurrentFilteredList = [];
 _iccRenderedCount = 0;
-body.innerHTML = `<div class="empty-msg">${activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : 'No matching employees found.'}</div>`;
+const emptyTxt = activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : (activeIccCriterion === 'requisition' ? '✓ আলহামদুলিল্লাহ, এই সেকশনে কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).' : 'No matching employees found.');
+body.innerHTML = `<div class="empty-msg" style="padding:16px;text-align:center;font-weight:700;color:${activeIccCriterion === 'requisition' ? '#059669' : '#64748b'};">${emptyTxt}</div>`;
 return;
 }
 const adminActive = isIccAdminCatModeActive();
@@ -14456,6 +14636,42 @@ else if (row.v[4] || row.v[5]) { row.tone = 'hol'; row.note = 'Holiday duty'; }
 else if (row.v[2] || row.v[3]) { row.tone = 'do'; row.note = 'Day off duty'; }
 else if (row.v[1]) row.note = 'Overtime';
 if (o.night) row.note += (row.note ? ' + ' : '') + 'Night';
+
+// REQUISITION PROBLEM DETECTION & HIGHLIGHT
+const parseM = (t) => {
+  if (!t) return null;
+  const mm = String(t).replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/);
+  return mm ? parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10) : null;
+};
+const ti = parseM(o.inn), to = parseM(o.out);
+const totOt = (Number(o.v[1]) || 0) + (Number(o.v[3]) || 0) + (Number(o.v[5]) || 0);
+const totDuty = (Number(o.v[0]) || 0) + (Number(o.v[2]) || 0) + (Number(o.v[4]) || 0);
+let elHrs = 0;
+if (ti !== null && to !== null) {
+  const diff = to < ti ? (1440 - ti) + to : to - ti;
+  elHrs = Number((diff / 60).toFixed(2));
+}
+
+if (totOt === 0 && !mi && !mo) {
+  let isReq = false, reqNote = '';
+  if (o.night && (elHrs >= 11.0 || totDuty >= 11.0)) {
+    isReq = true;
+    const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+    reqNote = `⚠️ Night OT Missing (${exp}h OT)`;
+  } else if (!o.night && to !== null && to >= 1150 && to <= 1215) {
+    isReq = true; reqNote = '⚠️ 3h OT Missing (04:30-07:30 PM)';
+  } else if (!o.night && to !== null && to >= 1216 && to <= 1350) {
+    isReq = true; reqNote = '⚠️ 5h OT Missing (04:30-09:30 PM)';
+  } else if (!o.night && ti !== null && ti <= 435 && elHrs >= 9.5) {
+    isReq = true; reqNote = ti <= 390 ? '⚠️ 2.5h Morning OT Missing' : '⚠️ 1.0h Morning OT Missing';
+  }
+
+  if (isReq) {
+    row.tone = 'req';
+    row.reqProblem = true;
+    row.note = reqNote + (row.note ? ' [' + row.note + ']' : '');
+  }
+}
 }
 }
 rows.push(row);
@@ -14492,7 +14708,7 @@ rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) pres
 const displayRows = _rptHideEmptyDays
 ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
 : rows;
-const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9' };
+const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', req: '#fef3c7' };
 const fsCell = forExport ? '12.5px' : '11px';
 const fsSmall = forExport ? '11.5px' : '10.5px';
 const fsHead = forExport ? '11.5px' : '10px';
@@ -14540,6 +14756,7 @@ return `<div style="${containerStyle}">
 <tbody>${body}</tbody>
 <tfoot><tr style="background:#0f172a;color:#fff;font-weight:900;height:30px;"><td colspan="3" style="${tdBase}padding-left:6px;font-size:${fsSmall};color:#fff;border-color:#0f172a;">Total (${present}d present)</td>${sum.map(x => `<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${_rN(x)}</td>`).join('')}<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${nights || ''}</td><td style="${tdBase}border-color:#0f172a;"></td></tr></tfoot></table>
 <div style="margin-top:7px;font-size:12px;font-weight:800;color:${issues ? '#b91c1c' : '#15803d'};">${issues ? 'Punch problem on ' + issues + ' day(s): ' + issueDates.join(', ') : 'No missing In/Out punch found in this report.'}</div>
+${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
 <div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
 }
 function _rptReset() { const h = document.getElementById('rptPreviewHost'); if (h) { h.style.display = 'none'; h.innerHTML = ''; } const b = document.getElementById('rptPreviewBtn'); if (b) b.textContent = 'Preview daily report ▼'; }
@@ -14750,6 +14967,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
     updateLbSummaryMetrics(base);
   }
 };
@@ -17432,6 +17650,248 @@ function renderAdminLongTermLeaves() {
   });
 
   html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+
+
+/* ==========================================================================
+   PLANT HOLIDAY & DUTY COORDINATION JAVASCRIPT CONTROLLER (TICK/UNTICK)
+   ========================================================================== */
+
+let PLANT_HOLIDAYS = {
+  cancelled: [],
+  custom: [],
+  byMonth: {}
+};
+
+let _admHolidayViewMode = 'all'; // 'all' shows all 30/31 days; 'holidays' shows holidays only
+
+function getPlantHolidaysConfig() {
+  try {
+    const raw = localStorage.getItem('rppf_plant_holidays_v1');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        PLANT_HOLIDAYS = Object.assign(PLANT_HOLIDAYS, parsed);
+      }
+    }
+  } catch (e) {}
+  if (!Array.isArray(PLANT_HOLIDAYS.cancelled)) PLANT_HOLIDAYS.cancelled = [];
+  if (!Array.isArray(PLANT_HOLIDAYS.custom)) PLANT_HOLIDAYS.custom = [];
+  return PLANT_HOLIDAYS;
+}
+
+function adminSetHolidayFilterMode(mode) {
+  _admHolidayViewMode = mode;
+  adminRenderPlantHolidays();
+}
+
+function adminSavePlantHolidays() {
+  try {
+    localStorage.setItem('rppf_plant_holidays_v1', JSON.stringify(PLANT_HOLIDAYS));
+  } catch (e) {}
+
+  if (typeof saveAreaCache === 'function') {
+    saveAreaCache();
+  }
+
+  showToast('Plant holidays and duty coordination saved successfully!', 'success');
+  adminRenderPlantHolidays();
+}
+
+function adminToggleHoliday(dateStr, isChecked, isGeneralDay = false) {
+  dateStr = String(dateStr).toUpperCase().trim();
+  if (!Array.isArray(PLANT_HOLIDAYS.cancelled)) PLANT_HOLIDAYS.cancelled = [];
+  if (!Array.isArray(PLANT_HOLIDAYS.custom)) PLANT_HOLIDAYS.custom = [];
+
+  if (isChecked) {
+    // Turning this date INTO a holiday!
+    PLANT_HOLIDAYS.cancelled = PLANT_HOLIDAYS.cancelled.filter(d => d !== dateStr);
+    if (isGeneralDay) {
+      if (!PLANT_HOLIDAYS.custom.includes(dateStr)) {
+        PLANT_HOLIDAYS.custom.push(dateStr);
+      }
+      showToast(`Made ${dateStr} an official Plant Holiday / Day Off!`, 'success');
+    } else {
+      showToast(`Restored holiday for ${dateStr}`, 'info');
+    }
+  } else {
+    // Turning this date into a REGULAR working day!
+    PLANT_HOLIDAYS.custom = PLANT_HOLIDAYS.custom.filter(d => d !== dateStr);
+    if (!PLANT_HOLIDAYS.cancelled.includes(dateStr)) {
+      PLANT_HOLIDAYS.cancelled.push(dateStr);
+    }
+    showToast(`Cancelled holiday on ${dateStr} (Now a Regular Working Day)`, 'info');
+  }
+  adminSavePlantHolidays();
+}
+
+function adminAddCustomHoliday() {
+  const dInp = document.getElementById('admNewHolidayDateInp');
+  const tInp = document.getElementById('admNewHolidayTitleInp');
+  const dVal = (dInp?.value || '').trim();
+  const title = (tInp?.value || '').trim() || 'Custom Plant Holiday';
+
+  if (!dVal) {
+    showToast('Please select a date', 'warn');
+    return;
+  }
+
+  // Format to DD-MON-YYYY
+  const p = dVal.split('-');
+  if (p.length !== 3) return;
+  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const formatted = `${p[2]}-${mons[parseInt(p[1],10)-1]}-${p[0]}`.toUpperCase();
+
+  if (!Array.isArray(PLANT_HOLIDAYS.custom)) PLANT_HOLIDAYS.custom = [];
+  if (!PLANT_HOLIDAYS.custom.includes(formatted)) {
+    PLANT_HOLIDAYS.custom.push(formatted);
+  }
+  if (!Array.isArray(PLANT_HOLIDAYS.cancelled)) PLANT_HOLIDAYS.cancelled = [];
+  PLANT_HOLIDAYS.cancelled = PLANT_HOLIDAYS.cancelled.filter(d => d !== formatted);
+
+  if (dInp) dInp.value = '';
+  if (tInp) tInp.value = '';
+
+  adminSavePlantHolidays();
+  showToast(`Added holiday for ${formatted}`, 'success');
+}
+
+function adminRenderPlantHolidays() {
+  const container = document.getElementById('admHolidayDatesContainer');
+  const lbl = document.getElementById('admHolidaySelectedMonthLbl');
+  if (!container) return;
+
+  getPlantHolidaysConfig();
+
+  const y = document.getElementById('adminPdfYear')?.value || new Date().getFullYear();
+  const m = document.getElementById('adminPdfMonth')?.value || String(new Date().getMonth()+1).padStart(2, '0');
+  const ymStr = `${y}-${m}`;
+  if (lbl) lbl.textContent = ymStr;
+
+  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const monName = mons[parseInt(m,10)-1];
+  const lastDay = new Date(parseInt(y,10), parseInt(m,10), 0).getDate();
+
+  const baseHols = {
+    '21-FEB': 'Shaheed Day & Mother Language Day',
+    '26-MAR': 'Independence Day',
+    '14-APR': 'Pahela Baishakh',
+    '01-MAY': 'May Day (Workers Day)',
+    '16-DEC': 'Victory Day',
+    '25-DEC': 'Christmas Day',
+    '20-OCT-2026': 'Durga Puja (Bijaya Dashami)',
+    '21-OCT-2026': 'Durga Puja Holiday'
+  };
+
+  const daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = '';
+  let activeHolsCount = 0;
+
+  // First pass: count active holidays
+  for (let d = 1; d <= lastDay; d++) {
+    const dStr = String(d).padStart(2, '0');
+    const dtObj = new Date(parseInt(y,10), parseInt(m,10)-1, d);
+    const dayName = daysOfWeek[dtObj.getDay()];
+    const fullDate = `${dStr}-${monName}-${y}`.toUpperCase();
+    const shortDate = `${dStr}-${monName}`;
+    const isWeekend = (dayName === 'Thu' || dayName === 'Fri');
+    const holTitle = baseHols[fullDate] || baseHols[shortDate] || (PLANT_HOLIDAYS.custom.includes(fullDate) ? 'Special Plant Holiday' : '');
+    const isDefaultHoliday = isWeekend || Boolean(holTitle);
+    const isCustom = PLANT_HOLIDAYS.custom.includes(fullDate);
+    const isCancelled = (PLANT_HOLIDAYS.cancelled || []).includes(fullDate);
+    if ((isDefaultHoliday || isCustom) && !isCancelled) activeHolsCount++;
+  }
+
+  // Filter toolbar
+  const filterToolbar = `
+  <div style="grid-column:1/-1;display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;">
+    <button type="button" class="calc-mini-btn ${_admHolidayViewMode === 'all' ? 'active' : ''}" onclick="adminSetHolidayFilterMode('all')" style="${_admHolidayViewMode === 'all' ? 'background:#0f766e;color:#fff;border-color:#0f766e;font-weight:700;' : ''}">
+      📅 Show All Days of Month (${lastDay})
+    </button>
+    <button type="button" class="calc-mini-btn ${_admHolidayViewMode === 'holidays' ? 'active' : ''}" onclick="adminSetHolidayFilterMode('holidays')" style="${_admHolidayViewMode === 'holidays' ? 'background:#0f766e;color:#fff;border-color:#0f766e;font-weight:700;' : ''}">
+      🎯 Holidays &amp; Weekends Only (${activeHolsCount})
+    </button>
+  </div>`;
+
+  html += filterToolbar;
+
+  for (let d = 1; d <= lastDay; d++) {
+    const dStr = String(d).padStart(2, '0');
+    const dtObj = new Date(parseInt(y,10), parseInt(m,10)-1, d);
+    const dayName = daysOfWeek[dtObj.getDay()];
+    const fullDate = `${dStr}-${monName}-${y}`.toUpperCase();
+    const shortDate = `${dStr}-${monName}`;
+
+    const isWeekend = (dayName === 'Thu' || dayName === 'Fri');
+    const holTitle = baseHols[fullDate] || baseHols[shortDate];
+    const isCustom = PLANT_HOLIDAYS.custom.includes(fullDate);
+    const isDefaultHoliday = isWeekend || Boolean(holTitle);
+    const isCancelled = (PLANT_HOLIDAYS.cancelled || []).includes(fullDate);
+
+    // If viewing holidays only, skip regular working days
+    if (_admHolidayViewMode === 'holidays') {
+      if (!isDefaultHoliday && !isCustom) continue;
+      if (isCancelled) continue;
+    }
+
+    const isGeneralDay = !isDefaultHoliday;
+    // Checked if: (it is default holiday and not cancelled) OR (it is custom holiday)
+    const isChecked = (isDefaultHoliday && !isCancelled) || isCustom;
+
+    let badgeText = '';
+    let badgeColor = '#64748b';
+    let cardBg = '#ffffff';
+    let borderColor = '#e2e8f0';
+
+    if (isChecked) {
+      if (isCustom) {
+        badgeText = '✓ Declared Plant Holiday (ছুটি ঘোষিত)';
+        badgeColor = '#0d9488';
+        cardBg = '#f0fdfa';
+        borderColor = '#5eead4';
+      } else if (isWeekend) {
+        badgeText = `✓ Weekend (${dayName})`;
+        badgeColor = '#4f46e5';
+        cardBg = '#f8fafc';
+        borderColor = '#cbd5e1';
+      } else {
+        badgeText = `✓ ${holTitle || 'Govt Holiday'}`;
+        badgeColor = '#059669';
+        cardBg = '#f0fdf4';
+        borderColor = '#86efac';
+      }
+    } else {
+      if (isDefaultHoliday) {
+        badgeText = `❌ Cancelled / Regular Working Day`;
+        badgeColor = '#dc2626';
+        cardBg = '#fef2f2';
+        borderColor = '#fca5a5';
+      } else {
+        badgeText = `Regular Working Day (${dayName})`;
+        badgeColor = '#64748b';
+        cardBg = '#ffffff';
+        borderColor = '#e2e8f0';
+      }
+    }
+
+    html += `
+    <div style="background:${cardBg};border:1.5px solid ${borderColor};border-radius:8px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:all 0.15s ease;">
+      <div style="min-width:0;">
+        <div style="font-size:12.5px;font-weight:800;color:${isChecked ? '#0f172a' : (isDefaultHoliday ? '#991b1b' : '#334155')};${!isChecked && isDefaultHoliday ? 'text-decoration:line-through;' : ''}">
+          ${fullDate} (${dayName})
+        </div>
+        <div style="font-size:11px;font-weight:700;color:${badgeColor};margin-top:2px;">
+          ${badgeText}
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;">
+        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="adminToggleHoliday('${fullDate}', this.checked, ${isGeneralDay})" style="width:20px;height:20px;cursor:pointer;accent-color:#0d9488;">
+      </label>
+    </div>`;
+  }
+
   container.innerHTML = html;
 }
 
