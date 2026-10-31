@@ -83,17 +83,18 @@ def load_areas_json():
                     return (
                         data.get("areas", {}),
                         data.get("details", {}),
-                        data.get("rateTable", DEFAULT_RATE_TABLE)
+                        data.get("rateTable", DEFAULT_RATE_TABLE),
+                        data.get("holidays", {})
                     )
             except Exception as e:
                 print(f"[WARN] Could not parse {p}: {e}")
-    return {}, {}, DEFAULT_RATE_TABLE
+    return {}, {}, DEFAULT_RATE_TABLE, {}
 
 def clean_punch_value(val):
     if val is None:
         return ""
     s = str(val)
-    return re.sub(r'[\s   -‏ -  　﻿]+', '', s).strip()
+    return re.sub(r'[\s   -‏-  　﻿]+', '', s).strip()
 
 def is_punch_missing(val):
     cleaned = clean_punch_value(val).upper()
@@ -389,7 +390,7 @@ def pick_best_employee(a, b):
         return a if a.get("holidayCount", 0) > b.get("holidayCount", 0) else b
     return a
 
-def parse_workbook(wb, source_name, area_map, rate_table, details=None):
+def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None):
     sheet_name = "Work Log" if "Work Log" in wb.sheetnames else wb.sheetnames[0]
     ws = wb[sheet_name]
     rows = list(ws.iter_rows(values_only=True))
@@ -399,6 +400,22 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
     out = []
     month_counts = Counter()
     cur = None
+
+    # Step A: Auto-detect Empress recognized Government/Company Holidays for this month
+    detected_holidays = set()
+    for r in rows:
+        c0 = format_date_str(r[0] if r and len(r) > 0 else "")
+        if re.match(r'^\d{2}-[A-Za-z]{3}-\d{4}$', c0):
+            hol_d = get_num(r, ci["holDuty"])
+            hol_o = get_num(r, ci["holOT"])
+            if hol_d > 0 or hol_o > 0:
+                detected_holidays.add(c0.upper())
+
+    # Incorporate Admin Panel overrides (Tick / Untick)
+    cancelled_hols = set((holidays_cfg or {}).get("cancelled", []))
+    custom_hols = set((holidays_cfg or {}).get("custom", []))
+    # Apply custom additions and exclude admin unticked/cancelled dates
+    detected_holidays = (detected_holidays | custom_hols) - cancelled_hols
 
     def flush():
         nonlocal cur
@@ -543,57 +560,68 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None):
                 cur["plainDaysCount"] += 1
 
             # -------------------------------------------------------------
-            # REQUISITION PROBLEM DETECTION (ওভারটাইম রিকুইজিশন নেই)
-            # Rule: Not a night shift, duty is 9.2h to 13.5h (e.g. 7:30 PM
-            # or 9:30 PM exit, or early morning OT), but total OT is 0.0!
+            # COMPREHENSIVE REQUISITION AUDIT (OT, Weekend DO, Govt Holiday)
             # -------------------------------------------------------------
             total_ot_today = regOT + doOT + holOT
             total_duty_today = regDuty + doDuty + holDuty
-            if total_ot_today == 0.0 and not miss_in and not miss_out:
-                is_req_problem = False
-                expected_ot_str = ""
+            date_upper = date_str.upper()
 
-                # Case 1: Day/Evening Shift OT Missing (not night)
-                if not is_night:
-                    # Case A: Evening 3-Hour OT (Out 19:10 - 20:15 / around 7:30 PM)
-                    if t_out_mins is not None and 1150 <= t_out_mins <= 1215:
-                        is_req_problem = True
-                        expected_ot_str = "3.0h (04:30 - 07:30 PM)"
-                    # Case B: Evening 5-Hour OT (Out 21:10 - 22:30 / around 9:30 PM)
-                    elif t_out_mins is not None and 1216 <= t_out_mins <= 1350:
-                        is_req_problem = True
-                        expected_ot_str = "5.0h (04:30 - 09:30 PM)"
-                    # Case C: Morning Pre-shift OT (In <= 07:15 AM)
-                    elif t_in_mins is not None and t_in_mins <= 435:
-                        is_req_problem = True
-                        if t_in_mins <= 390:
-                            expected_ot_str = "2.5h Morning OT (06:00 - 08:30 AM)"
-                        else:
-                            expected_ot_str = "1.0h Morning OT (07:00 - 08:00 AM)"
-                    # Case D: General elapsed duration between 9.5h and 13.5h
-                    elif 9.5 <= elapsed_hrs <= 13.5 and (t_out_mins is not None and t_out_mins > 1035):
-                        is_req_problem = True
-                        expected_ot_str = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+            is_req_problem = False
+            expected_ot_str = ""
+            prob_reason = ""
 
-                # Case 2: Night Shift OT Requisition Missing (Case: Numan)
-                # Night shift is recorded (Night=Yes/DN), but worked 11h-24h and OT is 0.0!
-                elif is_night and (elapsed_hrs >= 11.0 or total_duty_today >= 11.0):
+            # 1. Government Holiday Requisition Missing
+            # Worked on Govt Holiday, but hours went to regDuty/regOT instead of holDuty/holOT!
+            if date_upper in detected_holidays and (regDuty > 0 or regOT > 0) and (holDuty == 0 and holOT == 0):
+                is_req_problem = True
+                expected_ot_str = "Govt Holiday Requisition Missing"
+                prob_reason = "Worked on Govt Holiday, but recorded as Regular Duty"
+
+            # 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only)
+            # Worked on Thu or Fri, but hours went to regDuty/regOT instead of doDuty/doOT!
+            elif day_val in ("Thu", "Fri") and (regDuty > 0 or regOT > 0) and (doDuty == 0 and doOT == 0):
+                is_req_problem = True
+                expected_ot_str = f"Weekend ({day_val}) DO Req Missing"
+                prob_reason = "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+
+            # 3. Night Shift OT Requisition Missing (Case: Numan)
+            elif is_night and (elapsed_hrs >= 11.0 or total_duty_today >= 11.0) and total_ot_today == 0.0 and not miss_in and not miss_out:
+                is_req_problem = True
+                exp_hrs = min(7.0, max(4.0, round(max(elapsed_hrs, total_duty_today) - 8.5, 1)))
+                expected_ot_str = f"{exp_hrs}h (Night Shift OT Error / Missing)"
+                prob_reason = "Night Shift OT Missing"
+
+            # 4. Standard Evening/Morning Overtime Missing
+            elif not is_night and total_ot_today == 0.0 and not miss_in and not miss_out:
+                if t_out_mins is not None and 1150 <= t_out_mins <= 1215:
                     is_req_problem = True
-                    expected_ot_hrs = min(7.0, max(4.0, round(max(elapsed_hrs, total_duty_today) - 8.5, 1)))
-                    expected_ot_str = f"{expected_ot_hrs}h (Night Shift OT Error / Missing)"
+                    expected_ot_str = "3.0h (04:30 - 07:30 PM)"
+                    prob_reason = "3h Evening OT Missing"
+                elif t_out_mins is not None and 1216 <= t_out_mins <= 1350:
+                    is_req_problem = True
+                    expected_ot_str = "5.0h (04:30 - 09:30 PM)"
+                    prob_reason = "5h Evening OT Missing"
+                elif t_in_mins is not None and t_in_mins <= 435:
+                    is_req_problem = True
+                    expected_ot_str = "2.5h Morning OT" if t_in_mins <= 390 else "1.0h Morning OT"
+                    prob_reason = "Morning OT Missing"
+                elif 9.5 <= elapsed_hrs <= 13.5 and (t_out_mins is not None and t_out_mins > 1035):
+                    is_req_problem = True
+                    expected_ot_str = f"{round(elapsed_hrs - 8.5, 1)}h Extended OT"
+                    prob_reason = "Day OT Missing"
 
-                if is_req_problem:
-                    cur["requisitionProblems"].append({
-                        "date": date_str,
-                        "day": day_val,
-                        "in": in_val,
-                        "out": out_val,
-                        "duty": round(regDuty + doDuty + holDuty, 2),
-                        "elapsed": elapsed_hrs,
-                        "isNight": is_night,
-                        "expectedOt": expected_ot_str,
-                        "reason": "Night Shift OT Missing" if is_night else "Day/Evening OT Missing"
-                    })
+            if is_req_problem:
+                cur["requisitionProblems"].append({
+                    "date": date_str,
+                    "day": day_val,
+                    "in": in_val,
+                    "out": out_val,
+                    "duty": round(total_duty_today, 2),
+                    "elapsed": elapsed_hrs,
+                    "isNight": is_night,
+                    "expectedOt": expected_ot_str,
+                    "reason": prob_reason
+                })
 
     flush()
     return out, month_counts
@@ -610,7 +638,7 @@ def main():
         print(f"[INFO] No .xlsx files found in '{RAW_DIR}'. Nothing to process.")
         sys.exit(0)
 
-    area_map, details, rate_table = load_areas_json()
+    area_map, details, rate_table, holidays_cfg = load_areas_json()
     print(f"[INFO] Loaded {len(area_map)} area assignments from areas.json")
 
     all_employees_map = {}
@@ -621,7 +649,7 @@ def main():
         print(f"[INFO] Parsing '{fpath.name}'...")
         try:
             wb = openpyxl.load_workbook(fpath, data_only=True)
-            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details)
+            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details, holidays_cfg=holidays_cfg)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -675,3 +703,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+ 
