@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6836,6 +6838,71 @@ body[data-page="search"] .wa-float {
     <div id="admAbsentItemsContainer"></div>
   </div>
   <div id="admAbsentSyncStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
+
+<!-- ================================================================= -->
+<!-- APPROVED LONG-TERM LEAVE & MATERNITY LEAVE MANAGER                -->
+<!-- ================================================================= -->
+<div class="card" style="padding:14px;margin-top:14px;border:1.5px solid rgba(16,185,129,0.3);background:linear-gradient(180deg, rgba(16,185,129,0.03) 0%, rgba(255,255,255,0) 100%);">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+    <div>
+      <div class="card-title" style="display:flex;align-items:center;gap:6px;color:#059669;">
+        <span>🏥</span> Approved Long-Term Leave & Maternity Leave Manager
+      </div>
+      <div class="card-sub" style="white-space:normal;">
+        Record long-term approved leaves (e.g. 6-Month Maternity Leave, Medical Leave, Extended Leaves). Employees with active approved leaves are <strong>100% excluded</strong> from daily Absent reports and WhatsApp alerts!
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button type="button" class="calc-mini-btn btn-success-solid" onclick="saveAbsentAndPushServer()">Save &amp; Sync Server</button>
+    </div>
+  </div>
+
+  <div style="background:var(--card-bg, #ffffff);border:1px solid var(--border-color, #e2e8f0);border-radius:8px;padding:12px;margin-bottom:12px;">
+    <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text-main, #0f172a);">+ Grant / Add Approved Long-Term Leave</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:8px;align-items:flex-end;">
+      <div>
+        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Employee (ID / Name)</label>
+        <input type="text" id="admLtEmpSearch" list="admLtEmpDataList" placeholder="Search ID or Name..." style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+        <datalist id="admLtEmpDataList"></datalist>
+      </div>
+      <div>
+        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Leave Category</label>
+        <select id="admLtCategory" onchange="onLtCategoryPresetChange(this.value)" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+          <option value="Maternity Leave (ML)">Maternity Leave (ML - 6 Months)</option>
+          <option value="Medical / Sick Leave (SL)">Extended Medical / Sick (SL)</option>
+          <option value="Earned Leave (EL)">Extended Earned Leave (EL)</option>
+          <option value="Special Leave">Special Approved Leave</option>
+          <option value="Other Approved Leave">Other Approved Leave</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Start Date</label>
+        <input type="date" id="admLtStartDt" onchange="onLtStartDateChange()" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+      </div>
+      <div>
+        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">End Date (Inclusive)</label>
+        <input type="date" id="admLtEndDt" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+      </div>
+      <div>
+        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Remarks / Reference No.</label>
+        <input type="text" id="admLtRemarks" placeholder="e.g. HR Approved ML-2026/04" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+      </div>
+      <div>
+        <button type="button" class="calc-mini-btn btn-brand" onclick="admLtAddLeaveRecord()" style="width:100%;min-height:34px;font-weight:700;background:#059669;border-color:#059669;color:#fff;">+ Add Approved Leave</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+    <div style="font-size:12.5px;font-weight:700;color:var(--text-main, #1e293b);">
+      Active &amp; Recorded Long-Term Leaves (<span id="admLtLeaveCount">0</span>)
+    </div>
+    <input type="text" id="admLtTableFilter" placeholder="Filter recorded leaves..." oninput="renderAdminLongTermLeaves()" style="max-width:220px;min-height:30px;font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+  </div>
+
+  <div id="admLtLeavesTableContainer" style="overflow-x:auto;"></div>
+</div>
+
 </div>
 </div>
 
@@ -14471,32 +14538,38 @@ const DEFAULT_AREA_SUBSECTIONS = {
 
 function ensureDefaultSubsections() {
   if (!AREA_SUBS || typeof AREA_SUBS !== 'object') AREA_SUBS = {};
+  if (!Array.isArray(AREA_SUBS.__deleted_subs__)) AREA_SUBS.__deleted_subs__ = [];
+  const deletedSet = new Set(AREA_SUBS.__deleted_subs__);
+
   Object.keys(DEFAULT_AREA_SUBSECTIONS).forEach(area => {
-    const existing = Array.isArray(AREA_SUBS[area]) ? AREA_SUBS[area] : [];
-    const merged = [...new Set([...existing, ...DEFAULT_AREA_SUBSECTIONS[area]].filter(Boolean))];
-    AREA_SUBS[area] = merged;
+    if (!Array.isArray(AREA_SUBS[area])) {
+      AREA_SUBS[area] = [...DEFAULT_AREA_SUBSECTIONS[area]].filter(s => !deletedSet.has(s));
+    } else {
+      AREA_SUBS[area] = AREA_SUBS[area].filter(s => !deletedSet.has(s));
+    }
   });
 }
 
 function getAllSubsectionsForArea(area) {
   ensureDefaultSubsections();
+  const deletedSet = new Set(AREA_SUBS.__deleted_subs__ || []);
   const fromDetails = [];
   Object.keys(AREA_DETAILS || {}).forEach(id => {
     const d = AREA_DETAILS[id];
     const empArea = AREA_MAP[id];
-    if (d && d.s && (area === 'all' || empArea === area)) {
+    if (d && d.s && !deletedSet.has(d.s) && (area === 'all' || empArea === area)) {
       fromDetails.push(String(d.s).trim());
     }
   });
   if (area === 'all') {
     const allSubs = [];
     Object.keys(AREA_SUBS).forEach(k => {
-      if (k === '__custom_cats__') return;
+      if (k === '__custom_cats__' || k === '__deleted_subs__') return;
       if (Array.isArray(AREA_SUBS[k])) allSubs.push(...AREA_SUBS[k]);
     });
-    return [...new Set([...allSubs, ...fromDetails].filter(Boolean))];
+    return [...new Set([...allSubs, ...fromDetails].filter(s => Boolean(s) && !deletedSet.has(s)))];
   }
-  return [...new Set([...(AREA_SUBS[area] || []), ...fromDetails].filter(Boolean))];
+  return [...new Set([...(AREA_SUBS[area] || []), ...fromDetails].filter(s => Boolean(s) && !deletedSet.has(s)))];
 }
 
 // Override refreshSubFilter so Sub-section filter is ALWAYS visible in Ranking instead of Category
@@ -15147,6 +15220,7 @@ function copyAbsentSummaryText() {
 }
 
 function renderAdminAbsentPane() {
+  try { renderAdminLongTermLeaves(); admLtPopulateEmployeeDatalist(); } catch(e) {}
   const container = _el('admAbsentItemsContainer');
   const dtInp = _el('admAbsentDateInput');
   if (!container) return;
@@ -16028,22 +16102,64 @@ function adminQuickAddSubsection() {
 }
 
 function adminDeleteSubConfirm(subName) {
-  // Canvas does not allow confirm(); proceed directly with toast confirmation
   const area = _admCurrentActiveSection;
-  AREA_SUBS[area] = (AREA_SUBS[area] || []).filter(s => s !== subName);
+  if (!AREA_SUBS || typeof AREA_SUBS !== 'object') AREA_SUBS = {};
+  if (!Array.isArray(AREA_SUBS.__deleted_subs__)) AREA_SUBS.__deleted_subs__ = [];
+  if (!AREA_SUBS.__deleted_subs__.includes(subName)) {
+    AREA_SUBS.__deleted_subs__.push(subName);
+  }
+  if (Array.isArray(AREA_SUBS[area])) {
+    AREA_SUBS[area] = AREA_SUBS[area].filter(s => s !== subName);
+  }
   // Clear from employees
+  let unassignedCount = 0;
   Object.keys(AREA_MAP || {}).forEach(id => {
-    if (AREA_MAP[id] === area && (AREA_DETAILS[id] || {}).s === subName) {
+    if ((area === 'all' || AREA_MAP[id] === area) && (AREA_DETAILS[id] || {}).s === subName) {
       delete AREA_DETAILS[id].s;
+      unassignedCount++;
     }
   });
   persistAreaSubs();
   persistAreaDetails();
-  showToast(`Removed sub-section "${subName}"`, "success");
+  showToast(`Permanently deleted sub-section "${subName}" (${unassignedCount} employee(s) reset)`, "success");
   if (_admCurrentActiveSub === subName) _admCurrentActiveSub = '';
   adminRenderSubPills();
   adminFilterEmployeeTable();
   populateAdminSubSelect();
+}
+
+function adminCleanUnusedSubsections() {
+  const area = _admCurrentActiveSection;
+  if (!area) return;
+  const currentSubs = AREA_SUBS[area] || [];
+  if (!currentSubs.length) {
+    showToast('No subsections found in current section', 'info');
+    return;
+  }
+  const sectionIds = Object.keys(AREA_MAP || {}).filter(id => AREA_MAP[id] === area);
+  const counts = {};
+  currentSubs.forEach(s => counts[s] = 0);
+  sectionIds.forEach(id => {
+    const s = (AREA_DETAILS[id] || {}).s;
+    if (s && counts[s] !== undefined) counts[s]++;
+  });
+  const unused = currentSubs.filter(s => counts[s] === 0);
+  if (!unused.length) {
+    showToast('All subsections currently have active employees', 'info');
+    return;
+  }
+  if (!confirm(`Found ${unused.length} unused subsection(s) with 0 employees:\n\n• ${unused.join('\n• ')}\n\nDelete these unused subsections permanently?`)) {
+    return;
+  }
+  if (!Array.isArray(AREA_SUBS.__deleted_subs__)) AREA_SUBS.__deleted_subs__ = [];
+  unused.forEach(s => {
+    if (!AREA_SUBS.__deleted_subs__.includes(s)) AREA_SUBS.__deleted_subs__.push(s);
+  });
+  AREA_SUBS[area] = currentSubs.filter(s => !unused.includes(s));
+  persistAreaSubs();
+  adminRenderSubPills();
+  populateAdminSubSelect();
+  showToast(`Successfully removed ${unused.length} unused subsection(s)`, 'success');
 }
 
 function adminFilterEmployeeTable() {
@@ -16973,6 +17089,228 @@ function init() {
 }
 init();
 })();
+
+/* ==========================================================================
+   APPROVED LONG-TERM LEAVE & MATERNITY LEAVE JAVASCRIPT CONTROLLER
+   ========================================================================== */
+
+function getActiveLongTermLeaves() {
+  if (!ABSENT_STORE || typeof ABSENT_STORE !== 'object') return [];
+  if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
+  return ABSENT_STORE.longTermLeaves;
+}
+
+function isEmployeeOnApprovedLeave(empId, targetDateStr) {
+  const dt = targetDateStr || getTodayDateStr();
+  const uId = String(empId || '').trim().toUpperCase();
+  if (!uId) return null;
+  const list = getActiveLongTermLeaves();
+  for (const item of list) {
+    if (String(item.id || '').trim().toUpperCase() === uId) {
+      if ((!item.startDate || item.startDate <= dt) && (!item.endDate || item.endDate >= dt)) {
+        return item;
+      }
+    }
+  }
+  return null;
+}
+
+function onLtCategoryPresetChange(cat) {
+  const startInp = document.getElementById('admLtStartDt');
+  const endInp = document.getElementById('admLtEndDt');
+  if (!startInp || !endInp) return;
+  const startVal = startInp.value || getTodayDateStr();
+  startInp.value = startVal;
+  
+  const d = new Date(startVal);
+  if (isNaN(d.getTime())) return;
+
+  if (cat.includes('Maternity')) {
+    d.setMonth(d.getMonth() + 6);
+    endInp.value = d.toISOString().split('T')[0];
+  } else if (cat.includes('Medical') || cat.includes('Sick')) {
+    d.setMonth(d.getMonth() + 1);
+    endInp.value = d.toISOString().split('T')[0];
+  }
+}
+
+function onLtStartDateChange() {
+  const cat = document.getElementById('admLtCategory')?.value || '';
+  if (cat.includes('Maternity') || cat.includes('Medical') || cat.includes('Sick')) {
+    onLtCategoryPresetChange(cat);
+  }
+}
+
+function admLtPopulateEmployeeDatalist() {
+  const dl = document.getElementById('admLtEmpDataList');
+  if (!dl) return;
+  let html = '';
+  const dir = typeof getDirectoryList === 'function' ? getDirectoryList() : [];
+  if (dir.length) {
+    dir.forEach(e => {
+      html += `<option value="${esc(e.id)}">${esc(e.n || '')} (${esc(e.des || e.d || '')}) - ${esc(e.area || '')}</option>`;
+    });
+  } else {
+    Object.keys(AREA_MAP || {}).forEach(id => {
+      const d = AREA_DETAILS[id] || {};
+      html += `<option value="${esc(id)}">${esc(d.n || '')} - ${esc(AREA_MAP[id] || '')}</option>`;
+    });
+  }
+  dl.innerHTML = html;
+}
+
+function admLtAddLeaveRecord() {
+  const empVal = (document.getElementById('admLtEmpSearch')?.value || '').trim();
+  const cat = document.getElementById('admLtCategory')?.value || 'Maternity Leave (ML)';
+  const startDt = document.getElementById('admLtStartDt')?.value || '';
+  const endDt = document.getElementById('admLtEndDt')?.value || '';
+  const remarks = (document.getElementById('admLtRemarks')?.value || '').trim();
+
+  if (!empVal) {
+    showToast('Please select or enter Employee ID', 'warn');
+    return;
+  }
+  if (!startDt || !endDt) {
+    showToast('Please select both Start Date and End Date', 'warn');
+    return;
+  }
+  if (startDt > endDt) {
+    showToast('Start Date cannot be after End Date', 'warn');
+    return;
+  }
+
+  const rec = typeof resolveEmployeeDirectoryRecord === 'function' ? resolveEmployeeDirectoryRecord(empVal) : { id: empVal };
+  const empId = rec.id || empVal.toUpperCase();
+  const empName = rec.n || (AREA_DETAILS[empId] || {}).n || empId;
+  const empArea = rec.area || AREA_MAP[empId] || 'Unassigned';
+  const empSub = rec.sub || (AREA_DETAILS[empId] || {}).s || '';
+  const empDes = rec.des || (AREA_DETAILS[empId] || {}).des || '';
+
+  if (!ABSENT_STORE.longTermLeaves) ABSENT_STORE.longTermLeaves = [];
+  
+  const existingIdx = ABSENT_STORE.longTermLeaves.findIndex(x => String(x.id).toUpperCase() === empId.toUpperCase());
+  if (existingIdx !== -1) {
+    if (!confirm(`Employee ${empId} already has a long-term leave entry. Replace with this new record?`)) {
+      return;
+    }
+    ABSENT_STORE.longTermLeaves.splice(existingIdx, 1);
+  }
+
+  ABSENT_STORE.longTermLeaves.push({
+    id: empId,
+    name: empName,
+    area: empArea,
+    sub: empSub,
+    designation: empDes,
+    category: cat,
+    startDate: startDt,
+    endDate: endDt,
+    remarks: remarks,
+    addedAt: new Date().toISOString()
+  });
+
+  ABSENT_STORE.updatedAt = new Date().toISOString();
+  saveAbsentCache();
+  
+  const empInp = document.getElementById('admLtEmpSearch');
+  if (empInp) empInp.value = '';
+  const remInp = document.getElementById('admLtRemarks');
+  if (remInp) remInp.value = '';
+
+  renderAdminLongTermLeaves();
+  renderAdminAbsentPane();
+  showToast(`Added ${cat} for ${empName} (${empId})`, 'success');
+}
+
+function admLtDeleteLeaveRecord(empId) {
+  if (!confirm(`Are you sure you want to remove long-term approved leave for Employee ${empId}?`)) return;
+  if (!ABSENT_STORE.longTermLeaves) return;
+  ABSENT_STORE.longTermLeaves = ABSENT_STORE.longTermLeaves.filter(x => String(x.id).toUpperCase() !== String(empId).toUpperCase());
+  ABSENT_STORE.updatedAt = new Date().toISOString();
+  saveAbsentCache();
+  renderAdminLongTermLeaves();
+  renderAdminAbsentPane();
+  showToast(`Removed leave entry for ${empId}`, 'info');
+}
+
+function renderAdminLongTermLeaves() {
+  const container = document.getElementById('admLtLeavesTableContainer');
+  const countEl = document.getElementById('admLtLeaveCount');
+  if (!container) return;
+
+  const leaves = getActiveLongTermLeaves();
+  const filterVal = (document.getElementById('admLtTableFilter')?.value || '').trim().toLowerCase();
+  const today = getTodayDateStr();
+
+  let filtered = leaves;
+  if (filterVal) {
+    filtered = leaves.filter(item => {
+      const q = `${item.id} ${item.name} ${item.area} ${item.sub} ${item.category} ${item.remarks}`.toLowerCase();
+      return q.includes(filterVal);
+    });
+  }
+
+  if (countEl) countEl.textContent = leaves.length;
+
+  if (!filtered.length) {
+    container.innerHTML = `<div style="text-align:center;padding:18px;color:#64748b;font-size:12.5px;">No long-term approved leave records found. Add above.</div>`;
+    return;
+  }
+
+  let html = `<table class="admin-data-table" style="width:100%;font-size:12px;border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;text-align:left;">
+        <th style="padding:6px 8px;">Employee</th>
+        <th style="padding:6px 8px;">Area & Sub</th>
+        <th style="padding:6px 8px;">Leave Type</th>
+        <th style="padding:6px 8px;">Duration</th>
+        <th style="padding:6px 8px;">Status</th>
+        <th style="padding:6px 8px;">Remarks</th>
+        <th style="padding:6px 8px;text-align:center;">Action</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  filtered.forEach(item => {
+    const isActiveNow = (!item.startDate || item.startDate <= today) && (!item.endDate || item.endDate >= today);
+    const isFuture = item.startDate && item.startDate > today;
+    const isExpired = item.endDate && item.endDate < today;
+
+    let statusBadge = '<span style="background:#10b981;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;">ACTIVE NOW</span>';
+    if (isFuture) statusBadge = '<span style="background:#3b82f6;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;">UPCOMING</span>';
+    if (isExpired) statusBadge = '<span style="background:#94a3b8;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;">EXPIRED</span>';
+
+    html += `<tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:6px 8px;">
+        <div style="font-weight:700;color:#0f172a;">${esc(item.name || item.id)}</div>
+        <div style="font-size:11px;color:#64748b;">${esc(item.id)} ${item.designation ? '• ' + esc(item.designation) : ''}</div>
+      </td>
+      <td style="padding:6px 8px;">
+        <div>${esc(item.area || '—')}</div>
+        <div style="font-size:11px;color:#64748b;">${esc(item.sub || 'General')}</div>
+      </td>
+      <td style="padding:6px 8px;font-weight:600;color:#059669;">
+        ${esc(item.category || 'Approved Leave')}
+      </td>
+      <td style="padding:6px 8px;white-space:nowrap;">
+        <div>${esc(item.startDate)} ➔ ${esc(item.endDate)}</div>
+      </td>
+      <td style="padding:6px 8px;">
+        ${statusBadge}
+      </td>
+      <td style="padding:6px 8px;font-size:11px;color:#475569;">
+        ${esc(item.remarks || '—')}
+      </td>
+      <td style="padding:6px 8px;text-align:center;">
+        <button type="button" class="calc-mini-btn" onclick="admLtDeleteLeaveRecord('${esc(item.id)}')" title="Delete this leave record" style="padding:2px 6px;font-size:11px;color:#ef4444;border-color:rgba(239,68,68,0.3);">Delete</button>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
 </script>
 
 </body>
