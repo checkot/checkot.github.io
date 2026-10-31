@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6518,6 +6516,16 @@ body[data-page="search"] .wa-float {
     }
   }
 
+
+.icc-row.icc-req-row {
+  border-left: 3.5px solid #f59e0b !important;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+.icc-row.icc-req-row .icc-val-main {
+  color: #d97706 !important;
+  font-weight: 900 !important;
+}
+
 </style>
 
 <style id="adminModernOrganizerStyles">
@@ -7681,7 +7689,7 @@ body[data-page="search"] .wa-float {
 </div>
 </div>
 <div class="card calc-card" id="step7" style="padding:12px;">
-<div class="section-label" id="step7LabelText" style="margin:0 0 6px 0;padding:0 0 6px 0;border-bottom:1px solid var(--border);">Report &amp; Punch Verification Status</div>
+<div class="section-label" id="step7LabelText" style="margin:0 0 6px 0;padding:0 0 6px 0;border-bottom:1px solid var(--border);">Report, Punch &amp; OT Requisition Status</div>
 <div id="remarksBox" class="remarks-box remarks-info">—</div>
 <button type="button" class="btn-secondary" id="rptPreviewBtn" style="width:100%;margin-top:8px;" onclick="toggleReportPreview()">Preview daily report ▼</button>
 <div id="rptPreviewHost" style="display:none;margin-top:8px;"></div>
@@ -9283,7 +9291,11 @@ return null;
 function getRequisitionProblemCount(emp) {
   if (!emp) return 0;
   if (Array.isArray(emp.requisitionProblems)) return emp.requisitionProblems.length;
-  return Number(emp.requisitionProblemCount) || 0;
+  if (emp.requisitionProblemCount != null) return Number(emp.requisitionProblemCount) || 0;
+  const probs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : [];
+  emp.requisitionProblems = probs;
+  emp.requisitionProblemCount = probs.length;
+  return probs.length;
 }
 function getPunchProblemCount(emp) {
 if (!emp) return 0;
@@ -10256,7 +10268,14 @@ return `Hello, my ID: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, 
 }
 return `Hello, my ID: ${currentSearchId}${empName ? ' (' + empName + ')' : ''}, area: ${areaName}. In my ${currentMonth} report, I need help with grade/rate and punch (${datesStr}).`;
 }
+function buildSingleEmployeeReqErpMessage(empId, empName, reqProbs) {
+  const lines = reqProbs.map(p => `• ${p.date}: In ${p.in || '—'} ➔ Out ${p.out || '—'} (${p.duty || p.elapsed}h duty) | ${p.expectedOt || 'OT Missing'}`);
+  return `Dear ERP Team,\nEmployee ${empName || '—'} (${empId}) physically worked overtime on the following days, but Empress shows 0 OT (Requisition Missing):\n\n${lines.join('\n')}\n\nPlease allocate and approve the OT requisitions. Thank you!`;
+}
+
 function showRemarks(punchProblems, detection) {
+const curEmp = typeof currentResult !== 'undefined' ? currentResult : {};
+const rawReqProbs = Array.isArray(curEmp.requisitionProblems) ? curEmp.requisitionProblems : [];
 const box = document.getElementById('remarksBox');
 const pList = Array.isArray(punchProblems) ? punchProblems : [];
 const pCount = Array.isArray(punchProblems) ? punchProblems.length : (Number(punchProblems) || 0);
@@ -10269,9 +10288,22 @@ const isOwn = (ctx === 'own');
 const subj = isOwn ? 'Your report' : `Report of this employee (${esc(currentSearchId)})`;
 const isRppf = currentResult?.isRppf !== false;
 const facilityWarn = isRppf ? '' : '<div style="margin-top:8px;padding:8px 10px;background:var(--warning-bg);border:1px solid var(--border);border-radius:6px;color:var(--warning);font-weight:700;">This employee is not from RPPF - other facility</div>';
-if (detection.valid && !hasP) {
+const reqWarnHtml = rawReqProbs.length > 0 ? `
+<div style="margin-top:8px;padding:10px 12px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;color:#92400e;font-size:12px;line-height:1.4;">
+  <div style="font-weight:800;display:flex;align-items:center;gap:5px;color:#b45309;font-size:12.5px;">
+    <span>⚠️</span> Overtime Requisition Alert (${rawReqProbs.length} day${rawReqProbs.length > 1 ? 's' : ''})
+  </div>
+  <div style="margin-top:3px;font-size:11.5px;">Worked overtime on floor, but Empress shows 0 OT (ERP Requisition Missing):</div>
+  <div style="margin-top:4px;font-weight:700;">${rawReqProbs.map(p => `• ${p.date}: ${p.in || '—'} ➔ ${p.out || '—'} (${p.duty || p.elapsed}h) | ${p.expectedOt || 'OT'}`).join('<br>')}</div>
+  <button type="button" class="btn-secondary" style="margin-top:8px;background:#d97706;color:#fff;border-color:#b45309;font-weight:700;padding:5px 10px;font-size:11.5px;" onclick="openErpSupportModal(${esc(JSON.stringify(buildSingleEmployeeReqErpMessage(currentSearchId, currentResult?.name, rawReqProbs)))}, ${esc(JSON.stringify(areaName))})">Forward Missing Requisitions to ERP Team (WhatsApp)</button>
+</div>` : '';
+
+if (detection.valid && !hasP && rawReqProbs.length === 0) {
 box.className = "remarks-box remarks-ok";
 box.innerHTML = `${subj}: all In/Out punches are correct.${facilityWarn}`;
+} else if (detection.valid && !hasP && rawReqProbs.length > 0) {
+box.className = "remarks-box remarks-warn";
+box.innerHTML = `${subj}: all In/Out punches are correct, but <b>${rawReqProbs.length} Overtime Requisition(s)</b> are pending.${facilityWarn}${reqWarnHtml}`;
 } else if (detection.valid && hasP) {
 box.className = "remarks-box remarks-warn";
 box.innerHTML = `${subj}: punch missing on <b>${esc(dates)}</b> (${bn(pCount)} days).${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
@@ -10732,7 +10764,118 @@ avgOutDetailStr: (nightOutCnt && dayOutCnt)
 };
 }
 window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
+function computeEmpRequisitionProblems(e) {
+  if (!e) return [];
+  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) return e.requisitionProblems;
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  const reqProbs = [];
+
+  // Known / Detected Govt Holidays & Admin Tick/Untick Overrides
+  let cancelledHols = [];
+  let customHols = [];
+  try {
+    const raw = localStorage.getItem('rppf_plant_holidays_v1');
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase());
+      customHols = (cfg.custom || []).map(x => String(x).toUpperCase());
+    }
+  } catch (e) {}
+
+  const baseGovtHols = ['20-OCT-2026', '21-OCT-2026', '21-FEB-2026', '26-MAR-2026', '14-APR-2026', '01-MAY-2026', '16-DEC-2026', '25-DEC-2026'];
+  const activeGovtHols = [...new Set([...baseGovtHols, ...customHols])].filter(d => !cancelledHols.includes(d));
+
+  daily.forEach(r => {
+    if (!r || !Array.isArray(r)) return;
+    const dateStr = String(r[0] || '').trim().toUpperCase();
+    const dayStr = String(r[1] || '').trim();
+    const inStr = String(r[2] || '').trim();
+    const outStr = String(r[3] || '').trim();
+
+    // If date is explicitly unticked/cancelled by admin, treat as normal working day!
+    const isExplicitlyCancelled = cancelledHols.includes(dateStr);
+
+    const regD = Number(r[4]) || 0;
+    const regO = Number(r[5]) || 0;
+    const doD = Number(r[6]) || 0;
+    const doO = Number(r[7]) || 0;
+    const holD = Number(r[8]) || 0;
+    const holO = Number(r[9]) || 0;
+    const isNight = Number(r[10]) === 1 || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+
+    const totOt = regO + doO + holO;
+    const totDuty = regD + doD + holD;
+
+    // 1. Govt Holiday Requisition Missing (Active holidays only, unless cancelled)
+    if (!isExplicitlyCancelled && activeGovtHols.includes(dateStr) && (regD > 0 || regO > 0) && (holD === 0 && holO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: 'Govt Holiday Req Missing (Should be in Holiday Allowance)',
+        reason: 'Govt Holiday Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    // 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only, unless cancelled as compensatory working day)
+    if (!isExplicitlyCancelled && (dayStr === 'Thu' || dayStr === 'Fri') && (regD > 0 || regO > 0) && (doD === 0 && doO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: `Weekend (${dayStr}) DO Req Missing`,
+        reason: 'Weekend Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    if (typeof isPunchMissing === 'function' && (isPunchMissing(inStr) || isPunchMissing(outStr))) return;
+
+    const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
+    const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
+    if (!mIn || !mOut) return;
+    const ti = (+mIn[1]) * 60 + (+mIn[2]);
+    const to = (+mOut[1]) * 60 + (+mOut[2]);
+    const diff = to < ti ? (1440 - ti) + to : to - ti;
+    const elHrs = Number((diff / 60).toFixed(2));
+
+    if (totOt === 0) {
+      if (isNight && (elHrs >= 11.0 || totDuty >= 11.0)) {
+        const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: true,
+          expectedOt: `${exp}.0h (Night Shift OT Error / Missing)`,
+          reason: 'Night Shift OT Missing'
+        });
+      } else if (!isNight && to >= 1150 && to <= 1215) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '3.0h (04:30 - 07:30 PM)',
+          reason: '3h Evening OT Missing'
+        });
+      } else if (!isNight && to >= 1216 && to <= 1350) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '5.0h (04:30 - 09:30 PM)',
+          reason: '5h Evening OT Missing'
+        });
+      } else if (!isNight && ti <= 435 && elHrs >= 9.5) {
+        const exp = ti <= 390 ? '2.5h Morning OT' : '1.0h Morning OT';
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: exp,
+          reason: 'Morning OT Missing'
+        });
+      }
+    }
+  });
+  return reqProbs;
+}
+
 function ensureEmpAvgStats(list) {
+(list || []).forEach(e => {
+  if (!e) return;
+  const rps = computeEmpRequisitionProblems(e);
+  e.requisitionProblems = rps;
+  e.requisitionProblemCount = rps.length;
+});
 (list || []).forEach(e => {
 if (!e || (e._avgComputed && e.adjustedDuty != null && e.adjustedAvgDuty != null && e.nightRestDays != null)) return;
 const st = computeEmpAvgDutyAndInOut(e);
@@ -11069,6 +11212,7 @@ currentLeaderboardResult = result;
 const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id));
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
 const preferredArea = getAppMode() === 'incharge' ? getInchargeDefaultArea() : (getMyId() ? getAreaForId(getMyId(), true) : 'all');
@@ -11215,7 +11359,8 @@ const sortedByLessOT = [...filtered].sort((a,b) => (a.otHours - b.otHours) || (a
 const sortedByAvgDuty = [...filtered].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
 const sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, area };
+const sortedByRequisition = [...filtered].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, area };
 updateLbSummaryMetrics(filtered);
 renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
 renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
@@ -11873,6 +12018,9 @@ setTxt('hubSubPlain', 'Most 4:30 pm Regular Days');
 setTxt('hubSubLessDuty', 'Lowest Total Duty Hours');
 setTxt('hubSubLessOt', 'Lowest Overtime Hours');
 setTxt('hubSubPunch', 'Missing In/Out Punch List');
+const rCount = (filteredList || []).filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).length;
+setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
+setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
 if (iccDrillOpen) renderIccDrillList();
@@ -12151,11 +12299,9 @@ return f.sortedByAvgInOut;
 }
 if (crit === 'punch') return f.sortedByPunch || [];
 if (crit === 'requisition') {
-  if (!f.sortedByRequisition || !f.sortedByRequisition.length) {
-    const base = f._rawFiltered || f.allEmployees || [];
-    f.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
-  }
-  return f.sortedByRequisition || [];
+  if (Array.isArray(f.sortedByRequisition)) return f.sortedByRequisition;
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 }
 return f.sortedByDuty || [];
 }
@@ -12169,6 +12315,10 @@ const adj = e.adjustedAvgDuty != null ? e.adjustedAvgDuty : (e.avgDutyPerDay || 
 return `${adj} h/d`;
 }
 if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}`;
+if (crit === 'requisition') {
+  const c = typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0;
+  return `${c}d req`;
+}
 return `${getPunchProblemCount(e)}d miss`;
 }
 const ICC_RENDER_BATCH_SIZE = 25;
@@ -12197,7 +12347,16 @@ const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
-const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (rk <= 3 ? `icc-rank-${rk}` : '');
+const isReqCrit = activeIccCriterion === 'requisition';
+const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (rk <= 3 ? `icc-rank-${rk}` : ''));
+let reqMetaUnderName = '';
+if (isReqCrit) {
+  const probs = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
+  if (probs.length > 0) {
+    const pDates = probs.map(p => `${p.date}`).join(', ');
+    reqMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(pDates)}</div>`;
+  }
+}
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
@@ -12209,7 +12368,7 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${e
 <div class="icc-avatar">${esc(initials)}</div>
 <div class="icc-emp-text">
 <div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
-<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>
+<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}
 </div>
 ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
@@ -12276,7 +12435,8 @@ const filtered = q ? indexed.filter(e => String(e.id || '').toUpperCase().includ
 if (!filtered.length) {
 _iccCurrentFilteredList = [];
 _iccRenderedCount = 0;
-body.innerHTML = `<div class="empty-msg">${activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : 'No matching employees found.'}</div>`;
+const emptyTxt = activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : (activeIccCriterion === 'requisition' ? '✓ আলহামদুলিল্লাহ, এই সেকশনে কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).' : 'No matching employees found.');
+body.innerHTML = `<div class="empty-msg" style="padding:16px;text-align:center;font-weight:700;color:${activeIccCriterion === 'requisition' ? '#059669' : '#64748b'};">${emptyTxt}</div>`;
 return;
 }
 const adminActive = isIccAdminCatModeActive();
@@ -13182,6 +13342,49 @@ else if (row.v[4] || row.v[5]) { row.tone = 'hol'; row.note = 'Holiday duty'; }
 else if (row.v[2] || row.v[3]) { row.tone = 'do'; row.note = 'Day off duty'; }
 else if (row.v[1]) row.note = 'Overtime';
 if (o.night) row.note += (row.note ? ' + ' : '') + 'Night';
+
+// REQUISITION PROBLEM DETECTION & HIGHLIGHT
+const parseM = (t) => {
+  if (!t) return null;
+  const mm = String(t).replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/);
+  return mm ? parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10) : null;
+};
+const ti = parseM(o.inn), to = parseM(o.out);
+const totOt = (Number(o.v[1]) || 0) + (Number(o.v[3]) || 0) + (Number(o.v[5]) || 0);
+const totDuty = (Number(o.v[0]) || 0) + (Number(o.v[2]) || 0) + (Number(o.v[4]) || 0);
+let elHrs = 0;
+if (ti !== null && to !== null) {
+  const diff = to < ti ? (1440 - ti) + to : to - ti;
+  elHrs = Number((diff / 60).toFixed(2));
+}
+
+if (totOt === 0 && !mi && !mo) {
+  let isReq = false, reqNote = '';
+  // Case 1: Night Shift OT Missing (Numan case: Night=Yes, worked 11h+, OT=0)
+  if (o.night && (elHrs >= 11.0 || totDuty >= 11.0)) {
+    isReq = true;
+    const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+    reqNote = `⚠️ Night OT Missing (${exp}h OT)`;
+  }
+  // Case 2: Evening 3h OT (Out 19:10 - 20:15 / ~7:30 PM)
+  else if (!o.night && to !== null && to >= 1150 && to <= 1215) {
+    isReq = true; reqNote = '⚠️ 3h OT Missing (04:30-07:30 PM)';
+  }
+  // Case 3: Evening 5h OT (Out 21:10 - 22:30 / ~9:30 PM)
+  else if (!o.night && to !== null && to >= 1216 && to <= 1350) {
+    isReq = true; reqNote = '⚠️ 5h OT Missing (04:30-09:30 PM)';
+  }
+  // Case 4: Morning OT (In <= 07:15 AM)
+  else if (!o.night && ti !== null && ti <= 435 && elHrs >= 9.5) {
+    isReq = true; reqNote = ti <= 390 ? '⚠️ 2.5h Morning OT Missing' : '⚠️ 1.0h Morning OT Missing';
+  }
+
+  if (isReq) {
+    row.tone = 'req';
+    row.reqProblem = true;
+    row.note = reqNote + (row.note ? ' [' + row.note + ']' : '');
+  }
+}
 }
 }
 rows.push(row);
@@ -13213,12 +13416,12 @@ btn.classList.toggle('active', (btn.getAttribute('data-hide-empty') === '1') ===
 }
 function _rptHtml(ctx, forExport) {
 const e = ctx.emp, { rows, y, m } = _rptRows(ctx);
-const sum = [0, 0, 0, 0, 0, 0]; let present = 0, nights = 0, issues = 0, offAfterNight = 0;
-rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) present++; if (r.night) nights++; if (r.afterNight) offAfterNight++; if (r.tone === 'bad') issues++; });
+const sum = [0, 0, 0, 0, 0, 0]; let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0;
+rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) present++; if (r.night) nights++; if (r.afterNight) offAfterNight++; if (r.tone === 'bad') issues++; if (r.tone === 'req') reqIssues++; });
 const displayRows = _rptHideEmptyDays
 ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
 : rows;
-const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff' };
+const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7' };
 const fsCell = forExport ? '12.5px' : '11px';
 const fsSmall = forExport ? '11.5px' : '10.5px';
 const fsHead = forExport ? '11.5px' : '10px';
@@ -13259,13 +13462,16 @@ return `<div style="${containerStyle}">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:7px;margin-bottom:7px;">
 <div style="min-width:0;"><div style="font-size:${forExport ? '19px' : '16px'};font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RPPF</div><div style="font-size:${forExport ? '12.5px' : '11.5px'};font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${_rptHideEmptyDays ? ' (Duty Days)' : ''}</div></div>
 <div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
-<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}${chip(issues ? 'Punch Fix: ' + issues : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}</div>
+<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}
+${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
+${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
 <colgroup>${colHeaders.map(c => `<col style="width:${c.w};">`).join('')}</colgroup>
 <thead><tr style="height:40px;">${colHeaders.map(c => `<th style="${thBase}">${c.label}</th>`).join('')}</tr></thead>
 <tbody>${body}</tbody>
 <tfoot><tr style="background:#0f172a;color:#fff;font-weight:900;height:30px;"><td colspan="3" style="${tdBase}padding-left:6px;font-size:${fsSmall};color:#fff;border-color:#0f172a;">Total (${present}d present)</td>${sum.map(x => `<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${_rN(x)}</td>`).join('')}<td style="${tdBase}text-align:center;font-size:${fsSmall};color:#fff;border-color:#0f172a;">${nights || ''}</td><td style="${tdBase}border-color:#0f172a;"></td></tr></tfoot></table>
 <div style="margin-top:7px;font-size:12px;font-weight:800;color:${issues ? '#b91c1c' : '#15803d'};">${issues ? 'Punch problem on ' + issues + ' day(s): ' + issueDates.join(', ') : 'No missing In/Out punch found in this report.'}</div>
+${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
 <div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
 }
 function _rptReset() { const h = document.getElementById('rptPreviewHost'); if (h) { h.style.display = 'none'; h.innerHTML = ''; } const b = document.getElementById('rptPreviewBtn'); if (b) b.textContent = 'Preview daily report ▼'; }
@@ -13582,6 +13788,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
     updateLbSummaryMetrics(base);
   }
 };
