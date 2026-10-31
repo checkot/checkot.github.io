@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7863,6 +7865,19 @@ body[data-page="search"] .wa-float {
 </div>
 <span class="rank-hub-chev">›</span>
 </button>
+<button type="button" class="rank-hub-item req-hub" onclick="openRankDrillDown('requisition')" style="border-left: 3px solid #f59e0b;">
+<div class="rank-hub-left">
+<span class="rank-hub-icon" style="background:#fef3c7;color:#d97706;">⚠️</span>
+<div>
+<div class="rank-hub-title">Requisition Problem</div>
+<div class="rank-hub-sub" id="hubSubReq">9–13.5h Worked but 0 OT in Empress</div>
+</div>
+</div>
+<div class="rank-hub-right">
+<span class="rank-hub-val" id="hubValReq" style="color:#d97706;">—</span>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
 <div class="rank-hub-section-divider" id="inchargeHubUpcomingDivider" style="display:none;">
 <span>In-Charge &amp; Manager Analytics</span>
 <span>RPPF</span>
@@ -7939,6 +7954,7 @@ body[data-page="search"] .wa-float {
 <div class="icc-search-row" id="iccSearchRowWrap" style="display:none;">
 <input type="text" id="iccSearchInput" placeholder="Search employee name or ID..." oninput="renderIccDrillList()">
 <button type="button" class="calc-mini-btn btn-wa-solid" id="iccPunchWaBtn" style="display:none;" onclick="openBulkPunchErpForward()">Forward to ERP</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn" style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
 </div>
 </div>
 <div class="icc-mypos-banner" id="iccMyPosBanner" style="display:none;"></div>
@@ -9263,6 +9279,11 @@ return parsed.employees;
 } catch (err) {}
 }
 return null;
+}
+function getRequisitionProblemCount(emp) {
+  if (!emp) return 0;
+  if (Array.isArray(emp.requisitionProblems)) return emp.requisitionProblems.length;
+  return Number(emp.requisitionProblemCount) || 0;
 }
 function getPunchProblemCount(emp) {
 if (!emp) return 0;
@@ -11580,6 +11601,36 @@ const url = erpWaLink(pendingErpMessage, m.whatsapp);
 closeErpSupportModal();
 window.open(url, '_blank', 'noopener,noreferrer');
 }
+function openBulkRequisitionErpForward() {
+  if (!currentLeaderboardResult) {
+    showToast('First load the leaderboard list', 'warn');
+    return;
+  }
+  const f = currentLeaderboardResult.filtered;
+  const list = f ? (f.sortedByRequisition || []) : (currentLeaderboardResult.sortedByRequisition || []);
+  if (!list || list.length === 0) {
+    showToast('No employees with OT requisition problems in this section', 'info');
+    return;
+  }
+  const areaLabel = describeLbFilter();
+  const monthStr = currentLeaderboardResult.month || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const lines = list.map((e, i) => {
+    let rDetails = `${getRequisitionProblemCount(e)} days`;
+    if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) {
+      rDetails = e.requisitionProblems.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; ');
+    }
+    return `${i + 1}. ${e.name || '—'} (${e.id}) [${e.sub || 'General'}]:\n   └ ${rDetails}`;
+  });
+  const msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition Pending Report:\nThe following employees physically worked overtime (9.2h - 13.5h), but Empress shows 0 OT (Requisition Missing):\n\n${lines.join('\n\n')}\n\nPlease allocate and approve their OT requisitions before payroll cutoff. Thank you!`;
+  const areaOnly = document.getElementById('areaFilter')?.value || 'All';
+  if (typeof openErpSupportModal === 'function') {
+    openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
+  } else if (typeof fallbackCopyText === 'function') {
+    fallbackCopyText(msg);
+    showToast('Copied ERP requisition message to clipboard!', 'success');
+  }
+}
+
 function openBulkPunchErpForward() {
 if (!currentLeaderboardResult) {
 showToast('First load the leaderboard list', 'warn');
@@ -12012,7 +12063,8 @@ lessDuty: 'Less Duty RPPF',
 lessOt: 'Less OT RPPF',
 avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
-punch: 'Punch Problem RPPF'
+punch: 'Punch Problem RPPF',
+requisition: 'OT Requisition Missing RPPF'
 };
 const colHeaders = {
 duty: 'Duty Hrs',
@@ -12023,7 +12075,8 @@ lessDuty: 'Duty Hrs',
 lessOt: 'OT Hrs',
 avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In',
-punch: 'Missing'
+punch: 'Missing',
+requisition: 'Missing OT'
 };
 const titleEl = document.getElementById('iccDrillTitle');
 if (titleEl) titleEl.textContent = titles[activeIccCriterion] || 'Best Duty RPPF';
@@ -12097,6 +12150,13 @@ f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMin
 return f.sortedByAvgInOut;
 }
 if (crit === 'punch') return f.sortedByPunch || [];
+if (crit === 'requisition') {
+  if (!f.sortedByRequisition || !f.sortedByRequisition.length) {
+    const base = f._rawFiltered || f.allEmployees || [];
+    f.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+  }
+  return f.sortedByRequisition || [];
+}
 return f.sortedByDuty || [];
 }
 function formatIccMainMetric(e, crit) {
