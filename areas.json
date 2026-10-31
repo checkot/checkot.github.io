@@ -619,6 +619,12 @@
     },
     "CF10274": {
       "s": "Coating"
+    },
+    "CF8176": {
+      "s": "IBC Wash"
+    },
+    "CF8451": {
+      "s": "IBC Wash"
     }
   },
   "subsections": {
@@ -639,7 +645,8 @@
       "Inspection",
       "ERP",
       "pri- packaging",
-      "Iron"
+      "Iron",
+      "IBC Wash"
     ],
     "Softgel Production": [
       "Encapsulation",
