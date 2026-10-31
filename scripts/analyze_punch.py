@@ -1,5 +1,3 @@
-
-
 #!/usr/bin/env python3
 """
 RPPF Attendance & Punch Analyzer (WhatsApp Alert & OT Requisition Engine)
@@ -15,6 +13,7 @@ RPPF Attendance & Punch Analyzer (WhatsApp Alert & OT Requisition Engine)
 - ERP OT Requisition Mismatch Detection:
   * Identifies workers who physically worked 9.2h to 13.5h (e.g. left at 7:30 PM or 9:30 PM)
     but have 0 OT in Empress because ERP team hasn't created the OT requisition yet!
+  * Identifies Night Shift workers (11h-21h duty) with 0 OT (Numan case)!
 - Generates an executive "Manager View" overview with counts for JO, CF, Executive
 - WhatsApp character limit safety with smart chunking
 """
@@ -246,8 +245,11 @@ def main():
         is_present = False
         today_in = ""
         today_out = ""
+        reg_duty = 0.0
         reg_ot = 0.0
+        do_duty = 0.0
         do_ot = 0.0
+        hol_duty = 0.0
         hol_ot = 0.0
 
         if today_row:
@@ -255,19 +257,23 @@ def main():
             today_out = str(today_row[3]).strip() if len(today_row) > 3 else ""
             reg_duty = float(today_row[4]) if len(today_row) > 4 and str(today_row[4]).replace('.','',1).isdigit() else 0.0
             reg_ot = float(today_row[5]) if len(today_row) > 5 and str(today_row[5]).replace('.','',1).isdigit() else 0.0
+            do_duty = float(today_row[6]) if len(today_row) > 6 and str(today_row[6]).replace('.','',1).isdigit() else 0.0
             do_ot = float(today_row[7]) if len(today_row) > 7 and str(today_row[7]).replace('.','',1).isdigit() else 0.0
+            hol_duty = float(today_row[8]) if len(today_row) > 8 and str(today_row[8]).replace('.','',1).isdigit() else 0.0
             hol_ot = float(today_row[9]) if len(today_row) > 9 and str(today_row[9]).replace('.','',1).isdigit() else 0.0
 
-            if (not is_punch_missing(today_in)) or (not is_punch_missing(today_out)) or (reg_duty > 0) or (reg_ot > 0):
+            if (not is_punch_missing(today_in)) or (not is_punch_missing(today_out)) or (reg_duty > 0) or (reg_ot > 0) or (do_duty > 0) or (hol_duty > 0):
                 is_present = True
 
         # Check 2: Night Shift Exemption (Including Month-End crossover)
         is_night_exempt = False
+        is_night_flag = False
+        shift_str = ""
 
         if yesterday_row:
             is_night_flag = int(yesterday_row[10]) == 1 if len(yesterday_row) > 10 and str(yesterday_row[10]).isdigit() else False
             shift_str = str(yesterday_row[11]).strip().upper() if len(yesterday_row) > 11 else ""
-            if is_night_flag or "NIGHT" in shift_str:
+            if is_night_flag or "NIGHT" in shift_str or "DN" in shift_str:
                 is_night_exempt = True
                 print(f"[EXEMPT - NIGHT REST] {emp_id} ({emp_name}) worked Night Shift yesterday ({yesterday_emp_format}).")
 
@@ -310,7 +316,6 @@ def main():
             total_duty_today = reg_duty + do_duty + hol_duty
             elapsed_hrs = calc_elapsed_hours(today_in, today_out)
 
-            # OT Package Recognition:
             is_physical_ot = False
             detected_ot_desc = ""
 
@@ -499,7 +504,6 @@ def main():
 
     if not green_id or not green_token or not recipients_raw:
         print("[WARN] Green API secrets not found in environment.")
-        print("\n--- WHATSAPP MESSAGE PREVIEW ---\n" + messages_to_send[0] + "\n--------------------------------\n")
         return
 
     recipients = [r.strip() for r in re.split(r"[,;\n]+", recipients_raw) if r.strip()]
