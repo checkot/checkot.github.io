@@ -662,7 +662,8 @@
       "Section In-Charge",
       "QA / Compliance",
       "ERP & Planning"
-    ]
+    ],
+    "__deleted_subs__": []
   },
   "designationRates": {},
   "rateTable": {
