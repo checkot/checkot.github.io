@@ -1,6 +1,6 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-01T14:29:36.174183Z",
+  "updatedAt": "2026-11-01T17:28:38.674051Z",
   "employees": [
     {
       "valid": false,
@@ -1661,21 +1661,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.22,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "22:00",
+          "duty": 14.22,
+          "elapsed": 14.22,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -1697,27 +1708,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "22:00",
+          14.22,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -1809,21 +1820,32 @@
       "area": "Solid Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.28,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:49",
+          "out": "22:06",
+          "duty": 14.28,
+          "elapsed": 14.28,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -1845,27 +1867,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:49",
-          "",
+          "22:06",
+          14.28,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -2170,6 +2192,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF10279",
+      "name": "Muhiminul Ajad Ramim",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Granulation",
+      "isRppf": true,
+      "totalDuty": 14.15,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "21:59",
+          "duty": 14.15,
+          "elapsed": 14.15,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:50",
+          "21:59",
+          14.15,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -5068,19 +5170,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.73,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:06",
+          "out": "21:50",
+          "duty": 13.73,
+          "elapsed": 13.73,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -5110,8 +5222,8 @@
           "01-NOV-2026",
           "Sun",
           "08:06",
-          "",
-          0.0,
+          "21:50",
+          13.73,
           0.0,
           0.0,
           0.0,
@@ -5338,6 +5450,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF2701",
+      "name": "Md. Nurul Islam",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 14.13,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "22:05",
+          "duty": 14.13,
+          "elapsed": 14.13,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:57",
+          "22:05",
+          14.13,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -6888,6 +7080,86 @@
     },
     {
       "valid": true,
+      "id": "CF2781",
+      "name": "Md. Azizul Haque",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Granulation",
+      "isRppf": true,
+      "totalDuty": 14.1,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:59",
+          "duty": 14.1,
+          "elapsed": 14.1,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:53",
+          "21:59",
+          14.1,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF2784",
       "name": "Md. Shahin Alam",
       "grade": "Helper",
@@ -7097,19 +7369,29 @@
       "area": "Softgel Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.95,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:57",
+          "duty": 13.95,
+          "elapsed": 13.95,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -7139,8 +7421,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:57",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -7166,19 +7448,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.97,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "21:48",
+          "duty": 13.97,
+          "elapsed": 13.97,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -7208,8 +7500,8 @@
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
-          0.0,
+          "21:48",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -7381,21 +7673,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.25,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "22:05",
+          "duty": 14.25,
+          "elapsed": 14.25,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -7417,27 +7720,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
+          "22:05",
+          14.25,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -7663,19 +7966,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.97,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:52",
+          "out": "21:50",
+          "duty": 13.97,
+          "elapsed": 13.97,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -7705,8 +8018,8 @@
           "01-NOV-2026",
           "Sun",
           "07:52",
-          "",
-          0.0,
+          "21:50",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -8012,21 +8325,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.1,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:55",
+          "out": "22:01",
+          "duty": 14.1,
+          "elapsed": 14.1,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -8048,27 +8372,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:55",
-          "",
+          "22:01",
+          14.1,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -8294,19 +8618,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.48,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:59",
+          "out": "21:28",
+          "duty": 13.48,
+          "elapsed": 13.48,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -8336,8 +8670,8 @@
           "01-NOV-2026",
           "Sun",
           "07:59",
-          "",
-          0.0,
+          "21:28",
+          13.48,
           0.0,
           0.0,
           0.0,
@@ -8442,21 +8776,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.0,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:30",
+          "out": "21:30",
+          "duty": 14.0,
+          "elapsed": 14.0,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -8478,27 +8823,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:30",
-          "",
+          "21:30",
+          14.0,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -8578,21 +8923,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.03,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "22:02",
+          "duty": 14.03,
+          "elapsed": 14.03,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -8614,27 +8970,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
+          "22:02",
+          14.03,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -8647,21 +9003,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.23,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:45",
+          "out": "21:59",
+          "duty": 14.23,
+          "elapsed": 14.23,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -8683,27 +9050,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:45",
-          "",
+          "21:59",
+          14.23,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -9185,21 +9552,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.05,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "21:50",
+          "duty": 14.05,
+          "elapsed": 14.05,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -9221,27 +9599,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "21:50",
+          14.05,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -10567,27 +10945,37 @@
     },
     {
       "valid": true,
-      "id": "CF3573",
-      "name": "Akramul Haque",
+      "id": "CF3563",
+      "name": "Md. Abdullah al Numan",
       "grade": "Helper",
       "kind": "",
       "category": "CF",
-      "area": "Packing Hall",
-      "sub": "",
+      "area": "Solid Production",
+      "sub": "Coating",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.75,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:45",
+          "duty": 13.75,
+          "elapsed": 13.75,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -10616,9 +11004,9 @@
         [
           "01-NOV-2026",
           "Sun",
-          "07:41",
-          "",
-          0.0,
+          "08:00",
+          "21:45",
+          13.75,
           0.0,
           0.0,
           0.0,
@@ -10632,6 +11020,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF3573",
+      "name": "Akramul Haque",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Packing Hall",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.33,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:41",
+          "out": "22:01",
+          "duty": 14.33,
+          "elapsed": 14.33,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:41",
+          "22:01",
+          14.33,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -11082,19 +11550,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.97,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:55",
+          "out": "21:53",
+          "duty": 13.97,
+          "elapsed": 13.97,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -11124,8 +11602,8 @@
           "01-NOV-2026",
           "Sun",
           "07:55",
-          "",
-          0.0,
+          "21:53",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -11218,19 +11696,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.95,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:54",
+          "out": "21:51",
+          "duty": 13.95,
+          "elapsed": 13.95,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -11260,8 +11748,8 @@
           "01-NOV-2026",
           "Sun",
           "07:54",
-          "",
-          0.0,
+          "21:51",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -11445,21 +11933,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.05,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:59",
+          "out": "22:02",
+          "duty": 14.05,
+          "elapsed": 14.05,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -11481,27 +11980,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:59",
-          "",
+          "22:02",
+          14.05,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -12837,19 +13336,29 @@
       "area": "Softgel Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.88,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:03",
+          "out": "21:56",
+          "duty": 13.88,
+          "elapsed": 13.88,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -12879,8 +13388,8 @@
           "01-NOV-2026",
           "Sun",
           "08:03",
-          "",
-          0.0,
+          "21:56",
+          13.88,
           0.0,
           0.0,
           0.0,
@@ -14604,6 +15113,86 @@
     },
     {
       "valid": true,
+      "id": "CF4558",
+      "name": "Imtius Hossain",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 14.2,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "22:03",
+          "duty": 14.2,
+          "elapsed": 14.2,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:51",
+          "22:03",
+          14.2,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF4561",
       "name": "Rocky Kumar Barmon",
       "grade": "Helper",
@@ -15172,21 +15761,32 @@
       "area": "Softgel Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.05,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:56",
+          "duty": 14.05,
+          "elapsed": 14.05,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -15208,27 +15808,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:53",
-          "",
+          "21:56",
+          14.05,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -15442,6 +16042,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF4743",
+      "name": "Shuva Roy",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 14.15,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:54",
+          "out": "22:03",
+          "duty": 14.15,
+          "elapsed": 14.15,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:54",
+          "22:03",
+          14.15,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -15789,19 +16469,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.87,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:55",
+          "out": "21:47",
+          "duty": 13.87,
+          "elapsed": 13.87,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -15831,8 +16521,8 @@
           "01-NOV-2026",
           "Sun",
           "07:55",
-          "",
-          0.0,
+          "21:47",
+          13.87,
           0.0,
           0.0,
           0.0,
@@ -16712,19 +17402,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.93,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:49",
+          "duty": 13.93,
+          "elapsed": 13.93,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -16754,8 +17454,8 @@
           "01-NOV-2026",
           "Sun",
           "07:53",
-          "",
-          0.0,
+          "21:49",
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -17018,21 +17718,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.17,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "22:00",
+          "duty": 14.17,
+          "elapsed": 14.17,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -17054,27 +17765,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
+          "22:00",
+          14.17,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -17225,29 +17936,40 @@
     },
     {
       "valid": true,
-      "id": "CF5112",
-      "name": "Md. Farhad Ali",
+      "id": "CF5101",
+      "name": "Gopal Chandra Das",
       "grade": "Helper",
       "kind": "",
       "category": "CF",
-      "area": "Packing Hall",
-      "sub": "",
+      "area": "Solid Production",
+      "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.2,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "22:03",
+          "duty": 14.2,
+          "elapsed": 14.2,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -17269,27 +17991,107 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
-          "07:35",
-          "",
+          "07:51",
+          "22:03",
+          14.2,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF5112",
+      "name": "Md. Farhad Ali",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Packing Hall",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.4,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:35",
+          "out": "21:59",
+          "duty": 14.4,
+          "elapsed": 14.4,
+          "isNight": true,
+          "expectedOt": "5.9h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:35",
+          "21:59",
+          14.4,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -17302,21 +18104,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.27,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:44",
+          "out": "22:00",
+          "duty": 14.27,
+          "elapsed": 14.27,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -17338,27 +18151,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:44",
-          "",
+          "22:00",
+          14.27,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -18160,6 +18973,86 @@
     },
     {
       "valid": true,
+      "id": "CF5176",
+      "name": "Md. Abiruzzaman",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Dispensing",
+      "isRppf": true,
+      "totalDuty": 14.57,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:00",
+          "out": "21:34",
+          "duty": 14.57,
+          "elapsed": 14.57,
+          "isNight": true,
+          "expectedOt": "6.1h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:00",
+          "21:34",
+          14.57,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF5179",
       "name": "Subroto Chandra Sutradhar",
       "grade": "Helper",
@@ -18168,19 +19061,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.65,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "21:29",
+          "duty": 13.65,
+          "elapsed": 13.65,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -18210,8 +19113,8 @@
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
-          0.0,
+          "21:29",
+          13.65,
           0.0,
           0.0,
           0.0,
@@ -18395,21 +19298,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.23,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "22:04",
+          "duty": 14.23,
+          "elapsed": 14.23,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -18431,27 +19345,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
+          "22:04",
+          14.23,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -19182,21 +20096,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.02,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "21:52",
+          "duty": 14.02,
+          "elapsed": 14.02,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -19218,27 +20143,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:51",
-          "",
+          "21:52",
+          14.02,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -19799,19 +20724,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.82,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:03",
+          "out": "21:52",
+          "duty": 13.82,
+          "elapsed": 13.82,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -19841,8 +20776,8 @@
           "01-NOV-2026",
           "Sun",
           "08:03",
-          "",
-          0.0,
+          "21:52",
+          13.82,
           0.0,
           0.0,
           0.0,
@@ -20609,6 +21544,86 @@
     },
     {
       "valid": true,
+      "id": "CF8016",
+      "name": "Md. Raju Ahmed",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.08,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "22:07",
+          "duty": 14.08,
+          "elapsed": 14.08,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "08:02",
+          "22:07",
+          14.08,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF8017",
       "name": "Rahat",
       "grade": "Helper",
@@ -20684,6 +21699,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF8019",
+      "name": "Md. Shah Alam",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.18,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:54",
+          "out": "22:05",
+          "duty": 14.18,
+          "elapsed": 14.18,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:54",
+          "22:05",
+          14.18,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -20897,19 +21992,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.5,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:58",
+          "out": "21:28",
+          "duty": 13.5,
+          "elapsed": 13.5,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -20939,8 +22044,8 @@
           "01-NOV-2026",
           "Sun",
           "07:58",
-          "",
-          0.0,
+          "21:28",
+          13.5,
           0.0,
           0.0,
           0.0,
@@ -20966,21 +22071,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.13,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:49",
+          "out": "21:57",
+          "duty": 14.13,
+          "elapsed": 14.13,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -21002,27 +22118,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:49",
-          "",
+          "21:57",
+          14.13,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -21035,19 +22151,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.95,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:57",
+          "duty": 13.95,
+          "elapsed": 13.95,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -21077,8 +22203,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:57",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -21408,19 +22534,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.98,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:30",
+          "out": "21:29",
+          "duty": 13.98,
+          "elapsed": 13.98,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -21450,8 +22586,8 @@
           "01-NOV-2026",
           "Sun",
           "07:30",
-          "",
-          0.0,
+          "21:29",
+          13.98,
           0.0,
           0.0,
           0.0,
@@ -21745,21 +22881,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.15,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:40",
+          "out": "21:49",
+          "duty": 14.15,
+          "elapsed": 14.15,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -21781,27 +22928,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:40",
-          "",
+          "21:49",
+          14.15,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -21881,21 +23028,32 @@
       "area": "Solid Production",
       "sub": "Iron",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.03,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:56",
+          "out": "21:58",
+          "duty": 14.03,
+          "elapsed": 14.03,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -21917,27 +23075,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:56",
-          "",
+          "21:58",
+          14.03,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -22510,21 +23668,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.2,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "21:59",
+          "duty": 14.2,
+          "elapsed": 14.2,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -22546,27 +23715,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "21:59",
+          14.2,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -22859,19 +24028,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.38,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:06",
+          "out": "21:29",
+          "duty": 13.38,
+          "elapsed": 13.38,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -22901,8 +24080,8 @@
           "01-NOV-2026",
           "Sun",
           "08:06",
-          "",
-          0.0,
+          "21:29",
+          13.38,
           0.0,
           0.0,
           0.0,
@@ -23275,21 +24454,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.0,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:59",
+          "out": "21:59",
+          "duty": 14.0,
+          "elapsed": 14.0,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -23311,27 +24501,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:59",
-          "",
+          "21:59",
+          14.0,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -23691,21 +24881,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.18,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:40",
+          "out": "21:51",
+          "duty": 14.18,
+          "elapsed": 14.18,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -23727,27 +24928,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:40",
-          "",
+          "21:51",
+          14.18,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -25287,6 +26488,85 @@
     },
     {
       "valid": true,
+      "id": "CF8261",
+      "name": "Md. Razib Hossain",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 13.98,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
+      "holidayDays": [],
+      "nightDays": [],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:05",
+          "out": "22:04",
+          "duty": 13.98,
+          "elapsed": 13.98,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "02-NOV (Mon)",
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 21,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "08:05",
+          "22:04",
+          13.98,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 0,
+      "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF8263",
       "name": "Md. Monwar Hossain Shanto",
       "grade": "Helper",
@@ -25295,19 +26575,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.45,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:01",
+          "out": "21:28",
+          "duty": 13.45,
+          "elapsed": 13.45,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -25337,8 +26627,8 @@
           "01-NOV-2026",
           "Sun",
           "08:01",
-          "",
-          0.0,
+          "21:28",
+          13.45,
           0.0,
           0.0,
           0.0,
@@ -27032,19 +28322,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.9,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:54",
+          "duty": 13.9,
+          "elapsed": 13.9,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -27074,8 +28374,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:54",
+          13.9,
           0.0,
           0.0,
           0.0,
@@ -27890,6 +29190,86 @@
     },
     {
       "valid": true,
+      "id": "CF8323",
+      "name": "Md. Shohag Hossen",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.18,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "22:08",
+          "duty": 14.18,
+          "elapsed": 14.18,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:57",
+          "22:08",
+          14.18,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF8324",
       "name": "Md. Shariful Islam",
       "grade": "Helper",
@@ -28446,21 +29826,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.12,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:43",
+          "out": "21:50",
+          "duty": 14.12,
+          "elapsed": 14.12,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -28482,27 +29873,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:43",
-          "",
+          "21:50",
+          14.12,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -29426,6 +30817,86 @@
     },
     {
       "valid": true,
+      "id": "CF8356",
+      "name": "Md. Shajib Hossain",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Granulation",
+      "isRppf": true,
+      "totalDuty": 14.07,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:55",
+          "out": "21:59",
+          "duty": 14.07,
+          "elapsed": 14.07,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:55",
+          "21:59",
+          14.07,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF8358",
       "name": "Shimla Akter",
       "grade": "Helper",
@@ -29568,21 +31039,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.13,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "21:59",
+          "duty": 14.13,
+          "elapsed": 14.13,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -29604,27 +31086,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:51",
-          "",
+          "21:59",
+          14.13,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -29637,19 +31119,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.88,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:04",
+          "out": "21:57",
+          "duty": 13.88,
+          "elapsed": 13.88,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -29679,8 +31171,87 @@
           "01-NOV-2026",
           "Sun",
           "08:04",
-          "",
+          "21:57",
+          13.88,
           0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 0,
+      "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF8362",
+      "name": "Md. Liton Babu",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Coating",
+      "isRppf": true,
+      "totalDuty": 13.87,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
+      "holidayDays": [],
+      "nightDays": [],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:45",
+          "duty": 13.87,
+          "elapsed": 13.87,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "02-NOV (Mon)",
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 21,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:53",
+          "21:45",
+          13.87,
           0.0,
           0.0,
           0.0,
@@ -30065,21 +31636,32 @@
       "area": "Solid Production",
       "sub": "pri- packaging",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.27,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "22:03",
+          "duty": 14.27,
+          "elapsed": 14.27,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -30101,27 +31683,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "22:03",
+          14.27,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -31069,6 +32651,86 @@
     },
     {
       "valid": true,
+      "id": "CF8397",
+      "name": "Md. Aminul Islam",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.15,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:43",
+          "out": "21:52",
+          "duty": 14.15,
+          "elapsed": 14.15,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:43",
+          "21:52",
+          14.15,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF8399",
       "name": "Monowara",
       "grade": "Helper",
@@ -31929,19 +33591,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.78,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:47",
+          "duty": 13.78,
+          "elapsed": 13.78,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -31971,8 +33643,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:47",
+          13.78,
           0.0,
           0.0,
           0.0,
@@ -32199,19 +33871,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.62,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "21:28",
+          "duty": 13.62,
+          "elapsed": 13.62,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -32241,8 +33923,8 @@
           "01-NOV-2026",
           "Sun",
           "07:51",
-          "",
-          0.0,
+          "21:28",
+          13.62,
           0.0,
           0.0,
           0.0,
@@ -32828,19 +34510,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.4,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:05",
+          "out": "21:29",
+          "duty": 13.4,
+          "elapsed": 13.4,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -32870,8 +34562,8 @@
           "01-NOV-2026",
           "Sun",
           "08:05",
-          "",
-          0.0,
+          "21:29",
+          13.4,
           0.0,
           0.0,
           0.0,
@@ -33112,21 +34804,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.25,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:44",
+          "out": "21:59",
+          "duty": 14.25,
+          "elapsed": 14.25,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -33148,27 +34851,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:44",
-          "",
+          "21:59",
+          14.25,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -34794,21 +36497,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.15,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "21:56",
+          "duty": 14.15,
+          "elapsed": 14.15,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -34830,27 +36544,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "21:56",
+          14.15,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -34997,21 +36711,32 @@
       "area": "Softgel Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.3,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:48",
+          "out": "22:06",
+          "duty": 14.3,
+          "elapsed": 14.3,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -35033,27 +36758,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:48",
-          "",
+          "22:06",
+          14.3,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -35827,19 +37552,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.52,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "21:28",
+          "duty": 13.52,
+          "elapsed": 13.52,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -35869,8 +37604,8 @@
           "01-NOV-2026",
           "Sun",
           "07:57",
-          "",
-          0.0,
+          "21:28",
+          13.52,
           0.0,
           0.0,
           0.0,
@@ -35963,21 +37698,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.02,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:46",
+          "out": "21:47",
+          "duty": 14.02,
+          "elapsed": 14.02,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -35999,27 +37745,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:46",
-          "",
+          "21:47",
+          14.02,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -36470,21 +38216,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.02,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:49",
+          "out": "21:50",
+          "duty": 14.02,
+          "elapsed": 14.02,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -36506,27 +38263,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:49",
-          "",
+          "21:50",
+          14.02,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -36539,19 +38296,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.57,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:54",
+          "out": "21:28",
+          "duty": 13.57,
+          "elapsed": 13.57,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -36581,8 +38348,8 @@
           "01-NOV-2026",
           "Sun",
           "07:54",
-          "",
-          0.0,
+          "21:28",
+          13.57,
           0.0,
           0.0,
           0.0,
@@ -37381,19 +39148,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.48,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:29",
+          "duty": 13.48,
+          "elapsed": 13.48,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -37423,8 +39200,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:29",
+          13.48,
           0.0,
           0.0,
           0.0,
@@ -37450,19 +39227,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.58,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:35",
+          "duty": 13.58,
+          "elapsed": 13.58,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -37492,8 +39279,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:35",
+          13.58,
           0.0,
           0.0,
           0.0,
@@ -38469,6 +40256,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF8583",
+      "name": "Md. Ariful Islam",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Granulation",
+      "isRppf": true,
+      "totalDuty": 14.13,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:48",
+          "out": "21:56",
+          "duty": 14.13,
+          "elapsed": 14.13,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:48",
+          "21:56",
+          14.13,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -39838,19 +41705,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.47,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:28",
+          "duty": 13.47,
+          "elapsed": 13.47,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -39880,8 +41757,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:28",
+          13.47,
           0.0,
           0.0,
           0.0,
@@ -40857,19 +42734,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.8,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:48",
+          "duty": 13.8,
+          "elapsed": 13.8,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -40899,8 +42786,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:48",
+          13.8,
           0.0,
           0.0,
           0.0,
@@ -41005,21 +42892,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.05,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:45",
+          "out": "21:48",
+          "duty": 14.05,
+          "elapsed": 14.05,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -41041,27 +42939,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:45",
-          "",
+          "21:48",
+          14.05,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -41220,21 +43118,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.3,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:29",
+          "out": "21:47",
+          "duty": 14.3,
+          "elapsed": 14.3,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -41256,27 +43165,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:29",
-          "",
+          "21:47",
+          14.3,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -41289,19 +43198,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.8,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:59",
+          "out": "21:47",
+          "duty": 13.8,
+          "elapsed": 13.8,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -41331,8 +43250,8 @@
           "01-NOV-2026",
           "Sun",
           "07:59",
-          "",
-          0.0,
+          "21:47",
+          13.8,
           0.0,
           0.0,
           0.0,
@@ -41358,21 +43277,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.13,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:50",
+          "out": "21:58",
+          "duty": 14.13,
+          "elapsed": 14.13,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -41394,27 +43324,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:50",
-          "",
+          "21:58",
+          14.13,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -41427,19 +43357,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.93,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:56",
+          "duty": 13.93,
+          "elapsed": 13.93,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -41469,8 +43409,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:56",
+          13.93,
           0.0,
           0.0,
           0.0,
@@ -41764,21 +43704,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.27,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:49",
+          "out": "22:05",
+          "duty": 14.27,
+          "elapsed": 14.27,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -41800,27 +43751,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:49",
-          "",
+          "22:05",
+          14.27,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -42314,21 +44265,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.12,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "21:58",
+          "duty": 14.12,
+          "elapsed": 14.12,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -42350,27 +44312,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:51",
-          "",
+          "21:58",
+          14.12,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -42462,19 +44424,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.9,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:04",
+          "out": "21:58",
+          "duty": 13.9,
+          "elapsed": 13.9,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -42504,8 +44476,8 @@
           "01-NOV-2026",
           "Sun",
           "08:04",
-          "",
-          0.0,
+          "21:58",
+          13.9,
           0.0,
           0.0,
           0.0,
@@ -42519,6 +44491,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "CF9370",
+      "name": "Kukan Das",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Dispensing",
+      "isRppf": true,
+      "totalDuty": 14.2,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:51",
+          "out": "22:03",
+          "duty": 14.2,
+          "elapsed": 14.2,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:51",
+          "22:03",
+          14.2,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -42610,21 +44662,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.02,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:56",
+          "out": "21:57",
+          "duty": 14.02,
+          "elapsed": 14.02,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -42646,27 +44709,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:56",
-          "",
+          "21:57",
+          14.02,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -42817,6 +44880,85 @@
     },
     {
       "valid": true,
+      "id": "CF9381",
+      "name": "Sourov Chandra Das",
+      "grade": "Helper",
+      "kind": "",
+      "category": "CF",
+      "area": "Solid Production",
+      "sub": "Coating",
+      "isRppf": true,
+      "totalDuty": 13.7,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
+      "holidayDays": [],
+      "nightDays": [],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "21:44",
+          "duty": 13.7,
+          "elapsed": 13.7,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "02-NOV (Mon)",
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 21,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "08:02",
+          "21:44",
+          13.7,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 0,
+      "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "CF9383",
       "name": "Burhan Uddin",
       "grade": "Helper",
@@ -42892,19 +45034,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.8,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "21:50",
+          "duty": 13.8,
+          "elapsed": 13.8,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -42934,8 +45086,8 @@
           "01-NOV-2026",
           "Sun",
           "08:02",
-          "",
-          0.0,
+          "21:50",
+          13.8,
           0.0,
           0.0,
           0.0,
@@ -43040,21 +45192,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.22,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:45",
+          "out": "21:58",
+          "duty": 14.22,
+          "elapsed": 14.22,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -43076,27 +45239,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:45",
-          "",
+          "21:58",
+          14.22,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -43480,21 +45643,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.05,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:56",
+          "duty": 14.05,
+          "elapsed": 14.05,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -43516,27 +45690,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:53",
-          "",
+          "21:56",
+          14.05,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -44358,19 +46532,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.43,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "21:28",
+          "duty": 13.43,
+          "elapsed": 13.43,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -44400,8 +46584,8 @@
           "01-NOV-2026",
           "Sun",
           "08:02",
-          "",
-          0.0,
+          "21:28",
+          13.43,
           0.0,
           0.0,
           0.0,
@@ -47172,21 +49356,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.02,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "21:58",
+          "duty": 14.02,
+          "elapsed": 14.02,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -47208,27 +49403,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:57",
-          "",
+          "21:58",
+          14.02,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -47241,19 +49436,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.97,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:58",
+          "out": "21:56",
+          "duty": 13.97,
+          "elapsed": 13.97,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -47283,8 +49488,8 @@
           "01-NOV-2026",
           "Sun",
           "07:58",
-          "",
-          0.0,
+          "21:56",
+          13.97,
           0.0,
           0.0,
           0.0,
@@ -47310,21 +49515,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.43,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:30",
+          "out": "21:56",
+          "duty": 14.43,
+          "elapsed": 14.43,
+          "isNight": true,
+          "expectedOt": "5.9h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -47346,27 +49562,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:30",
-          "",
+          "21:56",
+          14.43,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 300,
+      "totalEarned": 300.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -49060,21 +51276,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.17,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:40",
+          "out": "21:50",
+          "duty": 14.17,
+          "elapsed": 14.17,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -49096,27 +51323,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:40",
-          "",
+          "21:50",
+          14.17,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -49415,6 +51642,86 @@
     },
     {
       "valid": true,
+      "id": "RF20177",
+      "name": "Md. Firoz Hossain",
+      "grade": "Junior Officer B",
+      "kind": "",
+      "category": "JO",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 14.12,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "22:04",
+          "duty": 14.12,
+          "elapsed": 14.12,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:57",
+          "22:04",
+          14.12,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "RF20178",
       "name": "Abdur Rahman Kazi",
       "grade": "Junior Officer C",
@@ -49660,19 +51967,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.9,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:57",
+          "out": "21:51",
+          "duty": 13.9,
+          "elapsed": 13.9,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -49702,8 +52019,8 @@
           "01-NOV-2026",
           "Sun",
           "07:57",
-          "",
-          0.0,
+          "21:51",
+          13.9,
           0.0,
           0.0,
           0.0,
@@ -51438,21 +53755,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.03,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:06",
+          "out": "22:08",
+          "duty": 14.03,
+          "elapsed": 14.03,
+          "isNight": true,
+          "expectedOt": "5.5h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -51474,27 +53802,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "08:06",
-          "",
+          "22:08",
+          14.03,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -52269,19 +54597,29 @@
       "area": "Softgel Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.92,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "21:57",
+          "duty": 13.92,
+          "elapsed": 13.92,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -52311,8 +54649,8 @@
           "01-NOV-2026",
           "Sun",
           "08:02",
-          "",
-          0.0,
+          "21:57",
+          13.92,
           0.0,
           0.0,
           0.0,
@@ -52393,6 +54731,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "RF22022",
+      "name": "Rejwanul Islam",
+      "grade": "Junior Officer D",
+      "kind": "",
+      "category": "JO",
+      "area": "Solid Production",
+      "sub": "Granulation",
+      "isRppf": true,
+      "totalDuty": 14.25,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:52",
+          "out": "22:07",
+          "duty": 14.25,
+          "elapsed": 14.25,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:52",
+          "22:07",
+          14.25,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -52484,19 +54902,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.95,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:00",
+          "out": "21:57",
+          "duty": 13.95,
+          "elapsed": 13.95,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -52526,8 +54954,8 @@
           "01-NOV-2026",
           "Sun",
           "08:00",
-          "",
-          0.0,
+          "21:57",
+          13.95,
           0.0,
           0.0,
           0.0,
@@ -53685,21 +56113,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.12,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:41",
+          "out": "21:48",
+          "duty": 14.12,
+          "elapsed": 14.12,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -53721,27 +56160,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:41",
-          "",
+          "21:48",
+          14.12,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -53825,29 +56264,40 @@
     },
     {
       "valid": true,
-      "id": "RF22107",
-      "name": "Md. Al Amin",
-      "grade": "Junior Officer E",
+      "id": "RF22105",
+      "name": "Md. Mamunur Rashid",
+      "grade": "Junior Officer D",
       "kind": "",
       "category": "JO",
-      "area": "Packing Hall",
-      "sub": "",
+      "area": "Solid Production",
+      "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.12,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:44",
+          "out": "21:51",
+          "duty": 14.12,
+          "elapsed": 14.12,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -53869,27 +56319,107 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
-          "07:53",
-          "",
+          "07:44",
+          "21:51",
+          14.12,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "RF22107",
+      "name": "Md. Al Amin",
+      "grade": "Junior Officer E",
+      "kind": "",
+      "category": "JO",
+      "area": "Packing Hall",
+      "sub": "",
+      "isRppf": true,
+      "totalDuty": 14.07,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:57",
+          "duty": 14.07,
+          "elapsed": 14.07,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:53",
+          "21:57",
+          14.07,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -53969,21 +56499,32 @@
       "area": "Solid Production",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.17,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:41",
+          "out": "21:51",
+          "duty": 14.17,
+          "elapsed": 14.17,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -54005,27 +56546,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:41",
-          "",
+          "21:51",
+          14.17,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -54519,21 +57060,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.17,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:56",
+          "out": "22:06",
+          "duty": 14.17,
+          "elapsed": 14.17,
+          "isNight": true,
+          "expectedOt": "5.7h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -54555,27 +57107,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:56",
-          "",
+          "22:06",
+          14.17,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -54892,21 +57444,32 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 14.07,
       "otHours": 0.0,
       "holidayCount": 0,
-      "nightCount": 0,
-      "regularDaysCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
+      "nightDays": [
         "01-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:47",
+          "out": "21:51",
+          "duty": 14.07,
+          "elapsed": 14.07,
+          "isNight": true,
+          "expectedOt": "5.6h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
-        "02-NOV (Mon)",
         "03-NOV (Tue)",
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -54928,27 +57491,27 @@
         "29-NOV (Sun)",
         "30-NOV (Mon)"
       ],
-      "generalAbsentCount": 21,
+      "generalAbsentCount": 20,
       "daily": [
         [
           "01-NOV-2026",
           "Sun",
           "07:47",
-          "",
+          "21:51",
+          14.07,
           0.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0,
+          1,
           "G"
         ]
       ],
       "otAmount": 0.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 0.0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -55971,19 +58534,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.87,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:58",
+          "out": "21:50",
+          "duty": 13.87,
+          "elapsed": 13.87,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -56013,8 +58586,8 @@
           "01-NOV-2026",
           "Sun",
           "07:58",
-          "",
-          0.0,
+          "21:50",
+          13.87,
           0.0,
           0.0,
           0.0,
@@ -56399,19 +58972,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.92,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:07",
+          "out": "22:02",
+          "duty": 13.92,
+          "elapsed": 13.92,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -56441,8 +59024,8 @@
           "01-NOV-2026",
           "Sun",
           "08:07",
-          "",
-          0.0,
+          "22:02",
+          13.92,
           0.0,
           0.0,
           0.0,
@@ -57683,6 +60266,85 @@
     },
     {
       "valid": true,
+      "id": "RF8327",
+      "name": "Md. Saiful Islam",
+      "grade": "Junior Officer B",
+      "kind": "",
+      "category": "JO",
+      "area": "Solid Production",
+      "sub": "Dispensing",
+      "isRppf": true,
+      "totalDuty": 13.7,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
+      "holidayDays": [],
+      "nightDays": [],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:53",
+          "out": "21:35",
+          "duty": 13.7,
+          "elapsed": 13.7,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "02-NOV (Mon)",
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 21,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:53",
+          "21:35",
+          13.7,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 0,
+      "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
       "id": "RF8350",
       "name": "Sofia Akter",
       "grade": "Junior Officer F",
@@ -58062,19 +60724,29 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 0.0,
+      "totalDuty": 13.55,
       "otHours": 0.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 0,
-      "plainDaysCount": 0,
+      "regularDaysCount": 1,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
-      "punchProblems": [
-        "01-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "08:02",
+          "out": "21:35",
+          "duty": 13.55,
+          "elapsed": 13.55,
+          "isNight": false,
+          "expectedOt": "5.0h (04:30 - 09:30 PM)",
+          "reason": "5h Evening OT Missing"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "generalAbsentDays": [
         "02-NOV (Mon)",
         "03-NOV (Tue)",
@@ -58104,8 +60776,8 @@
           "01-NOV-2026",
           "Sun",
           "08:02",
-          "",
-          0.0,
+          "21:35",
+          13.55,
           0.0,
           0.0,
           0.0,
@@ -58186,6 +60858,86 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
+      "fileName": "rf20716.xlsx"
+    },
+    {
+      "valid": true,
+      "id": "RF8372",
+      "name": "Md Jabbar Ali",
+      "grade": "Junior Officer C",
+      "kind": "",
+      "category": "JO",
+      "area": "Solid Production",
+      "sub": "pri- packaging",
+      "isRppf": true,
+      "totalDuty": 14.3,
+      "otHours": 0.0,
+      "holidayCount": 0,
+      "nightCount": 1,
+      "regularDaysCount": 1,
+      "plainDaysCount": 0,
+      "holidayDays": [],
+      "nightDays": [
+        "01-NOV-2026"
+      ],
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "01-NOV-2026",
+          "day": "Sun",
+          "in": "07:48",
+          "out": "22:06",
+          "duty": 14.3,
+          "elapsed": 14.3,
+          "isNight": true,
+          "expectedOt": "5.8h (Night Shift OT Error / Missing)",
+          "reason": "Night Shift OT Missing"
+        }
+      ],
+      "requisitionProblemCount": 1,
+      "generalAbsentDays": [
+        "03-NOV (Tue)",
+        "04-NOV (Wed)",
+        "07-NOV (Sat)",
+        "08-NOV (Sun)",
+        "09-NOV (Mon)",
+        "10-NOV (Tue)",
+        "11-NOV (Wed)",
+        "14-NOV (Sat)",
+        "15-NOV (Sun)",
+        "16-NOV (Mon)",
+        "17-NOV (Tue)",
+        "18-NOV (Wed)",
+        "21-NOV (Sat)",
+        "22-NOV (Sun)",
+        "23-NOV (Mon)",
+        "24-NOV (Tue)",
+        "25-NOV (Wed)",
+        "28-NOV (Sat)",
+        "29-NOV (Sun)",
+        "30-NOV (Mon)"
+      ],
+      "generalAbsentCount": 20,
+      "daily": [
+        [
+          "01-NOV-2026",
+          "Sun",
+          "07:48",
+          "22:06",
+          14.3,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1,
+          "G"
+        ]
+      ],
+      "otAmount": 0.0,
+      "holidayAmount": 0,
+      "nightAmount": 400,
+      "totalEarned": 400.0,
       "fileName": "rf20716.xlsx"
     },
     {
