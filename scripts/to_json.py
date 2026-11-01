@@ -96,6 +96,19 @@ def clean_punch_value(val):
     s = str(val)
     return re.sub(r'[\s   -‏-  　﻿]+', '', s).strip()
 
+def get_num(row, col_idx):
+    if row and 0 <= col_idx < len(row) and row[col_idx] is not None:
+        try:
+            return float(row[col_idx])
+        except (ValueError, TypeError):
+            return 0.0
+    return 0.0
+
+def get_val(row, col_idx):
+    if row and 0 <= col_idx < len(row) and row[col_idx] is not None:
+        return clean_punch_value(row[col_idx])
+    return "" 
+
 def is_punch_missing(val):
     cleaned = clean_punch_value(val).upper()
     if not cleaned:
@@ -292,13 +305,103 @@ def format_date_str(val):
     return s
 
 def extract_ym_from_date(date_str):
-    m = re.match(r'^\d{2}-([A-Za-z]{3})-(\d{4})$', date_str)
-    if m:
-        mon_str = m.group(1).upper()
+    s = str(date_str or "").strip()
+    m1 = re.match(r'^\d{1,2}-([A-Za-z]{3})-(\d{4})$', s)
+    if m1:
+        mon_str = m1.group(1).upper()
         if mon_str in MONTH_NAMES:
             mon_num = MONTH_NAMES.index(mon_str) + 1
-            return f"{m.group(2)}-{mon_num:02d}"
+            return f"{m1.group(2)}-{mon_num:02d}"
+    m2 = re.match(r'^(\d{4})-(\d{1,2})-(\d{1,2})$', s)
+    if m2:
+        return f"{m2.group(1)}-{int(m2.group(2)):02d}"
+    m3 = re.match(r'^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$', s)
+    if m3:
+        return f"{m3.group(3)}-{int(m3.group(2)):02d}"
     return None
+
+def compute_general_absents_for_employee(daily_records, detected_hols=None, target_month=None):
+    if not daily_records:
+        return [], 0
+    detected_hols = detected_hols or set()
+    
+    # Extract year and month
+    y = 0
+    m = 0
+    if target_month:
+        m_t = re.match(r'^(\d{4})-(\d{2})$', str(target_month).strip())
+        if m_t:
+            y = int(m_t.group(1))
+            m = int(m_t.group(2))
+    if not y or not m:
+        for r in daily_records:
+            if r and len(r) > 0 and r[0]:
+                ym = extract_ym_from_date(r[0])
+                if ym:
+                    parts = ym.split('-')
+                    y = int(parts[0])
+                    m = int(parts[1])
+                    break
+    if not y or not m:
+        now = datetime.datetime.now()
+        y, m = now.year, now.month
+
+    # Get number of days in month
+    if m == 12:
+        last_day = 31
+    else:
+        last_day = (datetime.date(y, m + 1, 1) - datetime.timedelta(days=1)).day
+
+    worked_days = set()
+    night_days = set()
+    has_day1_morning_checkout = False
+
+    for r in daily_records:
+        if not r or not r[0]:
+            continue
+        parts = str(r[0]).split('-')
+        if len(parts) >= 1 and parts[0].isdigit():
+            d_num = int(parts[0])
+            in_str = str(r[2] or '').strip()
+            out_str = str(r[3] or '').strip()
+            duty = float(r[4] or 0) + float(r[6] or 0) + float(r[8] or 0)
+            ot = float(r[5] or 0) + float(r[7] or 0) + float(r[9] or 0)
+            is_night = int(r[10] or 0) == 1 or 'NIGHT' in str(r[11] or '').upper() or 'DN' in str(r[11] or '').upper()
+
+            if duty > 0 or ot > 0 or (in_str and in_str != '-') or (out_str and out_str != '-'):
+                worked_days.add(d_num)
+            if is_night:
+                night_days.add(d_num)
+            if d_num == 1 and out_str and (not in_str or in_str == '-'):
+                t_m = parse_time_mins(out_str)
+                if t_m is not None and t_m <= 435:
+                    has_day1_morning_checkout = True
+
+    absent_dates = []
+    mon_name = MONTH_NAMES[m - 1]
+
+    for d in range(1, last_day + 1):
+        dt_obj = datetime.date(y, m, d)
+        day_name = dt_obj.strftime("%a")
+        full_date = f"{d:02d}-{mon_name}-{y}".upper()
+
+        # 1. Weekend exclusion (Thu & Fri only)
+        if day_name in ("Thu", "Fri"):
+            continue
+        # 2. Govt Holiday exclusion
+        if full_date in detected_hols:
+            continue
+        # 3. Night rest exclusion
+        if d > 1 and (d - 1) in night_days:
+            continue
+        # 4. Day 1 Month Crossover Night Rest exclusion
+        if d == 1 and has_day1_morning_checkout:
+            continue
+
+        if d not in worked_days:
+            absent_dates.append(f"{d:02d}-{mon_name} ({day_name})")
+
+    return absent_dates, len(absent_dates)
 
 def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
     detection = detect_category(c["designation"], c["id"])
@@ -337,6 +440,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
     sub_val = details.get(c["id"], {}).get("s", "") if details else ""
 
     req_problems = c.get("requisitionProblems", [])
+    gen_abs_days, gen_abs_cnt = compute_general_absents_for_employee(c.get("daily", []))
 
     return {
         "valid": valid,
@@ -359,6 +463,8 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
         "punchProblems": c["punchProblems"],
         "requisitionProblems": req_problems,
         "requisitionProblemCount": len(req_problems),
+        "generalAbsentDays": gen_abs_days,
+        "generalAbsentCount": gen_abs_cnt,
         "daily": c["daily"],
         "otAmount": ot_amount,
         "holidayAmount": holiday_amount,
@@ -396,10 +502,17 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     rows = list(ws.iter_rows(values_only=True))
     summary_map = build_summary_map(wb)
     ci = detect_work_log_columns(rows)
-    
     out = []
     month_counts = Counter()
     cur = None
+
+
+
+    def flush():
+        nonlocal cur
+        if cur:
+            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details))
+            cur = None
 
     # Step A: Auto-detect Empress recognized Government/Company Holidays for this month
     detected_holidays = set()
@@ -416,25 +529,6 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     custom_hols = set((holidays_cfg or {}).get("custom", []))
     # Apply custom additions and exclude admin unticked/cancelled dates
     detected_holidays = (detected_holidays | custom_hols) - cancelled_hols
-
-    def flush():
-        nonlocal cur
-        if cur:
-            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details))
-            cur = None
-
-    def get_num(row, col_idx):
-        if 0 <= col_idx < len(row) and row[col_idx] is not None:
-            try:
-                return float(row[col_idx])
-            except (ValueError, TypeError):
-                return 0.0
-        return 0.0
-
-    def get_val(row, col_idx):
-        if 0 <= col_idx < len(row) and row[col_idx] is not None:
-            return clean_punch_value(row[col_idx])
-        return ""
 
     for row in rows:
         if not row:
@@ -703,4 +797,3 @@ def main():
 
 if __name__ == "__main__":
     main()
- 
