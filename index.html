@@ -6526,6 +6526,16 @@ body[data-page="search"] .wa-float {
   font-weight: 900 !important;
 }
 
+
+.icc-row.icc-absent-row {
+  border-left: 3.5px solid #dc2626 !important;
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.05) 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+.icc-row.icc-absent-row .icc-val-main {
+  color: #dc2626 !important;
+  font-weight: 900 !important;
+}
+
 </style>
 
 <style id="adminModernOrganizerStyles">
@@ -7532,11 +7542,12 @@ body[data-page="search"] .wa-float {
 <th>Avg In</th>
 <th>4:30pm</th>
 <th>Hol/Night</th>
+<th>Absent</th>
 <th>Punch</th>
 </tr>
 </thead>
 <tbody id="incEmpMonthWiseTbody">
-<tr><td colspan="9" style="color:var(--muted);">Loading month-wise records...</td></tr>
+<tr><td colspan="10" style="color:var(--muted);">Loading month-wise records...</td></tr>
 </tbody>
 </table>
 </div>
@@ -7873,7 +7884,20 @@ body[data-page="search"] .wa-float {
 </div>
 <span class="rank-hub-chev">›</span>
 </button>
-<button type="button" class="rank-hub-item req-hub" onclick="openRankDrillDown('requisition')" style="border-left: 3px solid #f59e0b;">
+<button type="button" class="rank-hub-item absent-hub" onclick="openRankDrillDown('absent')" style="border-left: 3.5px solid #dc2626;">
+<div class="rank-hub-left">
+<span class="rank-hub-icon" style="background:#fee2e2;color:#dc2626;">🔴</span>
+<div>
+<div class="rank-hub-title">Highest Absent</div>
+<div class="rank-hub-sub" id="hubSubAbsent">General Working Days Absenteeism</div>
+</div>
+</div>
+<div class="rank-hub-right">
+<span class="rank-hub-val" id="hubValAbsent" style="color:#dc2626;">—</span>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<button type="button" class="rank-hub-item req-hub"  onclick="openRankDrillDown('requisition')" style="border-left: 3px solid #f59e0b;">
 <div class="rank-hub-left">
 <span class="rank-hub-icon" style="background:#fef3c7;color:#d97706;">⚠️</span>
 <div>
@@ -7933,6 +7957,8 @@ body[data-page="search"] .wa-float {
 <button type="button" class="icc-crit-tab" data-icc-crit="lessDuty" onclick="openRankDrillDown('lessDuty')">Less Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="absent" onclick="openRankDrillDown('absent')">Absent</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">Req Fix</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">AVG IN</button>
 </div>
@@ -7962,7 +7988,8 @@ body[data-page="search"] .wa-float {
 <div class="icc-search-row" id="iccSearchRowWrap" style="display:none;">
 <input type="text" id="iccSearchInput" placeholder="Search employee name or ID..." oninput="renderIccDrillList()">
 <button type="button" class="calc-mini-btn btn-wa-solid" id="iccPunchWaBtn" style="display:none;" onclick="openBulkPunchErpForward()">Forward to ERP</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn" style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccAbsentErpBtn" style="display:none;background:#dc2626;border-color:#dc2626;" onclick="openBulkAbsentForward()">Forward Absentees to In-Charge / HR</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
 </div>
 </div>
 <div class="icc-mypos-banner" id="iccMyPosBanner" style="display:none;"></div>
@@ -8484,6 +8511,9 @@ const PREFERRED_ID_KEY = 'renata_preferred_id_v1';
 const SALARY_KEY = 'renata_salary_v1';
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NIGHT_REST_CREDIT_HOURS = 8;
+const _monthLastNightCache = {};
+const _monthDatasetMetaCache = {};
+
 function _parseEmpDayNo(d) {
 if (typeof d === 'number') return Math.floor(d);
 const s = String(d == null ? '' : d).trim();
@@ -8491,53 +8521,303 @@ const iso = s.match(/^\d{4}-\d{1,2}-(\d{1,2})$/);
 if (iso) return parseInt(iso[1], 10);
 return parseInt(s, 10);
 }
+
+function getPrevMonthStr(monthStr) {
+const m = String(monthStr || '').match(/^(\d{4})-(\d{2})$/);
+if (!m) return '';
+let y = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1;
+if (mo < 1) { mo = 12; y -= 1; }
+return `${y}-${String(mo).padStart(2, '0')}`;
+}
+
+function getNextMonthStr(monthStr) {
+const m = String(monthStr || '').match(/^(\d{4})-(\d{2})$/);
+if (!m) return '';
+let y = parseInt(m[1], 10), mo = parseInt(m[2], 10) + 1;
+if (mo > 12) { mo = 1; y += 1; }
+return `${y}-${String(mo).padStart(2, '0')}`;
+}
+
+function resolveEmpAliasId(rawId) {
+let x = String(rawId || '').trim().toUpperCase();
+if (!x) return '';
+try {
+  const raw = localStorage.getItem('rppf_id_alias_v1');
+  if (raw) {
+    const a = JSON.parse(raw);
+    let n = 0;
+    while (a && a[x] && n++ < 5) x = String(a[x]).trim().toUpperCase();
+  }
+} catch (e) {}
+return x;
+}
+
+function didEmpWorkNightOnLastDay(emp, monthStr) {
+if (!emp) return false;
+if (typeof emp.lastDayNight === 'boolean') return emp.lastDayNight;
+let lastCalDay = 0;
+const mm = String(monthStr || emp._computedMonth || '').match(/^(\d{4})-(\d{2})$/);
+if (mm) {
+  lastCalDay = new Date(parseInt(mm[1], 10), parseInt(mm[2], 10), 0).getDate();
+}
+const daily = Array.isArray(emp.daily) ? emp.daily : [];
+if (daily.length > 0) {
+  if (!lastCalDay) {
+    const s0 = String(daily[0][0] || '').trim();
+    const qA = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
+    if (qA) {
+      const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const mi = mons.indexOf(qA[2].toUpperCase()) + 1;
+      if (mi > 0) lastCalDay = new Date(parseInt(qA[3], 10), mi, 0).getDate();
+    }
+  }
+  if (lastCalDay > 0) {
+    for (let i = 0; i < daily.length; i++) {
+      const r = daily[i];
+      if (r && _parseEmpDayNo(r[0]) === lastCalDay && (!!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN')) {
+        emp.lastDayNight = true;
+        return true;
+      }
+    }
+  }
+}
+const nDays = Array.isArray(emp.nightDays) ? emp.nightDays : [];
+if (nDays.length > 0 && lastCalDay > 0) {
+  for (let i = 0; i < nDays.length; i++) {
+    const nd = nDays[i];
+    const k = _parseEmpDayNo(typeof nd === 'string' ? nd : nd?.date);
+    if (k === lastCalDay) {
+      emp.lastDayNight = true;
+      return true;
+    }
+  }
+}
+emp.lastDayNight = false;
+return false;
+}
+
+function getPrevMonthNightSet(targetMonthStr) {
+const prevM = getPrevMonthStr(targetMonthStr);
+if (!prevM) return new Set();
+const prevList = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache[prevM]) ? monthIndexMemoryCache[prevM] : null;
+if (Array.isArray(prevList) && prevList.length > 0) {
+  const set = new Set();
+  prevList.forEach(e => {
+    if (!e) return;
+    if (didEmpWorkNightOnLastDay(e, prevM)) {
+      const uid = String(e.id || '').trim().toUpperCase();
+      if (uid) set.add(uid);
+      const aid = resolveEmpAliasId(uid);
+      if (aid) set.add(aid);
+    }
+  });
+  _monthLastNightCache[prevM] = set;
+  return set;
+}
+if (_monthLastNightCache[prevM]) return _monthLastNightCache[prevM];
+return new Set();
+}
+
+function hasPrevMonthLastNight(empId, targetMonthStr, empObj) {
+if (empObj && typeof empObj._prevMonthLastNight === 'boolean') return empObj._prevMonthLastNight;
+const uid = String(empId || (empObj && empObj.id) || '').trim().toUpperCase();
+if (!uid) return false;
+const set = getPrevMonthNightSet(targetMonthStr);
+return set.has(uid) || set.has(resolveEmpAliasId(uid));
+}
+
+function getMonthDatasetMeta(monthStr) {
+if (!monthStr) return { maxActiveDay: 31, consensusHolidays: new Set() };
+const list = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache[monthStr]) ? monthIndexMemoryCache[monthStr] : null;
+if (!Array.isArray(list) || list.length === 0) {
+  return _monthDatasetMetaCache[monthStr] || { maxActiveDay: 31, consensusHolidays: new Set() };
+}
+if (_monthDatasetMetaCache[monthStr] && _monthDatasetMetaCache[monthStr]._len === list.length) {
+  return _monthDatasetMetaCache[monthStr];
+}
+let maxActiveDay = 0;
+const dayStats = {};
+list.forEach(e => {
+  if (!e || e.isRppf === false) return;
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  if (daily.length > 0) {
+    daily.forEach(r => {
+      if (!r) return;
+      const k = _parseEmpDayNo(r[0]);
+      if (!k || k < 1 || k > 31) return;
+      const st = dayStats[k] || (dayStats[k] = { total: 0, reg: 0, hol: 0, active: 0 });
+      st.total++;
+      const regD = Number(r[4]) || 0;
+      const doD = (Number(r[6]) || 0) + (Number(r[7]) || 0);
+      const holD = (Number(r[8]) || 0) + (Number(r[9]) || 0);
+      const dHrs = regD + (Number(r[5]) || 0) + doD + holD;
+      const inStr = String(r[2] || '').trim();
+      const outStr = String(r[3] || '').trim();
+      const isNight = !!r[10];
+      if (regD > 0) st.reg++;
+      if (holD > 0 || doD > 0) st.hol++;
+      if (dHrs > 0 || inStr || outStr || isNight) {
+        st.active++;
+        if (k > maxActiveDay) maxActiveDay = k;
+      }
+    });
+  } else if (Array.isArray(e.activeDayNums)) {
+    e.activeDayNums.forEach(k => {
+      if (k > maxActiveDay) maxActiveDay = k;
+    });
+  }
+});
+const consensusHolidays = new Set();
+Object.keys(dayStats).forEach(kStr => {
+  const k = Number(kStr);
+  const st = dayStats[k];
+  if (st.total >= 15) {
+    if (st.hol / st.total >= 0.25 || (st.reg / st.total < 0.25 && st.hol > 0)) {
+      consensusHolidays.add(k);
+    }
+  }
+});
+const meta = {
+  _len: list.length,
+  maxActiveDay: maxActiveDay > 0 ? maxActiveDay : 31,
+  consensusHolidays
+};
+_monthDatasetMetaCache[monthStr] = meta;
+return meta;
+}
+
+function isPlantOrGovtHolidayDate(y, m, d, dn, consensusSet) {
+const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const monName = (m >= 1 && m <= 12) ? mons[m - 1] : 'JAN';
+const dStr = String(d).padStart(2, '0');
+const fullDate = `${dStr}-${monName}-${y}`.toUpperCase();
+const shortDate = `${dStr}-${monName}`.toUpperCase();
+
+let cancelledHols = [];
+let customHols = [];
+try {
+  const raw = localStorage.getItem('rppf_plant_holidays_v1');
+  if (raw) {
+    const cfg = JSON.parse(raw);
+    cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase().trim());
+    customHols = (cfg.custom || []).map(x => String(x).toUpperCase().trim());
+  }
+} catch (e) {}
+
+let dayTypeOv = {};
+try {
+  const rawOv = localStorage.getItem('rppf_daytype_ov_v1');
+  if (rawOv) dayTypeOv = JSON.parse(rawOv) || {};
+} catch (e) {}
+
+if (dayTypeOv[fullDate] === 'R' || cancelledHols.includes(fullDate) || cancelledHols.includes(shortDate)) {
+  return { isOffOrHol: false, isWeekend: false, isHoliday: false, label: '' };
+}
+if (dayTypeOv[fullDate] === 'H') {
+  return { isOffOrHol: true, isWeekend: false, isHoliday: true, label: 'Plant / Govt Holiday' };
+}
+if (dayTypeOv[fullDate] === 'O') {
+  return { isOffOrHol: true, isWeekend: true, isHoliday: false, label: 'Declared Off Day' };
+}
+
+const isWk = (dn === 'Thu' || dn === 'Fri');
+if (isWk) {
+  return { isOffOrHol: true, isWeekend: true, isHoliday: false, label: 'Weekend (Thu/Fri)' };
+}
+
+const baseGovtHols = {
+  '21-FEB': 'Govt Holiday (21 Feb)',
+  '26-MAR': 'Independence Day Holiday',
+  '14-APR': 'Pahela Baishakh Holiday',
+  '01-MAY': 'May Day Holiday',
+  '16-DEC': 'Victory Day Holiday',
+  '25-DEC': 'Christmas Holiday',
+  '20-OCT-2026': 'Durga Puja Holiday',
+  '21-OCT-2026': 'Durga Puja Holiday'
+};
+
+if (baseGovtHols[fullDate] || baseGovtHols[shortDate]) {
+  return { isOffOrHol: true, isWeekend: false, isHoliday: true, label: baseGovtHols[fullDate] || baseGovtHols[shortDate] };
+}
+if (customHols.includes(fullDate) || customHols.includes(shortDate)) {
+  return { isOffOrHol: true, isWeekend: false, isHoliday: true, label: 'Declared Plant Holiday' };
+}
+if (consensusSet && consensusSet.has(d)) {
+  return { isOffOrHol: true, isWeekend: false, isHoliday: true, label: 'Plant Holiday / General Off' };
+}
+return { isOffOrHol: false, isWeekend: false, isHoliday: false, label: '' };
+}
+
 function _buildEmpDayMap(e) {
 const byDay = {};
 if (!e) return { byDay, hasDaily: false, activeDays: 0 };
 const daily = Array.isArray(e.daily) ? e.daily : [];
 let activeDays = 0;
+const activeNums = [];
 daily.forEach(r => {
 if (!r) return;
 const k = _parseEmpDayNo(r[0]);
 const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
 const inStr = String(r[2] || '').trim();
 const outStr = String(r[3] || '').trim();
-const isNight = !!r[10];
+const isNight = !!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
 if (dHrs > 0 || inStr || outStr || isNight) {
 activeDays++;
-if (k >= 1) byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true };
+if (k >= 1) {
+  activeNums.push(k);
+  byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true };
+}
 }
 });
+if (daily.length > 0) {
+  e.activeDayNums = activeNums;
+}
 if (!daily.length) {
+if (Array.isArray(e.activeDayNums)) {
+  e.activeDayNums.forEach(k => {
+    if (k >= 1) {
+      byDay[k] = byDay[k] || { rec: true, inn: '08:00', out: '16:30', v: [8, 0, 0, 0, 0, 0], night: false };
+      activeDays++;
+    }
+  });
+}
 (e.holidayDays || []).forEach(h => {
 if (!h) return;
 const k = _parseEmpDayNo(typeof h === 'string' ? h : h.date);
 if (!k || k < 1) return;
-byDay[k] = Object.assign(byDay[k] || { rec: true }, { v: [0, 0, h.doDuty, h.doExtra, h.holDuty, h.holExtra], inn: '', out: '' });
+byDay[k] = Object.assign(byDay[k] || { rec: true }, { v: [0, 0, h.doDuty, h.doExtra, h.holDuty, h.holExtra], inn: byDay[k]?.inn || '', out: byDay[k]?.out || '' });
 });
 (e.nightDays || []).forEach(n => {
 if (!n) return;
 const k = _parseEmpDayNo(typeof n === 'string' ? n : n.date);
 if (!k || k < 1) return;
-(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).night = true;
+(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [8, 0, 0, 0, 0, 0] }).night = true;
 });
 (e.punchProblems || []).forEach(p => {
 if (!p) return;
 const k = _parseEmpDayNo(typeof p === 'string' ? p : p.date);
 if (!k || k < 1) return;
-(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [] }).forceMiss = true;
+(byDay[k] = byDay[k] || { rec: true, inn: '', out: '', v: [0, 0, 0, 0, 0, 0] }).forceMiss = true;
 });
 }
-return { byDay, hasDaily: daily.length > 0, activeDays };
+return { byDay, hasDaily: daily.length > 0 || Array.isArray(e.activeDayNums), activeDays };
 }
-function getNightRestDays(emp) {
+
+function getNightRestDays(emp, targetMonthStr) {
 if (!emp) return 0;
 const { byDay, hasDaily } = _buildEmpDayMap(emp);
 const dayKeys = Object.keys(byDay).map(Number).filter(k => k >= 1).sort((a, b) => a - b);
+const mStr = targetMonthStr || emp._computedMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+let lastCalDay = 31;
+const mm = String(mStr || '').match(/^(\d{4})-(\d{2})$/);
+if (mm) lastCalDay = new Date(parseInt(mm[1], 10), parseInt(mm[2], 10), 0).getDate();
 if (dayKeys.length > 0) {
 let restDays = 0;
+if (!byDay[1] && hasPrevMonthLastNight(emp.id, mStr, emp)) {
+  restDays++;
+}
 dayKeys.forEach(d => {
-if (byDay[d] && byDay[d].night && !byDay[d + 1]) restDays++;
+if (d < lastCalDay && byDay[d] && byDay[d].night && !byDay[d + 1]) restDays++;
 });
 return restDays;
 }
@@ -9244,8 +9524,14 @@ const run = () => {
 try {
 const mKeys = Object.keys(localStorage).filter(k => k.startsWith(MONTH_DATA_CACHE_PREFIX) && k !== MONTH_DATA_CACHE_PREFIX + month);
 if (mKeys.length >= 2) mKeys.sort().slice(0, mKeys.length - 1).forEach(k => localStorage.removeItem(k));
-// The per-day log is by far the largest part; the report view already copes with rows that lack it.
-const slim = employees.map(e => { const c = { ...e }; delete c.daily; return c; });
+// Pre-index activeDayNums, lastDayNight, and absent/requisition metrics before stripping daily for localStorage
+const slim = employees.map(e => {
+  if (!Array.isArray(e.activeDayNums) && Array.isArray(e.daily) && e.daily.length > 0) _buildEmpDayMap(e);
+  didEmpWorkNightOnLastDay(e, month);
+  const c = { ...e };
+  delete c.daily;
+  return c;
+});
 localStorage.setItem(MONTH_DATA_CACHE_PREFIX + month, JSON.stringify({ ts: Date.now(), employees: slim }));
 } catch (e) {}
 };
@@ -9261,14 +9547,20 @@ const data = await fetchJsonResource(`data/${month}.json`);
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : null);
 if (list && list.length > 0) {
 await loadAreaMap();
-const normalized = list.map(e => ({
+const normalized = list.map(e => {
+const obj = {
 ...e,
 id: String(e.id || '').toUpperCase().trim(),
 isRppf: e.isRppf !== false,
 area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facility')
-}));
+};
+if (Array.isArray(obj.daily) && obj.daily.length > 0) _buildEmpDayMap(obj);
+didEmpWorkNightOnLastDay(obj, month);
+return obj;
+});
 normalized.forEach(applyTypeOverride);
 monthIndexMemoryCache[month] = normalized;
+getMonthDatasetMeta(month);
 if (persist) { _monthPersisted[month] = true; persistMonthCache(month, normalized); }
 return normalized;
 }
@@ -9978,7 +10270,12 @@ closeDrawer();
 }
 });
 function renderInstantEmployeeRecord(emp, month, searchId) {
-window._rptCtx = { emp, month, id: searchId };
+const prevNight = hasPrevMonthLastNight(searchId, month, emp);
+emp._prevMonthLastNight = prevNight;
+computeEmpGeneralAbsents(emp, month, prevNight);
+emp.requisitionProblems = computeEmpRequisitionProblems(emp);
+emp.requisitionProblemCount = emp.requisitionProblems.length;
+window._rptCtx = { emp, month, id: searchId, prevNight };
 if (window._rptReset) _rptReset();
 applyTypeOverride(emp);
 const rc = getRateCategory(emp);
@@ -10094,7 +10391,11 @@ if (!isListedEmployeeId(searchId)) {
   showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
   return;
 }
-const fastList = await fetchMonthPreIndexedData(month);
+const prevMonth = getPrevMonthStr(month);
+const [fastList] = await Promise.all([
+  fetchMonthPreIndexedData(month),
+  prevMonth ? fetchMonthPreIndexedData(prevMonth, false, false).catch(() => null) : Promise.resolve(null)
+]);
 if (myToken !== currentToken) return;
 if (!fastList || !Array.isArray(fastList) || fastList.length === 0) {
 spinner.style.display = "none"; searchBtn.disabled = false;
@@ -10298,15 +10599,25 @@ const reqWarnHtml = rawReqProbs.length > 0 ? `
   <button type="button" class="btn-secondary" style="margin-top:8px;background:#d97706;color:#fff;border-color:#b45309;font-weight:700;padding:5px 10px;font-size:11.5px;" onclick="openErpSupportModal(${esc(JSON.stringify(buildSingleEmployeeReqErpMessage(currentSearchId, currentResult?.name, rawReqProbs)))}, ${esc(JSON.stringify(areaName))})">Forward Missing Requisitions to ERP Team (WhatsApp)</button>
 </div>` : '';
 
+const empObj = (window._rptCtx && window._rptCtx.emp) ? window._rptCtx.emp : curEmp;
+const absDatesList = Array.isArray(empObj?.generalAbsentDays) ? empObj.generalAbsentDays : [];
+const absWarnHtml = absDatesList.length > 0 ? `
+<div style="margin-top:8px;padding:9px 12px;background:#fef2f2;border:1.5px solid #f87171;border-radius:8px;color:#991b1b;font-size:12px;line-height:1.45;">
+  <div style="font-weight:800;display:flex;align-items:center;gap:5px;color:#dc2626;font-size:12.5px;">
+    <span>🔴</span> General Working Day Absent (${absDatesList.length} day${absDatesList.length > 1 ? 's' : ''})
+  </div>
+  <div style="margin-top:3px;font-weight:700;">Dates: ${esc(absDatesList.join(', '))}</div>
+</div>` : '';
+
 if (detection.valid && !hasP && rawReqProbs.length === 0) {
-box.className = "remarks-box remarks-ok";
-box.innerHTML = `${subj}: all In/Out punches are correct.${facilityWarn}`;
+box.className = absDatesList.length > 0 ? "remarks-box remarks-warn" : "remarks-box remarks-ok";
+box.innerHTML = `${subj}: all In/Out punches are correct.${facilityWarn}${absWarnHtml}`;
 } else if (detection.valid && !hasP && rawReqProbs.length > 0) {
 box.className = "remarks-box remarks-warn";
-box.innerHTML = `${subj}: all In/Out punches are correct, but <b>${rawReqProbs.length} Overtime Requisition(s)</b> are pending.${facilityWarn}${reqWarnHtml}`;
+box.innerHTML = `${subj}: all In/Out punches are correct, but <b>${rawReqProbs.length} Overtime Requisition(s)</b> are pending.${facilityWarn}${reqWarnHtml}${absWarnHtml}`;
 } else if (detection.valid && hasP) {
 box.className = "remarks-box remarks-warn";
-box.innerHTML = `${subj}: punch missing on <b>${esc(dates)}</b> (${bn(pCount)} days).${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
+box.innerHTML = `${subj}: punch missing on <b>${esc(dates)}</b> (${bn(pCount)} days).${facilityWarn}${reqWarnHtml}${absWarnHtml}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
 } else if (!detection.valid && !hasP) {
 box.className = "remarks-box remarks-error";
 box.innerHTML = `${subj}: the grade is outside this calculation, so the amount cannot be shown.${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage('—', 'grade'));
@@ -10869,12 +11180,101 @@ function computeEmpRequisitionProblems(e) {
   return reqProbs;
 }
 
-function ensureEmpAvgStats(list) {
+function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
+  if (!e) return { dates: [], shortDates: [], count: 0 };
+  const isMulti = Boolean(e.isMultiMonth || (e.monthsCount && e.monthsCount > 1));
+  if (isMulti && Array.isArray(e.generalAbsentDays)) {
+    return {
+      dates: e.generalAbsentDays,
+      shortDates: Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : e.generalAbsentDays,
+      count: e.generalAbsentCount != null ? Number(e.generalAbsentCount) : e.generalAbsentDays.length
+    };
+  }
+  const mStr = targetMonthStr 
+    || e._computedMonth
+    || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
+    || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+
+  const hasDailyOrActive = (Array.isArray(e.daily) && e.daily.length > 0) || (Array.isArray(e.activeDayNums) && e.activeDayNums.length > 0);
+  if (!hasDailyOrActive && Array.isArray(e.generalAbsentDays) && e._computedMonth === mStr) {
+    return {
+      dates: e.generalAbsentDays,
+      shortDates: Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : e.generalAbsentDays,
+      count: e.generalAbsentCount != null ? Number(e.generalAbsentCount) : e.generalAbsentDays.length
+    };
+  }
+
+  if (typeof _rptRows === 'function') {
+    const { rows, y, m } = _rptRows({ emp: e, month: mStr, prevNight: prevNightSetOrBool });
+    const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const monName = (m >= 1 && m <= 12) ? mons[m - 1] : 'JAN';
+    const mmPad = String(m >= 1 && m <= 12 ? m : 1).padStart(2, '0');
+    const absentDates = [];
+    const shortDates = [];
+    (rows || []).forEach(r => {
+      if (r && r.isGeneralAbsent) {
+        const dStr = String(r.dayNum || (r.date ? r.date.split('/')[0] : '')).padStart(2, '0');
+        absentDates.push(`${dStr}-${monName} (${r.day})`);
+        shortDates.push(`${dStr}-${mmPad}`);
+      }
+    });
+    e.generalAbsentDays = absentDates;
+    e.generalAbsentShortDates = shortDates;
+    e.generalAbsentCount = absentDates.length;
+    e._computedMonth = mStr;
+    return { dates: absentDates, shortDates, count: absentDates.length };
+  }
+
+  return { dates: [], shortDates: [], count: 0 };
+}
+
+function getGeneralAbsentCount(emp, targetMonth) {
+  if (!emp) return 0;
+  const isMulti = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || emp.isMultiMonth || (emp.monthsCount && emp.monthsCount > 1);
+  if (isMulti) {
+    return Number(emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0));
+  }
+  const mStr = targetMonth || emp._computedMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const prevSet = getPrevMonthNightSet(mStr);
+  const prevHas = prevSet.has(String(emp.id || '').toUpperCase()) || prevSet.has(resolveEmpAliasId(emp.id));
+  if (emp.generalAbsentCount != null && emp._computedMonth === mStr && emp._computedPrevNight === prevHas) {
+    return Number(emp.generalAbsentCount) || 0;
+  }
+  const res = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, mStr, prevHas) : { count: Number(emp.generalAbsentCount) || 0 };
+  emp._computedPrevNight = prevHas;
+  return res.count;
+}
+
+function ensureEmpAvgStats(list, targetMonth) {
+const isMulti = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(list && list[0] && (list[0].isMultiMonth || (list[0].monthsCount && list[0].monthsCount > 1)));
+const mStr = targetMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+const prevNightSet = !isMulti ? getPrevMonthNightSet(mStr) : new Set();
 (list || []).forEach(e => {
   if (!e) return;
-  const rps = computeEmpRequisitionProblems(e);
-  e.requisitionProblems = rps;
-  e.requisitionProblemCount = rps.length;
+  if (!isMulti) {
+    const uid = String(e.id || '').toUpperCase();
+    const prevHas = prevNightSet.has(uid) || prevNightSet.has(resolveEmpAliasId(uid));
+    e._prevMonthLastNight = prevHas;
+    if (!e._metricsComputed || e._computedMonth !== mStr || e._computedPrevNight !== prevHas) {
+      const rps = computeEmpRequisitionProblems(e);
+      const abs = computeEmpGeneralAbsents(e, mStr, prevHas);
+      e.requisitionProblems = rps;
+      e.requisitionProblemCount = rps.length;
+      e.generalAbsentDays = abs.dates;
+      e.generalAbsentShortDates = abs.shortDates;
+      e.generalAbsentCount = abs.count;
+      e._metricsComputed = true;
+      e._computedMonth = mStr;
+      e._computedPrevNight = prevHas;
+    }
+  } else {
+    if (e.generalAbsentCount == null) {
+      e.generalAbsentCount = Array.isArray(e.generalAbsentDays) ? e.generalAbsentDays.length : 0;
+    }
+    if (e.requisitionProblemCount == null) {
+      e.requisitionProblemCount = Array.isArray(e.requisitionProblems) ? e.requisitionProblems.length : 0;
+    }
+  }
 });
 (list || []).forEach(e => {
 if (!e || (e._avgComputed && e.adjustedDuty != null && e.adjustedAvgDuty != null && e.nightRestDays != null)) return;
@@ -10892,7 +11292,7 @@ plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays
 area: getAreaForId(e.id, true),
 punchProblemsCount: getPunchProblemCount(e)
 }));
-ensureEmpAvgStats(normalized);
+ensureEmpAvgStats(normalized, month);
 const sortedByDuty = [...normalized].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...normalized].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...normalized].sort((a,b) => b.totalEarned - a.totalEarned);
@@ -10901,6 +11301,9 @@ const sortedByLessDuty = [...normalized].sort((a,b) => (a.totalDuty - b.totalDut
 const sortedByLessOT = [...normalized].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
 const sortedByAvgDuty = [...normalized].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
 const sortedByAvgInOut = [...normalized].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+const sortedByPunch = [...normalized].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
+const sortedByRequisition = [...normalized].filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+const sortedByAbsent = [...normalized].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, month) - getGeneralAbsentCount(a, month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
 return {
 month,
 allEmployees: normalized,
@@ -10911,7 +11314,10 @@ sortedByPlain,
 sortedByLessDuty,
 sortedByLessOT,
 sortedByAvgDuty,
-sortedByAvgInOut
+sortedByAvgInOut,
+sortedByPunch,
+sortedByRequisition,
+sortedByAbsent
 };
 }
 function getPreviousMonthStrings(baseMonthStr, count) {
@@ -10960,18 +11366,47 @@ startLeaderboardScan(false);
 async function aggregateMultiMonthEmployees(monthList) {
 const map = new Map();
 let loadedMonths = 0;
-const lists = await Promise.all(monthList.map(m => fetchMonthPreIndexedData(m, false, false).catch(() => null)));
-lists.forEach(list => {
+const chronoMonths = Array.from(new Set((monthList || []).filter(Boolean))).sort();
+const earliestPrevMonth = chronoMonths.length > 0 ? getPrevMonthStr(chronoMonths[0]) : '';
+const fetchTargets = earliestPrevMonth && !chronoMonths.includes(earliestPrevMonth)
+  ? [earliestPrevMonth, ...chronoMonths]
+  : [...chronoMonths];
+
+await Promise.all(fetchTargets.map(m => fetchMonthPreIndexedData(m, false, false).catch(() => null)));
+
+const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+chronoMonths.forEach((mStr) => {
+const list = monthIndexMemoryCache[mStr];
 if (!list || !list.length) return;
 loadedMonths++;
+const prevNightSet = getPrevMonthNightSet(mStr);
+const mNum = parseInt(String(mStr).split('-')[1], 10) || 1;
+const mShortLbl = shortMonths[mNum - 1] || mStr;
+
 list.forEach(e => {
 if (!e || e.isRppf === false || e.valid === false || !isMappedAreaId(e.id)) return;
-const cur = map.get(e.id);
+const empKey = resolveEmpAliasId(e.id) || String(e.id || '').toUpperCase();
+const cur = map.get(empKey);
+const uid = String(e.id || '').toUpperCase();
+const prevHas = prevNightSet.has(uid) || prevNightSet.has(empKey);
+e._prevMonthLastNight = prevHas;
+
 const pArr = Array.isArray(e.punchProblems) ? e.punchProblems : [];
+const absObj = typeof computeEmpGeneralAbsents === 'function'
+  ? computeEmpGeneralAbsents(e, mStr, prevHas)
+  : { dates: (e.generalAbsentDays || []), shortDates: (e.generalAbsentShortDates || []), count: (e.generalAbsentCount || 0) };
+const absArr = absObj.dates || [];
+const absShortArr = absObj.shortDates || [];
+const reqArr = Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0
+  ? e.requisitionProblems
+  : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
 const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
+
 if (!cur) {
-map.set(e.id, {
+map.set(empKey, {
 ...e,
+id: e.id,
 monthsCount: 1,
 totalDuty: Number(e.totalDuty || 0),
 otHours: Number(e.otHours || 0),
@@ -10980,6 +11415,12 @@ nightCount: Number(e.nightCount || 0),
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
 totalEarned: Number(e.totalEarned || 0),
 punchProblems: [...pArr],
+generalAbsentDays: [...absArr],
+generalAbsentShortDates: [...absShortArr],
+generalAbsentCount: absArr.length,
+absentByMonth: absArr.length > 0 ? [{ month: mStr, label: mShortLbl, count: absArr.length, dates: [...absShortArr] }] : [],
+requisitionProblems: [...reqArr],
+requisitionProblemCount: reqArr.length,
 _sumPresentDays: st.presentDaysCount || 0,
 _sumNightRestDays: st.nightRestDays || 0,
 _sumInMins: (st.avgInMins != null ? st.avgInMins : 480)
@@ -10993,15 +11434,31 @@ cur.nightCount += Number(e.nightCount || 0);
 cur.plainDaysCount = (cur.plainDaysCount || 0) + Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0);
 cur.totalEarned = Number((cur.totalEarned + Number(e.totalEarned || 0)).toFixed(2));
 cur.punchProblems.push(...pArr);
+if (!Array.isArray(cur.generalAbsentDays)) cur.generalAbsentDays = [];
+if (!Array.isArray(cur.generalAbsentShortDates)) cur.generalAbsentShortDates = [];
+if (!Array.isArray(cur.absentByMonth)) cur.absentByMonth = [];
+cur.generalAbsentDays.push(...absArr);
+cur.generalAbsentShortDates.push(...absShortArr);
+cur.generalAbsentCount = cur.generalAbsentDays.length;
+if (absArr.length > 0) {
+  cur.absentByMonth.push({ month: mStr, label: mShortLbl, count: absArr.length, dates: [...absShortArr] });
+}
+if (!Array.isArray(cur.requisitionProblems)) cur.requisitionProblems = [];
+cur.requisitionProblems.push(...reqArr);
+cur.requisitionProblemCount = cur.requisitionProblems.length;
 cur._sumPresentDays = (cur._sumPresentDays || 0) + (st.presentDaysCount || 0);
 cur._sumNightRestDays = (cur._sumNightRestDays || 0) + (st.nightRestDays || 0);
 cur._sumInMins = (cur._sumInMins || 0) + (st.avgInMins != null ? st.avgInMins : 480);
-if (!cur.name && e.name) cur.name = e.name;
+if (e.name) cur.name = e.name;
+if (e.grade) cur.grade = e.grade;
 }
 });
 });
 const merged = Array.from(map.values()).map(e => {
 const mc = Math.max(1, e.monthsCount || 1);
+e.isMultiMonth = true;
+e.generalAbsentCount = (e.generalAbsentDays || []).length;
+e.requisitionProblemCount = (e.requisitionProblems || []).length;
 const presentDaysCount = Math.max(1, e._sumPresentDays || 1);
 const nightRestDays = e._sumNightRestDays || 0;
 const nightRestCredit = Number((nightRestDays * NIGHT_REST_CREDIT_HOURS).toFixed(2));
@@ -11025,7 +11482,8 @@ _avgComputed: true,
 avgDuty: Number((e.totalDuty / mc).toFixed(1)),
 avgOt: Number((e.otHours / mc).toFixed(1)),
 avgNight: Number((e.nightCount / mc).toFixed(1)),
-avgEarned: Number((e.totalEarned / mc).toFixed(0))
+avgEarned: Number((e.totalEarned / mc).toFixed(0)),
+avgAbsent: Number((e.generalAbsentCount / mc).toFixed(1))
 };
 });
 return { merged, loadedMonths };
@@ -11090,7 +11548,11 @@ isScanning = false;
 return;
 }
 }
-const fastList = await fetchMonthPreIndexedData(month, forceRescan);
+const prevM = getPrevMonthStr(month);
+const [fastList] = await Promise.all([
+  fetchMonthPreIndexedData(month, forceRescan),
+  prevM ? fetchMonthPreIndexedData(prevM, false, false).catch(() => null) : Promise.resolve(null)
+]);
 if (fastList && fastList.length > 0) {
 const lbPayload = buildLeaderboardPayloadFromList(month, fastList);
 lbPayload.timeMode = 'monthly';
@@ -11213,6 +11675,7 @@ const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+result.sortedByAbsent = [...allEmpsGlobal].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, result.month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, result.month) - getGeneralAbsentCount(a, result.month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
 const preferredArea = getAppMode() === 'incharge' ? getInchargeDefaultArea() : (getMyId() ? getAreaForId(getMyId(), true) : 'all');
@@ -11349,7 +11812,8 @@ const filtered = allEmps.filter(e =>
 (st.gender === 'all' || e.gender === st.gender) &&
 (st.type === 'all' || e.empType === st.type) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
-ensureEmpAvgStats(filtered);
+const curMonth = (currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+ensureEmpAvgStats(filtered, curMonth);
 const sortedByDuty = [...filtered].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
@@ -11360,7 +11824,8 @@ const sortedByAvgDuty = [...filtered].sort((a,b) => ((b.adjustedAvgDuty ?? b.avg
 const sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 const sortedByRequisition = [...filtered].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
-currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, area };
+const sortedByAbsent = [...filtered].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, curMonth) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, curMonth) - getGeneralAbsentCount(a, curMonth)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
+currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, sortedByAbsent, area };
 updateLbSummaryMetrics(filtered);
 renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
 renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
@@ -11503,7 +11968,7 @@ currentLbListType = null;
 function lbModalBackdropClick(e) { if (e.target.id === 'lbFullListModal') closeLbFullList(); }
 async function viewEmployeeFromLeaderboard(empId) {
 if (document.getElementById('lbFullListModal').classList.contains('open')) closeLbFullList();
-const month = getCurrentMonth();
+const month = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || getCurrentMonth();
 const [year, mon] = month.split('-');
 document.getElementById('yearSelect').value = year;
 document.getElementById('monthSelect').value = mon;
@@ -11746,6 +12211,33 @@ const url = erpWaLink(pendingErpMessage, m.whatsapp);
 closeErpSupportModal();
 window.open(url, '_blank', 'noopener,noreferrer');
 }
+function openBulkAbsentForward() {
+  if (!currentLeaderboardResult) {
+    showToast('First load the leaderboard list', 'warn');
+    return;
+  }
+  const f = currentLeaderboardResult.filtered;
+  const list = f ? (f.sortedByAbsent || []) : (currentLeaderboardResult.sortedByAbsent || []);
+  if (!list || list.length === 0) {
+    showToast('No employees with general day absents in this selection', 'info');
+    return;
+  }
+  const areaLabel = describeLbFilter();
+  const monthStr = currentLeaderboardResult.month || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const lines = list.map((e, i) => {
+    const absDates = Array.isArray(e.generalAbsentDays) ? e.generalAbsentDays.join(', ') : `${getGeneralAbsentCount(e)} days`;
+    return `${i + 1}. ${e.name || '—'} (${e.id}) [${e.sub || 'General'}] — Absent: ${getGeneralAbsentCount(e)} days\n   └ Dates: ${absDates}`;
+  });
+  const msg = `Dear Management & Floor In-Charge,\n${areaLabel} section, ${monthStr} General Working Days Absenteeism Report:\n\n${lines.join('\n\n')}\n\nPlease review attendance discipline. Thank you!`;
+  const areaOnly = document.getElementById('areaFilter')?.value || 'All';
+  if (typeof openErpSupportModal === 'function') {
+    openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
+  } else if (typeof fallbackCopyText === 'function') {
+    fallbackCopyText(msg);
+    showToast('Copied Absentee list to clipboard!', 'success');
+  }
+}
+
 function openBulkRequisitionErpForward() {
   if (!currentLeaderboardResult) {
     showToast('First load the leaderboard list', 'warn');
@@ -12021,6 +12513,9 @@ setTxt('hubSubPunch', 'Missing In/Out Punch List');
 const rCount = (filteredList || []).filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).length;
 setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
 setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
+const absCount = (filteredList || []).filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).length;
+setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
+setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees absent on general days` : 'No general day absents');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
 if (iccDrillOpen) renderIccDrillList();
@@ -12212,7 +12707,8 @@ lessOt: 'Less OT RPPF',
 avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF',
-requisition: 'OT Requisition Missing RPPF'
+requisition: 'OT Requisition Missing RPPF',
+absent: 'Highest Absent (General Days) RPPF'
 };
 const colHeaders = {
 duty: 'Duty Hrs',
@@ -12224,7 +12720,8 @@ lessOt: 'OT Hrs',
 avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In',
 punch: 'Missing',
-requisition: 'Missing OT'
+requisition: 'Missing OT',
+absent: 'Absent Days'
 };
 const titleEl = document.getElementById('iccDrillTitle');
 if (titleEl) titleEl.textContent = titles[activeIccCriterion] || 'Best Duty RPPF';
@@ -12238,9 +12735,13 @@ try { btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest
 }
 });
 const waBtn = document.getElementById('iccPunchWaBtn');
+const absBtn = document.getElementById('iccAbsentErpBtn');
+const reqBtn = document.getElementById('iccReqErpBtn');
 const sRow = document.getElementById('iccSearchRowWrap');
 if (waBtn) waBtn.style.display = activeIccCriterion === 'punch' ? 'inline-flex' : 'none';
-if (sRow && activeIccCriterion === 'punch') sRow.style.display = 'flex';
+if (absBtn) absBtn.style.display = activeIccCriterion === 'absent' ? 'inline-flex' : 'none';
+if (reqBtn) reqBtn.style.display = activeIccCriterion === 'requisition' ? 'inline-flex' : 'none';
+if (sRow && (activeIccCriterion === 'punch' || activeIccCriterion === 'absent' || activeIccCriterion === 'requisition')) sRow.style.display = 'flex';
 const curArea = document.getElementById('areaFilter')?.value || 'all';
 document.querySelectorAll('.icc-area-btn').forEach(btn => {
 btn.classList.toggle('active', btn.getAttribute('data-icc-area') === curArea);
@@ -12298,6 +12799,12 @@ f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMin
 return f.sortedByAvgInOut;
 }
 if (crit === 'punch') return f.sortedByPunch || [];
+if (crit === 'absent') {
+  if (Array.isArray(f.sortedByAbsent)) return f.sortedByAbsent;
+  const mStr = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, mStr) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, mStr) - getGeneralAbsentCount(a, mStr)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
+}
 if (crit === 'requisition') {
   if (Array.isArray(f.sortedByRequisition)) return f.sortedByRequisition;
   const base = f._rawFiltered || f.allEmployees || [];
@@ -12318,6 +12825,10 @@ if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}`;
 if (crit === 'requisition') {
   const c = typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0;
   return `${c}d req`;
+}
+if (crit === 'absent') {
+  const c = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0;
+  return `${c}d`;
 }
 return `${getPunchProblemCount(e)}d miss`;
 }
@@ -12348,7 +12859,35 @@ const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
 const isReqCrit = activeIccCriterion === 'requisition';
-const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (rk <= 3 ? `icc-rank-${rk}` : ''));
+const isAbsCrit = activeIccCriterion === 'absent';
+const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (rk <= 3 ? `icc-rank-${rk}` : '')));
+let absMetaUnderName = '';
+const isMultiTime = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(e && (e.isMultiMonth || (e.monthsCount && e.monthsCount > 1)));
+if (isAbsCrit) {
+  if (!isMultiTime) {
+    const curMonth = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+    const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(e, curMonth) : { dates: (e.generalAbsentDays || []), shortDates: (e.generalAbsentShortDates || []), count: (e.generalAbsentCount || 0) };
+    const shortDates = (Array.isArray(absRes.shortDates) && absRes.shortDates.length > 0) ? absRes.shortDates : (absRes.dates || []).map(d => {
+      const m1 = String(d).match(/^(\d{1,2})-([A-Za-z]{3})/i);
+      if (m1) {
+        const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        const mIdx = mons.findIndex(x => x === m1[2].toUpperCase()) + 1;
+        const mm = String(mIdx > 0 ? mIdx : (curMonth.split('-')[1] || '01')).padStart(2, '0');
+        return `${String(m1[1]).padStart(2, '0')}-${mm}`;
+      }
+      return String(d).split(' ')[0];
+    });
+    if (shortDates.length > 0) {
+      absMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#dc2626;margin-top:2px;">🔴 Absent (${shortDates.length}d): ${esc(shortDates.slice(0, 8).join(', '))}${shortDates.length > 8 ? ' +' + (shortDates.length - 8) + ' more' : ''}</div>`;
+    }
+  } else {
+    const byM = Array.isArray(e.absentByMonth) ? e.absentByMonth : [];
+    const shortDates = Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : (Array.isArray(e.generalAbsentDays) ? e.generalAbsentDays : []);
+    const mSummary = byM.length > 0 ? byM.map(x => `${x.label}: ${x.count}d`).join(' • ') : `${shortDates.length}d total`;
+    const dtPreview = shortDates.length > 0 ? ` (${shortDates.slice(0, 6).join(', ')}${shortDates.length > 6 ? ' +' + (shortDates.length - 6) : ''})` : '';
+    absMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#dc2626;margin-top:2px;">🔴 ${esc(mSummary)}${esc(dtPreview)}</div>`;
+  }
+}
 let reqMetaUnderName = '';
 if (isReqCrit) {
   const probs = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
@@ -12368,7 +12907,7 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${e
 <div class="icc-avatar">${esc(initials)}</div>
 <div class="icc-emp-text">
 <div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
-<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}
+<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}${absMetaUnderName}
 </div>
 ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
@@ -12381,7 +12920,7 @@ ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
 <div class="icc-val-col">
 <div class="icc-val-main">${mainVal}</div>
-${activeIccCriterion === 'duty' && (e.nightRestDays || 0) > 0 ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">+${e.nightRestCredit || (e.nightRestDays * NIGHT_REST_CREDIT_HOURS)}h night-rest credit (${e.nightRestDays}d)</div>` : activeIccCriterion === 'avgDuty' ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">(raw ${Number(e.avgDutyPerDay || 0).toFixed(1)})</div>` : ''}
+${activeIccCriterion === 'duty' && (e.nightRestDays || 0) > 0 ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">+${e.nightRestCredit || (e.nightRestDays * NIGHT_REST_CREDIT_HOURS)}h night-rest credit (${e.nightRestDays}d)</div>` : activeIccCriterion === 'avgDuty' ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">(raw ${Number(e.avgDutyPerDay || 0).toFixed(1)})</div>` : (activeIccCriterion === 'absent' && isMultiTime ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">Avg ${e.avgAbsent != null ? e.avgAbsent : Number(((e.generalAbsentCount || 0) / Math.max(1, e.monthsCount || 1)).toFixed(1))}d/m • ${e.monthsCount || 1}m</div>` : '')}
 <div class="icc-val-sub">${subVal}</div>
 </div>
 </div>`;
@@ -13313,22 +13852,88 @@ const _rMin = t => { const q = String(t).match(/^(\d{1,2}):(\d{2})/); return q ?
 function _rptRows(ctx) {
 const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
 let y = 0, m = 0;
-const mm = String(ctx.month || '').match(/(\d{4})-(\d{2})/);
-if (mm) { y = +mm[1]; m = +mm[2]; }
-else { const q = String((daily[0] && daily[0][0]) || '').match(/^(\d{2})-([A-Z]{3})-(\d{4})$/i); if (q) { y = +q[3]; m = _RMON.findIndex(x => x.toUpperCase() === q[2].toUpperCase()) + 1; } }
-if (!y || m < 1) { const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1; }
-const { byDay } = _buildEmpDayMap(e);
-const rows = [], last = new Date(y, m, 0).getDate();
+const mm = String(ctx.month || e._computedMonth || '').match(/(\d{4})-(\d{2})/);
+if (mm) { 
+  y = +mm[1]; m = +mm[2]; 
+} else if (daily.length > 0 && daily[0] && daily[0][0]) {
+  const s0 = String(daily[0][0]).trim();
+  const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
+  if (qAlpha) {
+    y = +qAlpha[3];
+    m = _RMON.findIndex(x => x.toUpperCase() === qAlpha[2].toUpperCase()) + 1;
+  } else {
+    const qIso = s0.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (qIso) {
+      y = +qIso[1];
+      m = +qIso[2];
+    } else {
+      const qSlash = s0.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{4}))?/);
+      if (qSlash) {
+        m = +qSlash[2];
+        y = qSlash[3] ? +qSlash[3] : 2026;
+      }
+    }
+  }
+}
+if (!y || m < 1 || m > 12) {
+  const curM = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
+    || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const curMatch = String(curM).match(/(\d{4})-(\d{2})/);
+  if (curMatch) {
+    y = +curMatch[1];
+    m = +curMatch[2];
+  } else {
+    const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
+  }
+}
 const mNumStr = String(m).padStart(2, '0');
+const ymStr = `${y}-${mNumStr}`;
+const { byDay, hasDaily } = _buildEmpDayMap(e);
+const dsMeta = getMonthDatasetMeta(ymStr);
+const maxDatasetDay = dsMeta.maxActiveDay || 31;
+const consensusHols = dsMeta.consensusHolidays;
+const prevMonthNight = (typeof ctx.prevNight === 'boolean')
+  ? ctx.prevNight
+  : (ctx.prevNight instanceof Set ? (ctx.prevNight.has(String(e.id || '').toUpperCase()) || ctx.prevNight.has(resolveEmpAliasId(e.id))) : hasPrevMonthLastNight(e.id, ymStr, e));
+
+const rows = [], last = new Date(y, m, 0).getDate();
 for (let d = 1; d <= last; d++) {
 const dn = _RDAY[new Date(y, m - 1, d).getDay()], o = byDay[d];
 const dStr = String(d).padStart(2, '0');
+const isoDateStr = `${y}-${mNumStr}-${dStr}`;
 const row = { date: dStr + '/' + mNumStr, dayNum: dStr, monthNum: mNumStr, day: dn, v: [0, 0, 0, 0, 0, 0], inn: '', out: '', night: false, tone: '', note: '' };
 if (!o) {
-const wk = dn === 'Thu' || dn === 'Fri';
-const afterNight = d > 1 && byDay[d - 1] && byDay[d - 1].night;   // previous day was a night duty -> auto day off
-if (afterNight) { row.tone = 'offn'; row.note = 'Day off after night' + (wk ? ' (Weekend)' : ''); row.afterNight = true; }
-else { row.tone = wk ? 'off' : 'none'; row.note = wk ? 'Weekend' : 'No record'; }
+const holCheck = isPlantOrGovtHolidayDate(y, m, d, dn, consensusHols);
+const wk = holCheck.isWeekend;
+const afterPrevMonthNight = (d === 1 && prevMonthNight);
+const afterSameMonthNight = (d > 1 && byDay[d - 1] && byDay[d - 1].night);
+const afterNight = afterPrevMonthNight || afterSameMonthNight;
+const leaveRec = (typeof isEmployeeOnApprovedLeave === 'function') ? isEmployeeOnApprovedLeave(e.id, isoDateStr) : null;
+
+if (afterNight) {
+  row.tone = 'offn';
+  row.note = (afterPrevMonthNight ? 'Day off after night (Prev Month)' : 'Day off after night') + (wk ? ' (Weekend)' : '');
+  row.afterNight = true;
+  if (afterPrevMonthNight) row.crossMonthAfterNight = true;
+} else if (leaveRec) {
+  row.tone = 'off';
+  row.note = `Approved Leave (${leaveRec.category || 'Leave'})`;
+  row.isApprovedLeave = true;
+} else if (holCheck.isOffOrHol) {
+  row.tone = 'off';
+  row.note = holCheck.label || (wk ? 'Weekend (Thu/Fri)' : 'Plant / Govt Holiday');
+} else if (d > maxDatasetDay) {
+  row.tone = 'none';
+  row.note = 'Upcoming / Not recorded';
+} else if (!hasDaily && Number(e.totalDuty || 0) > 0 && !Array.isArray(e.activeDayNums)) {
+  row.tone = 'none';
+  row.note = 'No daily log cached';
+} else {
+  // True General Working Day Absent
+  row.tone = 'absent';
+  row.note = '🔴 Absent (General Working Day)';
+  row.isGeneralAbsent = true;
+}
 }
 else {
 Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night });
@@ -13360,21 +13965,17 @@ if (ti !== null && to !== null) {
 
 if (totOt === 0 && !mi && !mo) {
   let isReq = false, reqNote = '';
-  // Case 1: Night Shift OT Missing (Numan case: Night=Yes, worked 11h+, OT=0)
   if (o.night && (elHrs >= 11.0 || totDuty >= 11.0)) {
     isReq = true;
     const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
     reqNote = `⚠️ Night OT Missing (${exp}h OT)`;
   }
-  // Case 2: Evening 3h OT (Out 19:10 - 20:15 / ~7:30 PM)
   else if (!o.night && to !== null && to >= 1150 && to <= 1215) {
     isReq = true; reqNote = '⚠️ 3h OT Missing (04:30-07:30 PM)';
   }
-  // Case 3: Evening 5h OT (Out 21:10 - 22:30 / ~9:30 PM)
   else if (!o.night && to !== null && to >= 1216 && to <= 1350) {
     isReq = true; reqNote = '⚠️ 5h OT Missing (04:30-09:30 PM)';
   }
-  // Case 4: Morning OT (In <= 07:15 AM)
   else if (!o.night && ti !== null && ti <= 435 && elHrs >= 9.5) {
     isReq = true; reqNote = ti <= 390 ? '⚠️ 2.5h Morning OT Missing' : '⚠️ 1.0h Morning OT Missing';
   }
@@ -13421,7 +14022,7 @@ rows.forEach(r => { r.v.forEach((x, i) => sum[i] += x); if (r.inn || r.out) pres
 const displayRows = _rptHideEmptyDays
 ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
 : rows;
-const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7' };
+const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', absent: '#fee2e2' };
 const fsCell = forExport ? '12.5px' : '11px';
 const fsSmall = forExport ? '11.5px' : '10.5px';
 const fsHead = forExport ? '11.5px' : '10px';
@@ -13464,7 +14065,8 @@ return `<div style="${containerStyle}">
 <div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
 <div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}
 ${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
-${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}</div>
+${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}
+${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
 <colgroup>${colHeaders.map(c => `<col style="width:${c.w};">`).join('')}</colgroup>
 <thead><tr style="height:40px;">${colHeaders.map(c => `<th style="${thBase}">${c.label}</th>`).join('')}</tr></thead>
@@ -13599,8 +14201,13 @@ async function renderInchargeEmployeeProfile(emp, month, searchId) {
 
   const tbody = document.getElementById('incEmpMonthWiseTbody');
   if (tbody) {
-    tbody.innerHTML = monthRecords.map(r => {
+    tbody.innerHTML = monthRecords.map((r, rIdx) => {
       const e = r.emp;
+      const prevRec = rIdx > 0 && monthRecords[rIdx - 1].ym === getPrevMonthStr(r.ym) ? monthRecords[rIdx - 1].emp : null;
+      const prevNight = prevRec ? didEmpWorkNightOnLastDay(prevRec, monthRecords[rIdx - 1].ym) : hasPrevMonthLastNight(searchId, r.ym, e);
+      e._prevMonthLastNight = prevNight;
+      const absRes = computeEmpGeneralAbsents(e, r.ym, prevNight);
+      const absCnt = absRes.count || 0;
       const st = (typeof computeEmpAvgDutyAndInOut === 'function') ? computeEmpAvgDutyAndInOut(e) : {};
       const [, mm] = r.ym.split('-');
       const mLabel = `${shortMonths[(parseInt(mm, 10) || 1) - 1]} ${year}`;
@@ -13615,6 +14222,7 @@ async function renderInchargeEmployeeProfile(emp, month, searchId) {
         <td>${st.avgInTimeStr || '08:00'}</td>
         <td>${Number(e.plainDaysCount || e.plainDays || 0)}d</td>
         <td>H:${Number(e.holidayCount || 0)} | N:${Number(e.nightCount || 0)}</td>
+        <td style="color:${absCnt > 0 ? 'var(--danger)' : 'var(--success)'};font-weight:700;" title="${esc((absRes.shortDates || []).join(', '))}">${absCnt > 0 ? absCnt + 'd abs' : '0d'}</td>
         <td style="color:${pIssues > 0 ? 'var(--danger)' : 'var(--success)'};font-weight:700;">${pIssues > 0 ? pIssues + ' miss' : 'OK'}</td>
       </tr>`;
     }).join('');
@@ -13789,6 +14397,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+currentLeaderboardResult.filtered.sortedByAbsent = [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b) - getGeneralAbsentCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     updateLbSummaryMetrics(base);
   }
 };
