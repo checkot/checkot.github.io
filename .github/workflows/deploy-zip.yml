@@ -1,0 +1,82 @@
+name: Deploy Zip Extractor (Experimental)
+
+on:
+  push:
+    paths:
+      - 'deploy.zip'
+
+jobs:
+  extract-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate and extract deploy.zip
+        run: |
+          set -e
+          echo "Validating deploy.zip..."
+          if [ ! -f "deploy.zip" ]; then
+            echo "deploy.zip not found. Exiting."
+            exit 0
+          fi
+
+          mkdir -p /tmp/deploy_staging
+          unzip -q deploy.zip -d /tmp/deploy_staging
+
+          echo "Checking for disallowed files and folders in deploy.zip..."
+          FORBIDDEN_ITEMS="data scripts .github areas.json team.json notices.json absent.json"
+          for item in $FORBIDDEN_ITEMS; do
+            if [ -e "/tmp/deploy_staging/$item" ]; then
+              echo "ERROR: Disallowed item '$item' found in deploy.zip! Deployment rejected for safety."
+              exit 1
+            fi
+          done
+
+          echo "Checking whitelist compliance..."
+          ALLOWED_ITEMS="index.html admin.html sw.js manifest.json DEPLOY.md css js"
+          for entry in /tmp/deploy_staging/*; do
+            [ -e "$entry" ] || continue
+            basename=$(basename "$entry")
+            allowed=0
+            for w in $ALLOWED_ITEMS; do
+              if [ "$basename" = "$w" ]; then
+                allowed=1
+                break
+              fi
+            done
+            if [ "$allowed" -eq 0 ]; then
+              echo "ERROR: Unrecognized file or directory '$basename' in deploy.zip! Deployment rejected."
+              exit 1
+            fi
+          done
+
+          echo "Copying whitelisted items into repository root..."
+          for item in $ALLOWED_ITEMS; do
+            if [ -e "/tmp/deploy_staging/$item" ]; then
+              cp -r "/tmp/deploy_staging/$item" .
+              echo " - Copied: $item"
+            fi
+          done
+
+          echo "Removing deploy.zip from git index and workspace..."
+          git rm -f --ignore-unmatch deploy.zip
+          rm -rf /tmp/deploy_staging
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html admin.html sw.js manifest.json DEPLOY.md css js
+          if git diff --cached --quiet; then
+            echo "No changes detected to commit."
+          else
+            git commit -m "Auto-deploy: extract deploy.zip whitelisted files"
+            git push origin HEAD:${{ github.ref }}
+          fi
