@@ -76,3 +76,21 @@ function formatNoticeDate(dateStr) {
 
 const fmtTime = (t) => String(t || '').replace(/^(\d{2}:\d{2}):\d{2}$/, '$1');
 const setT = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = String(t); };
+
+function cleanPunchValue(val) {
+  return String(val == null ? '' : val)
+    .replace(/['"“”]/g, '')
+    .trim();
+}
+
+function isPunchMissing(val) {
+  const cleaned = cleanPunchValue(val).toUpperCase();
+  if (!cleaned) return true;
+  if (cleaned === '-' || cleaned === '--' || cleaned === 'N/A' || cleaned === 'NA' || cleaned === 'NULL' || cleaned === 'NONE' || cleaned === 'MISSING') return true;
+  if (/^0{1,2}:00(:00)?$/.test(cleaned)) return true;
+  if (!/^\d{1,2}:\d{2}(:\d{2})?([AP]M)?$/i.test(cleaned)) return true;
+  return false;
+}
+
+window.cleanPunchValue = cleanPunchValue;
+window.isPunchMissing = isPunchMissing;

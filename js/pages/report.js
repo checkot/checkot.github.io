@@ -19,103 +19,147 @@ function _loadScript(src) {
 }
 
 function _rptRows(ctx) {
-  const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
-  let y = 0, m = 0;
-  const mm = String(ctx.month || e._computedMonth || '').match(/(\d{4})-(\d{2})/);
-  if (mm) { 
-    y = +mm[1]; m = +mm[2]; 
-  } else if (daily.length > 0 && daily[0] && daily[0][0]) {
-    const s0 = String(daily[0][0]).trim();
-    const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
-    if (qAlpha) {
-      y = +qAlpha[3];
-      m = _RMON.findIndex(x => x.toUpperCase() === qAlpha[2].toUpperCase()) + 1;
+const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
+let y = 0, m = 0;
+const mm = String(ctx.month || e._computedMonth || '').match(/(\d{4})-(\d{2})/);
+if (mm) { 
+  y = +mm[1]; m = +mm[2]; 
+} else if (daily.length > 0 && daily[0] && daily[0][0]) {
+  const s0 = String(daily[0][0]).trim();
+  const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
+  if (qAlpha) {
+    y = +qAlpha[3];
+    m = _RMON.findIndex(x => x.toUpperCase() === qAlpha[2].toUpperCase()) + 1;
+  } else {
+    const qIso = s0.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (qIso) {
+      y = +qIso[1];
+      m = +qIso[2];
     } else {
-      const qIso = s0.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-      if (qIso) {
-        y = +qIso[1];
-        m = +qIso[2];
-      } else {
-        const qSlash = s0.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{4}))?/);
-        if (qSlash) {
-          m = +qSlash[2];
-          y = qSlash[3] ? +qSlash[3] : 2026;
-        }
+      const qSlash = s0.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{4}))?/);
+      if (qSlash) {
+        m = +qSlash[2];
+        y = qSlash[3] ? +qSlash[3] : 2026;
       }
     }
   }
-  if (!y || m < 1 || m > 12) {
-    const curM = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
-      || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-    const curMatch = String(curM).match(/(\d{4})-(\d{2})/);
-    if (curMatch) {
-      y = +curMatch[1];
-      m = +curMatch[2];
-    } else {
-      const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
-    }
+}
+if (!y || m < 1 || m > 12) {
+  const curM = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
+    || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const curMatch = String(curM).match(/(\d{4})-(\d{2})/);
+  if (curMatch) {
+    y = +curMatch[1];
+    m = +curMatch[2];
+  } else {
+    const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
   }
-  const mNumStr = String(m).padStart(2, '0');
-  const ymStr = `${y}-${mNumStr}`;
-  const { byDay, hasDaily } = _buildEmpDayMap(e);
-  const dsMeta = (typeof getMonthDatasetMeta === 'function') ? getMonthDatasetMeta(ymStr) : {};
-  const maxDatasetDay = dsMeta.maxActiveDay || 31;
-  const consensusHols = dsMeta.consensusHolidays;
-  const prevMonthNight = (typeof ctx.prevNight === 'boolean')
-    ? ctx.prevNight
-    : (ctx.prevNight instanceof Set ? (ctx.prevNight.has(String(e.id || '').toUpperCase()) || ctx.prevNight.has(resolveEmpAliasId(e.id))) : hasPrevMonthLastNight(e.id, ymStr, e));
+}
+const mNumStr = String(m).padStart(2, '0');
+const ymStr = `${y}-${mNumStr}`;
+const { byDay, hasDaily } = _buildEmpDayMap(e);
+const dsMeta = getMonthDatasetMeta(ymStr);
+const maxDatasetDay = dsMeta.maxActiveDay || 31;
+const consensusHols = dsMeta.consensusHolidays;
+const prevMonthNight = (typeof ctx.prevNight === 'boolean')
+  ? ctx.prevNight
+  : (ctx.prevNight instanceof Set ? (ctx.prevNight.has(String(e.id || '').toUpperCase()) || ctx.prevNight.has(resolveEmpAliasId(e.id))) : hasPrevMonthLastNight(e.id, ymStr, e));
 
-  const rows = [], last = new Date(y, m, 0).getDate();
-  for (let d = 1; d <= last; d++) {
-    const dn = _RDAY[new Date(y, m - 1, d).getDay()], o = byDay[d];
-    const dStr = String(d).padStart(2, '0');
-    const isoDateStr = `${y}-${mNumStr}-${dStr}`;
-    const row = { date: dStr + '/' + mNumStr, dayNum: dStr, monthNum: mNumStr, day: dn, v: [0, 0, 0, 0, 0, 0], inn: '', out: '', night: false, tone: '', note: '' };
-    if (!o) {
-      const holCheck = (typeof isPlantOrGovtHolidayDate === 'function') ? isPlantOrGovtHolidayDate(y, m, d, dn, consensusHols) : { isWeekend: (dn === 'Thu' || dn === 'Fri') };
-      const wk = holCheck.isWeekend;
-      const afterPrevMonthNight = (d === 1 && prevMonthNight);
-      const afterSameMonthNight = (d > 1 && byDay[d - 1] && byDay[d - 1].night);
-      const afterNight = afterPrevMonthNight || afterSameMonthNight;
-      const leaveRec = (typeof isEmployeeOnApprovedLeave === 'function') ? isEmployeeOnApprovedLeave(e.id, isoDateStr) : null;
-      if (leaveRec) {
-        row.tone = 'off';
-        row.note = leaveRec.reason ? `Leave: ${leaveRec.reason}` : 'Approved Leave';
-      } else if (d > maxDatasetDay) {
-        row.tone = 'none'; row.note = 'Upcoming';
-      } else if (wk) {
-        row.tone = holCheck.isPlantHoliday ? 'hol' : 'do';
-        row.note = holCheck.reason || (dn === 'Thu' ? 'Weekend' : 'Weekend (Off)');
-      } else if (afterNight) {
-        row.tone = 'offn'; row.note = 'Rest day after night duty'; row.afterNight = true;
-      } else {
-        row.tone = 'absent'; row.note = 'General Absent'; row.isGeneralAbsent = true;
-      }
-    } else {
-      row.inn = o.inTime || ''; row.out = o.outTime || '';
-      row.v = [o.regDuty, o.regOt, o.doDuty, o.doOt, o.holDuty, o.holOt].map(v => Number(v) || 0);
-      row.night = Boolean(o.night);
-      const punchFix = o.missIn || o.missOut || o.unmatched;
-      const workedOt = (row.v[1] > 0 || row.v[3] > 0 || row.v[5] > 0);
-      const isReqProblem = (typeof e.requisitionProblems !== 'undefined' && Array.isArray(e.requisitionProblems)) ? e.requisitionProblems.some(p => p.day === d) : false;
-      if (punchFix) {
-        row.tone = 'bad';
-        row.note = o.unmatched ? 'Punch check needed' : (o.missIn && o.missOut ? 'Both punch missing' : (o.missIn ? 'In punch missing' : 'Out punch missing'));
-      } else if (isReqProblem) {
-        row.tone = 'req'; row.note = 'OT Requisition pending';
-      } else if (row.v[4] > 0 || row.v[5] > 0) {
-        row.tone = 'hol'; row.note = 'Festival Holiday duty';
-      } else if (row.v[2] > 0 || row.v[3] > 0) {
-        row.tone = 'do'; row.note = 'Weekly Off (DO) duty';
-      } else if (row.night) {
-        row.tone = 'offn'; row.note = 'Night shift duty';
-      } else if (row.inn || row.out || row.v[0] > 0) {
-        row.tone = 'none'; row.note = workedOt ? 'Regular duty + OT' : 'Regular duty';
-      }
-    }
-    rows.push(row);
+const rows = [], last = new Date(y, m, 0).getDate();
+for (let d = 1; d <= last; d++) {
+const dn = _RDAY[new Date(y, m - 1, d).getDay()], o = byDay[d];
+const dStr = String(d).padStart(2, '0');
+const isoDateStr = `${y}-${mNumStr}-${dStr}`;
+const row = { date: dStr + '/' + mNumStr, dayNum: dStr, monthNum: mNumStr, day: dn, v: [0, 0, 0, 0, 0, 0], inn: '', out: '', night: false, tone: '', note: '' };
+if (!o) {
+const holCheck = isPlantOrGovtHolidayDate(y, m, d, dn, consensusHols);
+const wk = holCheck.isWeekend;
+const afterPrevMonthNight = (d === 1 && prevMonthNight);
+const afterSameMonthNight = (d > 1 && byDay[d - 1] && byDay[d - 1].night);
+const afterNight = afterPrevMonthNight || afterSameMonthNight;
+const leaveRec = (typeof isEmployeeOnApprovedLeave === 'function') ? isEmployeeOnApprovedLeave(e.id, isoDateStr) : null;
+
+if (afterNight) {
+  row.tone = 'offn';
+  row.note = (afterPrevMonthNight ? 'Day off after night (Prev Month)' : 'Day off after night') + (wk ? ' (Weekend)' : '');
+  row.afterNight = true;
+  if (afterPrevMonthNight) row.crossMonthAfterNight = true;
+} else if (leaveRec) {
+  row.tone = 'off';
+  row.note = `Approved Leave (${leaveRec.category || 'Leave'})`;
+  row.isApprovedLeave = true;
+} else if (holCheck.isOffOrHol) {
+  row.tone = 'off';
+  row.note = holCheck.label || (wk ? 'Weekend (Thu/Fri)' : 'Plant / Govt Holiday');
+} else if (d > maxDatasetDay) {
+  row.tone = 'none';
+  row.note = 'Upcoming / Not recorded';
+} else if (!hasDaily && Number(e.totalDuty || 0) > 0 && !Array.isArray(e.activeDayNums)) {
+  row.tone = 'none';
+  row.note = 'No daily log cached';
+} else {
+  // True General Working Day Absent
+  row.tone = 'absent';
+  row.note = '🔴 Absent (General Working Day)';
+  row.isGeneralAbsent = true;
+}
+}
+else {
+Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night });
+const mi = o.forceMiss || (daily.length && isPunchMissing(o.inn)), mo = o.forceMiss || (daily.length && isPunchMissing(o.out));
+row.inn = mi ? 'MISSING' : o.inn; row.out = mo ? 'MISSING' : o.out; row.missIn = !!mi; row.missOut = !!mo;
+if (mi || mo) { row.tone = 'bad'; row.note = mi && mo ? 'In & Out punch missing' : mi ? 'In punch missing' : 'Out punch missing'; }
+else {
+const a = _rMin(o.inn), b = _rMin(o.out);
+if (a != null && b != null && b <= a && !o.night) { row.tone = 'bad'; row.note = 'Out is before In'; row.missOut = true; }
+else if (row.v[4] || row.v[5]) { row.tone = 'hol'; row.note = 'Holiday duty'; }
+else if (row.v[2] || row.v[3]) { row.tone = 'do'; row.note = 'Day off duty'; }
+else if (row.v[1]) row.note = 'Overtime';
+if (o.night) row.note += (row.note ? ' + ' : '') + 'Night';
+
+// REQUISITION PROBLEM DETECTION & HIGHLIGHT
+const parseM = (t) => {
+  if (!t) return null;
+  const mm = String(t).replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/);
+  return mm ? parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10) : null;
+};
+const ti = parseM(o.inn), to = parseM(o.out);
+const totOt = (Number(o.v[1]) || 0) + (Number(o.v[3]) || 0) + (Number(o.v[5]) || 0);
+const totDuty = (Number(o.v[0]) || 0) + (Number(o.v[2]) || 0) + (Number(o.v[4]) || 0);
+let elHrs = 0;
+if (ti !== null && to !== null) {
+  const diff = to < ti ? (1440 - ti) + to : to - ti;
+  elHrs = Number((diff / 60).toFixed(2));
+}
+
+if (totOt === 0 && !mi && !mo) {
+  let isReq = false, reqNote = '';
+  if (o.night && (elHrs >= 11.0 || totDuty >= 11.0)) {
+    isReq = true;
+    const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+    reqNote = `⚠️ Night OT Missing (${exp}h OT)`;
   }
-  return { rows, y, m };
+  else if (!o.night && to !== null && to >= 1150 && to <= 1215) {
+    isReq = true; reqNote = '⚠️ 3h OT Missing (04:30-07:30 PM)';
+  }
+  else if (!o.night && to !== null && to >= 1216 && to <= 1350) {
+    isReq = true; reqNote = '⚠️ 5h OT Missing (04:30-09:30 PM)';
+  }
+  else if (!o.night && ti !== null && ti <= 435 && elHrs >= 9.5) {
+    isReq = true; reqNote = ti <= 390 ? '⚠️ 2.5h Morning OT Missing' : '⚠️ 1.0h Morning OT Missing';
+  }
+
+  if (isReq) {
+    row.tone = 'req';
+    row.reqProblem = true;
+    row.note = reqNote + (row.note ? ' [' + row.note + ']' : '');
+  }
+}
+}
+}
+rows.push(row);
+}
+return { rows, y, m };
 }
 
 function _rptHtml(ctx, forExport) {
