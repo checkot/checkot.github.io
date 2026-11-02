@@ -155,6 +155,26 @@ def main():
         employees_list = month_data
 
     emp_records = {normalize_id(e.get("id")): e for e in employees_list if e.get("id")}
+
+    # Comprehensive fallback name dictionary across all historical monthly records
+    fallback_names = {
+        'CL6523': 'Joyodroto Roy',
+        'CL6524': 'Sayed Afridi',
+        'CL6525': 'Sagor Chandra Das'
+    }
+    import glob
+    for fpath in sorted(glob.glob('data/*.json'), reverse=True):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                d = json.load(f)
+                emps = d if isinstance(d, list) else d.get('employees', [])
+                for e in emps:
+                    eid = normalize_id(e.get('id'))
+                    ename = e.get('name')
+                    if eid and ename and eid not in fallback_names:
+                        fallback_names[eid] = ename
+        except Exception:
+            pass
     print(f"Loaded {len(emp_records)} employee records from current month data.")
 
     # Day 1 of Month Crossover Check: Load previous month data
@@ -205,7 +225,7 @@ def main():
         emp_type = get_category_type(emp_id, emp_meta_type=emp_meta.get("t", ""))
 
         emp_rec = emp_records.get(emp_id, {})
-        emp_name = emp_rec.get("name") or emp_id
+        emp_name = emp_rec.get("name") or fallback_names.get(emp_id) or emp_id
         emp_grade = emp_rec.get("grade") or ""
 
         if emp_type == "CON" and "JUNIOR OFFICER" in emp_grade.upper():
