@@ -402,109 +402,109 @@
       "s": "ERP"
     },
     "CF8510": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF10277": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF4558": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF8371": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF8207": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF2792": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF8353": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF10280": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF9405": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF2694": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF3665": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF2701": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF8261": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "CF4743": {
-      "s": "pri- packaging"
+      "s": "Defoiling"
     },
     "RF8366": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF20177": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF8372": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF20855": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF21560": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF20179": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF22059": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "RF22878": {
-      "s": "pri- packaging"
+      "s": "Pri. Packing"
     },
     "CF8401": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF8351": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF8407": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF2781": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF8583": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF3595": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF4562": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF3799": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF8356": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF10279": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "RF22105": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "RF22017": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "RF22034": {
-      "s": "Granulation"
+      "s": "Compression"
     },
     "CF5101": {
       "s": "Dispensing"
@@ -558,34 +558,34 @@
       "s": "Granulation"
     },
     "CF4995": {
-      "s": "Granulation"
+      "s": "IBC Wash"
     },
     "RF22023": {
-      "s": "Iron"
+      "s": "Granulation"
     },
     "RF22108": {
-      "s": "Iron"
+      "s": "Compression"
     },
     "CF8359": {
-      "s": "Iron"
+      "s": "Dispensing"
     },
     "CF8393": {
-      "s": "Iron"
+      "s": "Dispensing"
     },
     "CF8285": {
-      "s": "Iron"
+      "s": "Compression"
     },
     "CF5124": {
-      "s": "Iron"
+      "s": "Compression"
     },
     "CF3778": {
-      "s": "Iron"
+      "s": "Dispensing"
     },
     "CF4990": {
-      "s": "Iron"
+      "s": "Compression"
     },
     "CF8188": {
-      "s": "Iron"
+      "s": "Dispensing"
     },
     "RF8374": {
       "s": "Coating"
@@ -619,6 +619,93 @@
     },
     "CF10274": {
       "s": "Coating"
+    },
+    "CF8576": {
+      "s": "Dispensing"
+    },
+    "CF9395": {
+      "s": "Dispensing"
+    },
+    "CF9797": {
+      "s": "Dispensing"
+    },
+    "CF3661": {
+      "s": "Dispensing"
+    },
+    "CF3667": {
+      "s": "Granulation"
+    },
+    "CF3789": {
+      "s": "Granulation"
+    },
+    "CF8016": {
+      "s": "Granulation"
+    },
+    "CF8323": {
+      "s": "Granulation"
+    },
+    "CF8397": {
+      "s": "Granulation"
+    },
+    "CF10278": {
+      "s": "Granulation"
+    },
+    "CF10264": {
+      "s": "Granulation"
+    },
+    "CF2705": {
+      "s": "Compression"
+    },
+    "CF8325": {
+      "s": "Compression"
+    },
+    "CF8191": {
+      "s": "Compression"
+    },
+    "CF8019": {
+      "s": "Defoiling"
+    },
+    "CF8259": {
+      "s": "Defoiling"
+    },
+    "CF8490": {
+      "s": "Defoiling"
+    },
+    "CF8574": {
+      "s": "Defoiling"
+    },
+    "CF9798": {
+      "s": "Defoiling"
+    },
+    "CF10266": {
+      "s": "Defoiling"
+    },
+    "CL6523": {
+      "s": "Defoiling"
+    },
+    "CL6524": {
+      "s": "Defoiling"
+    },
+    "CL6525": {
+      "s": "Defoiling"
+    },
+    "RF22111": {
+      "s": "ERP"
+    },
+    "CF5242": {
+      "s": "ERP"
+    },
+    "CF8355": {
+      "s": "ERP"
+    },
+    "RF22032": {
+      "s": "Documentation"
+    },
+    "CF8176": {
+      "s": "IBC Wash"
+    },
+    "CF8451": {
+      "s": "IBC Wash"
     }
   },
   "subsections": {
@@ -634,10 +721,15 @@
       "Granulation",
       "Compression",
       "Coating",
+      "Capsule Filling",
       "Dispensing",
+      "Inspection",
       "ERP",
       "pri- packaging",
       "Iron",
+      "Pri. Packing",
+      "Defoiling",
+      "Documentation",
       "IBC Wash"
     ],
     "Softgel Production": [
@@ -649,9 +741,12 @@
       "ERP"
     ],
     "Packing Hall": [
+      "Blister Packing",
+      "Strip & Alu-Alu",
+      "Bottle Line",
       "Cartoning",
-      "Labeling",
-      "Belt"
+      "Secondary Packing",
+      "Labeling"
     ],
     "Overall": [
       "Production Management",
