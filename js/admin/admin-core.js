@@ -341,14 +341,49 @@ if (isWk) {
 }
 
 const baseGovtHols = {
-  '21-FEB': 'Govt Holiday (21 Feb)',
+  // February 2026
+  '04-FEB-2026': 'Shab-e-Barat',
+  '10-FEB-2026': 'National Parliamentary Election',
+  '11-FEB-2026': 'National Parliamentary Election',
+  '12-FEB-2026': 'National Parliamentary Election',
+  '21-FEB': 'International Mother Language Day',
+  '21-FEB-2026': 'International Mother Language Day',
+  // March 2026
+  '17-MAR-2026': 'Shab-e-Qadr',
+  '18-MAR-2026': 'General Holiday',
+  '19-MAR-2026': 'Eid-ul-Fitr',
+  '20-MAR-2026': "Jumu'atul Wida & Eid-ul-Fitr",
+  '21-MAR-2026': 'Eid-ul-Fitr',
+  '22-MAR-2026': 'Eid-ul-Fitr',
+  '23-MAR-2026': 'Eid-ul-Fitr',
   '26-MAR': 'Independence Day Holiday',
-  '14-APR': 'Pahela Baishakh Holiday',
+  '26-MAR-2026': 'Independence Day Holiday',
+  // April 2026
+  '14-APR': 'Bengali New Year Day (Pahela Baishakh)',
+  '14-APR-2026': 'Bengali New Year Day (Pahela Baishakh)',
+  // May 2026
   '01-MAY': 'May Day Holiday',
-  '16-DEC': 'Victory Day Holiday',
-  '25-DEC': 'Christmas Holiday',
+  '01-MAY-2026': 'May Day Holiday',
+  '26-MAY-2026': 'Eid-ul-Azha',
+  '27-MAY-2026': 'Eid-ul-Azha',
+  '28-MAY-2026': 'Eid-ul-Azha',
+  '29-MAY-2026': 'Eid-ul-Azha',
+  '30-MAY-2026': 'Eid-ul-Azha',
+  '31-MAY-2026': 'Eid-ul-Azha',
+  // June 2026
+  '26-JUN-2026': 'Ashura (Muharram)',
+  // August 2026
+  '05-AUG-2026': 'July Mass Uprising Day',
+  // September 2026
+  '04-SEP-2026': 'Janmashtami',
+  // October 2026
   '20-OCT-2026': 'Durga Puja Holiday',
-  '21-OCT-2026': 'Durga Puja Holiday'
+  '21-OCT-2026': 'Durga Puja Holiday',
+  // December 2026
+  '16-DEC': 'Victory Day Holiday',
+  '16-DEC-2026': 'Victory Day Holiday',
+  '25-DEC': 'Christmas Holiday',
+  '25-DEC-2026': 'Christmas Holiday'
 };
 
 if (baseGovtHols[fullDate] || baseGovtHols[shortDate]) {
@@ -3136,10 +3171,15 @@ result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProble
 result.sortedByAbsent = [...allEmpsGlobal].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, result.month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, result.month) - getGeneralAbsentCount(a, result.month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
+const currentArea = areaFilter.value;
 const preferredArea = getAppMode() === 'incharge' ? getInchargeDefaultArea() : (getMyId() ? getAreaForId(getMyId(), true) : 'all');
 populateAreaDropdown();
+const hasCurrentArea = currentArea && currentArea !== '' && [...areaFilter.options].some(o => o.value === currentArea);
 const hasPrefArea = [...areaFilter.options].some(o => o.value === preferredArea);
-areaFilter.value = hasPrefArea ? preferredArea : 'all';
+areaFilter.value = hasCurrentArea ? currentArea : (hasPrefArea ? preferredArea : 'all');
+document.querySelectorAll('.icc-area-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.getAttribute('data-icc-area') === areaFilter.value);
+});
 ['genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 'all'; });
 enrichLbEmployees(allEmpsGlobal);
 const gSel = document.getElementById('genderFilter');

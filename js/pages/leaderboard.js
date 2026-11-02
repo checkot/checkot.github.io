@@ -260,10 +260,15 @@ result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProble
 result.sortedByAbsent = [...allEmpsGlobal].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, result.month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, result.month) - getGeneralAbsentCount(a, result.month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
+const currentArea = areaFilter.value;
 const preferredArea = getAppMode() === 'incharge' ? getInchargeDefaultArea() : (getMyId() ? getAreaForId(getMyId(), true) : 'all');
 populateAreaDropdown();
+const hasCurrentArea = currentArea && currentArea !== '' && [...areaFilter.options].some(o => o.value === currentArea);
 const hasPrefArea = [...areaFilter.options].some(o => o.value === preferredArea);
-areaFilter.value = hasPrefArea ? preferredArea : 'all';
+areaFilter.value = hasCurrentArea ? currentArea : (hasPrefArea ? preferredArea : 'all');
+document.querySelectorAll('.icc-area-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.getAttribute('data-icc-area') === areaFilter.value);
+});
 ['genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 'all'; });
 enrichLbEmployees(allEmpsGlobal);
 const gSel = document.getElementById('genderFilter');
