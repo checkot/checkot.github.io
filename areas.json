@@ -739,9 +739,9 @@
       "Pri. Packing"
     ],
     "Packing Hall": [
-      "Cartoning",
       "Secondary Packing",
-      "Labeling"
+      "Labeling",
+      "Auto Cartoning"
     ],
     "Overall": [
       "Production Management",
