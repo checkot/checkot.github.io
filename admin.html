@@ -796,6 +796,17 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="btn-secondary" onclick="adminChangePassword()">Change password</button>
 </div>
 </div>
+<div class="card" style="padding:14px;margin-top:14px;">
+<div class="card-title">📦 One-Click Site Code Update (Deploy ZIP)</div>
+<p style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;">
+Upload <code>deploy.zip</code> directly from your phone to update your live website without opening GitHub.
+</p>
+<input type="file" id="adminZipFileInput" accept=".zip" style="display:none;" onchange="adminHandleZipUpload(this.files)">
+<button type="button" class="btn-primary" style="width:100%;margin-top:10px;min-height:44px;font-size:14px;" onclick="document.getElementById('adminZipFileInput').click()">
+🚀 Select deploy.zip and Update Site
+</button>
+<div id="adminZipUploadStatus" style="margin-top:10px;font-size:12.5px;font-weight:700;line-height:1.4;display:none;padding:8px 10px;border-radius:8px;"></div>
+</div>
 </div>
 </div>
 </div>

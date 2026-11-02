@@ -153,3 +153,60 @@ githubDeleteFile = async function(repoPath, sha, commitMessage) {
   return res;
 };
 
+
+async function adminHandleZipUpload(files) {
+  const file = files && files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('adminZipUploadStatus');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'var(--brand-soft)';
+    statusEl.style.color = 'var(--brand-text)';
+    statusEl.textContent = 'Reading ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)...';
+  }
+  const token = getGhToken();
+  if (!token) {
+    if (statusEl) {
+      statusEl.style.background = 'var(--danger-bg)';
+      statusEl.style.color = 'var(--danger)';
+      statusEl.textContent = 'Please enter and save your Server Access Key first in the box above.';
+    }
+    if (typeof showToast === 'function') showToast('Save Server Access Key first', 'warn');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      if (statusEl) {
+        statusEl.textContent = 'Uploading deploy.zip to GitHub via API, please wait...';
+      }
+      const bytes = new Uint8Array(e.target.result);
+      let binary = '';
+      const chunk = 8192;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      const b64 = btoa(binary);
+
+      await githubPutFile('deploy.zip', b64, 'Auto-deploy site update via Admin Panel ZIP Uploader (' + file.name + ')');
+      if (statusEl) {
+        statusEl.style.background = 'var(--success-bg)';
+        statusEl.style.color = 'var(--success)';
+        statusEl.textContent = '✓ deploy.zip uploaded successfully! GitHub Actions is now extracting and publishing your site. The updated site will be live in ~30 seconds.';
+      }
+      if (typeof showToast === 'function') showToast('Site update initiated! Live in ~30 seconds.', 'success');
+      const inputEl = document.getElementById('adminZipFileInput');
+      if (inputEl) inputEl.value = '';
+    } catch (err) {
+      if (statusEl) {
+        statusEl.style.background = 'var(--danger-bg)';
+        statusEl.style.color = 'var(--danger)';
+        statusEl.textContent = '✗ Error uploading zip: ' + err.message;
+      }
+      if (typeof showToast === 'function') showToast('Upload failed: ' + err.message, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+window.adminHandleZipUpload = adminHandleZipUpload;
