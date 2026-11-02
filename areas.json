@@ -721,7 +721,6 @@
       "Granulation",
       "Compression",
       "Coating",
-      "Capsule Filling",
       "Dispensing",
       "ERP",
       "Iron",
@@ -733,7 +732,6 @@
     "Softgel Production": [
       "Encapsulation",
       "Gelatin Prep",
-      "Medicament Prep",
       "Tumble Drying",
       "Sorting & Inspection",
       "ERP"
