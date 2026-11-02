@@ -4212,15 +4212,10 @@ body.norate-view #compareMyAmount {
     font-size: 12.5px;
   }
   .rank-hub-menu {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 8px;
-  }
-  @media (max-width: 359px) {
-    .rank-hub-menu {
-      grid-template-columns: 1fr;
-    }
   }
   .rank-hub-item {
     padding: 8px 10px;
