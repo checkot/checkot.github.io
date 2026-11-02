@@ -1,0 +1,270 @@
+
+/* ==========================================================================
+   NAV.CSS - Topnav, header, bottom navigation bar, and side drawers
+   ========================================================================== */
+/* ==========================================================================
+   4. PAGE CONTAINERS, HEADER & NAVIGATION (Mobile Bottom Nav + Desktop Topnav)
+   ========================================================================== */
+.page {
+  display: none;
+  max-width: 580px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page.active {
+  display: block;
+  animation: pageIn 0.2s ease;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: none; }
+}
+
+.card,
+.collapse-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  margin: 0 0 var(--space-3) 0;
+  min-width: 0;
+}
+
+.card {
+  padding: var(--space-4);
+}
+
+.collapse-card {
+  overflow: hidden;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 var(--space-3) 0;
+  min-width: 0;
+}
+
+.app-header .logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--brand-soft);
+}
+
+.header {
+  flex: 1;
+  min-width: 0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header p {
+  margin: 2px 0 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header.compact p {
+  display: none;
+}
+
+.topnav {
+  display: none;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 18px rgba(11, 27, 51, 0.08);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px;
+}
+
+:root[data-theme="dark"] .bottom-nav {
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.bn-item {
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+  min-height: 52px;
+  padding: 5px 4px;
+  background: transparent;
+  color: var(--muted);
+  border-radius: var(--radius);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.bn-item:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.bn-item svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.18s ease;
+}
+
+.bn-item.active {
+  color: var(--brand-text);
+  background: var(--brand-soft);
+}
+
+.bn-item.active svg {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.nav-badge {
+  position: absolute;
+  top: 3px;
+  left: calc(50% + 6px);
+  background: var(--danger);
+  color: #FFFFFF;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 5px;
+  min-width: 16px;
+  text-align: center;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+:root[data-theme="dark"] .nav-badge {
+  color: #1A0505;
+}
+
+
+/* ==========================================================================
+   MERGED CANONICAL NAVIGATION (Bottom Nav + Item + Safe Area Insets)
+   ========================================================================== */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 18px rgba(11, 27, 51, 0.08);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)) 8px;
+  transform: none !important; /* Always visible: scroll-hide disabled */
+  will-change: auto;
+}
+
+:root[data-theme="dark"] .bottom-nav {
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 900px) {
+  .bottom-nav {
+    display: none !important;
+  }
+}
+
+.bn-item {
+  position: relative;
+  flex: 1;
+  max-width: none;
+  min-height: 52px;
+  min-width: 48px;
+  padding: 6px 2px calc(6px + env(safe-area-inset-bottom)) 2px;
+  background: transparent;
+  color: var(--muted);
+  border-radius: var(--radius);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bn-item:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.bn-item svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.18s ease;
+}
+
+.bn-item.active {
+  color: var(--brand-text);
+  background: var(--brand-soft);
+}
+
+.bn-item.active svg {
+  transform: translateY(-1px) scale(1.05);
+}
+
+/* Permanent visibility: disable any scroll-hiding */
+body.nav-scroll-hidden .bottom-nav {
+  transform: none !important;
+}
+
+.notice-ticker {
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  transition: none;
+}
+
+body.nav-scroll-hidden .notice-ticker {
+  transform: none !important;
+}

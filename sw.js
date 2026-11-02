@@ -1,12 +1,12 @@
 // RENATA Overtime App — Service Worker
-// Strategy: Network-first for dynamic data, pass-through for static assets
+// Strategy: Pure network pass-through (zero caching)
+// Bumping SW_VERSION forces immediate activation on all clients
 
-const SW_VERSION = '2026-10-07-v1';
+const SW_VERSION = '2026-11-02-v2';
 
 // ===== Install =====
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing version:', SW_VERSION);
-    // Activate immediately — don't wait for old SW to release clients
+    // Activate immediately without waiting for existing clients to release
     self.skipWaiting();
 });
 
@@ -14,27 +14,16 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         (async () => {
-            console.log('[SW] Activated version:', SW_VERSION);
-            // Take control of all open pages
+            // Take control of all open pages across origins
             await self.clients.claim();
         })()
     );
 });
 
 // ===== Fetch =====
-// IMPORTANT: No caching in this SW.
-// All requests pass through to network with browser default handling.
+// Pure network pass-through: All requests pass through directly to the network
+// Dynamic JSON files and app HTML/CSS/JS are never served stale from an offline cache.
 self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
-
-    // Dynamic data — always network, never cache
-    if (url.pathname.endsWith('/notices.json') ||
-        url.pathname.endsWith('/team.json') ||
-        url.pathname.endsWith('/index.html') ||
-        url.pathname.endsWith('/sw.js')) {
-        return;  // Browser default network handling
-    }
-
-    // All other requests — browser default handling
+    // Browser default network handling
     return;
 });

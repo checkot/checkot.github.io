@@ -1,7 +1,8 @@
 {
   "name": "RENATA Overtime Report",
   "short_name": "Overtime",
-  "start_url": "./index.html",
+  "scope": "./",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#004085",
