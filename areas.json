@@ -634,11 +634,11 @@
       "Granulation",
       "Compression",
       "Coating",
-      "Capsule Filling",
       "Dispensing",
       "ERP",
       "pri- packaging",
-      "Iron"
+      "Iron",
+      "IBC Wash"
     ],
     "Softgel Production": [
       "Encapsulation",
