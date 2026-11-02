@@ -3,7 +3,8 @@ name: Deploy Zip Extractor (Experimental)
 on:
   push:
     paths:
-      - 'deploy.zip'
+      - 'deploy*.zip'
+      - 'deploy*.ZIP'
 
 jobs:
   extract-and-deploy:
@@ -18,23 +19,27 @@ jobs:
           fetch-depth: 1
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Validate and extract deploy.zip
+      - name: Validate and extract deploy zip
         run: |
           set -e
-          echo "Validating deploy.zip..."
-          if [ ! -f "deploy.zip" ]; then
-            echo "deploy.zip not found. Exiting."
+          echo "Looking for deploy zip file..."
+          # deploy.zip, deploy(1).zip, deploy (1).zip ইত্যাদি যেকোনো নাম স্বয়ংক্রিয়ভাবে খুঁজে বের করবে
+          ZIP_FILE=$(find . -maxdepth 1 -type f -iname "deploy*.zip" | head -n 1)
+
+          if [ -z "$ZIP_FILE" ] || [ ! -f "$ZIP_FILE" ]; then
+            echo "No deploy zip found. Exiting."
             exit 0
           fi
 
+          echo "Found deploy file: $ZIP_FILE"
           mkdir -p /tmp/deploy_staging
-          unzip -q deploy.zip -d /tmp/deploy_staging
+          unzip -q "$ZIP_FILE" -d /tmp/deploy_staging
 
-          echo "Checking for disallowed files and folders in deploy.zip..."
+          echo "Checking for disallowed files and folders in deploy zip..."
           FORBIDDEN_ITEMS="data scripts .github areas.json team.json notices.json absent.json"
           for item in $FORBIDDEN_ITEMS; do
             if [ -e "/tmp/deploy_staging/$item" ]; then
-              echo "ERROR: Disallowed item '$item' found in deploy.zip! Deployment rejected for safety."
+              echo "ERROR: Disallowed item '$item' found in zip! Deployment rejected for safety."
               exit 1
             fi
           done
@@ -52,7 +57,7 @@ jobs:
               fi
             done
             if [ "$allowed" -eq 0 ]; then
-              echo "ERROR: Unrecognized file or directory '$basename' in deploy.zip! Deployment rejected."
+              echo "ERROR: Unrecognized file or directory '$basename' in zip! Deployment rejected."
               exit 1
             fi
           done
@@ -65,8 +70,8 @@ jobs:
             fi
           done
 
-          echo "Removing deploy.zip from git index and workspace..."
-          git rm -f --ignore-unmatch deploy.zip
+          echo "Removing uploaded zip file from git index and workspace..."
+          git rm -f --ignore-unmatch "deploy*.zip" "deploy*.ZIP" "$ZIP_FILE"
           rm -rf /tmp/deploy_staging
 
       - name: Commit and push changes
@@ -77,6 +82,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes detected to commit."
           else
-            git commit -m "Auto-deploy: extract deploy.zip whitelisted files"
+            git commit -m "Auto-deploy: extract deploy zip whitelisted files"
             git push origin HEAD:${{ github.ref }}
           fi
