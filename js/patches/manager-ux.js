@@ -1,760 +1,799 @@
-/* ==========================================================================
-   MANAGER-UX.JS  (loaded LAST - wraps existing functions, edits nothing else)
-   1. Stale body scroll-lock release (fixes Overview "stuck scroll")
-   2. Full-width mobile drawers + Back bar (fixes half-open Rank / More)
-   3. Info "?" buttons (Punch Problem / OT-Requisition Missing)
-   4. Report: loading / "No data available" state + manager month/filter bar
-   5. VS: multi-month / range / custom-month period + clean PNG export
-   6. Slim busy bar + empty-ranking toast
-   ========================================================================== */
-(function () {
+/**
+ * js/patches/manager-ux.js
+ * Manager-UX patch for RENATA OT Checker (checkot.github.io)
+ * Implements:
+ * 1. Mobile drawers (100vw) with sticky back bar
+ * 2. Stale scroll lock release
+ * 3. Info '?' popups for Punch & Requisition logic
+ * 4. Report tab loading/empty state + In-charge quick browse bar
+ * 5. Multi-month VS comparison & clean PNG export
+ * 6. Global busy progress bar
+ */
+(function() {
   'use strict';
 
-  var $ = function (id) { return document.getElementById(id); };
-  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  function h(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-  function toast(msg, type) { try { if (typeof showToast === 'function') showToast(msg, type || 'info'); } catch (e) { } }
-  function monthLabel(m) {
-    var p = String(m || '').split('-');
-    return p.length === 2 ? (MON[(parseInt(p[1], 10) || 1) - 1] + ' ' + p[0]) : String(m || '');
-  }
-  function curMonth() {
-    try { return (typeof getCurrentMonth === 'function') ? getCurrentMonth() : ''; } catch (e) { return ''; }
-  }
-  function allMonths() {
-    var a = [];
-    try { if (typeof availableServerMonths !== 'undefined' && Array.isArray(availableServerMonths)) a = availableServerMonths.slice(); } catch (e) { }
-    var c = curMonth();
-    if (!a.length && typeof getPreviousMonthStrings === 'function' && c) {
-      try { a = getPreviousMonthStrings(c, 12).slice(); } catch (e) { }
-    }
-    if (c && a.indexOf(c) < 0) a.push(c);
-    return a.filter(function (v, i, s) { return /^\d{4}-\d{2}$/.test(v) && s.indexOf(v) === i; }).sort();
-  }
-  function isManager() {
-    try { return typeof getAppMode === 'function' && getAppMode() === 'incharge'; } catch (e) { return false; }
-  }
-
-  /* ---------- 6. busy bar ---------- */
-  var busyCount = 0;
-  function busy(on) {
-    var bar = $('mgrBusyBar');
-    if (!bar) { bar = document.createElement('div'); bar.id = 'mgrBusyBar'; document.body.appendChild(bar); }
-    busyCount = Math.max(0, busyCount + (on ? 1 : -1));
-    bar.classList.toggle('on', busyCount > 0);
-  }
-
-  /* ---------- 1. stale scroll-lock release ---------- */
-  function modalOpen() {
-    return !!document.querySelector('.lb-modal.open, [id$="Modal"].open, .modal.open, [class*="overlay"].open, [class*="sheet"].open');
-  }
-  function releaseStaleLock() {
-    var b = document.body;
-    if (!b) return;
-    if (b.style.overflow !== 'hidden' && b.style.position !== 'fixed') return;
-    if (modalOpen()) return;
-    b.style.overflow = '';
-    b.style.position = '';
-    b.style.width = '';
-    b.style.top = '';
-  }
-  var lastTouchCheck = 0;
-  document.addEventListener('touchstart', function () {
-    var n = Date.now();
-    if (n - lastTouchCheck < 400) return;
-    lastTouchCheck = n;
-    releaseStaleLock();
-  }, { capture: true, passive: true });
-  window.addEventListener('pageshow', releaseStaleLock);
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) releaseStaleLock(); });
-
+  // Helper to wrap global functions without editing core files
   function wrapGlobal(name, make) {
-    try {
-      var orig = window[name];
-      if (typeof orig !== 'function' || orig.__mgrWrapped) return;
-      var w = make(orig);
-      w.__mgrWrapped = true;
-      window[name] = w;
-    } catch (e) { console.warn('manager-ux: cannot wrap', name, e); }
+    const orig = window[name];
+    if (typeof orig === 'function') {
+      window[name] = make(orig);
+    }
   }
 
-  wrapGlobal('switchPage', function (orig) {
-    return function () {
-      releaseStaleLock();
-      var r = orig.apply(this, arguments);
-      setTimeout(releaseStaleLock, 350);
-      return r;
-    };
+  /* ==========================================================================
+     1. BUSY PROGRESS BAR CONTROLLER
+     ========================================================================== */
+  let _busyEl = null;
+  function ensureBusyBar() {
+    if (!_busyEl) {
+      _busyEl = document.getElementById('mgrBusyBar');
+      if (!_busyEl) {
+        _busyEl = document.createElement('div');
+        _busyEl.id = 'mgrBusyBar';
+        document.body.appendChild(_busyEl);
+      }
+    }
+    return _busyEl;
+  }
+  function setBusy(active) {
+    const el = ensureBusyBar();
+    if (el) el.classList.toggle('active', Boolean(active));
+  }
+
+  /* ==========================================================================
+     2. STALE SCROLL LOCK RELEASE (#3.2)
+     ========================================================================== */
+  function releaseStaleLock() {
+    const hasOpenModal = Boolean(document.querySelector(
+      '.lb-modal.open, .modal.open, #iccContextModal.open, #mgrInfoOverlay.open, #mgrPickerModal.open, #quickAbsentModal.open'
+    ));
+    if (!hasOpenModal) {
+      document.body.style.position = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    }
+  }
+
+  window.addEventListener('pageshow', releaseStaleLock);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) releaseStaleLock();
   });
-  wrapGlobal('closeSideDrawer', function (orig) {
-    return function () {
-      var r = orig.apply(this, arguments);
+  let _lastTouchRelease = 0;
+  document.addEventListener('touchstart', () => {
+    const now = Date.now();
+    if (now - _lastTouchRelease > 1200) {
+      _lastTouchRelease = now;
       releaseStaleLock();
-      return r;
-    };
+    }
+  }, { capture: true, passive: true });
+
+  wrapGlobal('closeSideDrawer', (orig) => function() {
+    const res = orig.apply(this, arguments);
+    setTimeout(releaseStaleLock, 80);
+    return res;
   });
 
-  /* ---------- 2. drawer back bar ---------- */
-  function injectDrawerBars() {
-    var map = { leaderboard: 'Ranking', more: 'More', history: 'History', team: 'ERP Team', settings: 'Settings', notices: 'Notices' };
-    Object.keys(map).forEach(function (k) {
-      var p = $('page-' + k);
-      if (!p || p.querySelector(':scope > .drawer-topbar')) return;
-      var bar = document.createElement('div');
-      bar.className = 'drawer-topbar';
-      bar.innerHTML = '<button type="button" aria-label="Close">\u2039 Back</button><span>' + h(map[k]) + '</span>';
-      bar.querySelector('button').addEventListener('click', function () {
-        if (typeof closeSideDrawer === 'function') closeSideDrawer();
-      });
-      p.insertBefore(bar, p.firstChild);
+  wrapGlobal('switchPage', (orig) => function(pageName) {
+    releaseStaleLock();
+    const res = orig.apply(this, arguments);
+    setTimeout(releaseStaleLock, 350);
+    return res;
+  });
+
+  /* ==========================================================================
+     3. STICKY DRAWER TOPBAR ON MOBILE (#3.1)
+     ========================================================================== */
+  const DRAWER_PAGES = [
+    { id: 'page-leaderboard', title: 'Ranking' },
+    { id: 'page-more', title: 'More' },
+    { id: 'page-history', title: 'History' },
+    { id: 'page-team', title: 'ERP Team' },
+    { id: 'page-settings', title: 'Settings' },
+    { id: 'page-notices', title: 'Notice Board' }
+  ];
+
+  function injectDrawerTopbars() {
+    DRAWER_PAGES.forEach(dp => {
+      const pageEl = document.getElementById(dp.id);
+      if (pageEl && !pageEl.querySelector('.drawer-topbar')) {
+        const tb = document.createElement('div');
+        tb.className = 'drawer-topbar';
+        tb.innerHTML = `
+          <button type="button" class="drawer-back-btn" onclick="closeSideDrawer()">‹ Back</button>
+          <span class="drawer-topbar-title">${dp.title}</span>
+        `;
+        pageEl.insertBefore(tb, pageEl.firstChild);
+      }
     });
   }
 
-  /* ---------- 3. info "?" ---------- */
-  var INFO = {
+  /* ==========================================================================
+     4. INFO '?' BUTTONS & OVERLAY (#3.4)
+     ========================================================================== */
+  const INFO_TEXTS = {
     punch: {
-      title: 'Punch Problem',
-      html: '<p>Finds days where the <b>In</b> or <b>Out</b> punch is missing in the Empress work log.</p>' +
-        '<h5>How it is detected</h5><ul>' +
-        '<li>A punch counts as missing when it is blank, "-", "NA", "NULL", "MISSING" or "0000".</li>' +
-        '<li>Valid night-shift carry-over days are handled separately.</li></ul>' +
-        '<h5>Ranking</h5><p>Employees are listed by how many days have a missing punch in the selected period.</p>' +
-        '<div class="mgr-note">Why it matters: a missing punch means duty hours and OT cannot be calculated correctly. Ask ERP to correct it.</div>'
+      title: 'Missing / Problem Punch Rules',
+      body: `
+        <p>A punch is flagged as a <b>Problem Punch</b> when:</p>
+        <ul>
+          <li><b>Missing Out:</b> Employee punched In, but Out punch is blank, '-', 'NA', 'NULL', or 'MISSING'.</li>
+          <li><b>Missing In:</b> Employee punched Out, but In punch is missing or '0000'.</li>
+          <li><b>Irregular Punch:</b> Total punch count on that day is odd or contains erroneous timestamps.</li>
+        </ul>
+        <p><i>Resolution:</i> Contact ERP Team to rectify punches in Empress system.</p>
+      `
     },
     req: {
-      title: 'OT / Requisition Missing',
-      html: '<p>Finds days where the punches show extra work, but Empress has <b>no OT or allowance</b> recorded.</p>' +
-        '<h5>Checks (in order)</h5><ul>' +
-        '<li><b>Govt holiday</b> worked, but booked as regular duty (holiday duty = 0).</li>' +
-        '<li><b>Thu/Fri</b> worked, but booked as regular duty (day-off duty = 0).</li>' +
-        '<li><b>Night shift</b> of 11h or more with 0 OT.</li>' +
-        '<li><b>Day shift</b>, Out about 19:10-20:15 and 0 OT: 3h evening OT missing.</li>' +
-        '<li><b>Day shift</b>, Out about 20:16-22:30 and 0 OT: 5h evening OT missing.</li>' +
-        '<li><b>Early In</b> (07:15 or before) with 9.5h or more and 0 OT: morning OT missing.</li></ul>' +
-        '<h5>Ranking</h5><p>Employees are listed by the number of flagged days. Days with a missing punch are skipped here (see Punch Problem).</p>' +
-        '<div class="mgr-note">These are estimates from punch times. Please verify the requisition before taking action.</div>'
+      title: 'Overtime Requisition Rules',
+      body: `
+        <p>An OT discrepancy is flagged under <b>Requisition Problem</b> when:</p>
+        <ul>
+          <li><b>Physical Duty 9–13.5h:</b> Worked on standard days but recorded 0 OT in Empress without an approved OT requisition.</li>
+          <li><b>Night Shift 11h+:</b> Worked night shift with zero recorded OT.</li>
+          <li><b>Evening OT:</b> Shift ending between 19:10–20:15 expects 3h OT; ending 20:16–22:30 expects 5h OT.</li>
+          <li><b>Early Morning OT:</b> Punch-in by 07:15 with 9.5h+ total duty expects 1.0h morning OT.</li>
+          <li><b>Holiday Duty:</b> Worked Friday or public holiday booked as regular duty instead of Holiday duty.</li>
+        </ul>
+      `
+    },
+    both: {
+      title: 'Attendance & OT Audit Rules',
+      body: `
+        <p>Combines Empress physical punch matching with verified HR overtime allowances.</p>
+      `
     }
-  };
-  INFO.both = {
-    title: 'Report check',
-    html: INFO.punch.html + '<hr style="border:0;border-top:1px solid var(--border);margin:12px 0">' + INFO.req.html
   };
 
-  function openInfo(type) {
-    var d = INFO[type] || INFO.both;
-    var o = $('mgrInfoOverlay');
-    if (!o) {
-      o = document.createElement('div');
-      o.id = 'mgrInfoOverlay';
-      o.className = 'mgr-info-overlay';
-      o.addEventListener('click', function (e) { if (e.target === o) o.classList.remove('open'); });
-      document.body.appendChild(o);
+  let _infoOverlay = null;
+  function ensureInfoOverlay() {
+    if (!_infoOverlay) {
+      _infoOverlay = document.getElementById('mgrInfoOverlay');
+      if (!_infoOverlay) {
+        _infoOverlay = document.createElement('div');
+        _infoOverlay.id = 'mgrInfoOverlay';
+        _infoOverlay.className = 'mgr-info-overlay';
+        _infoOverlay.onclick = (e) => {
+          if (e.target === _infoOverlay) closeMgrInfoOverlay();
+        };
+        _infoOverlay.innerHTML = `
+          <div class="mgr-info-card" onclick="event.stopPropagation()">
+            <div class="mgr-info-title">
+              <span id="mgrInfoTitle">Rules &amp; Explanations</span>
+              <button type="button" class="calc-mini-btn" onclick="closeMgrInfoOverlay()">✕</button>
+            </div>
+            <div class="mgr-info-body" id="mgrInfoBody"></div>
+            <button type="button" class="btn-primary mgr-info-close-btn" onclick="closeMgrInfoOverlay()">Got it</button>
+          </div>
+        `;
+        document.body.appendChild(_infoOverlay);
+      }
     }
-    o.innerHTML = '<div class="mgr-info-box" role="dialog" aria-modal="true"><button type="button" class="mgr-info-close" aria-label="Close">\u2715</button><h4>' +
-      h(d.title) + '</h4>' + d.html + '</div>';
-    o.querySelector('.mgr-info-close').addEventListener('click', function () { o.classList.remove('open'); });
-    o.classList.add('open');
+    return _infoOverlay;
   }
-  function qBadge(type) {
-    var s = document.createElement('span');
-    s.className = 'mgr-q';
-    s.setAttribute('data-info', type);
-    s.setAttribute('role', 'button');
-    s.setAttribute('aria-label', 'How is this detected?');
-    s.setAttribute('data-html2canvas-ignore', 'true');
-    s.textContent = '?';
-    return s;
+
+  function openMgrInfo(type) {
+    const overlay = ensureInfoOverlay();
+    const data = INFO_TEXTS[type] || INFO_TEXTS.both;
+    const titleEl = document.getElementById('mgrInfoTitle');
+    const bodyEl = document.getElementById('mgrInfoBody');
+    if (titleEl) titleEl.textContent = data.title;
+    if (bodyEl) bodyEl.innerHTML = data.body;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
-  document.addEventListener('click', function (e) {
-    var q = e.target && e.target.closest ? e.target.closest('.mgr-q') : null;
-    if (!q) return;
-    e.preventDefault();
-    e.stopPropagation();
-    openInfo(q.getAttribute('data-info'));
-  }, true);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { var o = $('mgrInfoOverlay'); if (o) o.classList.remove('open'); }
-  });
+  window.openMgrInfo = openMgrInfo;
+
+  function closeMgrInfoOverlay() {
+    const overlay = document.getElementById('mgrInfoOverlay');
+    if (overlay) overlay.classList.remove('open');
+    releaseStaleLock();
+  }
+  window.closeMgrInfoOverlay = closeMgrInfoOverlay;
 
   function injectInfoBadges() {
-    document.querySelectorAll('.rank-hub-title').forEach(function (t) {
-      if (t.querySelector('.mgr-q')) return;
-      var txt = (t.textContent || '').trim();
-      if (txt === 'Punch Problem') t.appendChild(qBadge('punch'));
-      else if (txt === 'Requisition Problem') t.appendChild(qBadge('req'));
-    });
-    var lab = $('step7LabelText');
-    if (lab && !lab.querySelector('.mgr-q')) lab.appendChild(qBadge('both'));
-  }
-  var rptObs = null, rptObsBusy = false;
-  function decorateReportChips() {
-    var host = $('rptPreviewHost');
-    if (!host || rptObsBusy) return;
-    rptObsBusy = true;
-    try {
-      host.querySelectorAll('span,div,b').forEach(function (el) {
-        if (el.children.length || el.querySelector('.mgr-q')) return;
-        var t = (el.textContent || '').trim();
-        if (/^Req Missing/i.test(t)) el.appendChild(qBadge('req'));
-        else if (/^Punch (OK|Miss|Problem)/i.test(t)) el.appendChild(qBadge('punch'));
-      });
-    } finally { rptObsBusy = false; }
-  }
-  function watchReportChips() {
-    var host = $('rptPreviewHost');
-    if (!host || rptObs || typeof MutationObserver === 'undefined') return;
-    rptObs = new MutationObserver(function () { if (!rptObsBusy) decorateReportChips(); });
-    rptObs.observe(host, { childList: true, subtree: true });
-  }
-
-  /* ---------- 4. report: state card + manager bar ---------- */
-  var rptSeq = 0;
-  function ensureStateCard() {
-    var c = $('rptStateCard');
-    if (c) return c;
-    var anchor = $('reportEmptyCard');
-    if (!anchor || !anchor.parentNode) return null;
-    c = document.createElement('div');
-    c.id = 'rptStateCard';
-    c.className = 'card';
-    anchor.parentNode.insertBefore(c, anchor);
-    return c;
-  }
-  function setRptState(kind, month, msg) {
-    var c = ensureStateCard();
-    if (!c) return;
-    if (kind === 'none') { c.classList.remove('show'); c.innerHTML = ''; return; }
-    if (kind === 'loading') {
-      c.innerHTML = '<div class="mgr-spin"></div><div class="st-title">Loading ' + h(monthLabel(month)) + '\u2026</div>';
-    } else {
-      c.innerHTML = '<div class="st-title">No data available</div>' +
-        '<div class="st-sub">' + h(msg || ('No report found for ' + monthLabel(month) + '.')) + '</div>' +
-        '<div class="st-nav"><button type="button" class="month-nav-btn" data-mgr-nav="-1">\u2039 Prev Month</button>' +
-        '<button type="button" class="month-nav-btn" data-mgr-nav="1">Next Month \u203A</button></div>';
-      c.querySelectorAll('[data-mgr-nav]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          if (typeof navigateReportMonth === 'function') navigateReportMonth(parseInt(b.getAttribute('data-mgr-nav'), 10));
-        });
-      });
-    }
-    c.classList.add('show');
-  }
-  function selMonth() {
-    var y = $('yearSelect'), m = $('monthSelect');
-    return (y && m) ? (y.value + '-' + m.value) : '';
-  }
-
-  wrapGlobal('findReport', function (orig) {
-    return async function () {
-      var my = ++rptSeq;
-      var month = selMonth();
-      var hasId = !!(($('employeeId') || {}).value || '').trim();
-      if (hasId) setRptState('loading', month);
-      busy(true);
-      try { await orig.apply(this, arguments); } finally { busy(false); }
-      if (my !== rptSeq) return;
-      var ok = false;
-      try { ok = (typeof currentResult !== 'undefined') && !!currentResult; } catch (e) { }
-      if (ok || !hasId) { setRptState('none'); }
-      else {
-        var st = $('status');
-        var msg = st ? String(st.innerText || '').split('\n')[0] : '';
-        setRptState('nodata', month, msg);
-      }
-      syncMgrMonth();
-    };
-  });
-
-  var pickMode = 'all';
-  function buildMgrBar() {
-    if ($('mgrReportBar')) return;
-    var page = $('page-report');
-    if (!page) return;
-    var bar = document.createElement('div');
-    bar.id = 'mgrReportBar';
-    bar.className = 'card';
-    bar.style.padding = '8px 10px';
-    var OA = (typeof OVERALL_AREA !== 'undefined') ? OVERALL_AREA : 'Overall';
-    bar.innerHTML =
-      '<div class="mgr-row">' +
-      '<select id="mgrMonthSel" aria-label="Month"></select>' +
-      '<select id="mgrAreaSel" aria-label="Section"><option value="all">All sections</option>' +
-      '<option value="Solid Production">Solid</option><option value="Softgel Production">Softgel</option>' +
-      '<option value="Packing Hall">Packing</option><option value="' + h(OA) + '">Executives</option></select>' +
-      '<button type="button" class="calc-mini-btn" id="mgrPickToggle">Browse \u25BE</button></div>' +
-      '<div id="mgrPickPanel" style="display:none">' +
-      '<div class="mgr-chips" id="mgrFilterChips">' +
-      '<button type="button" class="mgr-chip active" data-mode="all">All</button>' +
-      '<button type="button" class="mgr-chip" data-mode="punch">Punch problem</button>' +
-      '<button type="button" class="mgr-chip" data-mode="req">OT missing</button></div>' +
-      '<div class="mgr-row"><input type="text" id="mgrPickSearch" placeholder="Filter by ID or name" autocomplete="off"></div>' +
-      '<div id="mgrPickList"></div></div>';
-    var strip = $('reportEmpStrip');
-    page.insertBefore(bar, strip || page.children[1] || null);
-
-    $('mgrMonthSel').addEventListener('change', function () {
-      var v = this.value.split('-');
-      var ys = $('yearSelect'), ms = $('monthSelect');
-      if (ys && ![].some.call(ys.options, function (o) { return o.value === v[0]; })) {
-        var op = document.createElement('option'); op.value = v[0]; op.textContent = v[0]; ys.appendChild(op);
-      }
-      if (ys) ys.value = v[0];
-      if (ms) ms.value = v[1];
-      var id = '';
-      try { id = (typeof currentSearchId !== 'undefined' && currentSearchId) ? currentSearchId : ''; } catch (e) { }
-      if (id) {
-        var ei = $('employeeId'); if (ei) ei.value = id;
-        if (typeof findReport === 'function') findReport();
-      }
-      if ($('mgrPickPanel').style.display !== 'none') loadPick();
-    });
-    $('mgrAreaSel').addEventListener('change', function () { loadPick(); });
-    $('mgrPickToggle').addEventListener('click', function () {
-      var p = $('mgrPickPanel');
-      var open = p.style.display === 'none';
-      p.style.display = open ? 'block' : 'none';
-      this.textContent = open ? 'Hide \u25B4' : 'Browse \u25BE';
-      if (open) loadPick();
-    });
-    $('mgrFilterChips').addEventListener('click', function (e) {
-      var b = e.target.closest('.mgr-chip');
-      if (!b) return;
-      pickMode = b.getAttribute('data-mode');
-      this.querySelectorAll('.mgr-chip').forEach(function (x) { x.classList.toggle('active', x === b); });
-      loadPick();
-    });
-    var t = null;
-    $('mgrPickSearch').addEventListener('input', function () { clearTimeout(t); t = setTimeout(loadPick, 200); });
-    $('mgrPickList').addEventListener('click', function (e) {
-      var r = e.target.closest('.mgr-pick-row');
-      if (r) pickEmployee(r.getAttribute('data-id'));
-    });
-    syncMgrMonth();
-  }
-
-  function syncMgrMonth() {
-    var s = $('mgrMonthSel');
-    if (!s) return;
-    var opts = allMonths().slice().reverse();
-    var cur = selMonth();
-    if (cur && opts.indexOf(cur) < 0) opts.unshift(cur);
-    var key = opts.join(',');
-    if (s.getAttribute('data-key') !== key) {
-      s.innerHTML = opts.map(function (m) { return '<option value="' + h(m) + '">' + h(monthLabel(m)) + '</option>'; }).join('');
-      s.setAttribute('data-key', key);
-    }
-    if (cur) s.value = cur;
-  }
-
-  async function loadPick() {
-    var list = $('mgrPickList');
-    if (!list) return;
-    var month = $('mgrMonthSel').value || selMonth();
-    list.innerHTML = '<div class="mgr-pick-empty"><div class="mgr-spin"></div>Loading\u2026</div>';
-    var data = null;
-    busy(true);
-    try {
-      if (typeof loadAreaMap === 'function') await loadAreaMap();
-      data = await fetchMonthPreIndexedData(month);
-    } catch (e) { data = null; } finally { busy(false); }
-    if (!Array.isArray(data) || !data.length) {
-      list.innerHTML = '<div class="mgr-pick-empty">No data available for ' + h(monthLabel(month)) + '.</div>';
-      return;
-    }
-    var area = $('mgrAreaSel').value;
-    var q = ($('mgrPickSearch').value || '').trim().toLowerCase();
-    var rows = [];
-    data.forEach(function (e) {
-      if (!e || !e.id) return;
-      try { if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(e)) return; } catch (x) { }
-      if (area !== 'all') {
-        var a = '';
-        try { a = getAreaForId(e.id, true); } catch (x) { }
-        if (a !== area) return;
-      }
-      if (q && String(e.id).toLowerCase().indexOf(q) < 0 && String(e.name || '').toLowerCase().indexOf(q) < 0) return;
-      var tag = '', n = 0;
-      if (pickMode === 'punch') {
-        n = typeof getPunchProblemCount === 'function' ? getPunchProblemCount(e) : 0;
-        if (n <= 0) return;
-        tag = n + ' punch';
-      } else if (pickMode === 'req') {
-        try { n = computeEmpRequisitionProblems(e).length; } catch (x) { n = 0; }
-        if (n <= 0) return;
-        tag = n + ' OT miss';
-      }
-      rows.push({ id: String(e.id), name: e.name || '', n: n, tag: tag });
-    });
-    rows.sort(function (a, b) { return (b.n - a.n) || a.id.localeCompare(b.id); });
-    if (!rows.length) {
-      list.innerHTML = '<div class="mgr-pick-empty">Nothing found for this filter in ' + h(monthLabel(month)) + '.</div>';
-      return;
-    }
-    var LIM = 60;
-    list.innerHTML = rows.slice(0, LIM).map(function (r) {
-      return '<button type="button" class="mgr-pick-row" data-id="' + h(r.id) + '"><b>' + h(r.id) + '</b><span class="n">' +
-        h(r.name) + '</span>' + (r.tag ? '<span class="t">' + h(r.tag) + '</span>' : '') + '</button>';
-    }).join('') + (rows.length > LIM ? '<div class="mgr-pick-empty">Showing first ' + LIM + ' of ' + rows.length + '. Use the filter box to narrow down.</div>' : '');
-  }
-
-  async function pickEmployee(id) {
-    var v = ($('mgrMonthSel').value || selMonth()).split('-');
-    var ys = $('yearSelect'), ms = $('monthSelect');
-    if (ys && v[0]) {
-      if (![].some.call(ys.options, function (o) { return o.value === v[0]; })) {
-        var op = document.createElement('option'); op.value = v[0]; op.textContent = v[0]; ys.appendChild(op);
-      }
-      ys.value = v[0];
-    }
-    if (ms && v[1]) ms.value = v[1];
-    var qi = $('reportQuickIdInput');
-    if (qi) qi.value = id;
-    if (typeof searchFromReportPage === 'function') await searchFromReportPage();
-    var p = $('mgrPickPanel');
-    if (p) { p.style.display = 'none'; var tgl = $('mgrPickToggle'); if (tgl) tgl.textContent = 'Browse \u25BE'; }
-  }
-
-  wrapGlobal('initReportPage', function (orig) {
-    return function () {
-      var r = orig.apply(this, arguments);
-      syncMgrMonth();
-      injectInfoBadges();
-      watchReportChips();
-      return r;
-    };
-  });
-  wrapGlobal('syncReportPageBanner', function (orig) {
-    return function () {
-      var r = orig.apply(this, arguments);
-      syncMgrMonth();
-      return r;
-    };
-  });
-
-  /* ---------- 5. VS: period handling ---------- */
-  function vsEnd() { var s = $('vsMonthOverrideSelect'); return (s && s.value) || curMonth(); }
-  function vsMonths() {
-    var p = ($('vsPeriodSelect') || {}).value || 'current';
-    var end = vsEnd();
-    var all = allMonths();
-    var upto = all.filter(function (m) { return m <= end; });
-    if (p === 'current') return [end];
-    if (p === '3m') return upto.slice(-3);
-    if (p === '6m') return upto.slice(-6);
-    if (p === '1y') return upto.slice(-12);
-    if (p === 'ytd') return upto.filter(function (m) { return m.slice(0, 4) === end.slice(0, 4); });
-    if (p === 'alltime') return all;
-    if (p === 'custom') {
-      var sel = [];
-      document.querySelectorAll('#vsExtraPeriod .mgr-chip.active').forEach(function (b) { sel.push(b.getAttribute('data-m')); });
-      return sel.sort();
-    }
-    if (p === 'range') {
-      var f = ($('vsRangeFrom') || {}).value, t = ($('vsRangeTo') || {}).value;
-      if (!f || !t) return [];
-      if (f > t) { var x = f; f = t; t = x; }
-      return all.filter(function (m) { return m >= f && m <= t; });
-    }
-    return [end];
-  }
-  function vsSub() {
-    var sub = $('vsPageSub');
-    if (!sub) return;
-    var p = ($('vsPeriodSelect') || {}).value || 'current';
-    if (p === 'current') { sub.textContent = 'Compare overtime & allowances (' + vsEnd() + ')'; return; }
-    var ms = vsMonths();
-    sub.textContent = ms.length ? ('Compare overtime & allowances (' + ms.length + ' month' + (ms.length > 1 ? 's' : '') + ')') : 'Compare overtime & allowances';
-  }
-  function buildVsExtra() {
-    var sel = $('vsPeriodSelect');
-    if (!sel) return;
-    if (![].some.call(sel.options, function (o) { return o.value === 'custom'; })) {
-      sel.insertAdjacentHTML('beforeend', '<option value="custom">Pick specific months</option><option value="range">Month range (from - to)</option>');
-    }
-    if (!$('vsExtraPeriod')) {
-      var d = document.createElement('div');
-      d.id = 'vsExtraPeriod';
-      var row = sel.closest('.vs-bar-row');
-      if (row && row.parentNode) row.parentNode.insertBefore(d, row.nextSibling);
-      else if (sel.parentNode) sel.parentNode.appendChild(d);
-    }
-  }
-  function renderVsExtra() {
-    var box = $('vsExtraPeriod');
-    if (!box) return;
-    var p = ($('vsPeriodSelect') || {}).value || 'current';
-    var all = allMonths();
-    if (p === 'custom') {
-      var prev = {};
-      box.querySelectorAll('.mgr-chip.active').forEach(function (b) { prev[b.getAttribute('data-m')] = 1; });
-      box.innerHTML = '<div class="mgr-chips">' + all.slice().reverse().map(function (m) {
-        return '<button type="button" class="mgr-chip' + (prev[m] ? ' active' : '') + '" data-m="' + h(m) + '">' + h(monthLabel(m)) + '</button>';
-      }).join('') + '</div>';
-      box.querySelectorAll('.mgr-chip').forEach(function (b) {
-        b.addEventListener('click', function () { b.classList.toggle('active'); vsSub(); });
-      });
-      box.classList.add('show');
-    } else if (p === 'range') {
-      var opts = all.map(function (m) { return '<option value="' + h(m) + '">' + h(monthLabel(m)) + '</option>'; }).join('');
-      var oldF = ($('vsRangeFrom') || {}).value, oldT = ($('vsRangeTo') || {}).value;
-      box.innerHTML = '<div class="mgr-row"><select id="vsRangeFrom" aria-label="From month">' + opts + '</select><span>to</span><select id="vsRangeTo" aria-label="To month">' + opts + '</select></div>';
-      $('vsRangeFrom').value = oldF || all[Math.max(0, all.length - 3)] || '';
-      $('vsRangeTo').value = oldT || all[all.length - 1] || '';
-      $('vsRangeFrom').addEventListener('change', vsSub);
-      $('vsRangeTo').addEventListener('change', vsSub);
-      box.classList.add('show');
-    } else {
-      box.classList.remove('show');
-      box.innerHTML = '';
-    }
-  }
-  function applyVsPeriodUI() {
-    var p = ($('vsPeriodSelect') || {}).value || 'current';
-    var m = $('vsMonthOverrideSelect');
-    if (m) m.style.display = (p === 'alltime' || p === 'custom' || p === 'range') ? 'none' : '';
-    renderVsExtra();
-    vsSub();
-  }
-  window.onVsPeriodChange = function () { applyVsPeriodUI(); };
-  wrapGlobal('onVsMonthOverrideChange', function (orig) {
-    return function () { var r = orig.apply(this, arguments); vsSub(); return r; };
-  });
-  wrapGlobal('initVsPage', function (orig) {
-    return function () {
-      var r = orig.apply(this, arguments);
-      buildVsExtra();
-      applyVsPeriodUI();
-      return r;
-    };
-  });
-
-  var SUM_KEYS = ['totalDuty', 'otHours', 'holidayCount', 'holiday', 'nightCount', 'night', 'plainDaysCount', 'plainDays',
-    'otAmount', 'holidayAmount', 'nightAmount', 'totalEarned'];
-  function numLike(v) { return typeof v === 'number' || (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v))); }
-  function mergeLists(lists) {
-    var map = {};
-    lists.forEach(function (pair) {
-      pair[1].forEach(function (e) {
-        if (!e || !e.id) return;
-        var id = String(e.id).toUpperCase();
-        var cur = map[id];
-        if (!cur) { map[id] = Object.assign({}, e); return; }
-        SUM_KEYS.forEach(function (k) {
-          if (numLike(e[k]) && numLike(cur[k])) cur[k] = Number(cur[k]) + Number(e[k]);
-          else if (numLike(e[k]) && cur[k] == null) cur[k] = Number(e[k]);
-        });
-        ['name', 'grade', 'category', 'type'].forEach(function (k) { if (e[k]) cur[k] = e[k]; });
-      });
-    });
-    return Object.keys(map).map(function (k) {
-      var o = map[k];
-      SUM_KEYS.forEach(function (key) { if (numLike(o[key])) o[key] = Math.round(Number(o[key]) * 100) / 100; });
-      return o;
-    });
-  }
-  function periodLabel(ms) {
-    if (!ms.length) return '';
-    var n = ms.length + ' month' + (ms.length > 1 ? 's' : '');
-    if (ms.length === 1) return monthLabel(ms[0]);
-    var contiguous = true;
-    var all = allMonths();
-    for (var i = 1; i < ms.length; i++) { if (all.indexOf(ms[i]) - all.indexOf(ms[i - 1]) !== 1) { contiguous = false; break; } }
-    if (contiguous) return monthLabel(ms[0]) + ' \u2013 ' + monthLabel(ms[ms.length - 1]) + ' (' + n + ')';
-    return ms.map(monthLabel).join(', ') + ' (' + n + ')';
-  }
-
-  wrapGlobal('runComparison', function (orig) {
-    return async function () {
-      var self = this, args = arguments;
-      var p = ($('vsPeriodSelect') || {}).value || 'current';
-      if (p === 'current') { window._vsPeriodLabel = ''; return orig.apply(self, args); }
-      var ms = vsMonths();
-      if (!ms.length) { toast('Select at least one month first', 'warn'); return; }
-      var origFetch = window.fetchMonthPreIndexedData;
-      busy(true);
-      try {
-        var lists = [];
-        for (var i = 0; i < ms.length; i++) {
-          try {
-            var l = await origFetch(ms[i]);
-            if (Array.isArray(l) && l.length) lists.push([ms[i], l]);
-          } catch (e) { }
+    // 1. Rank Hub titles
+    document.querySelectorAll('.rank-hub-item').forEach(item => {
+      const title = item.querySelector('.rank-hub-title');
+      if (title && !title.querySelector('.mgr-q')) {
+        const txt = title.textContent.trim().toLowerCase();
+        if (txt.includes('punch')) {
+          title.appendChild(createQBtn('punch'));
+        } else if (txt.includes('requisition')) {
+          title.appendChild(createQBtn('req'));
         }
-        if (!lists.length) { toast('No data available for the selected period', 'warn'); return; }
-        var merged = mergeLists(lists);
-        var used = lists.map(function (x) { return x[0]; });
-        window._vsPeriodLabel = periodLabel(used);
-        window.fetchMonthPreIndexedData = async function () { return merged; };
-        await orig.apply(self, args);
-        var t = $('vsExportTarget');
-        if (t && !t.querySelector('.vs-period-note')) {
-          var miss = ms.length - used.length;
-          t.insertAdjacentHTML('afterbegin', '<div class="vs-period-note">Period: ' + h(window._vsPeriodLabel) +
-            (miss > 0 ? ' \u2022 ' + miss + ' month(s) had no data' : '') + '</div>');
-        }
-      } finally {
-        window.fetchMonthPreIndexedData = origFetch;
-        busy(false);
       }
-    };
-  });
-
-  /* ----- VS PNG export: auto-sized columns, no overlapping text ----- */
-  function fitText(g, text, maxW, weight, size, minSize, font) {
-    var s = size;
-    g.font = weight + ' ' + s + 'px ' + font;
-    while (g.measureText(text).width > maxW && s > minSize) { s -= 1; g.font = weight + ' ' + s + 'px ' + font; }
-    if (g.measureText(text).width <= maxW) return text;
-    var t = text;
-    while (t.length > 1 && g.measureText(t + '\u2026').width > maxW) t = t.slice(0, -1);
-    return t + '\u2026';
-  }
-  function wrapLines(g, text, maxW, maxLines) {
-    var words = String(text).split(/\s+/), lines = [], cur = '';
-    words.forEach(function (w) {
-      var test = cur ? cur + ' ' + w : w;
-      if (g.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
     });
-    if (cur) lines.push(cur);
-    return lines.slice(0, maxLines || 3);
-  }
-  window.downloadVsComparisonPNG = async function (share) {
-    var target = $('vsExportTarget');
-    if (!target) return;
-    var table = target.querySelector('table.compare-table');
-    if (!table) return;
-    try {
-      toast(share ? 'Preparing comparison image...' : 'Downloading comparison PNG...', 'info');
-      if (typeof ensurePayslipFonts === 'function') { try { await ensurePayslipFonts(); } catch (e) { } }
-      var FONT = (typeof PAY_FONT !== 'undefined') ? PAY_FONT : 'Arial,sans-serif';
-      var rows = [].map.call(table.querySelectorAll('tr'), function (tr) {
-        return {
-          total: tr.classList.contains('total-row'),
-          cells: [].map.call(tr.children, function (td) {
-            return {
-              t: String(td.innerText || td.textContent || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
-              win: td.classList.contains('win-cell')
-            };
-          })
-        };
-      });
-      var cols = rows[0].cells.length;
-      var m = document.createElement('canvas').getContext('2d');
-      m.font = '600 18px ' + FONT;
-      var labW = 0;
-      rows.slice(1).forEach(function (r) { labW = Math.max(labW, m.measureText(r.cells[0].t.join(' ')).width); });
-      var dataCols = Math.max(1, cols - 1);
-      var colW = dataCols <= 2 ? 250 : dataCols === 3 ? 215 : 185;
-      var firstW = Math.ceil(Math.max(240, labW + 36));
-      var PAD = 32, W = PAD * 2 + firstW + colW * dataCols;
-      var HEAD_H = 68, ROW_H = 48;
-      var period = window._vsPeriodLabel || (typeof currentMonth !== 'undefined' && currentMonth ? currentMonth : curMonth());
-      var diffEl = target.querySelector('.compare-diff');
-      var diffText = diffEl ? diffEl.innerText.trim() : '';
-      m.font = '800 19px ' + FONT;
-      var diffLines = diffText ? wrapLines(m, diffText, W - PAD * 2, 3) : [];
-      var TOP = 118;
-      var H = TOP + HEAD_H + (rows.length - 1) * ROW_H + (diffLines.length ? diffLines.length * 28 + 34 : 20) + 14;
 
-      var c = document.createElement('canvas');
-      c.width = W; c.height = H;
-      var g = c.getContext('2d');
-      g.fillStyle = '#F8FAFC'; g.fillRect(0, 0, W, H);
-      g.fillStyle = '#1E3A8A'; g.fillRect(0, 0, W, 98);
-      g.textBaseline = 'middle'; g.textAlign = 'left';
-      g.fillStyle = '#FFFFFF';
-      g.fillText(fitText(g, 'RPPF \u2014 VS Overtime Comparison', W - PAD * 2, 800, 28, 18, FONT), PAD, 36);
-      g.fillStyle = '#BFDBFE';
-      g.fillText(fitText(g, period, W - PAD * 2, 700, 19, 13, FONT), PAD, 70);
+    // 2. Report Step 7 Label
+    const step7Lbl = document.getElementById('step7LabelText');
+    if (step7Lbl && !step7Lbl.querySelector('.mgr-q')) {
+      step7Lbl.appendChild(createQBtn('req'));
+    }
 
-      var y = TOP;
-      rows.forEach(function (r, ri) {
-        var head = ri === 0;
-        var rh = head ? HEAD_H : ROW_H;
-        g.fillStyle = head ? '#0F172A' : r.total ? '#DCFCE7' : (ri % 2 === 0 ? '#FFFFFF' : '#F1F5F9');
-        g.fillRect(PAD, y, W - PAD * 2, rh);
-        var x = PAD;
-        r.cells.forEach(function (cell, ci) {
-          var cw = ci === 0 ? firstW : colW;
-          g.strokeStyle = '#CBD5E1'; g.strokeRect(x, y, cw, rh);
-          var inner = cw - 24;
-          if (head && ci > 0) {
-            g.textAlign = 'right';
-            g.fillStyle = '#FFFFFF';
-            g.fillText(fitText(g, cell.t[0] || '', inner, 800, 19, 12, FONT), x + cw - 12, y + (cell.t[1] ? 24 : rh / 2));
-            if (cell.t[1]) {
-              g.fillStyle = '#CBD5E1';
-              g.fillText(fitText(g, cell.t[1], inner, 600, 14, 10, FONT), x + cw - 12, y + 48);
+    // 3. Observer for dynamically rendered report chips
+    const host = document.getElementById('rptPreviewHost');
+    if (host && !host.__mgrObserved) {
+      host.__mgrObserved = true;
+      const obs = new MutationObserver(() => {
+        host.querySelectorAll('.chip, span, div').forEach(el => {
+          if (!el.querySelector('.mgr-q')) {
+            const t = el.textContent.trim();
+            if (t.startsWith('Req Missing') || t.startsWith('Req Problem')) {
+              el.appendChild(createQBtn('req'));
+            } else if (t.startsWith('Punch Problem') || t.startsWith('Punch Missing')) {
+              el.appendChild(createQBtn('punch'));
             }
-          } else {
-            var txt = cell.t.join(' ');
-            g.fillStyle = head ? '#FFFFFF' : r.total ? '#15803D' : (cell.win ? '#1D4ED8' : '#0F172A');
-            g.textAlign = ci === 0 ? 'left' : 'right';
-            var wgt = (head || r.total || cell.win) ? 800 : 600;
-            g.fillText(fitText(g, txt, inner, wgt, 18, 11, FONT), ci === 0 ? x + 12 : x + cw - 12, y + rh / 2);
           }
-          x += cw;
         });
-        y += rh;
       });
-      if (diffLines.length) {
-        g.fillStyle = '#0F172A'; g.textAlign = 'center';
-        g.font = '800 19px ' + FONT;
-        diffLines.forEach(function (ln, i) { g.fillText(ln, W / 2, y + 30 + i * 28); });
-      }
+      obs.observe(host, { childList: true, subtree: true });
+    }
+  }
 
-      var blob = await new Promise(function (r) { c.toBlob(r, 'image/png'); });
-      var tag = String(window._vsPeriodLabel || period).replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '');
-      var fname = 'VS_Compare_' + tag + '.png';
-      var file = new File([blob], fname, { type: 'image/png' });
-      if (share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: fname });
-        return;
+  function createQBtn(type) {
+    const q = document.createElement('span');
+    q.className = 'mgr-q';
+    q.textContent = '?';
+    q.title = 'View explanation rules';
+    q.setAttribute('data-html2canvas-ignore', 'true');
+    q.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openMgrInfo(type);
+    };
+    return q;
+  }
+
+  /* ==========================================================================
+     5. REPORT TAB: LOADING & EMPTY STATE (#3.5)
+     ========================================================================== */
+  let _reportSeq = 0;
+  function ensureReportStateCard() {
+    let card = document.getElementById('rptStateCard');
+    if (!card) {
+      card = document.createElement('div');
+      card.id = 'rptStateCard';
+      card.className = 'rpt-state-card';
+      card.style.display = 'none';
+
+      const emptyCard = document.getElementById('reportEmptyCard');
+      if (emptyCard && emptyCard.parentNode) {
+        emptyCard.parentNode.insertBefore(card, emptyCard);
       }
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = fname;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-      toast('VS comparison PNG downloaded!', 'success');
-    } catch (e) {
-      if (e && e.name !== 'AbortError') toast('Could not export image', 'error');
+    }
+    return card;
+  }
+
+  wrapGlobal('findReport', (orig) => async function() {
+    const seq = ++_reportSeq;
+    const card = ensureReportStateCard();
+    const curM = typeof getCurrentMonth === 'function' ? getCurrentMonth() : '';
+
+    if (card) {
+      card.innerHTML = `
+        <div class="rpt-state-spinner"></div>
+        <div class="rpt-state-msg">Loading Overtime Report for ${curM}…</div>
+        <div class="rpt-state-sub">Verifying employee logs &amp; ERP data</div>
+      `;
+      card.style.display = 'block';
+    }
+    setBusy(true);
+
+    try {
+      await orig.apply(this, arguments);
+    } finally {
+      setBusy(false);
+      if (seq === _reportSeq && card) {
+        if (!window.currentResult) {
+          const st = document.getElementById('status');
+          const firstErr = st && st.innerText ? st.innerText.split('\n')[0] : 'No record found';
+          card.innerHTML = `
+            <div class="rpt-state-msg" style="color:var(--danger);">⚠️ No data available for ${curM}</div>
+            <div class="rpt-state-sub">${firstErr}</div>
+            <div class="rpt-state-nav">
+              <button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)">‹ Prev Month</button>
+              <button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)">Next Month ›</button>
+            </div>
+          `;
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    }
+  });
+
+  /* ==========================================================================
+     6. REPORT TAB: MANAGER BAR & BROWSE PICKER (#3.6)
+     ========================================================================== */
+  function ensureMgrReportBar() {
+    let bar = document.getElementById('mgrReportBar');
+    if (!bar) {
+      const page = document.getElementById('page-report');
+      if (!page) return null;
+      bar = document.createElement('div');
+      bar.id = 'mgrReportBar';
+      bar.className = 'mgr-report-bar';
+      bar.innerHTML = `
+        <span style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;">In-Charge View:</span>
+        <select id="mgrMonthSel" aria-label="Select month" onchange="onMgrMonthSelChange(this.value)"></select>
+        <select id="mgrAreaSel" aria-label="Select section" onchange="onMgrAreaSelChange(this.value)">
+          <option value="all">All Sections</option>
+          <option value="Solid Production">Solid Production</option>
+          <option value="Softgel Production">Softgel Production</option>
+          <option value="Packing Hall">Packing Hall</option>
+          <option value="Overall">Executives</option>
+        </select>
+        <button type="button" class="calc-mini-btn" onclick="openMgrPickerModal()">Browse ▾</button>
+      `;
+      const strip = document.getElementById('reportEmpStrip');
+      if (strip && strip.parentNode) {
+        strip.parentNode.insertBefore(bar, strip.nextSibling);
+      }
+    }
+    syncMgrReportBar();
+    return bar;
+  }
+
+  function syncMgrReportBar() {
+    const sel = document.getElementById('mgrMonthSel');
+    if (sel && typeof availableServerMonths !== 'undefined' && Array.isArray(availableServerMonths)) {
+      const curM = typeof getCurrentMonth === 'function' ? getCurrentMonth() : '';
+      sel.innerHTML = availableServerMonths.map(m => `
+        <option value="${m}" ${m === curM ? 'selected' : ''}>${m}</option>
+      `).join('');
+    }
+  }
+
+  window.onMgrMonthSelChange = function(mVal) {
+    if (!mVal) return;
+    const parts = mVal.split('-');
+    if (parts.length === 2) {
+      const ySel = document.getElementById('yearSelect');
+      const mSel = document.getElementById('monthSelect');
+      if (ySel) ySel.value = parts[0];
+      if (mSel) mSel.value = parts[1];
+      if (typeof findReport === 'function') findReport();
     }
   };
 
-  /* ---------- 6. ranking: busy + empty toast ---------- */
-  wrapGlobal('startLeaderboardScan', function (orig) {
-    return async function () {
-      busy(true);
-      try { return await orig.apply(this, arguments); }
-      finally {
-        busy(false);
-        try {
-          var r = (typeof currentLeaderboardResult !== 'undefined') ? currentLeaderboardResult : null;
-          var mth = curMonth();
-          var n = r && Array.isArray(r.allEmployees) ? r.allEmployees.length : 0;
-          if (!r || !n || (r.month && (r.timeMode || 'monthly') === 'monthly' && r.month !== mth)) {
-            toast('No data available for ' + monthLabel(mth), 'warn');
-          }
-        } catch (e) { }
+  window.onMgrAreaSelChange = function(aVal) {
+    // Area filter state stored for browse modal
+    window._mgrSelectedArea = aVal || 'all';
+  };
+
+  /* Manager Employee Browse Picker Modal */
+  let _mgrPickerFilter = 'all';
+  function ensureMgrPickerModal() {
+    let modal = document.getElementById('mgrPickerModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'mgrPickerModal';
+      modal.className = 'mgr-picker-modal';
+      modal.onclick = (e) => { if (e.target === modal) closeMgrPickerModal(); };
+      modal.innerHTML = `
+        <div class="mgr-picker-content" onclick="event.stopPropagation()">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:15px;font-weight:800;color:var(--text);">Browse Section Employees</div>
+            <button type="button" class="calc-mini-btn" onclick="closeMgrPickerModal()">✕</button>
+          </div>
+          <div class="mgr-picker-chips" id="mgrPickerChips">
+            <button type="button" class="mgr-picker-chip active" data-mgr-crit="all" onclick="setMgrPickerFilter('all')">All</button>
+            <button type="button" class="mgr-picker-chip" data-mgr-crit="punch" onclick="setMgrPickerFilter('punch')">Punch Problem</button>
+            <button type="button" class="mgr-picker-chip" data-mgr-crit="req" onclick="setMgrPickerFilter('req')">OT Missing</button>
+          </div>
+          <input type="text" id="mgrPickerSearchInp" placeholder="Search by name or ID..." oninput="renderMgrPickerList()" style="min-height:34px;font-size:12.5px;padding:4px 8px;margin:0 0 6px 0;width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface-2);color:var(--text);">
+          <div class="mgr-picker-list" id="mgrPickerList"></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    return modal;
+  }
+
+  window.setMgrPickerFilter = function(crit) {
+    _mgrPickerFilter = crit || 'all';
+    document.querySelectorAll('#mgrPickerChips .mgr-picker-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-mgr-crit') === _mgrPickerFilter);
+    });
+    renderMgrPickerList();
+  };
+
+  window.openMgrPickerModal = async function() {
+    const modal = ensureMgrPickerModal();
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    await renderMgrPickerList();
+  };
+
+  window.closeMgrPickerModal = function() {
+    const modal = document.getElementById('mgrPickerModal');
+    if (modal) modal.classList.remove('open');
+    releaseStaleLock();
+  };
+
+  async function renderMgrPickerList() {
+    const listEl = document.getElementById('mgrPickerList');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px;">Loading employees...</div>';
+
+    const month = typeof getCurrentMonth === 'function' ? getCurrentMonth() : '';
+    let emps = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache[month]);
+    if (!emps && typeof fetchMonthPreIndexedData === 'function') {
+      try {
+        emps = await fetchMonthPreIndexedData(month, false, true);
+      } catch (e) {}
+    }
+    if (!Array.isArray(emps) || !emps.length) {
+      listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px;">No employee data available.</div>';
+      return;
+    }
+
+    const selArea = window._mgrSelectedArea || 'all';
+    let filtered = emps.filter(e => {
+      if (typeof isMappedAreaId === 'function' && !isMappedAreaId(e.id)) return false;
+      if (selArea !== 'all') {
+        const a = typeof getAreaForId === 'function' ? getAreaForId(e.id, true) : '';
+        if (selArea === 'Overall') {
+          if (a !== 'Overall' && e.kind !== 'EXEC') return false;
+        } else if (a !== selArea) {
+          return false;
+        }
       }
-    };
+      return true;
+    });
+
+    if (_mgrPickerFilter === 'punch') {
+      filtered = filtered.filter(e => {
+        const c = typeof getPunchProblemCount === 'function' ? getPunchProblemCount(e) : 0;
+        return c > 0 || (Array.isArray(e.punchProblems) && e.punchProblems.length > 0);
+      });
+    } else if (_mgrPickerFilter === 'req') {
+      filtered = filtered.filter(e => {
+        return (Number(e.requisitionProblemCount) || 0) > 0 || (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0);
+      });
+    }
+
+    const q = (document.getElementById('mgrPickerSearchInp')?.value || '').trim().toLowerCase();
+    if (q) {
+      filtered = filtered.filter(e => `${e.id} ${e.name}`.toLowerCase().includes(q));
+    }
+
+    const top60 = filtered.slice(0, 60);
+    if (!top60.length) {
+      listEl.innerHTML = '<div style="padding:14px;text-align:center;color:var(--muted);font-size:12px;">No matching employees.</div>';
+      return;
+    }
+
+    listEl.innerHTML = top60.map(e => `
+      <div class="mgr-picker-row" onclick="selectMgrPickedEmp('${e.id}')">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);">${e.name || e.id} <span style="font-size:11.5px;color:var(--muted);">(${e.id})</span></div>
+          <div style="font-size:11px;color:var(--text-2);">${e.area || ''} • ${e.designation || 'Staff'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12.5px;font-weight:700;color:var(--brand);">${e.totalDuty || 0}h</div>
+          <div style="font-size:10.5px;color:var(--muted);">${e.otHours || 0}h OT</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.selectMgrPickedEmp = function(empId) {
+    closeMgrPickerModal();
+    const qInp = document.getElementById('reportQuickIdInput');
+    const empInp = document.getElementById('employeeId');
+    if (qInp) qInp.value = empId;
+    if (empInp) empInp.value = empId;
+    if (typeof searchFromReportPage === 'function') searchFromReportPage();
+    else if (typeof findReport === 'function') findReport();
+  };
+
+  /* ==========================================================================
+     7. VS MODE: WORKING MULTI-MONTH COMPARISON (#3.7 & #3.8)
+     ========================================================================== */
+  function ensureVsPeriodExtras() {
+    const pSel = document.getElementById('vsPeriodSelect');
+    if (!pSel) return;
+
+    // Add 'custom' and 'range' options if not present
+    if (![...pSel.options].some(o => o.value === 'custom')) {
+      const opt = document.createElement('option');
+      opt.value = 'custom';
+      opt.textContent = 'Pick specific months (Custom)';
+      pSel.appendChild(opt);
+    }
+    if (![...pSel.options].some(o => o.value === 'range')) {
+      const opt = document.createElement('option');
+      opt.value = 'range';
+      opt.textContent = 'Month range (From/To)';
+      pSel.appendChild(opt);
+    }
+
+    let extra = document.getElementById('vsExtraPeriod');
+    if (!extra) {
+      extra = document.createElement('div');
+      extra.id = 'vsExtraPeriod';
+      extra.className = 'vs-extra-period';
+      pSel.parentNode.insertBefore(extra, pSel.nextSibling);
+    }
+  }
+
+  window.onVsPeriodChange = function() {
+    const pSel = document.getElementById('vsPeriodSelect');
+    const extra = document.getElementById('vsExtraPeriod');
+    if (!pSel || !extra) return;
+
+    const val = pSel.value;
+    if (val === 'custom') {
+      extra.style.display = 'block';
+      const months = (typeof availableServerMonths !== 'undefined' && Array.isArray(availableServerMonths))
+        ? availableServerMonths : ['2026-10', '2026-09', '2026-08', '2026-07'];
+      extra.innerHTML = `
+        <div style="font-size:11.5px;font-weight:700;color:var(--text);">Select Months to Aggregate:</div>
+        <div class="vs-period-chips" id="vsCustomMonthChips">
+          ${months.map(m => `
+            <button type="button" class="vs-chip-btn ${m === '2026-10' ? 'active' : ''}" data-vsm="${m}" onclick="this.classList.toggle('active')">${m}</button>
+          `).join('')}
+        </div>
+      `;
+    } else if (val === 'range') {
+      extra.style.display = 'block';
+      const months = (typeof availableServerMonths !== 'undefined' && Array.isArray(availableServerMonths))
+        ? availableServerMonths : ['2026-10', '2026-09', '2026-08', '2026-07'];
+      extra.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);">From:</label>
+            <select id="vsRangeFrom" style="min-height:30px;font-size:12px;">
+              ${months.map(m => `<option value="${m}">${m}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);">To:</label>
+            <select id="vsRangeTo" style="min-height:30px;font-size:12px;">
+              ${months.map((m, idx) => `<option value="${m}" ${idx === months.length - 1 ? 'selected' : ''}>${m}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      `;
+    } else {
+      extra.style.display = 'none';
+    }
+  };
+
+  function getVsTargetMonths(curMonth) {
+    const pSel = document.getElementById('vsPeriodSelect');
+    const val = pSel ? pSel.value : 'current';
+    if (val === 'current') return [curMonth];
+
+    if (val === '3m') return (typeof getPreviousMonthStrings === 'function') ? getPreviousMonthStrings(curMonth, 3) : [curMonth];
+    if (val === '6m') return (typeof getPreviousMonthStrings === 'function') ? getPreviousMonthStrings(curMonth, 6) : [curMonth];
+    if (val === '1y') return (typeof getPreviousMonthStrings === 'function') ? getPreviousMonthStrings(curMonth, 12) : [curMonth];
+    if (val === 'ytd') return (typeof getYearToDateMonths === 'function') ? getYearToDateMonths(curMonth) : [curMonth];
+    if (val === 'alltime') return (typeof getAllTime2026Months === 'function') ? getAllTime2026Months(curMonth) : [curMonth];
+
+    if (val === 'custom') {
+      const active = [...document.querySelectorAll('#vsCustomMonthChips .vs-chip-btn.active')].map(b => b.getAttribute('data-vsm'));
+      return active.length ? active : [curMonth];
+    }
+    if (val === 'range') {
+      const from = document.getElementById('vsRangeFrom')?.value || curMonth;
+      const to = document.getElementById('vsRangeTo')?.value || curMonth;
+      const all = (typeof availableServerMonths !== 'undefined' && Array.isArray(availableServerMonths)) ? availableServerMonths : [curMonth];
+      const s = all.indexOf(from);
+      const e = all.indexOf(to);
+      if (s !== -1 && e !== -1) {
+        return all.slice(Math.min(s, e), Math.max(s, e) + 1);
+      }
+      return [curMonth];
+    }
+    return [curMonth];
+  }
+
+  wrapGlobal('runComparison', (orig) => async function() {
+    const curMonth = (document.getElementById('vsMonthOverrideSelect')?.value) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+    const months = getVsTargetMonths(curMonth);
+    const pSel = document.getElementById('vsPeriodSelect');
+    const pVal = pSel ? pSel.value : 'current';
+
+    if (pVal === 'current' || months.length <= 1) {
+      window._vsPeriodLabel = curMonth;
+      return orig.apply(this, arguments);
+    }
+
+    setBusy(true);
+    const origFetch = window.fetchMonthPreIndexedData;
+    window._vsPeriodLabel = `${months[0]} – ${months[months.length - 1]} (${months.length} months)`;
+
+    try {
+      // 1. Load all target months in parallel
+      const monthDataArrays = await Promise.all(months.map(async m => {
+        let list = typeof monthIndexMemoryCache !== 'undefined' ? monthIndexMemoryCache[m] : null;
+        if (!list && typeof origFetch === 'function') {
+          try { list = await origFetch(m, false, false); } catch (e) {}
+        }
+        return Array.isArray(list) ? list : [];
+      }));
+
+      // 2. Merge employees by ID
+      const mergedMap = {};
+      monthDataArrays.forEach(arr => {
+        arr.forEach(emp => {
+          if (!emp || !emp.id) return;
+          const uId = emp.id.toUpperCase();
+          if (!mergedMap[uId]) {
+            mergedMap[uId] = Object.assign({}, emp);
+          } else {
+            const tgt = mergedMap[uId];
+            ['totalDuty', 'otHours', 'holidayCount', 'holiday', 'nightCount', 'night', 'plainDaysCount', 'plainDays', 'otAmount', 'holidayAmount', 'nightAmount', 'totalEarned'].forEach(k => {
+              if (typeof emp[k] === 'number') tgt[k] = (tgt[k] || 0) + emp[k];
+            });
+            // Update latest meta
+            if (emp.name && emp.name !== emp.id) tgt.name = emp.name;
+            if (emp.designation) tgt.designation = emp.designation;
+            if (emp.category) tgt.category = emp.category;
+            if (emp.type) tgt.type = emp.type;
+          }
+        });
+      });
+
+      const mergedList = Object.values(mergedMap);
+
+      // 3. Temporarily swap fetchMonthPreIndexedData
+      window.fetchMonthPreIndexedData = async () => mergedList;
+
+      // 4. Run comparison
+      await orig.apply(this, arguments);
+
+      // 5. Inject period note inside #vsExportTarget
+      const exportTarget = document.getElementById('vsExportTarget');
+      if (exportTarget) {
+        let note = exportTarget.querySelector('.vs-period-note');
+        if (!note) {
+          note = document.createElement('div');
+          note.className = 'vs-period-note';
+          exportTarget.insertBefore(note, exportTarget.firstChild);
+        }
+        note.textContent = `Period: ${window._vsPeriodLabel}`;
+      }
+    } finally {
+      window.fetchMonthPreIndexedData = origFetch;
+      setBusy(false);
+    }
   });
 
-  /* ---------- boot ---------- */
-  function boot() {
-    injectDrawerBars();
-    buildMgrBar();
-    ensureStateCard();
+  /* Canvas PNG Re-implementation for Clean Layout (#3.8) */
+  window.downloadVsComparisonPNG = function() {
+    const table = document.querySelector('table.compare-table');
+    if (!table) {
+      if (typeof showToast === 'function') showToast('No comparison table to export', 'warn');
+      return;
+    }
+
+    const rows = [...table.querySelectorAll('tr')];
+    if (!rows.length) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const numCols = rows[0].children.length;
+    const dataCols = Math.max(1, numCols - 1);
+    const colW = dataCols === 2 ? 250 : (dataCols === 3 ? 215 : 185);
+    const labelW = 220;
+    const totalW = labelW + (dataCols * colW) + 40;
+    const rowH = 40;
+    const headerH = 130;
+    const totalH = headerH + (rows.length * rowH) + 60;
+
+    canvas.width = totalW * 2;
+    canvas.height = totalH * 2;
+    ctx.scale(2, 2);
+
+    // Background
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, totalW, totalH);
+
+    // Title banner
+    ctx.fillStyle = '#1E3A8A';
+    ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText('RENATA PLC • RPPF Production Overtime Comparison', 20, 36);
+
+    ctx.fillStyle = '#64748B';
+    ctx.font = '13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    const periodTxt = window._vsPeriodLabel ? `Period: ${window._vsPeriodLabel}` : `Exported: ${new Date().toLocaleDateString()}`;
+    ctx.fillText(periodTxt, 20, 58);
+
+    // Draw table
+    let y = 84;
+    rows.forEach((tr, rIdx) => {
+      const isHeader = rIdx === 0;
+      const isTotal = tr.classList.contains('total-row');
+
+      if (isHeader) {
+        ctx.fillStyle = '#F1F5F9';
+        ctx.fillRect(20, y, totalW - 40, rowH + 10);
+      } else if (isTotal) {
+        ctx.fillStyle = '#ECFDF5';
+        ctx.fillRect(20, y, totalW - 40, rowH);
+      } else if (rIdx % 2 === 1) {
+        ctx.fillStyle = '#F8FAFC';
+        ctx.fillRect(20, y, totalW - 40, rowH);
+      }
+
+      ctx.fillStyle = isHeader ? '#0F172A' : (isTotal ? '#15803D' : '#334155');
+      ctx.font = (isHeader || isTotal) ? 'bold 13px sans-serif' : '12.5px sans-serif';
+
+      let x = 28;
+      [...tr.children].forEach((td, cIdx) => {
+        const txt = td.innerText.replace(/[\n\r]+/g, ' ').trim();
+        const curW = cIdx === 0 ? labelW : colW;
+        ctx.fillText(txt.slice(0, 30), x, y + 25);
+        x += curW;
+      });
+
+      y += isHeader ? (rowH + 10) : rowH;
+    });
+
+    // Save
+    const fname = `VS_Compare_${(window._vsPeriodLabel || 'Export').replace(/[^a-zA-Z0-9_-]/g, '_')}.png`;
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fname, { type: 'image/png' })] })) {
+        navigator.share({
+          files: [new File([blob], fname, { type: 'image/png' })],
+          title: 'RENATA OT Comparison'
+        }).catch(() => {});
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+      }
+    }, 'image/png');
+  };
+
+  /* ==========================================================================
+     8. RANKING MONTH SWITCH TOAST (#3.9)
+     ========================================================================== */
+  wrapGlobal('startLeaderboardScan', (orig) => async function() {
+    setBusy(true);
+    try {
+      const res = await orig.apply(this, arguments);
+      const curM = typeof getCurrentMonth === 'function' ? getCurrentMonth() : '';
+      if (!window.currentLeaderboardResult || !window.currentLeaderboardResult.allEmployees || !window.currentLeaderboardResult.allEmployees.length) {
+        if (typeof showToast === 'function') showToast(`No data available for ${curM}`, 'info');
+      }
+      return res;
+    } finally {
+      setBusy(false);
+    }
+  });
+
+  /* ==========================================================================
+     INIT PATCH HOOKS
+     ========================================================================== */
+  function initManagerUxPatches() {
+    injectDrawerTopbars();
     injectInfoBadges();
-    watchReportChips();
-    buildVsExtra();
-    applyVsPeriodUI();
+    ensureReportStateCard();
+    ensureMgrReportBar();
+    ensureVsPeriodExtras();
+    releaseStaleLock();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initManagerUxPatches);
+  } else {
+    initManagerUxPatches();
+  }
+
+  // Periodic DOM poll for dynamic elements
+  setInterval(() => {
+    injectInfoBadges();
+    ensureMgrReportBar();
+    ensureVsPeriodExtras();
+  }, 1200);
+
 })();
