@@ -1,6 +1,6 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-03T03:25:44.605940Z",
+  "updatedAt": "2026-11-03T03:39:32.640387Z",
   "employees": [
     {
       "valid": false,
@@ -1839,8 +1839,8 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 14.15,
-      "otHours": 6.0,
+      "totalDuty": 24.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -1849,9 +1849,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -1882,29 +1880,15 @@
           "02-NOV-2026",
           "Mon",
           "07:52",
-          "22:01",
-          8.15,
-          6.0,
+          "07:52",
+          17.0,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:52",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 0.0,
@@ -1923,17 +1907,17 @@
       "area": "Packing Hall",
       "sub": "",
       "isRppf": true,
-      "totalDuty": 25.42,
-      "otHours": 5.0,
+      "totalDuty": 35.29,
+      "otHours": 7.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 2,
       "plainDaysCount": 1,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -1989,29 +1973,15 @@
           "02-NOV-2026",
           "Mon",
           "08:03",
-          "22:00",
-          8.95,
-          5.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
           "07:52",
-          "",
+          16.8166666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
       "otAmount": 0.0,
@@ -3999,17 +3969,17 @@
       "area": "Solid Production",
       "sub": "Coating",
       "isRppf": true,
-      "totalDuty": 25.1,
-      "otHours": 5.0,
+      "totalDuty": 35.34,
+      "otHours": 7.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 2,
       "plainDaysCount": 1,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -4065,35 +4035,21 @@
           "02-NOV-2026",
           "Mon",
           "08:02",
-          "21:40",
-          8.63,
-          5.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
           "07:54",
-          "",
+          16.8666666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
-      "otAmount": 190.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 190.0,
+      "nightAmount": 300,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -4106,7 +4062,7 @@
       "area": "Solid Production",
       "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 14.07,
+      "totalDuty": 21.62,
       "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 1,
@@ -4116,9 +4072,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -4149,29 +4103,15 @@
           "02-NOV-2026",
           "Mon",
           "07:53",
-          "21:57",
-          9.07,
+          "05:30",
+          16.6166666666667,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:30",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 190.0,
@@ -4285,8 +4225,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 25.76,
-      "otHours": 6.0,
+      "totalDuty": 35.61,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -4295,9 +4235,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -4353,35 +4291,21 @@
           "02-NOV-2026",
           "Mon",
           "07:57",
-          "22:02",
-          8.08,
-          6.0,
+          "07:53",
+          16.9333333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:53",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -4477,8 +4401,8 @@
       "area": "Solid Production",
       "sub": "Defoiling",
       "isRppf": true,
-      "totalDuty": 25.82,
-      "otHours": 6.0,
+      "totalDuty": 35.9,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -4487,9 +4411,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -4545,35 +4467,21 @@
           "02-NOV-2026",
           "Mon",
           "07:59",
-          "22:02",
-          8.05,
-          6.0,
+          "08:07",
+          17.1333333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:07",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -8313,30 +8221,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.43,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:51",
-          "out": "19:35",
-          "duty": 11.73,
-          "elapsed": 11.73,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -8379,8 +8275,8 @@
           "Mon",
           "07:51",
           "19:35",
-          11.73,
-          0.0,
+          8.73,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -8403,10 +8299,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -8943,8 +8839,8 @@
       "area": "Solid Production",
       "sub": "Defoiling",
       "isRppf": true,
-      "totalDuty": 22.95,
-      "otHours": 6.0,
+      "totalDuty": 33.57,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -8953,9 +8849,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -8999,35 +8893,21 @@
           "02-NOV-2026",
           "Mon",
           "07:50",
-          "21:59",
-          8.15,
-          6.0,
+          "08:36",
+          17.7666666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:36",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -11429,30 +11309,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.63,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:44",
-          "out": "19:35",
-          "duty": 11.85,
-          "elapsed": 11.85,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -11495,8 +11363,8 @@
           "Mon",
           "07:44",
           "19:35",
-          11.85,
-          0.0,
+          8.85,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -11519,10 +11387,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -11821,30 +11689,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.15,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:53",
-          "out": "19:31",
-          "duty": 11.63,
-          "elapsed": 11.63,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -11887,8 +11743,8 @@
           "Mon",
           "07:53",
           "19:31",
-          11.63,
-          0.0,
+          8.63,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -11911,10 +11767,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -16033,8 +15889,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 22.77,
-      "otHours": 6.0,
+      "totalDuty": 32.75,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -16043,9 +15899,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -16089,35 +15943,21 @@
           "02-NOV-2026",
           "Mon",
           "07:58",
-          "22:07",
-          8.15,
-          6.0,
+          "08:06",
+          17.1333333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:06",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -20399,7 +20239,7 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 14.18,
+      "totalDuty": 21.83,
       "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 1,
@@ -20409,9 +20249,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -20442,29 +20280,15 @@
           "02-NOV-2026",
           "Mon",
           "07:55",
-          "22:06",
-          9.18,
+          "05:45",
+          16.8333333333333,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:45",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 190.0,
@@ -21440,17 +21264,17 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 13.95,
+      "totalDuty": 21.68,
       "otHours": 5.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -21481,35 +21305,21 @@
           "02-NOV-2026",
           "Mon",
           "08:04",
-          "22:01",
-          8.95,
+          "05:45",
+          16.6833333333333,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:45",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
       "otAmount": 190.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 190.0,
+      "nightAmount": 300,
+      "totalEarned": 490.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -21914,8 +21724,8 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 25.91,
-      "otHours": 6.0,
+      "totalDuty": 36.08,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -21924,9 +21734,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -21982,35 +21790,21 @@
           "02-NOV-2026",
           "Mon",
           "07:48",
-          "21:53",
-          8.08,
-          6.0,
+          "08:03",
+          17.25,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:03",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -22791,7 +22585,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 32.31,
-      "otHours": 0.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -22801,20 +22595,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:53",
-          "out": "07:46",
-          "duty": 23.88,
-          "elapsed": 23.88,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -22857,8 +22639,8 @@
           "Mon",
           "07:53",
           "07:46",
-          23.8833333333333,
-          0.0,
+          16.8833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -22867,10 +22649,10 @@
           "DN"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 300.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -24077,30 +23859,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.03,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:00",
-          "out": "19:44",
-          "duty": 11.73,
-          "elapsed": 11.73,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -24143,8 +23913,8 @@
           "Mon",
           "08:00",
           "19:44",
-          11.73,
-          0.0,
+          8.73,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -24167,10 +23937,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -24184,30 +23954,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 23.5,
-      "otHours": 3.0,
+      "otHours": 6.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:46",
-          "out": "19:33",
-          "duty": 11.78,
-          "elapsed": 11.78,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -24250,8 +24008,8 @@
           "Mon",
           "07:46",
           "19:33",
-          11.78,
-          0.0,
+          8.78,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -24274,10 +24032,10 @@
           "G"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 228.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 114.0,
+      "totalEarned": 228.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -24777,8 +24535,8 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 19.12,
-      "otHours": 6.0,
+      "totalDuty": 29.19,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -24787,9 +24545,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -24833,35 +24589,21 @@
           "02-NOV-2026",
           "Mon",
           "07:48",
-          "22:03",
-          8.25,
-          6.0,
+          "08:07",
+          17.3166666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:07",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -25974,30 +25716,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 19.82,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:04",
-          "out": "19:35",
-          "duty": 11.52,
-          "elapsed": 11.52,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -26040,8 +25770,8 @@
           "Mon",
           "08:04",
           "19:35",
-          11.52,
-          0.0,
+          8.52,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -26064,10 +25794,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -28481,17 +28211,17 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 25.67,
+      "totalDuty": 33.22,
       "otHours": 5.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 2,
       "plainDaysCount": 1,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -28547,35 +28277,21 @@
           "02-NOV-2026",
           "Mon",
           "08:06",
-          "21:57",
-          8.85,
+          "05:30",
+          16.4,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:30",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
       "otAmount": 190.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 190.0,
+      "nightAmount": 300,
+      "totalEarned": 490.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -30475,19 +30191,18 @@
       "area": "Solid Production",
       "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 28.54,
+      "totalDuty": 36.09,
       "otHours": 5.0,
       "holidayCount": 0,
-      "nightCount": 1,
+      "nightCount": 2,
       "regularDaysCount": 2,
       "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [
-        "01-NOV-2026"
+        "01-NOV-2026",
+        "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -30543,35 +30258,21 @@
           "02-NOV-2026",
           "Mon",
           "08:00",
-          "21:58",
-          8.97,
+          "05:31",
+          16.5166666666667,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:31",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
       "otAmount": 190.0,
       "holidayAmount": 0,
-      "nightAmount": 300,
-      "totalEarned": 490.0,
+      "nightAmount": 600,
+      "totalEarned": 790.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -43858,7 +43559,7 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 25.72,
+      "totalDuty": 33.37,
       "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 1,
@@ -43868,9 +43569,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -43926,29 +43625,15 @@
           "02-NOV-2026",
           "Mon",
           "07:56",
-          "22:00",
-          9.07,
+          "05:39",
+          16.7166666666667,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:39",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 190.0,
@@ -43968,30 +43653,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.02,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:52",
-          "out": "19:35",
-          "duty": 11.72,
-          "elapsed": 11.72,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -44034,8 +43707,8 @@
           "Mon",
           "07:52",
           "19:35",
-          11.72,
-          0.0,
+          8.72,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -44058,10 +43731,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -44157,7 +43830,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 23.97,
-      "otHours": 0.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -44167,20 +43840,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:52",
-          "out": "07:50",
-          "duty": 23.97,
-          "elapsed": 23.97,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "01-NOV (Sun)",
         "04-NOV (Wed)",
@@ -44210,8 +43871,8 @@
           "Mon",
           "07:52",
           "07:50",
-          23.9666666666667,
-          0.0,
+          16.9666666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -44220,10 +43881,10 @@
           "DN"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 300.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -44413,7 +44074,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 23.95,
-      "otHours": 0.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -44423,20 +44084,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:54",
-          "out": "07:51",
-          "duty": 23.95,
-          "elapsed": 23.95,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "01-NOV (Sun)",
         "04-NOV (Wed)",
@@ -44466,8 +44115,8 @@
           "Mon",
           "07:54",
           "07:51",
-          23.95,
-          0.0,
+          16.95,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -44476,10 +44125,10 @@
           "DN"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 300.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -48672,8 +48321,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 25.66,
-      "otHours": 6.0,
+      "totalDuty": 35.68,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -48682,9 +48331,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -48740,35 +48387,21 @@
           "02-NOV-2026",
           "Mon",
           "07:58",
-          "22:00",
-          8.03,
-          6.0,
+          "08:01",
+          17.05,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:01",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -48781,17 +48414,17 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 13.95,
-      "otHours": 5.0,
+      "totalDuty": 24.1,
+      "otHours": 7.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -48822,35 +48455,21 @@
           "02-NOV-2026",
           "Mon",
           "07:56",
-          "21:53",
-          8.95,
-          5.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
           "08:02",
-          "",
+          17.1,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
-      "otAmount": 190.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 190.0,
+      "nightAmount": 300,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -48863,8 +48482,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 23.13,
-      "otHours": 6.0,
+      "totalDuty": 32.53,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -48873,9 +48492,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -48919,35 +48536,21 @@
           "02-NOV-2026",
           "Mon",
           "07:51",
-          "22:06",
-          8.25,
-          6.0,
+          "07:30",
+          16.65,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:30",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -49137,8 +48740,8 @@
       "area": "Solid Production",
       "sub": "ERP",
       "isRppf": true,
-      "totalDuty": 25.56,
-      "otHours": 6.0,
+      "totalDuty": 35.93,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -49147,9 +48750,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -49205,35 +48806,21 @@
           "02-NOV-2026",
           "Mon",
           "07:53",
-          "21:58",
-          8.08,
-          6.0,
+          "08:20",
+          17.45,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:20",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -49409,7 +48996,7 @@
       "area": "Solid Production",
       "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 22.63,
+      "totalDuty": 30.18,
       "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 1,
@@ -49419,9 +49006,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -49465,29 +49050,15 @@
           "02-NOV-2026",
           "Mon",
           "07:52",
-          "21:57",
-          9.08,
+          "05:30",
+          16.6333333333333,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:30",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 190.0,
@@ -50606,30 +50177,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 22.92,
-      "otHours": 3.0,
+      "otHours": 6.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:04",
-          "out": "19:34",
-          "duty": 11.5,
-          "elapsed": 11.5,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -50672,8 +50231,8 @@
           "Mon",
           "08:04",
           "19:34",
-          11.5,
-          0.0,
+          8.5,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -50696,10 +50255,10 @@
           "G"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 228.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 114.0,
+      "totalEarned": 228.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -50713,30 +50272,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.08,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:53",
-          "out": "19:31",
-          "duty": 11.63,
-          "elapsed": 11.63,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -50779,8 +50326,8 @@
           "Mon",
           "07:53",
           "19:31",
-          11.63,
-          0.0,
+          8.63,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -50803,10 +50350,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -50820,30 +50367,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 23.05,
-      "otHours": 3.0,
+      "otHours": 6.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:58",
-          "out": "19:34",
-          "duty": 11.6,
-          "elapsed": 11.6,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -50886,8 +50421,8 @@
           "Mon",
           "07:58",
           "19:34",
-          11.6,
-          0.0,
+          8.6,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -50910,10 +50445,10 @@
           "G"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 228.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 114.0,
+      "totalEarned": 228.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -52097,8 +51632,8 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 23.25,
-      "otHours": 6.0,
+      "totalDuty": 33.08,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -52107,9 +51642,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -52153,35 +51686,21 @@
           "02-NOV-2026",
           "Mon",
           "07:40",
-          "22:02",
-          8.37,
-          6.0,
+          "07:52",
+          17.2,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:52",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -52702,8 +52221,8 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 14.07,
-      "otHours": 6.0,
+      "totalDuty": 24.22,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -52712,9 +52231,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -52745,35 +52262,21 @@
           "02-NOV-2026",
           "Mon",
           "07:49",
-          "21:53",
-          8.07,
-          6.0,
+          "08:02",
+          17.2166666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:02",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -55428,8 +54931,8 @@
       "area": "Solid Production",
       "sub": "IBC Wash",
       "isRppf": true,
-      "totalDuty": 14.1,
-      "otHours": 6.0,
+      "totalDuty": 23.98,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -55439,8 +54942,7 @@
         "02-NOV-2026"
       ],
       "punchProblems": [
-        "01-NOV-2026",
-        "03-NOV-2026"
+        "01-NOV-2026"
       ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
@@ -55485,35 +54987,21 @@
           "02-NOV-2026",
           "Mon",
           "07:54",
-          "22:00",
-          8.1,
-          6.0,
+          "07:53",
+          16.9833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:53",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -59608,8 +59096,8 @@
       "area": "Solid Production",
       "sub": "Defoiling",
       "isRppf": true,
-      "totalDuty": 14.38,
-      "otHours": 6.0,
+      "totalDuty": 24.48,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -59618,9 +59106,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -59651,35 +59137,21 @@
           "02-NOV-2026",
           "Mon",
           "07:37",
-          "22:00",
-          8.38,
-          6.0,
+          "08:06",
+          17.4833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:06",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -59760,8 +59232,8 @@
       "area": "Solid Production",
       "sub": "Coating",
       "isRppf": true,
-      "totalDuty": 14.07,
-      "otHours": 6.0,
+      "totalDuty": 24.18,
+      "otHours": 8.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -59770,9 +59242,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -59803,35 +59273,21 @@
           "02-NOV-2026",
           "Mon",
           "07:36",
-          "21:40",
-          8.07,
-          6.0,
+          "07:47",
+          16.1833333333333,
+          8.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:47",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 304.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 604.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -60802,30 +60258,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.0,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:55",
-          "out": "19:31",
-          "duty": 11.6,
-          "elapsed": 11.6,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -60868,8 +60312,8 @@
           "Mon",
           "07:55",
           "19:31",
-          11.6,
-          0.0,
+          8.6,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -60892,10 +60336,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -62993,30 +62437,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 11.87,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 1,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:39",
-          "out": "19:31",
-          "duty": 11.87,
-          "elapsed": 11.87,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "01-NOV (Sun)",
         "04-NOV (Wed)",
@@ -63046,8 +62478,8 @@
           "Mon",
           "07:39",
           "19:31",
-          11.87,
-          0.0,
+          8.87,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -63070,10 +62502,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -64449,8 +63881,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 14.45,
-      "otHours": 6.0,
+      "totalDuty": 24.28,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 1,
@@ -64459,9 +63891,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -64492,35 +63922,21 @@
           "02-NOV-2026",
           "Mon",
           "07:35",
-          "22:02",
-          8.45,
-          6.0,
+          "07:52",
+          17.2833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "07:52",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -65265,30 +64681,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.05,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:57",
-          "out": "19:35",
-          "duty": 11.63,
-          "elapsed": 11.63,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -65331,8 +64735,8 @@
           "Mon",
           "07:57",
           "19:35",
-          11.63,
-          0.0,
+          8.63,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -65355,10 +64759,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -65858,30 +65262,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 22.34,
-      "otHours": 2.0,
+      "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:42",
-          "out": "19:31",
-          "duty": 11.82,
-          "elapsed": 11.82,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -65924,8 +65316,8 @@
           "Mon",
           "07:42",
           "19:31",
-          11.82,
-          0.0,
+          8.82,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -65948,10 +65340,10 @@
           "G"
         ]
       ],
-      "otAmount": 76.0,
+      "otAmount": 190.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 76.0,
+      "totalEarned": 190.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -67512,30 +66904,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 23.17,
-      "otHours": 2.0,
+      "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:54",
-          "out": "19:33",
-          "duty": 11.65,
-          "elapsed": 11.65,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -67578,8 +66958,8 @@
           "Mon",
           "07:54",
           "19:33",
-          11.65,
-          0.0,
+          8.65,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -67602,10 +66982,10 @@
           "G"
         ]
       ],
-      "otAmount": 76.0,
+      "otAmount": 190.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 76.0,
+      "totalEarned": 190.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -70803,30 +70183,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.05,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:03",
-          "out": "19:32",
-          "duty": 11.48,
-          "elapsed": 11.48,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -70869,8 +70237,8 @@
           "Mon",
           "08:03",
           "19:32",
-          11.48,
-          0.0,
+          8.48,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -70893,10 +70261,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -70910,7 +70278,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 35.43,
-      "otHours": 3.0,
+      "otHours": 10.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -70920,20 +70288,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:51",
-          "out": "07:51",
-          "duty": 24.0,
-          "elapsed": 0.0,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -70976,8 +70332,8 @@
           "Mon",
           "07:51",
           "07:51",
-          24.0,
-          0.0,
+          17.0,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -70986,10 +70342,10 @@
           "DN"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 380.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 414.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -72260,7 +71616,7 @@
       "area": "Solid Production",
       "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 14.1,
+      "totalDuty": 21.67,
       "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 1,
@@ -72270,9 +71626,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -72303,29 +71657,15 @@
           "02-NOV-2026",
           "Mon",
           "07:53",
-          "21:59",
-          9.1,
+          "05:33",
+          16.6666666666667,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "05:33",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
       "otAmount": 190.0,
@@ -72938,17 +72278,17 @@
       "area": "Solid Production",
       "sub": "Dispensing",
       "isRppf": true,
-      "totalDuty": 13.95,
-      "otHours": 5.0,
+      "totalDuty": 24.0,
+      "otHours": 7.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -72979,35 +72319,21 @@
           "02-NOV-2026",
           "Mon",
           "08:01",
-          "21:58",
-          8.95,
-          5.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
           "08:01",
-          "",
+          17.0,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
-      "otAmount": 190.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 190.0,
+      "nightAmount": 300,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -73225,30 +72551,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 22.03,
-      "otHours": 3.0,
+      "otHours": 5.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "05:57",
-          "out": "16:26",
-          "duty": 10.48,
-          "elapsed": 10.48,
-          "isNight": false,
-          "expectedOt": "2.5h Morning OT",
-          "reason": "Morning OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -73291,8 +72605,8 @@
           "Mon",
           "05:57",
           "16:26",
-          10.48,
-          0.0,
+          8.48,
+          2.0,
           0.0,
           0.0,
           0.0,
@@ -73315,10 +72629,10 @@
           "G"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 190.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 114.0,
+      "totalEarned": 190.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -73543,8 +72857,8 @@
       "area": "Solid Production",
       "sub": "Defoiling",
       "isRppf": true,
-      "totalDuty": 25.85,
-      "otHours": 6.0,
+      "totalDuty": 35.83,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -73553,9 +72867,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -73611,35 +72923,21 @@
           "02-NOV-2026",
           "Mon",
           "07:50",
-          "22:03",
-          8.22,
-          6.0,
+          "08:02",
+          17.2,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:02",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -75425,30 +74723,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 19.67,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:03",
-          "out": "19:28",
-          "duty": 11.42,
-          "elapsed": 11.42,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -75491,8 +74777,8 @@
           "Mon",
           "08:03",
           "19:28",
-          11.42,
-          0.0,
+          8.42,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -75515,10 +74801,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -75627,7 +74913,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 35.78,
-      "otHours": 3.0,
+      "otHours": 10.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -75637,20 +74923,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:52",
-          "out": "07:52",
-          "duty": 24.0,
-          "elapsed": 0.0,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -75693,8 +74967,8 @@
           "Mon",
           "07:52",
           "07:52",
-          24.0,
-          0.0,
+          17.0,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -75703,10 +74977,10 @@
           "DN"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 380.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 414.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -76061,7 +75335,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 32.15,
-      "otHours": 0.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -76071,20 +75345,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:01",
-          "out": "07:52",
-          "duty": 23.85,
-          "elapsed": 23.85,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -76127,8 +75389,8 @@
           "Mon",
           "08:01",
           "07:52",
-          23.85,
-          0.0,
+          16.85,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -76137,10 +75399,10 @@
           "DN"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 300.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -76154,30 +75416,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 19.92,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:58",
-          "out": "19:31",
-          "duty": 11.55,
-          "elapsed": 11.55,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -76220,8 +75470,8 @@
           "Mon",
           "07:58",
           "19:31",
-          11.55,
-          0.0,
+          8.55,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -76244,10 +75494,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 114.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 114.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -76463,7 +75713,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 35.2,
-      "otHours": 3.0,
+      "otHours": 10.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -76473,20 +75723,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:58",
-          "out": "07:52",
-          "duty": 23.9,
-          "elapsed": 23.9,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -76529,8 +75767,8 @@
           "Mon",
           "07:58",
           "07:52",
-          23.9,
-          0.0,
+          16.9,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -76539,10 +75777,10 @@
           "DN"
         ]
       ],
-      "otAmount": 114.0,
+      "otAmount": 380.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 414.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -78894,8 +78132,8 @@
       "area": "Solid Production",
       "sub": "Defoiling",
       "isRppf": true,
-      "totalDuty": 25.81,
-      "otHours": 6.0,
+      "totalDuty": 35.78,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -78904,9 +78142,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -78962,35 +78198,21 @@
           "02-NOV-2026",
           "Mon",
           "07:54",
-          "22:02",
-          8.13,
-          6.0,
+          "08:00",
+          17.1,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:00",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 228.0,
+      "otAmount": 266.0,
       "holidayAmount": 0,
       "nightAmount": 300,
-      "totalEarned": 528.0,
+      "totalEarned": 566.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -82476,8 +81698,8 @@
       "area": "Solid Production",
       "sub": "Pri. Packing",
       "isRppf": true,
-      "totalDuty": 25.57,
-      "otHours": 6.0,
+      "totalDuty": 35.73,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -82486,9 +81708,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -82544,35 +81764,21 @@
           "02-NOV-2026",
           "Mon",
           "08:04",
-          "22:05",
-          8.02,
-          6.0,
+          "08:15",
+          17.1833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:15",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -83476,30 +82682,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 22.92,
-      "otHours": 3.0,
+      "otHours": 6.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 1,
+      "plainDaysCount": 0,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:01",
-          "out": "19:35",
-          "duty": 11.57,
-          "elapsed": 11.57,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -83542,8 +82736,8 @@
           "Mon",
           "08:01",
           "19:35",
-          11.57,
-          0.0,
+          8.57,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -83566,10 +82760,10 @@
           "G"
         ]
       ],
-      "otAmount": 120.0,
+      "otAmount": 240.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 120.0,
+      "totalEarned": 240.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -83701,7 +82895,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 35.6,
-      "otHours": 3.0,
+      "otHours": 10.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -83711,20 +82905,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:49",
-          "out": "07:47",
-          "duty": 23.97,
-          "elapsed": 23.97,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -83767,8 +82949,8 @@
           "Mon",
           "07:49",
           "07:47",
-          23.9666666666667,
-          0.0,
+          16.9666666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -83777,10 +82959,10 @@
           "DN"
         ]
       ],
-      "otAmount": 120.0,
+      "otAmount": 400.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 520.0,
+      "totalEarned": 800.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -84976,8 +84158,8 @@
       "area": "Solid Production",
       "sub": "Coating",
       "isRppf": true,
-      "totalDuty": 25.85,
-      "otHours": 6.0,
+      "totalDuty": 36.48,
+      "otHours": 8.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -84986,9 +84168,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -85044,35 +84224,21 @@
           "02-NOV-2026",
           "Mon",
           "07:51",
-          "22:13",
-          8.37,
-          6.0,
+          "08:51",
+          17.0,
+          8.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:51",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 320.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 720.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -85085,8 +84251,8 @@
       "area": "Solid Production",
       "sub": "Granulation",
       "isRppf": true,
-      "totalDuty": 25.95,
-      "otHours": 6.0,
+      "totalDuty": 35.97,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -85095,9 +84261,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -85153,35 +84317,21 @@
           "02-NOV-2026",
           "Mon",
           "07:51",
-          "22:00",
-          8.15,
-          6.0,
+          "08:01",
+          17.1666666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:01",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -86117,8 +85267,8 @@
       "area": "Solid Production",
       "sub": "Pri. Packing",
       "isRppf": true,
-      "totalDuty": 22.63,
-      "otHours": 6.0,
+      "totalDuty": 32.61,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -86127,9 +85277,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -86173,35 +85321,21 @@
           "02-NOV-2026",
           "Mon",
           "08:03",
-          "22:09",
-          8.1,
-          6.0,
+          "08:08",
+          17.0833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:08",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -86926,17 +86060,17 @@
       "area": "Solid Production",
       "sub": "Compression",
       "isRppf": true,
-      "totalDuty": 13.97,
-      "otHours": 5.0,
+      "totalDuty": 24.13,
+      "otHours": 7.0,
       "holidayCount": 0,
-      "nightCount": 0,
+      "nightCount": 1,
       "regularDaysCount": 1,
       "plainDaysCount": 0,
       "holidayDays": [],
-      "nightDays": [],
-      "punchProblems": [
-        "03-NOV-2026"
+      "nightDays": [
+        "02-NOV-2026"
       ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -86967,35 +86101,21 @@
           "02-NOV-2026",
           "Mon",
           "08:03",
-          "22:01",
-          8.97,
-          5.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
           "08:11",
-          "",
+          17.1333333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          1,
+          "DN"
         ]
       ],
-      "otAmount": 200.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
-      "nightAmount": 0,
-      "totalEarned": 200.0,
+      "nightAmount": 400,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -87282,7 +86402,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 35.97,
-      "otHours": 1.0,
+      "otHours": 8.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -87292,20 +86412,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:41",
-          "out": "07:50",
-          "duty": 24.15,
-          "elapsed": 0.15,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -87348,8 +86456,8 @@
           "Mon",
           "07:41",
           "07:50",
-          24.15,
-          0.0,
+          17.15,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -87358,10 +86466,10 @@
           "DN"
         ]
       ],
-      "otAmount": 40.0,
+      "otAmount": 320.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 440.0,
+      "totalEarned": 720.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -87954,7 +87062,7 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 33.11,
-      "otHours": 0.0,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -87964,20 +87072,8 @@
         "02-NOV-2026"
       ],
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:33",
-          "out": "07:47",
-          "duty": 24.23,
-          "elapsed": 0.23,
-          "isNight": true,
-          "expectedOt": "7.0h (Night Shift OT Error / Missing)",
-          "reason": "Night Shift OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -88020,8 +87116,8 @@
           "Mon",
           "07:33",
           "07:47",
-          24.2333333333333,
-          0.0,
+          17.2333333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -88030,10 +87126,10 @@
           "DN"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 400.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -88139,8 +87235,8 @@
       "area": "Solid Production",
       "sub": "Pri. Packing",
       "isRppf": true,
-      "totalDuty": 26.28,
-      "otHours": 6.0,
+      "totalDuty": 36.17,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -88149,9 +87245,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -88207,35 +87301,21 @@
           "02-NOV-2026",
           "Mon",
           "07:43",
-          "22:09",
-          8.43,
-          6.0,
+          "08:02",
+          17.3166666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:02",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -88895,30 +87975,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.12,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "08:00",
-          "out": "19:28",
-          "duty": 11.47,
-          "elapsed": 11.47,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -88961,8 +88029,8 @@
           "Mon",
           "08:00",
           "19:28",
-          11.47,
-          0.0,
+          8.47,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -88985,10 +88053,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 120.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 120.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -89548,30 +88616,18 @@
       "sub": "",
       "isRppf": true,
       "totalDuty": 20.6,
-      "otHours": 0.0,
+      "otHours": 3.0,
       "holidayCount": 0,
       "nightCount": 0,
       "regularDaysCount": 2,
-      "plainDaysCount": 2,
+      "plainDaysCount": 1,
       "holidayDays": [],
       "nightDays": [],
       "punchProblems": [
         "03-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "02-NOV-2026",
-          "day": "Mon",
-          "in": "07:44",
-          "out": "19:22",
-          "duty": 11.63,
-          "elapsed": 11.63,
-          "isNight": false,
-          "expectedOt": "3.0h (04:30 - 07:30 PM)",
-          "reason": "3h Evening OT Missing"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "generalAbsentDays": [
         "04-NOV (Wed)",
         "07-NOV (Sat)",
@@ -89614,8 +88670,8 @@
           "Mon",
           "07:44",
           "19:22",
-          11.63,
-          0.0,
+          8.63,
+          3.0,
           0.0,
           0.0,
           0.0,
@@ -89638,10 +88694,10 @@
           "G"
         ]
       ],
-      "otAmount": 0.0,
+      "otAmount": 120.0,
       "holidayAmount": 0,
       "nightAmount": 0,
-      "totalEarned": 0.0,
+      "totalEarned": 120.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -92161,8 +91217,8 @@
       "area": "Solid Production",
       "sub": "Pri. Packing",
       "isRppf": true,
-      "totalDuty": 23.0,
-      "otHours": 6.0,
+      "totalDuty": 33.55,
+      "otHours": 7.0,
       "holidayCount": 0,
       "nightCount": 1,
       "regularDaysCount": 2,
@@ -92171,9 +91227,7 @@
       "nightDays": [
         "02-NOV-2026"
       ],
-      "punchProblems": [
-        "03-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "generalAbsentDays": [
@@ -92217,35 +91271,21 @@
           "02-NOV-2026",
           "Mon",
           "07:52",
-          "22:02",
-          8.17,
-          6.0,
+          "08:35",
+          17.7166666666667,
+          7.0,
           0.0,
           0.0,
           0.0,
           0.0,
           1,
-          "G"
-        ],
-        [
-          "03-NOV-2026",
-          "Tue",
-          "08:35",
-          "",
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
+          "DN"
         ]
       ],
-      "otAmount": 240.0,
+      "otAmount": 280.0,
       "holidayAmount": 0,
       "nightAmount": 400,
-      "totalEarned": 640.0,
+      "totalEarned": 680.0,
       "fileName": "rf20716.xlsx"
     },
     {
