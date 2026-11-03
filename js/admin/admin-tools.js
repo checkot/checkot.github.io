@@ -876,9 +876,13 @@ init();
    ========================================================================== */
 
 function getActiveLongTermLeaves() {
-  if (!ABSENT_STORE || typeof ABSENT_STORE !== 'object') return [];
-  if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
-  return ABSENT_STORE.longTermLeaves;
+  if (ABSENT_STORE && Array.isArray(ABSENT_STORE.longTermLeaves) && ABSENT_STORE.longTermLeaves.length > 0) {
+    return ABSENT_STORE.longTermLeaves;
+  }
+  if (typeof AREA_DATA !== 'undefined' && Array.isArray(AREA_DATA?.longTermLeaves)) {
+    return AREA_DATA.longTermLeaves;
+  }
+  return [];
 }
 
 function isEmployeeOnApprovedLeave(empId, targetDateStr) {

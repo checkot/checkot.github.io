@@ -48,8 +48,6 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/pages.css">
-  <link rel="stylesheet" href="css/rank-details.css">
-  <link rel="stylesheet" href="css/manager-ux.css">
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
@@ -314,6 +312,29 @@ document.documentElement.setAttribute('data-theme', t);
     </div>
   </div>
 
+  <!-- Approved Maternity & Long-Term Leave Tracker -->
+  <div class="inc-leaves-card" id="incHomeLeavesCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Approved Maternity &amp; Long-Term Leaves</span>
+          <span class="badge info" id="incLeavesCountBadge">9 Active</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Exempted from daily ERP absence list (HR &amp; Factory approved)</div>
+      </div>
+      <span class="inc-leaves-status-badge">6-Month Duration</span>
+    </div>
+    <div class="inc-leaves-pill-bar" id="incLeavesAreaBar">
+      <button type="button" class="inc-leaves-filter-btn active" data-leave-area="all" onclick="filterIncHomeLeaves('all')">All Sections (9)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Packing Hall" onclick="filterIncHomeLeaves('Packing Hall')">Packing Hall (9)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Solid Production" onclick="filterIncHomeLeaves('Solid Production')">Solid (0)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Softgel Production" onclick="filterIncHomeLeaves('Softgel Production')">Softgel (0)</button>
+    </div>
+    <div class="inc-leaves-grid" id="incHomeLeavesList">
+      <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading approved leaves...</div>
+    </div>
+  </div>
+
   <!-- Today's Absent Employee List (Updated from Admin Corner by ERP) -->
   <div class="inc-absent-card" id="incHomeAbsentCard">
     <div class="inc-section-head">
@@ -329,6 +350,10 @@ document.documentElement.setAttribute('data-theme', t);
         <button type="button" class="calc-mini-btn" id="incQuickEditAbsentBtn" onclick="openQuickAbsentModal()" style="display:none;">+ Update</button>
       </div>
     </div>
+    <div class="inc-absent-exemption-banner">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span><strong>Maternity Exemption:</strong> 9 female workers currently on 6-month maternity leave are factory-approved and automatically excluded from daily absent penalties.</span>
+    </div>
     <div class="inc-absent-pill-bar" id="incAbsentAreaFilterBar">
       <button type="button" class="inc-absent-filter-btn active" data-abs-area="all" onclick="filterIncHomeAbsent('all')">All Sections</button>
       <button type="button" class="inc-absent-filter-btn" data-abs-area="Solid Production" onclick="filterIncHomeAbsent('Solid Production')">Solid</button>
@@ -338,6 +363,75 @@ document.documentElement.setAttribute('data-theme', t);
     </div>
     <div class="inc-absent-grid" id="incHomeAbsentList">
       <div class="empty-msg" style="padding:14px 8px;grid-column:1/-1;">No absent employees recorded for today.</div>
+    </div>
+  </div>
+
+  <!-- Historical Production & Shift Analytics -->
+  <div class="inc-history-card" id="incHomeHistoryCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Historical Production &amp; Shift Analytics</span>
+          <span class="badge brand" id="incHistoryActiveMonthBadge">2026-10</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incHistorySubMeta">Plant-wide duty hours, overtime, night shifts &amp; section comparison</div>
+      </div>
+      <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Drill Down ›</button>
+    </div>
+    <div class="inc-history-timeline-bar" id="incHistoryTimelineBar">
+      <!-- dynamically populated: Oct 2026, Sep 2026, Aug 2026, Jul 2026, Jun 2026... -->
+    </div>
+    <div class="inc-history-kpi-grid" id="incHistoryKpiGrid">
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Total Duty Hours</div>
+        <div class="inc-kpi-val" id="incKpiTotalDuty">0h</div>
+        <div class="inc-kpi-sub" id="incKpiDutyAvg">0h / emp</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Total Overtime (OT)</div>
+        <div class="inc-kpi-val" id="incKpiTotalOt" style="color:var(--brand);">0h</div>
+        <div class="inc-kpi-sub" id="incKpiOtAvg">0h / emp</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Night Shifts</div>
+        <div class="inc-kpi-val" id="incKpiNightShifts" style="color:var(--indigo);">0</div>
+        <div class="inc-kpi-sub">Total nights</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Regular (4:30pm) Days</div>
+        <div class="inc-kpi-val" id="incKpiPlainDays" style="color:var(--success);">0</div>
+        <div class="inc-kpi-sub">Standard shift</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Holiday Duties</div>
+        <div class="inc-kpi-val" id="incKpiHolidayDays" style="color:var(--warn);">0</div>
+        <div class="inc-kpi-sub">Holiday / Weekend</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Active Workforce</div>
+        <div class="inc-kpi-val" id="incKpiActiveCount">0</div>
+        <div class="inc-kpi-sub">RPPF production</div>
+      </div>
+    </div>
+    <div class="inc-history-sec-table-wrap">
+      <div class="inc-sec-table-title">Section Performance Comparison</div>
+      <div class="table-scroll-x" style="overflow-x:auto;">
+        <table class="inc-sec-table" id="incHistorySecTable">
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th style="text-align:right;">Active</th>
+              <th style="text-align:right;">Total Duty</th>
+              <th style="text-align:right;">Total OT</th>
+              <th style="text-align:right;">Night</th>
+              <th style="text-align:right;">Avg Duty</th>
+            </tr>
+          </thead>
+          <tbody id="incHistorySecTbody">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -359,6 +453,28 @@ document.documentElement.setAttribute('data-theme', t);
     </div>
     <div class="inc-toppers-grid" id="incHomeToppersGrid">
       <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading category toppers...</div>
+    </div>
+  </div>
+
+  <!-- Attendance & Operational Risk Watchlist -->
+  <div class="inc-watchlist-card" id="incHomeWatchlistCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Operational Risk &amp; Anomaly Watchlist</span>
+          <span class="badge warn" id="incWatchlistRiskBadge">Action Required</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Discipline, single-punch &amp; recurring attendance anomalies</div>
+      </div>
+      <span class="inc-watchlist-hint">Tap employee to inspect dates</span>
+    </div>
+    <div class="inc-watchlist-tabs" id="incWatchlistTabs">
+      <button type="button" class="inc-watch-tab-btn active" data-watch-tab="absent" onclick="setIncWatchlistTab('absent')">High Absenteeism</button>
+      <button type="button" class="inc-watch-tab-btn" data-watch-tab="punch" onclick="setIncWatchlistTab('punch')">Punch Anomalies</button>
+      <button type="button" class="inc-watch-tab-btn" data-watch-tab="req" onclick="setIncWatchlistTab('req')">OT Requisitions</button>
+    </div>
+    <div class="inc-watchlist-list" id="incHomeWatchlistList">
+      <div class="empty-msg" style="padding:14px;">Loading watchlist...</div>
     </div>
   </div>
 </section>
@@ -1463,7 +1579,6 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js"></script>
   <script src="js/pages/leaderboard.js"></script>
-  <script src="js/components/rank-details.js"></script>
 <script>
 /* Config, state, storage, and utility constants moved to js/core/ */
 function didEmpWorkNightOnLastDay(emp, monthStr) {
@@ -3605,7 +3720,7 @@ const rk = ranks[idx];
 if (!e) return `<div class="podium-spot p-${rk}" style="opacity:.4;cursor:default;"><div class="podium-medal">${rk}</div><div class="podium-name">—</div></div>`;
 const val = type === 'duty' ? `${e.totalDuty}h` : type === 'ot' ? `${e.otHours}h` : `৳${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
 const crown = rk === 1 ? '👑 ' : '';
-return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${type}')">
+return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
 <div class="podium-medal">${rk}</div>
 <div class="podium-name">${crown}${esc(e.name || e.id)}</div>
 <div class="podium-id">${esc(e.id)}</div>
@@ -4366,7 +4481,7 @@ rowEl.classList.add('show-details-open');
 return;
 }
 }
-viewEmployeeFromLeaderboard(empId, false, activeIccCriterion);
+viewEmployeeFromLeaderboard(empId);
 }
 function buildIccRowHtml(e, myId, adminActive) {
 const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
@@ -4421,9 +4536,12 @@ if (isReqCrit) {
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
-const ICC_DETAIL_LABELS = { duty: 'Duty Log →', lessDuty: 'Duty Log →', avgDuty: 'Duty Log →', ot: 'OT Days →', lessOt: 'OT Days →', earned: 'Earning Details →', plain: '4:30pm Days →', absent: 'Absent Dates →', punch: 'Punch Details →', requisition: 'Req Details →', avgInOut: 'Punch Times →', night: 'Night Shifts →' };
-const detailsBtnText = ICC_DETAIL_LABELS[activeIccCriterion] || 'Show Details →';
-const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}', false, activeIccCriterion)">${detailsBtnText}</button>`;
+let detailsBtnText = 'Show Details →';
+if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
+else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
+else if (activeIccCriterion === 'requisition') detailsBtnText = 'Req Details →';
+else if (isMultiTime) detailsBtnText = 'Period Summary →';
+const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}')">${detailsBtnText}</button>`;
 const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
 return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${esc(e.id)}" onclick="onIccRowClick(this, '${esc(e.id)}')">
 <div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
@@ -5562,6 +5680,8 @@ function saveAbsentCache() {
 
 async function loadAbsentStore(forceFresh = false) {
   if (_absentLoaded && !forceFresh) return ABSENT_STORE;
+  if (!ABSENT_STORE.byDate || typeof ABSENT_STORE.byDate !== "object") ABSENT_STORE.byDate = {};
+  if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
   try {
     const raw = localStorage.getItem(ABSENT_CACHE_KEY);
     if (raw) {
@@ -5583,6 +5703,10 @@ async function loadAbsentStore(forceFresh = false) {
       });
       if (rStore.activeDate) ABSENT_STORE.activeDate = rStore.activeDate;
       if (rStore.updatedAt) ABSENT_STORE.updatedAt = rStore.updatedAt;
+      if (Array.isArray(remote.longTermLeaves)) ABSENT_STORE.longTermLeaves = remote.longTermLeaves;
+      if (!Array.isArray(ABSENT_STORE.longTermLeaves) || !ABSENT_STORE.longTermLeaves.length) {
+        if (typeof AREA_DATA !== 'undefined' && Array.isArray(AREA_DATA?.longTermLeaves)) ABSENT_STORE.longTermLeaves = AREA_DATA.longTermLeaves;
+      }
       saveAbsentCache();
     }
   } catch (e) {}
@@ -5728,7 +5852,323 @@ async function saveAbsentAndPushServer() {
 /* ==========================================================================
    IN-CHARGE HOME OVERVIEW DASHBOARD
    ========================================================================== */
-function openInchargeAreaRanking(areaVal) {
+
+/* ==========================================================================
+   APPROVED MATERNITY LEAVES CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incLeavesAreaFilter = 'all';
+
+function filterIncHomeLeaves(areaVal) {
+  _incLeavesAreaFilter = areaVal || 'all';
+  document.querySelectorAll('#incLeavesAreaBar .inc-leaves-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-leave-area') === _incLeavesAreaFilter);
+  });
+  renderInchargeHomeLeavesList();
+}
+
+function renderInchargeHomeLeavesList() {
+  const container = _el('incHomeLeavesList');
+  const countBadge = _el('incLeavesCountBadge');
+  if (!container) return;
+
+  const leaves = typeof getActiveLongTermLeaves === 'function' ? getActiveLongTermLeaves() : [];
+  if (countBadge) countBadge.textContent = `${leaves.length} Active`;
+
+  const filtered = _incLeavesAreaFilter === 'all'
+    ? leaves
+    : leaves.filter(l => l.area === _incLeavesAreaFilter);
+
+  if (!filtered || filtered.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;grid-column:1/-1;">No approved long-term leaves recorded in ${_incLeavesAreaFilter === 'all' ? 'any section' : esc(_incLeavesAreaFilter)}.</div>`;
+    return;
+  }
+
+  const todayStr = typeof getTodayDateStr === 'function' ? getTodayDateStr() : new Date().toISOString().slice(0, 10);
+  const today = new Date(todayStr);
+
+  container.innerHTML = filtered.map(item => {
+    const endDt = item.endDate ? new Date(item.endDate) : null;
+    let daysLeftTxt = '';
+    let isExpired = false;
+    if (endDt && !isNaN(endDt.getTime())) {
+      const diffDays = Math.ceil((endDt - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) {
+        daysLeftTxt = 'Completed';
+        isExpired = true;
+      } else if (diffDays === 0) {
+        daysLeftTxt = 'Ends today';
+      } else {
+        daysLeftTxt = `${diffDays} days remaining`;
+      }
+    }
+    const duration = item.duration || '6 months';
+    const sub = item.sub ? ` • ${item.sub}` : '';
+    const badgeCls = isExpired ? 'badge neutral' : 'badge info';
+
+    return `<div class="inc-leave-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
+      <div class="inc-leave-icon-col">
+        <div class="inc-leave-avatar">ML</div>
+      </div>
+      <div class="inc-leave-body">
+        <div class="inc-leave-head">
+          <span class="inc-leave-name">${esc(item.name || item.id)}</span>
+          <span class="inc-leave-id">(${esc(item.id)})</span>
+          <span class="${badgeCls}" style="margin-left:auto;font-size:10.5px;">${esc(item.category || item.type || 'Maternity Leave')}</span>
+        </div>
+        <div class="inc-leave-meta">
+          <span>${esc(item.area || 'Packing Hall')}${esc(sub)}</span>
+          <span>•</span>
+          <span>${esc(item.startDate || '')} to ${esc(item.endDate || '')}</span>
+          <span>(${esc(duration)})</span>
+        </div>
+        <div class="inc-leave-foot">
+          <span class="inc-leave-status-dot ${isExpired ? 'expired' : 'active'}"></span>
+          <span class="inc-leave-status-text">${isExpired ? 'Expired / Resumed' : 'Active Leave'} • ${esc(daysLeftTxt)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ==========================================================================
+   HISTORICAL PRODUCTION & SHIFT ANALYTICS CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incHistorySelectedMonth = '2026-10';
+
+async function setIncHistoryMonth(mStr) {
+  _incHistorySelectedMonth = mStr;
+  document.querySelectorAll('#incHistoryTimelineBar .inc-history-month-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-hmonth') === mStr);
+  });
+  const badge = _el('incHistoryActiveMonthBadge');
+  if (badge) badge.textContent = mStr;
+  await renderInchargeHistoricalAnalytics(mStr);
+  renderInchargeWatchlist();
+}
+
+async function renderInchargeHistoricalAnalytics(optMonth) {
+  const card = _el('incHomeHistoryCard');
+  if (!card) return;
+
+  const mStr = optMonth || _incHistorySelectedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10');
+  _incHistorySelectedMonth = mStr;
+
+  const bar = _el('incHistoryTimelineBar');
+  if (bar && (!bar.children || bar.children.length === 0)) {
+    const months = ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04'];
+    const shortNames = {'2026-10':'Oct 26','2026-09':'Sep 26','2026-08':'Aug 26','2026-07':'Jul 26','2026-06':'Jun 26','2026-05':'May 26','2026-04':'Apr 26'};
+    bar.innerHTML = months.map(m => `
+      <button type="button" class="inc-history-month-btn ${m === _incHistorySelectedMonth ? 'active' : ''}" data-hmonth="${m}" onclick="setIncHistoryMonth('${m}')">
+        ${shortNames[m] || m}
+      </button>
+    `).join('');
+  }
+
+  const badge = _el('incHistoryActiveMonthBadge');
+  if (badge) badge.textContent = mStr;
+
+  let list = monthIndexMemoryCache[mStr];
+  if (!list && typeof fetchMonthPreIndexedData === 'function') {
+    try {
+      list = await fetchMonthPreIndexedData(mStr, false, true);
+    } catch (e) {
+      console.warn('Historical data load err:', e);
+    }
+  }
+
+  const rppfActive = Array.isArray(list)
+    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id))
+    : [];
+
+  let totDuty = 0, totOt = 0, totNight = 0, totPlain = 0, totHoli = 0;
+  const secStats = {
+    'Packing Hall': { name: 'Packing Hall', active: 0, duty: 0, ot: 0, night: 0 },
+    'Solid Production': { name: 'Solid Production', active: 0, duty: 0, ot: 0, night: 0 },
+    'Softgel Production': { name: 'Softgel Production', active: 0, duty: 0, ot: 0, night: 0 },
+    'Overall': { name: 'Executives / Staff', active: 0, duty: 0, ot: 0, night: 0 }
+  };
+
+  rppfActive.forEach(e => {
+    const duty = Number(e.totalDuty || 0);
+    const ot = Number(e.otHours || 0);
+    const night = Number(e.nightCount || 0);
+    const plain = Number(e.plainDaysCount || 0);
+    const holi = Number(e.holidayCount || e.holidayDutyCount || 0);
+
+    totDuty += duty;
+    totOt += ot;
+    totNight += night;
+    totPlain += plain;
+    totHoli += holi;
+
+    const area = getAreaForId(e.id, true);
+    let secKey = 'Overall';
+    if (area === 'Solid Production') secKey = 'Solid Production';
+    else if (area === 'Softgel Production') secKey = 'Softgel Production';
+    else if (area === 'Packing Hall') secKey = 'Packing Hall';
+
+    if (secStats[secKey]) {
+      secStats[secKey].active++;
+      secStats[secKey].duty += duty;
+      secStats[secKey].ot += ot;
+      secStats[secKey].night += night;
+    }
+  });
+
+  const actCount = rppfActive.length || 1;
+  const setT = (id, txt) => { const el = _el(id); if (el) el.textContent = txt; };
+
+  setT('incKpiTotalDuty', `${Math.round(totDuty).toLocaleString()}h`);
+  setT('incKpiDutyAvg', `${(totDuty / actCount).toFixed(1)}h / emp`);
+  setT('incKpiTotalOt', `${Math.round(totOt).toLocaleString()}h`);
+  setT('incKpiOtAvg', `${(totOt / actCount).toFixed(1)}h / emp`);
+  setT('incKpiNightShifts', `${totNight.toLocaleString()}`);
+  setT('incKpiPlainDays', `${totPlain.toLocaleString()}`);
+  setT('incKpiHolidayDays', `${totHoli.toLocaleString()}`);
+  setT('incKpiActiveCount', `${rppfActive.length} active`);
+
+  const tbody = _el('incHistorySecTbody');
+  if (tbody) {
+    tbody.innerHTML = Object.keys(secStats).map(k => {
+      const s = secStats[k];
+      const avg = s.active > 0 ? (s.duty / s.active).toFixed(1) : '0';
+      return `<tr onclick="openInchargeAreaRanking('${esc(k)}', '${esc(mStr)}')" style="cursor:pointer;" title="Tap to view ${esc(s.name)} ranking for ${esc(mStr)}">
+        <td style="font-weight:700;display:flex;align-items:center;gap:6px;">
+          <span>${esc(s.name)}</span>
+          <span style="font-size:11px;color:var(--brand);">›</span>
+        </td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;">${s.active}</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:700;">${Math.round(s.duty).toLocaleString()}h</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--brand);font-weight:700;">${Math.round(s.ot).toLocaleString()}h</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;">${s.night}</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);">${avg}h</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+/* ==========================================================================
+   ATTENDANCE & OPERATIONAL RISK WATCHLIST CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incWatchlistTab = 'absent';
+
+function setIncWatchlistTab(tabVal) {
+  _incWatchlistTab = tabVal || 'absent';
+  document.querySelectorAll('#incWatchlistTabs .inc-watch-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-watch-tab') === _incWatchlistTab);
+  });
+  renderInchargeWatchlist();
+}
+
+function renderInchargeWatchlist() {
+  const container = _el('incHomeWatchlistList');
+  if (!container) return;
+
+  const month = _incHistorySelectedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10');
+  const list = monthIndexMemoryCache[month] || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.allEmployees) || [];
+  const rppfActive = Array.isArray(list)
+    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id))
+    : [];
+
+  if (rppfActive.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;">Loading watchlist data for ${esc(month)}...</div>`;
+    return;
+  }
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Pack' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'SG' : a === OVERALL_AREA ? 'Exec' : (a || 'RPPF');
+
+  let items = [];
+  if (_incWatchlistTab === 'absent') {
+    items = [...rppfActive]
+      .map(e => {
+        let cnt = e.generalAbsentCount;
+        if (cnt == null && typeof computeEmpGeneralAbsents === 'function') {
+          const res = computeEmpGeneralAbsents(e, month);
+          cnt = res.count || (res.dates ? res.dates.length : 0);
+          e.generalAbsentCount = cnt;
+        }
+        return { emp: e, count: cnt || 0 };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Days Absent`,
+        sub: `Recurring absence • Tap to inspect dates`,
+        crit: 'absent'
+      }));
+  } else if (_incWatchlistTab === 'punch') {
+    items = [...rppfActive]
+      .map(e => {
+        const probs = Array.isArray(e.punchProblems) ? e.punchProblems.length : (e.punchAnomalyCount || e.missingPunchCount || 0);
+        return { emp: e, count: probs };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Punch Anomalies`,
+        sub: `Missing punch-in/out • Tap to review punches`,
+        crit: 'punch'
+      }));
+    if (items.length === 0) {
+      items = [...rppfActive].slice(0, 6).map(e => ({
+        emp: e,
+        val: `Punches Verified`,
+        sub: `Regular punch history • Tap to review`,
+        crit: 'punch'
+      }));
+    }
+  } else if (_incWatchlistTab === 'req') {
+    items = [...rppfActive]
+      .map(e => {
+        const cnt = Number(e.requisitionProblemCount || (Array.isArray(e.requisitionProblems) ? e.requisitionProblems.length : 0)) || (e.unreqOtHours || 0);
+        return { emp: e, count: cnt };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Unreq OT Records`,
+        sub: `Pending OT approval • Tap to inspect`,
+        crit: 'requisition'
+      }));
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;">No anomalies flagged under this category for ${esc(month)}.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(item => {
+    const e = item.emp;
+    const a = getAreaForId(e.id, true);
+    const sub = e.sub ? ` • ${e.sub}` : '';
+    return `<div class="inc-watch-item" onclick="openIccContextModal('${esc(e.id)}', '${esc(item.crit)}', '${esc(month)}')" title="Tap to inspect ${esc(item.crit)} context modal">
+      <div class="inc-watch-info">
+        <div class="inc-watch-name">${esc(e.name || e.id)} <span class="inc-watch-id">(${esc(e.id)})</span></div>
+        <div class="inc-watch-sub">${esc(areaShort(a))}${esc(sub)} • ${esc(item.sub)}</div>
+      </div>
+      <div class="inc-watch-right">
+        <span class="inc-watch-val">${esc(item.val)}</span>
+        <span class="inc-watch-arrow">Inspect ›</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openInchargeAreaRanking(areaVal, optMonth) {
+  if (optMonth) {
+    const parts = optMonth.split('-');
+    if (parts.length === 2) {
+      const ySel = _el('yearSelect');
+      const mSel = _el('monthSelect');
+      if (ySel) ySel.value = parts[0];
+      if (mSel) mSel.value = parts[1];
+    }
+  }
   const areaSel = _el('areaFilter');
   if (areaSel) {
     if (![...areaSel.options].some(o => o.value === areaVal)) {
@@ -5801,7 +6241,7 @@ function renderInchargeHomeAbsentList() {
     const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
     const subTxt = item.sub || dirRec?.sub ? ` • ${item.sub || dirRec.sub}` : '';
     const noteTxt = item.note ? ` (${item.note})` : '';
-    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}', true)" title="Tap to view employee profile">
+    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
       <div class="inc-absent-emp">
         <div class="inc-absent-name">${esc(dispName)} <span style="color:var(--danger);font-size:12px;">(${esc(item.id)})</span></div>
         <div class="inc-absent-sub">${esc(areaShort(item.area))}${esc(subTxt)} • ${esc(item.designation || 'Employee')}</div>
@@ -5896,7 +6336,7 @@ function renderInchargeHomeToppers() {
     const top3 = [...areaFiltered].sort(cat.sortFn).slice(0, 3);
     const rowsHtml = top3.map((e, idx) => {
       const subBadge = e.sub ? ` • ${e.sub}` : '';
-      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${cat.key}')">
+      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
         <span class="inc-topper-medal m-${idx + 1}">${idx + 1}</span>
         <div class="inc-topper-info">
           <div class="inc-topper-name">${esc(e.name || e.id)}</div>
@@ -5974,8 +6414,11 @@ async function renderInchargeHomeOverview() {
   setT('incMetaPack', `${(AREA_SUBS['Packing Hall'] || []).length} sub-sections • Active`);
   setT('incMetaExec', `Management & Officers`);
 
+  renderInchargeHomeLeavesList();
   renderInchargeHomeAbsentList();
+  renderInchargeHistoricalAnalytics();
   renderInchargeHomeToppers();
+  renderInchargeWatchlist();
 }
 
 /* Quick Absent Modal Handlers */
@@ -6382,7 +6825,7 @@ function wireAllAutocompleteSearchInputs() {
     findReport();
   });
   attachEmployeeAutocompleteToInput(_el('lbQuickSearchInput'), (id) => {
-    viewEmployeeFromLeaderboard(id, true);
+    viewEmployeeFromLeaderboard(id);
   });
   attachEmployeeAutocompleteToInput(_el('iccSearchInput'), () => {
     renderIccDrillList();
@@ -6959,9 +7402,13 @@ if (window.Router && typeof window.Router.init === "function") window.Router.ini
 
 
 function getActiveLongTermLeaves() {
-  if (!ABSENT_STORE || typeof ABSENT_STORE !== 'object') return [];
-  if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
-  return ABSENT_STORE.longTermLeaves;
+  if (ABSENT_STORE && Array.isArray(ABSENT_STORE.longTermLeaves) && ABSENT_STORE.longTermLeaves.length > 0) {
+    return ABSENT_STORE.longTermLeaves;
+  }
+  if (typeof AREA_DATA !== 'undefined' && Array.isArray(AREA_DATA?.longTermLeaves)) {
+    return AREA_DATA.longTermLeaves;
+  }
+  return [];
 }
 
 function isEmployeeOnApprovedLeave(empId, targetDateStr) {
@@ -6980,6 +7427,5 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
 }
 
 </script>
-<script src="js/patches/manager-ux.js"></script>
 </body>
 </html>

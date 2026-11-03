@@ -1851,7 +1851,6 @@ if (document.getElementById('rateChartModal')?.classList.contains('open')) { clo
 if (document.getElementById('erpSupportModal')?.classList.contains('open')) { closeErpSupportModal(); return; }
 if (document.getElementById('confirmActionModal')?.classList.contains('open')) { closeConfirmModal(); return; }
 if (document.getElementById('complianceModal')?.classList.contains('open')) { closeComplianceModal(); return; }
-if (document.getElementById('iccContextModal')?.classList.contains('open')) { closeIccContextModal(); return; }
 if (document.getElementById('lbFullListModal')?.classList.contains('open')) { closeLbFullList(); return; }
 closeDrawer();
 }
@@ -2554,7 +2553,7 @@ function searchEmployeeFromLbBar() {
 const inp = document.getElementById('lbQuickSearchInput');
 const raw = (inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
 if (!raw) { showToast('Enter employee ID number (e.g. CF8355)', 'warn'); if (inp) inp.focus(); return; }
-viewEmployeeFromLeaderboard(raw, true);
+viewEmployeeFromLeaderboard(raw);
 }
 function buildLeaderboardPayloadFromList(month, allList) {
 const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id));
@@ -3110,7 +3109,7 @@ const displayRank = e._rank != null ? e._rank : (index + 1);
 const rowClass = type === 'punch' ? 'punch-issue-row' : (displayRank <= 3 ? 'rank-' + displayRank : '');
 const pct = (maxVal && maxVal > 0 && type !== 'punch') ? Math.max(10, Math.min(100, Math.round((rawMetric / maxVal) * 100))) : 0;
 const progHtml = pct > 0 ? `<div class="rank-progress-wrap"><div class="rank-progress-bar" style="width:${pct}%"></div></div>` : '';
-return `<div class="rank-item ${rowClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${type}')">
+return `<div class="rank-item ${rowClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
 <div class="rank-number">${bn(displayRank)}</div>
 <div class="rank-info">
 <div class="rank-name">${esc(e.name || '—')}${isMine ? ' (you)' : ''}</div>
@@ -3207,7 +3206,7 @@ const rk = ranks[idx];
 if (!e) return `<div class="podium-spot p-${rk}" style="opacity:.4;cursor:default;"><div class="podium-medal">${rk}</div><div class="podium-name">—</div></div>`;
 const val = type === 'duty' ? `${e.totalDuty}h` : type === 'ot' ? `${e.otHours}h` : `৳${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
 const crown = rk === 1 ? '👑 ' : '';
-return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${type}')">
+return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
 <div class="podium-medal">${rk}</div>
 <div class="podium-name">${crown}${esc(e.name || e.id)}</div>
 <div class="podium-id">${esc(e.id)}</div>
@@ -3470,12 +3469,509 @@ document.body.style.overflow = ''; document.body.style.position = ''; document.b
 currentLbListType = null;
 }
 function lbModalBackdropClick(e) { if (e.target.id === 'lbFullListModal') closeLbFullList(); }
-/* Ranking "See Details": handled by js/components/rank-details.js (context-aware).
-   crit = ranking criterion (duty/ot/earned/plain/lessDuty/lessOt/punch/absent/requisition/avgDuty/avgInOut/night)
-   forceReport = true -> skip the details popup and open the full report page directly */
-async function viewEmployeeFromLeaderboard(empId, forceReport = false, crit = null) {
-  if (forceReport) return openFullEmployeeReport(empId);
-  return openIccContextModal(empId, crit || undefined);
+/* ==========================================================================
+   CONTEXT-AWARE RANKING DETAILS MODAL ENGINE
+   ========================================================================== */
+function closeIccContextModal() {
+  const modal = document.getElementById('iccContextModal');
+  if (modal) modal.classList.remove('open');
+  if (typeof iccDrillOpen === 'undefined' || !iccDrillOpen) {
+    if (!document.getElementById('lbFullListModal')?.classList.contains('open')) {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+  }
+}
+
+function iccContextModalBackdropClick(e) {
+  if (e && e.target && e.target.id === 'iccContextModal') {
+    closeIccContextModal();
+  }
+}
+
+async function openFullEmployeeReport(empId, targetMonth) {
+  closeIccContextModal();
+  if (document.getElementById('lbFullListModal')?.classList.contains('open')) closeLbFullList();
+  const m = targetMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const mClean = String(m).includes(' - ') ? m.split(' - ')[1].trim() : String(m).split(' ')[0];
+  const [year, mon] = (mClean.includes('-') ? mClean : (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10')).split('-');
+  const ySel = document.getElementById('yearSelect');
+  const mSel = document.getElementById('monthSelect');
+  if (ySel) ySel.value = year;
+  if (mSel) mSel.value = mon;
+  const empInp = document.getElementById('employeeId');
+  if (empInp) empInp.value = empId;
+  if (typeof toggleClearIdBtn === 'function') toggleClearIdBtn();
+  const backBtn = document.getElementById('backToLbBtn');
+  if (backBtn) backBtn.style.display = "block";
+  _lbView = true;
+  if (typeof switchPage === 'function') switchPage('search');
+  setTimeout(() => { if (typeof findReport === 'function') findReport(); }, 100);
+}
+
+function openIccContextModal(empId, optCrit, optMonth) {
+  if (!empId) return;
+  const modal = document.getElementById('iccContextModal');
+  if (!modal) return;
+
+  const curM = optMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const cleanM = String(curM).includes(' - ') ? curM.split(' - ')[1].trim() : String(curM).split(' ')[0];
+  const crit = optCrit || (typeof activeIccCriterion !== 'undefined' && activeIccCriterion) || (typeof currentLbListType !== 'undefined' && currentLbListType) || 'duty';
+  const isMultiTime = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.timeMode && currentLeaderboardResult.timeMode !== 'monthly');
+  const incMode = typeof getAppMode === 'function' && getAppMode() === 'incharge';
+
+  // Find employee in active result or cache
+  let emp = null;
+  if (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.allEmployees)) {
+    emp = currentLeaderboardResult.allEmployees.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+  }
+  if (!emp && typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.filtered && Array.isArray(currentLeaderboardResult.filtered._rawFiltered)) {
+    emp = currentLeaderboardResult.filtered._rawFiltered.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+  }
+  if (!emp && typeof monthIndexMemoryCache !== 'undefined') {
+    const list = monthIndexMemoryCache[cleanM] || monthIndexMemoryCache[typeof getCurrentMonth === 'function' ? getCurrentMonth() : ''];
+    if (Array.isArray(list)) {
+      emp = list.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+    }
+  }
+  if (!emp) {
+    const meta = typeof getEmpMeta === 'function' ? getEmpMeta(empId) : {};
+    emp = {
+      id: empId,
+      name: meta.name || empId,
+      area: typeof getAreaForId === 'function' ? getAreaForId(empId, true) : 'RPPF',
+      grade: meta.grade || '',
+      sub: meta.sub || '',
+      totalDuty: 0,
+      otHours: 0,
+      holidayCount: 0,
+      nightCount: 0,
+      plainDaysCount: 0,
+      totalEarned: 0
+    };
+  }
+
+  const titleEl = document.getElementById('iccCtxTitle');
+  const subEl = document.getElementById('iccCtxSubtitle');
+  const bodyEl = document.getElementById('iccCtxBody');
+  const footerEl = document.getElementById('iccCtxFooter');
+  if (!bodyEl || !footerEl) return;
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : (typeof OVERALL_AREA !== 'undefined' && a === OVERALL_AREA) ? 'Executives' : (a || 'RPPF');
+  const desig = typeof getDesignation === 'function' ? getDesignation(emp) : (emp.grade || '');
+  const subName = emp.sub || (typeof getEmpMeta === 'function' ? getEmpMeta(emp.id).sub : '') || '';
+  const areaName = typeof getAreaForId === 'function' ? getAreaForId(emp.id, true) : (emp.area || 'RPPF');
+
+  let periodLabel = cleanM;
+  if (isMultiTime) {
+    const mc = emp.monthsCount || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.loadedMonths ? currentLeaderboardResult.loadedMonths.length : (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode === '3m' ? 3 : (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode === '6m' ? 6 : 'Multi')));
+    const modeName = typeof currentLbTimeMode !== 'undefined' ? (currentLbTimeMode === '3m' ? '3 Months' : (currentLbTimeMode === '6m' ? '6 Months' : (currentLbTimeMode === 'ytd' ? 'YTD' : (currentLbTimeMode === '1y' ? '1 Year' : 'All-Time')))) : 'Multi-Month';
+    periodLabel = `${modeName} (${mc}m)`;
+  } else {
+    const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const pts = cleanM.split('-');
+    if (pts.length === 2) {
+      const mi = parseInt(pts[1], 10) - 1;
+      periodLabel = `${mons[mi] || pts[1]} ${pts[0]}`;
+    }
+  }
+
+  if (titleEl) titleEl.innerHTML = `${esc(emp.name || emp.id)} <span style="font-weight:600;font-size:13px;opacity:0.85;">(${esc(emp.id)})</span>`;
+  if (subEl) {
+    const subBadge = subName ? `<span class="badge" style="background:var(--brand-soft);color:var(--brand-text);border:1px solid var(--brand-soft-border);font-size:11px;padding:2px 6px;border-radius:4px;margin-right:4px;">${esc(subName)}</span>` : '';
+    subEl.innerHTML = `${subBadge}${esc(areaShort(areaName))}${desig ? ' • ' + esc(desig) : ''} • <span style="font-weight:700;color:var(--text);">${esc(periodLabel)}</span>`;
+  }
+
+  const prevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(cleanM) : new Set();
+  const prevHas = prevSet.has(String(emp.id).toUpperCase()) || (typeof resolveEmpAliasId === 'function' && prevSet.has(resolveEmpAliasId(emp.id)));
+
+  let loadedMonthsList = [];
+  if (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.loadedMonths)) {
+    loadedMonthsList = [...currentLeaderboardResult.loadedMonths];
+  } else if (typeof monthIndexMemoryCache !== 'undefined') {
+    loadedMonthsList = Object.keys(monthIndexMemoryCache).filter(m => Array.isArray(monthIndexMemoryCache[m]) && monthIndexMemoryCache[m].length > 0).sort();
+  }
+  if (!loadedMonthsList.length) loadedMonthsList = [cleanM];
+
+  let bodyHtml = '';
+
+  // -------------------------------------------------------------
+  // CONTEXT 1: ABSENT CRITERION
+  // -------------------------------------------------------------
+  if (crit === 'absent') {
+    let absCount = 0;
+    if (isMultiTime) {
+      absCount = emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0);
+    } else {
+      const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, cleanM, prevHas) : { count: emp.generalAbsentCount || 0, dates: emp.generalAbsentDays || [] };
+      absCount = absRes.count || (absRes.dates ? absRes.dates.length : 0);
+    }
+
+    bodyHtml += `
+      <div class="icc-ctx-banner absent">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>🔴</span><span>${isMultiTime ? 'Total Period Absent' : 'Monthly Absent'}: <b>${absCount} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">General absent dates (excludes holidays & scheduled off-days)</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    if (!isMultiTime) {
+      const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, cleanM, prevHas) : { dates: (emp.generalAbsentDays || []), count: (emp.generalAbsentCount || 0) };
+      const dList = absRes.dates || [];
+      if (!dList.length) {
+        bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, ${esc(periodLabel)} মাসে কোনো অ্যাবসেন্ট নেই (0 Days Absent - 100% Attendance).</div>`;
+      } else {
+        bodyHtml += `
+          <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+            Specific Absent Calendar Dates (${dList.length} Days)
+          </div>
+          <div class="icc-ctx-date-grid">
+            ${dList.map(d => `<div class="icc-ctx-date-item"><span>📅</span><span>${esc(d)}</span></div>`).join('')}
+          </div>
+        `;
+      }
+
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-top:14px;margin-bottom:8px;">
+          Monthly Duty Summary
+        </div>
+        <div class="icc-ctx-grid">
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Duty Hours</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holidays</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Nights</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val">${getPunchProblemCount(emp)}d</span></div>
+        </div>
+      `;
+    } else {
+      // Multi-month absent breakdown
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Month-by-Month Absent Breakdown
+        </div>
+      `;
+
+      const monthBlocksHtml = loadedMonthsList.map(mStr => {
+        const mEmp = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+          ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+          : null;
+        if (!mEmp) return '';
+        const mPrevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(mStr) : new Set();
+        const mPrevHas = mPrevSet.has(String(emp.id).toUpperCase()) || (typeof resolveEmpAliasId === 'function' && mPrevSet.has(resolveEmpAliasId(emp.id)));
+        const mAbs = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(mEmp, mStr, mPrevHas) : { dates: (mEmp.generalAbsentDays || []), count: (mEmp.generalAbsentCount || 0) };
+        const dArr = mAbs.dates || [];
+
+        const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mParts = mStr.split('-');
+        const mLbl = mParts.length === 2 ? `${mons[parseInt(mParts[1], 10)-1] || mParts[1]} ${mParts[0]}` : mStr;
+
+        return `
+          <div class="icc-ctx-month-card">
+            <div class="icc-ctx-month-header">
+              <div class="icc-ctx-month-title">${esc(mLbl)} <span style="font-size:12px;font-weight:700;color:${dArr.length > 0 ? '#dc2626' : '#059669'};">(${dArr.length} days absent)</span></div>
+              <button type="button" class="btn-secondary" style="min-height:28px;padding:2px 8px;font-size:11px;" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(mStr)}')">View ${esc(mLbl.split(' ')[0])} Report →</button>
+            </div>
+            ${dArr.length > 0
+              ? `<div class="icc-ctx-date-grid" style="margin-bottom:0;">${dArr.map(d => `<div class="icc-ctx-date-item"><span>📅</span><span>${esc(d)}</span></div>`).join('')}</div>`
+              : `<div style="font-size:11.5px;color:#059669;font-weight:600;">✓ 100% Attendance (0 days absent)</div>`
+            }
+          </div>
+        `;
+      }).filter(Boolean).join('');
+
+      bodyHtml += monthBlocksHtml || `<div class="empty-msg" style="padding:16px;text-align:center;">No monthly records found.</div>`;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 2: PUNCH PROBLEM CRITERION
+  // -------------------------------------------------------------
+  else if (crit === 'punch') {
+    const pCount = getPunchProblemCount(emp);
+    bodyHtml += `
+      <div class="icc-ctx-banner punch">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>⚠️</span><span>Missing In/Out Punches: <b>${pCount} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">Punch missing dates requiring ERP attendance punch adjustment</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    const punchRows = [];
+    const monthsToScan = isMultiTime ? loadedMonthsList : [cleanM];
+    monthsToScan.forEach(mStr => {
+      const mEmp = (isMultiTime && typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+        ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+        : emp;
+      if (!mEmp || !Array.isArray(mEmp.daily)) return;
+      mEmp.daily.forEach(row => {
+        if (!Array.isArray(row) || row.length < 4) return;
+        const [dt, day, inn, out] = row;
+        const inMiss = typeof isPunchMissing === 'function' ? isPunchMissing(inn) : (!inn || inn === '--:--');
+        const outMiss = typeof isPunchMissing === 'function' ? isPunchMissing(out) : (!out || out === '--:--');
+        if (inMiss || outMiss) {
+          punchRows.push({
+            date: dt,
+            day: day || '',
+            in: inMiss ? '--:--' : inn,
+            out: outMiss ? '--:--' : out,
+            inMiss,
+            outMiss,
+            type: inMiss && outMiss ? 'In & Out Missing' : (inMiss ? 'In Punch Missing' : 'Out Punch Missing'),
+            month: mStr
+          });
+        }
+      });
+    });
+
+    if (!punchRows.length) {
+      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, কোনো পাঞ্চ মিসিং সমস্যা নেই (All Punches OK).</div>`;
+    } else {
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Missing Punch Records (${punchRows.length} Days)
+        </div>
+        <div class="icc-ctx-table-wrap">
+          <table class="icc-ctx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>In Punch</th>
+                <th>Out Punch</th>
+                <th>Missing Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${punchRows.map(p => `
+                <tr>
+                  <td style="font-weight:700;">${esc(p.date)}</td>
+                  <td style="color:var(--muted);">${esc(p.day)}</td>
+                  <td style="color:${p.inMiss ? '#dc2626' : 'var(--text)'};font-weight:${p.inMiss ? '800' : '600'};">${esc(p.in)}</td>
+                  <td style="color:${p.outMiss ? '#dc2626' : 'var(--text)'};font-weight:${p.outMiss ? '800' : '600'};">${esc(p.out)}</td>
+                  <td><span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:700;padding:2px 6px;border-radius:4px;font-size:11px;">${esc(p.type)}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 3: REQUISITION CRITERION
+  // -------------------------------------------------------------
+  else if (crit === 'requisition') {
+    const reqProbs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (emp.requisitionProblems || []);
+    bodyHtml += `
+      <div class="icc-ctx-banner req">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>📋</span><span>Pending OT Requisitions: <b>${reqProbs.length} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">Employee worked overtime hours but In-Charge approval requisition is pending</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    if (!reqProbs.length) {
+      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).</div>`;
+    } else {
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Pending Requisition Dates (${reqProbs.length} Days)
+        </div>
+        <div class="icc-ctx-table-wrap">
+          <table class="icc-ctx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Punch In/Out</th>
+                <th>Duty</th>
+                <th>Expected OT</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${reqProbs.map(p => `
+                <tr>
+                  <td style="font-weight:700;">${esc(p.date)}</td>
+                  <td style="color:var(--text-2);font-size:11.5px;">${esc(p.in)} - ${esc(p.out)}</td>
+                  <td>${esc(p.duty || p.elapsed)}h</td>
+                  <td style="font-weight:800;color:#d97706;">${esc(p.expectedOt)}</td>
+                  <td style="font-size:11.5px;color:var(--muted);">${esc(p.reason || 'Pending Requisition')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 4: MULTI-MONTH PERFORMANCE (Duty / OT / Earned / Plain / etc.)
+  // -------------------------------------------------------------
+  else if (isMultiTime) {
+    const mc = emp.monthsCount || loadedMonthsList.length || 1;
+    bodyHtml += `
+      <div class="icc-ctx-banner multi">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>📈</span><span>Multi-Month Performance Summary (<b>${mc} Months</b>)</span>
+          </div>
+          <div class="icc-ctx-banner-sub">Aggregated performance across ${esc(periodLabel)}</div>
+        </div>
+        <div>
+          <span class="badge" style="background:var(--brand-soft);color:var(--brand-text);font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(areaShort(areaName))}</span>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+        Multi-Month Total KPIs
+      </div>
+      <div class="icc-ctx-grid">
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Duty</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg Duty/Day</span><span class="icc-ctx-kpi-val">${emp.avgDutyPerDay ? emp.avgDutyPerDay + 'h' : '—'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg In Time</span><span class="icc-ctx-kpi-val">${emp.avgInTimeStr || '08:00'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holiday Duty</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Night Shifts</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Absent</span><span class="icc-ctx-kpi-val" style="color:#dc2626;">${emp.generalAbsentCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val" style="color:#d97706;">${getPunchProblemCount(emp)}d</span></div>
+        ${!incMode ? `<div class="icc-ctx-kpi" style="border-color:var(--brand);"><span class="icc-ctx-kpi-label">Total Earned</span><span class="icc-ctx-kpi-val" style="color:var(--brand-text);">৳ ${Math.round(emp.totalEarned || 0)}</span></div>` : ''}
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-top:14px;margin-bottom:8px;">
+        Month-by-Month Breakdown Table
+      </div>
+      <div class="icc-ctx-table-wrap">
+        <table class="icc-ctx-table">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Duty</th>
+              <th>OT</th>
+              ${!incMode ? '<th>Earned</th>' : ''}
+              <th>Absent</th>
+              <th>Punch</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${loadedMonthsList.map(mStr => {
+              const mEmp = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+                ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+                : null;
+              const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              const mParts = mStr.split('-');
+              const mLbl = mParts.length === 2 ? `${mons[parseInt(mParts[1], 10)-1] || mParts[1]} ${mParts[0]}` : mStr;
+
+              if (!mEmp) {
+                return `<tr><td style="font-weight:700;">${esc(mLbl)}</td><td colspan="${incMode ? 5 : 6}" style="color:var(--muted);text-align:center;">No work record in this month</td></tr>`;
+              }
+              const mDuty = Math.round((Number(mEmp.totalDuty)||0)*10)/10;
+              const mOt = Math.round((Number(mEmp.otHours)||0)*10)/10;
+              const mAbs = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(mEmp, mStr) : 0;
+              const mPunch = getPunchProblemCount(mEmp);
+              const mEarn = Math.round(Number(mEmp.totalEarned || 0));
+
+              return `
+                <tr>
+                  <td style="font-weight:700;">${esc(mLbl)}</td>
+                  <td>${mDuty}h</td>
+                  <td>${mOt}h</td>
+                  ${!incMode ? `<td style="font-weight:700;color:var(--brand-text);">৳ ${mEarn}</td>` : ''}
+                  <td style="color:${mAbs > 0 ? '#dc2626' : 'var(--text)'};font-weight:${mAbs > 0 ? '700' : '400'};">${mAbs}d</td>
+                  <td style="color:${mPunch > 0 ? '#d97706' : 'var(--text)'};font-weight:${mPunch > 0 ? '700' : '400'};">${mPunch}d</td>
+                  <td><button type="button" class="btn-secondary" style="min-height:26px;padding:2px 8px;font-size:11px;" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(mStr)}')">View</button></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 5: SINGLE MONTH STANDARD PERFORMANCE
+  // -------------------------------------------------------------
+  else {
+    const absCount = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(emp, cleanM) : 0;
+    const punchCount = getPunchProblemCount(emp);
+    bodyHtml += `
+      <div class="icc-ctx-banner duty">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>⏱️</span><span>Monthly Performance Summary (<b>${esc(periodLabel)}</b>)</span>
+          </div>
+          <div class="icc-ctx-banner-sub">${esc(areaShort(areaName))} • Regular & Overtime Duty Summary</div>
+        </div>
+        <div>
+          <span class="badge" style="background:var(--brand-soft);color:var(--brand-text);font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+        Monthly Key Indicators
+      </div>
+      <div class="icc-ctx-grid">
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Duty</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg In Time</span><span class="icc-ctx-kpi-val">${emp.avgInTimeStr || '08:00'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holiday Duty</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Night Shifts</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Absent Days</span><span class="icc-ctx-kpi-val" style="color:${absCount > 0 ? '#dc2626' : 'var(--text)'};">${absCount}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val" style="color:${punchCount > 0 ? '#d97706' : 'var(--text)'};">${punchCount}d</span></div>
+        ${!incMode ? `<div class="icc-ctx-kpi" style="border-color:var(--brand);"><span class="icc-ctx-kpi-label">Total Earned</span><span class="icc-ctx-kpi-val" style="color:var(--brand-text);">৳ ${Math.round(emp.totalEarned || 0)}</span></div>` : ''}
+      </div>
+    `;
+  }
+
+  bodyEl.innerHTML = bodyHtml;
+
+  const targetReportMonth = isMultiTime && loadedMonthsList.length ? loadedMonthsList[loadedMonthsList.length - 1] : cleanM;
+  let reportBtnText = '📊 Open Full Monthly Report';
+  if (!incMode && (crit === 'duty' || crit === 'ot' || crit === 'earned' || crit === 'plain')) {
+    reportBtnText = '💰 View Overtime Calculation & Payslip →';
+  } else if (incMode) {
+    reportBtnText = '📋 View Monthly Work Log →';
+  }
+
+  footerEl.innerHTML = `
+    <button type="button" class="btn-secondary" onclick="closeIccContextModal()">✕ Close</button>
+    <button type="button" class="btn-primary" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(targetReportMonth)}')">${reportBtnText}</button>
+  `;
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+async function viewEmployeeFromLeaderboard(empId, forceReport = false) {
+  if (forceReport) {
+    return openFullEmployeeReport(empId);
+  }
+  return openIccContextModal(empId);
 }
 function resetAll() {
 document.body.classList.remove('has-result');
@@ -5000,7 +5496,7 @@ const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
 const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
-return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, activeIccCriterion)">
+return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
 <div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
 <div class="icc-emp-col">
 <div class="icc-avatar">${esc(initials)}</div>
@@ -5868,7 +6364,6 @@ try {
 const openModals = [
 ['adminCatAuthModal', closeAdminCatAuthModal],
 ['empAdminCatModal', closeEmpAdminCatModal],
-['iccContextModal', closeIccContextModal],
 ['lbFullListModal', closeLbFullList],
 ['rateChartModal', closeRateChartModal],
 ['modeSetupModal', closeModeSetupModal],
@@ -6414,6 +6909,8 @@ function saveAbsentCache() {
 
 async function loadAbsentStore(forceFresh = false) {
   if (_absentLoaded && !forceFresh) return ABSENT_STORE;
+  if (!ABSENT_STORE.byDate || typeof ABSENT_STORE.byDate !== "object") ABSENT_STORE.byDate = {};
+  if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
   try {
     const raw = localStorage.getItem(ABSENT_CACHE_KEY);
     if (raw) {
@@ -6435,6 +6932,10 @@ async function loadAbsentStore(forceFresh = false) {
       });
       if (rStore.activeDate) ABSENT_STORE.activeDate = rStore.activeDate;
       if (rStore.updatedAt) ABSENT_STORE.updatedAt = rStore.updatedAt;
+      if (Array.isArray(remote.longTermLeaves)) ABSENT_STORE.longTermLeaves = remote.longTermLeaves;
+      if (!Array.isArray(ABSENT_STORE.longTermLeaves) || !ABSENT_STORE.longTermLeaves.length) {
+        if (typeof AREA_DATA !== 'undefined' && Array.isArray(AREA_DATA?.longTermLeaves)) ABSENT_STORE.longTermLeaves = AREA_DATA.longTermLeaves;
+      }
       saveAbsentCache();
     }
   } catch (e) {}
@@ -6580,7 +7081,323 @@ async function saveAbsentAndPushServer() {
 /* ==========================================================================
    IN-CHARGE HOME OVERVIEW DASHBOARD
    ========================================================================== */
-function openInchargeAreaRanking(areaVal) {
+
+/* ==========================================================================
+   APPROVED MATERNITY LEAVES CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incLeavesAreaFilter = 'all';
+
+function filterIncHomeLeaves(areaVal) {
+  _incLeavesAreaFilter = areaVal || 'all';
+  document.querySelectorAll('#incLeavesAreaBar .inc-leaves-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-leave-area') === _incLeavesAreaFilter);
+  });
+  renderInchargeHomeLeavesList();
+}
+
+function renderInchargeHomeLeavesList() {
+  const container = _el('incHomeLeavesList');
+  const countBadge = _el('incLeavesCountBadge');
+  if (!container) return;
+
+  const leaves = typeof getActiveLongTermLeaves === 'function' ? getActiveLongTermLeaves() : [];
+  if (countBadge) countBadge.textContent = `${leaves.length} Active`;
+
+  const filtered = _incLeavesAreaFilter === 'all'
+    ? leaves
+    : leaves.filter(l => l.area === _incLeavesAreaFilter);
+
+  if (!filtered || filtered.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;grid-column:1/-1;">No approved long-term leaves recorded in ${_incLeavesAreaFilter === 'all' ? 'any section' : esc(_incLeavesAreaFilter)}.</div>`;
+    return;
+  }
+
+  const todayStr = typeof getTodayDateStr === 'function' ? getTodayDateStr() : new Date().toISOString().slice(0, 10);
+  const today = new Date(todayStr);
+
+  container.innerHTML = filtered.map(item => {
+    const endDt = item.endDate ? new Date(item.endDate) : null;
+    let daysLeftTxt = '';
+    let isExpired = false;
+    if (endDt && !isNaN(endDt.getTime())) {
+      const diffDays = Math.ceil((endDt - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) {
+        daysLeftTxt = 'Completed';
+        isExpired = true;
+      } else if (diffDays === 0) {
+        daysLeftTxt = 'Ends today';
+      } else {
+        daysLeftTxt = `${diffDays} days remaining`;
+      }
+    }
+    const duration = item.duration || '6 months';
+    const sub = item.sub ? ` • ${item.sub}` : '';
+    const badgeCls = isExpired ? 'badge neutral' : 'badge info';
+
+    return `<div class="inc-leave-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
+      <div class="inc-leave-icon-col">
+        <div class="inc-leave-avatar">ML</div>
+      </div>
+      <div class="inc-leave-body">
+        <div class="inc-leave-head">
+          <span class="inc-leave-name">${esc(item.name || item.id)}</span>
+          <span class="inc-leave-id">(${esc(item.id)})</span>
+          <span class="${badgeCls}" style="margin-left:auto;font-size:10.5px;">${esc(item.category || item.type || 'Maternity Leave')}</span>
+        </div>
+        <div class="inc-leave-meta">
+          <span>${esc(item.area || 'Packing Hall')}${esc(sub)}</span>
+          <span>•</span>
+          <span>${esc(item.startDate || '')} to ${esc(item.endDate || '')}</span>
+          <span>(${esc(duration)})</span>
+        </div>
+        <div class="inc-leave-foot">
+          <span class="inc-leave-status-dot ${isExpired ? 'expired' : 'active'}"></span>
+          <span class="inc-leave-status-text">${isExpired ? 'Expired / Resumed' : 'Active Leave'} • ${esc(daysLeftTxt)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ==========================================================================
+   HISTORICAL PRODUCTION & SHIFT ANALYTICS CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incHistorySelectedMonth = '2026-10';
+
+async function setIncHistoryMonth(mStr) {
+  _incHistorySelectedMonth = mStr;
+  document.querySelectorAll('#incHistoryTimelineBar .inc-history-month-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-hmonth') === mStr);
+  });
+  const badge = _el('incHistoryActiveMonthBadge');
+  if (badge) badge.textContent = mStr;
+  await renderInchargeHistoricalAnalytics(mStr);
+  renderInchargeWatchlist();
+}
+
+async function renderInchargeHistoricalAnalytics(optMonth) {
+  const card = _el('incHomeHistoryCard');
+  if (!card) return;
+
+  const mStr = optMonth || _incHistorySelectedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10');
+  _incHistorySelectedMonth = mStr;
+
+  const bar = _el('incHistoryTimelineBar');
+  if (bar && (!bar.children || bar.children.length === 0)) {
+    const months = ['2026-10', '2026-09', '2026-08', '2026-07', '2026-06', '2026-05', '2026-04'];
+    const shortNames = {'2026-10':'Oct 26','2026-09':'Sep 26','2026-08':'Aug 26','2026-07':'Jul 26','2026-06':'Jun 26','2026-05':'May 26','2026-04':'Apr 26'};
+    bar.innerHTML = months.map(m => `
+      <button type="button" class="inc-history-month-btn ${m === _incHistorySelectedMonth ? 'active' : ''}" data-hmonth="${m}" onclick="setIncHistoryMonth('${m}')">
+        ${shortNames[m] || m}
+      </button>
+    `).join('');
+  }
+
+  const badge = _el('incHistoryActiveMonthBadge');
+  if (badge) badge.textContent = mStr;
+
+  let list = monthIndexMemoryCache[mStr];
+  if (!list && typeof fetchMonthPreIndexedData === 'function') {
+    try {
+      list = await fetchMonthPreIndexedData(mStr, false, true);
+    } catch (e) {
+      console.warn('Historical data load err:', e);
+    }
+  }
+
+  const rppfActive = Array.isArray(list)
+    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id))
+    : [];
+
+  let totDuty = 0, totOt = 0, totNight = 0, totPlain = 0, totHoli = 0;
+  const secStats = {
+    'Packing Hall': { name: 'Packing Hall', active: 0, duty: 0, ot: 0, night: 0 },
+    'Solid Production': { name: 'Solid Production', active: 0, duty: 0, ot: 0, night: 0 },
+    'Softgel Production': { name: 'Softgel Production', active: 0, duty: 0, ot: 0, night: 0 },
+    'Overall': { name: 'Executives / Staff', active: 0, duty: 0, ot: 0, night: 0 }
+  };
+
+  rppfActive.forEach(e => {
+    const duty = Number(e.totalDuty || 0);
+    const ot = Number(e.otHours || 0);
+    const night = Number(e.nightCount || 0);
+    const plain = Number(e.plainDaysCount || 0);
+    const holi = Number(e.holidayCount || e.holidayDutyCount || 0);
+
+    totDuty += duty;
+    totOt += ot;
+    totNight += night;
+    totPlain += plain;
+    totHoli += holi;
+
+    const area = getAreaForId(e.id, true);
+    let secKey = 'Overall';
+    if (area === 'Solid Production') secKey = 'Solid Production';
+    else if (area === 'Softgel Production') secKey = 'Softgel Production';
+    else if (area === 'Packing Hall') secKey = 'Packing Hall';
+
+    if (secStats[secKey]) {
+      secStats[secKey].active++;
+      secStats[secKey].duty += duty;
+      secStats[secKey].ot += ot;
+      secStats[secKey].night += night;
+    }
+  });
+
+  const actCount = rppfActive.length || 1;
+  const setT = (id, txt) => { const el = _el(id); if (el) el.textContent = txt; };
+
+  setT('incKpiTotalDuty', `${Math.round(totDuty).toLocaleString()}h`);
+  setT('incKpiDutyAvg', `${(totDuty / actCount).toFixed(1)}h / emp`);
+  setT('incKpiTotalOt', `${Math.round(totOt).toLocaleString()}h`);
+  setT('incKpiOtAvg', `${(totOt / actCount).toFixed(1)}h / emp`);
+  setT('incKpiNightShifts', `${totNight.toLocaleString()}`);
+  setT('incKpiPlainDays', `${totPlain.toLocaleString()}`);
+  setT('incKpiHolidayDays', `${totHoli.toLocaleString()}`);
+  setT('incKpiActiveCount', `${rppfActive.length} active`);
+
+  const tbody = _el('incHistorySecTbody');
+  if (tbody) {
+    tbody.innerHTML = Object.keys(secStats).map(k => {
+      const s = secStats[k];
+      const avg = s.active > 0 ? (s.duty / s.active).toFixed(1) : '0';
+      return `<tr onclick="openInchargeAreaRanking('${esc(k)}', '${esc(mStr)}')" style="cursor:pointer;" title="Tap to view ${esc(s.name)} ranking for ${esc(mStr)}">
+        <td style="font-weight:700;display:flex;align-items:center;gap:6px;">
+          <span>${esc(s.name)}</span>
+          <span style="font-size:11px;color:var(--brand);">›</span>
+        </td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;">${s.active}</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:700;">${Math.round(s.duty).toLocaleString()}h</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--brand);font-weight:700;">${Math.round(s.ot).toLocaleString()}h</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;">${s.night}</td>
+        <td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);">${avg}h</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+/* ==========================================================================
+   ATTENDANCE & OPERATIONAL RISK WATCHLIST CONTROLLER (IN-CHARGE HOME)
+   ========================================================================== */
+let _incWatchlistTab = 'absent';
+
+function setIncWatchlistTab(tabVal) {
+  _incWatchlistTab = tabVal || 'absent';
+  document.querySelectorAll('#incWatchlistTabs .inc-watch-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-watch-tab') === _incWatchlistTab);
+  });
+  renderInchargeWatchlist();
+}
+
+function renderInchargeWatchlist() {
+  const container = _el('incHomeWatchlistList');
+  if (!container) return;
+
+  const month = _incHistorySelectedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10');
+  const list = monthIndexMemoryCache[month] || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.allEmployees) || [];
+  const rppfActive = Array.isArray(list)
+    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id))
+    : [];
+
+  if (rppfActive.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;">Loading watchlist data for ${esc(month)}...</div>`;
+    return;
+  }
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Pack' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'SG' : a === OVERALL_AREA ? 'Exec' : (a || 'RPPF');
+
+  let items = [];
+  if (_incWatchlistTab === 'absent') {
+    items = [...rppfActive]
+      .map(e => {
+        let cnt = e.generalAbsentCount;
+        if (cnt == null && typeof computeEmpGeneralAbsents === 'function') {
+          const res = computeEmpGeneralAbsents(e, month);
+          cnt = res.count || (res.dates ? res.dates.length : 0);
+          e.generalAbsentCount = cnt;
+        }
+        return { emp: e, count: cnt || 0 };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Days Absent`,
+        sub: `Recurring absence • Tap to inspect dates`,
+        crit: 'absent'
+      }));
+  } else if (_incWatchlistTab === 'punch') {
+    items = [...rppfActive]
+      .map(e => {
+        const probs = Array.isArray(e.punchProblems) ? e.punchProblems.length : (e.punchAnomalyCount || e.missingPunchCount || 0);
+        return { emp: e, count: probs };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Punch Anomalies`,
+        sub: `Missing punch-in/out • Tap to review punches`,
+        crit: 'punch'
+      }));
+    if (items.length === 0) {
+      items = [...rppfActive].slice(0, 6).map(e => ({
+        emp: e,
+        val: `Punches Verified`,
+        sub: `Regular punch history • Tap to review`,
+        crit: 'punch'
+      }));
+    }
+  } else if (_incWatchlistTab === 'req') {
+    items = [...rppfActive]
+      .map(e => {
+        const cnt = Number(e.requisitionProblemCount || (Array.isArray(e.requisitionProblems) ? e.requisitionProblems.length : 0)) || (e.unreqOtHours || 0);
+        return { emp: e, count: cnt };
+      })
+      .filter(x => x.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map(x => ({
+        emp: x.emp,
+        val: `${x.count} Unreq OT Records`,
+        sub: `Pending OT approval • Tap to inspect`,
+        crit: 'requisition'
+      }));
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="empty-msg" style="padding:14px;">No anomalies flagged under this category for ${esc(month)}.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(item => {
+    const e = item.emp;
+    const a = getAreaForId(e.id, true);
+    const sub = e.sub ? ` • ${e.sub}` : '';
+    return `<div class="inc-watch-item" onclick="openIccContextModal('${esc(e.id)}', '${esc(item.crit)}', '${esc(month)}')" title="Tap to inspect ${esc(item.crit)} context modal">
+      <div class="inc-watch-info">
+        <div class="inc-watch-name">${esc(e.name || e.id)} <span class="inc-watch-id">(${esc(e.id)})</span></div>
+        <div class="inc-watch-sub">${esc(areaShort(a))}${esc(sub)} • ${esc(item.sub)}</div>
+      </div>
+      <div class="inc-watch-right">
+        <span class="inc-watch-val">${esc(item.val)}</span>
+        <span class="inc-watch-arrow">Inspect ›</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openInchargeAreaRanking(areaVal, optMonth) {
+  if (optMonth) {
+    const parts = optMonth.split('-');
+    if (parts.length === 2) {
+      const ySel = _el('yearSelect');
+      const mSel = _el('monthSelect');
+      if (ySel) ySel.value = parts[0];
+      if (mSel) mSel.value = parts[1];
+    }
+  }
   const areaSel = _el('areaFilter');
   if (areaSel) {
     if (![...areaSel.options].some(o => o.value === areaVal)) {
@@ -6653,7 +7470,7 @@ function renderInchargeHomeAbsentList() {
     const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
     const subTxt = item.sub || dirRec?.sub ? ` • ${item.sub || dirRec.sub}` : '';
     const noteTxt = item.note ? ` (${item.note})` : '';
-    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}', true)" title="Tap to view employee profile">
+    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
       <div class="inc-absent-emp">
         <div class="inc-absent-name">${esc(dispName)} <span style="color:var(--danger);font-size:12px;">(${esc(item.id)})</span></div>
         <div class="inc-absent-sub">${esc(areaShort(item.area))}${esc(subTxt)} • ${esc(item.designation || 'Employee')}</div>
@@ -6748,7 +7565,7 @@ function renderInchargeHomeToppers() {
     const top3 = [...areaFiltered].sort(cat.sortFn).slice(0, 3);
     const rowsHtml = top3.map((e, idx) => {
       const subBadge = e.sub ? ` • ${e.sub}` : '';
-      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${cat.key}')">
+      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
         <span class="inc-topper-medal m-${idx + 1}">${idx + 1}</span>
         <div class="inc-topper-info">
           <div class="inc-topper-name">${esc(e.name || e.id)}</div>
@@ -6826,8 +7643,11 @@ async function renderInchargeHomeOverview() {
   setT('incMetaPack', `${(AREA_SUBS['Packing Hall'] || []).length} sub-sections • Active`);
   setT('incMetaExec', `Management & Officers`);
 
+  renderInchargeHomeLeavesList();
   renderInchargeHomeAbsentList();
+  renderInchargeHistoricalAnalytics();
   renderInchargeHomeToppers();
+  renderInchargeWatchlist();
 }
 
 /* Quick Absent Modal Handlers */
@@ -7235,7 +8055,7 @@ function wireAllAutocompleteSearchInputs() {
     findReport();
   });
   attachEmployeeAutocompleteToInput(_el('lbQuickSearchInput'), (id) => {
-    viewEmployeeFromLeaderboard(id, true);
+    viewEmployeeFromLeaderboard(id);
   });
   attachEmployeeAutocompleteToInput(_el('iccSearchInput'), () => {
     renderIccDrillList();

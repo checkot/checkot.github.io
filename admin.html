@@ -49,7 +49,6 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/admin.css">
-  <link rel="stylesheet" href="css/rank-details.css">
 </head>
 <body data-page="admin">
 <div class="page" id="page-admin">
@@ -1317,6 +1316,29 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
     </div>
   </div>
 
+  <!-- Approved Maternity & Long-Term Leave Tracker -->
+  <div class="inc-leaves-card" id="incHomeLeavesCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Approved Maternity &amp; Long-Term Leaves</span>
+          <span class="badge info" id="incLeavesCountBadge">9 Active</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Exempted from daily ERP absence list (HR &amp; Factory approved)</div>
+      </div>
+      <span class="inc-leaves-status-badge">6-Month Duration</span>
+    </div>
+    <div class="inc-leaves-pill-bar" id="incLeavesAreaBar">
+      <button type="button" class="inc-leaves-filter-btn active" data-leave-area="all" onclick="filterIncHomeLeaves('all')">All Sections (9)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Packing Hall" onclick="filterIncHomeLeaves('Packing Hall')">Packing Hall (9)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Solid Production" onclick="filterIncHomeLeaves('Solid Production')">Solid (0)</button>
+      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Softgel Production" onclick="filterIncHomeLeaves('Softgel Production')">Softgel (0)</button>
+    </div>
+    <div class="inc-leaves-grid" id="incHomeLeavesList">
+      <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading approved leaves...</div>
+    </div>
+  </div>
+
   <!-- Today's Absent Employee List (Updated from Admin Corner by ERP) -->
   <div class="inc-absent-card" id="incHomeAbsentCard">
     <div class="inc-section-head">
@@ -1332,6 +1354,10 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
         <button type="button" class="calc-mini-btn" id="incQuickEditAbsentBtn" onclick="openQuickAbsentModal()" style="display:none;">+ Update</button>
       </div>
     </div>
+    <div class="inc-absent-exemption-banner">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span><strong>Maternity Exemption:</strong> 9 female workers currently on 6-month maternity leave are factory-approved and automatically excluded from daily absent penalties.</span>
+    </div>
     <div class="inc-absent-pill-bar" id="incAbsentAreaFilterBar">
       <button type="button" class="inc-absent-filter-btn active" data-abs-area="all" onclick="filterIncHomeAbsent('all')">All Sections</button>
       <button type="button" class="inc-absent-filter-btn" data-abs-area="Solid Production" onclick="filterIncHomeAbsent('Solid Production')">Solid</button>
@@ -1341,6 +1367,75 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
     </div>
     <div class="inc-absent-grid" id="incHomeAbsentList">
       <div class="empty-msg" style="padding:14px 8px;grid-column:1/-1;">No absent employees recorded for today.</div>
+    </div>
+  </div>
+
+  <!-- Historical Production & Shift Analytics -->
+  <div class="inc-history-card" id="incHomeHistoryCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Historical Production &amp; Shift Analytics</span>
+          <span class="badge brand" id="incHistoryActiveMonthBadge">2026-10</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incHistorySubMeta">Plant-wide duty hours, overtime, night shifts &amp; section comparison</div>
+      </div>
+      <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Drill Down ›</button>
+    </div>
+    <div class="inc-history-timeline-bar" id="incHistoryTimelineBar">
+      <!-- dynamically populated: Oct 2026, Sep 2026, Aug 2026, Jul 2026, Jun 2026... -->
+    </div>
+    <div class="inc-history-kpi-grid" id="incHistoryKpiGrid">
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Total Duty Hours</div>
+        <div class="inc-kpi-val" id="incKpiTotalDuty">0h</div>
+        <div class="inc-kpi-sub" id="incKpiDutyAvg">0h / emp</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Total Overtime (OT)</div>
+        <div class="inc-kpi-val" id="incKpiTotalOt" style="color:var(--brand);">0h</div>
+        <div class="inc-kpi-sub" id="incKpiOtAvg">0h / emp</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Night Shifts</div>
+        <div class="inc-kpi-val" id="incKpiNightShifts" style="color:var(--indigo);">0</div>
+        <div class="inc-kpi-sub">Total nights</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Regular (4:30pm) Days</div>
+        <div class="inc-kpi-val" id="incKpiPlainDays" style="color:var(--success);">0</div>
+        <div class="inc-kpi-sub">Standard shift</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Holiday Duties</div>
+        <div class="inc-kpi-val" id="incKpiHolidayDays" style="color:var(--warn);">0</div>
+        <div class="inc-kpi-sub">Holiday / Weekend</div>
+      </div>
+      <div class="inc-kpi-box">
+        <div class="inc-kpi-lbl">Active Workforce</div>
+        <div class="inc-kpi-val" id="incKpiActiveCount">0</div>
+        <div class="inc-kpi-sub">RPPF production</div>
+      </div>
+    </div>
+    <div class="inc-history-sec-table-wrap">
+      <div class="inc-sec-table-title">Section Performance Comparison</div>
+      <div class="table-scroll-x" style="overflow-x:auto;">
+        <table class="inc-sec-table" id="incHistorySecTable">
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th style="text-align:right;">Active</th>
+              <th style="text-align:right;">Total Duty</th>
+              <th style="text-align:right;">Total OT</th>
+              <th style="text-align:right;">Night</th>
+              <th style="text-align:right;">Avg Duty</th>
+            </tr>
+          </thead>
+          <tbody id="incHistorySecTbody">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1362,6 +1457,28 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
     </div>
     <div class="inc-toppers-grid" id="incHomeToppersGrid">
       <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading category toppers...</div>
+    </div>
+  </div>
+
+  <!-- Attendance & Operational Risk Watchlist -->
+  <div class="inc-watchlist-card" id="incHomeWatchlistCard">
+    <div class="inc-section-head">
+      <div>
+        <h4 class="inc-section-title">
+          <span>Operational Risk &amp; Anomaly Watchlist</span>
+          <span class="badge warn" id="incWatchlistRiskBadge">Action Required</span>
+        </h4>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Discipline, single-punch &amp; recurring attendance anomalies</div>
+      </div>
+      <span class="inc-watchlist-hint">Tap employee to inspect dates</span>
+    </div>
+    <div class="inc-watchlist-tabs" id="incWatchlistTabs">
+      <button type="button" class="inc-watch-tab-btn active" data-watch-tab="absent" onclick="setIncWatchlistTab('absent')">High Absenteeism</button>
+      <button type="button" class="inc-watch-tab-btn" data-watch-tab="punch" onclick="setIncWatchlistTab('punch')">Punch Anomalies</button>
+      <button type="button" class="inc-watch-tab-btn" data-watch-tab="req" onclick="setIncWatchlistTab('req')">OT Requisitions</button>
+    </div>
+    <div class="inc-watchlist-list" id="incHomeWatchlistList">
+      <div class="empty-msg" style="padding:14px;">Loading watchlist...</div>
     </div>
   </div>
 </section>
@@ -2211,7 +2328,6 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
   <!-- Modular Admin Scripts (Step 7) -->
   <script src="js/admin/admin-github.js"></script>
   <script src="js/admin/admin-core.js"></script>
-  <script src="js/components/rank-details.js"></script>
   <script src="js/admin/admin-tools.js"></script>
   <script src="js/admin/admin-sync-bar.js"></script>
   <script>

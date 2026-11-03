@@ -28,7 +28,9 @@ let ABSENT_STORE = {
   activeDate: new Date().toISOString().slice(0, 10),
   updatedAt: new Date().toISOString(),
   records: {},
-  auditLog: []
+  auditLog: [],
+  byDate: {},
+  longTermLeaves: []
 };
 
 let _memAppMode = 'normal';
