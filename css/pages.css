@@ -5688,7 +5688,7 @@ body.norate-view #compareMyAmount {
     font-size: 9.5px !important;
   }
 
-  /* In-Charge Desktop Split: Hero on Top, Absent and Toppers Side-by-Side */
+  /* In-Charge Desktop Split: Hero, Leaves, History & Watchlist Full Width, Absent & Toppers Side-by-Side */
   @media (min-width: 900px) {
     #inchargeHomeOverview {
       display: grid !important;
@@ -5699,6 +5699,9 @@ body.norate-view #compareMyAmount {
     #inchargeHomeOverview > .inc-ov-hero {
       grid-column: 1 / -1 !important;
     }
+    #inchargeHomeOverview > #incHomeLeavesCard {
+      grid-column: 1 / -1 !important;
+    }
     #inchargeHomeOverview > #incHomeAbsentCard {
       grid-column: 1 !important;
       margin: 0 !important;
@@ -5706,6 +5709,12 @@ body.norate-view #compareMyAmount {
     #inchargeHomeOverview > #incHomeToppersCard {
       grid-column: 2 !important;
       margin: 0 !important;
+    }
+    #inchargeHomeOverview > #incHomeHistoryCard {
+      grid-column: 1 / -1 !important;
+    }
+    #inchargeHomeOverview > #incHomeWatchlistCard {
+      grid-column: 1 / -1 !important;
     }
   }
 
