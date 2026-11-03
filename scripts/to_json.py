@@ -174,7 +174,7 @@ def parse_emp_header(col0, emp_id):
     m = re.match(r'^(.*?)\s{2,}(.+)$', name_desig)
     if m:
         return clean_emp_name(m.group(1)), clean_designation(m.group(2))
-    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual).*)$', name_desig, re.IGNORECASE)
+    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual)\b.*)$', name_desig, re.IGNORECASE)
     if g:
         return clean_emp_name(g.group(1)), clean_designation(g.group(2))
     return clean_emp_name(name_desig), ""
@@ -182,12 +182,12 @@ def parse_emp_header(col0, emp_id):
 def detect_category(grade_text, emp_id):
     g = (grade_text or "").upper().strip()
     id_upper = (emp_id or "").upper().strip()
-    if id_upper.startswith("CF") or re.search(r'HELPER', g):
+    if id_upper.startswith("CF") or re.search(r'\bHELPER\b', g):
         return {"category": "CF", "valid": True, "reason": "Contractual", "gradeText": g or "CF"}
-    if re.search(r'(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)', g) and not re.search(r'JUNIOR\s+OFFICER', g):
+    if re.search(r'\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b', g) and not re.search(r'JUNIOR\s+OFFICER', g):
         return {"category": None, "valid": False, "reason": "Management/Executive", "gradeText": g}
-    grade_match = re.search(r'JUNIOR\s+OFFICER\s+([A-F])', g)
-    level_match = re.search(r'M(\d{2})', g)
+    grade_match = re.search(r'JUNIOR\s+OFFICER\s+([A-F])\b', g)
+    level_match = re.search(r'\bM(\d{2})\b', g)
     grade_letter = grade_match.group(1).upper() if grade_match else None
     level_num = int(level_match.group(1)) if level_match else None
     if grade_letter:
@@ -380,7 +380,16 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
     absent_dates = []
     mon_name = MONTH_NAMES[m - 1]
 
-    for d in range(1, last_day + 1):
+    # Calculate cutoff day: do not count future days as absent!
+    bd_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=6)))
+    is_current_month = (y == bd_now.year and m == bd_now.month)
+    max_data_day = max(worked_days) if worked_days else 0
+    if is_current_month:
+        cutoff_day = min(last_day, max_data_day if max_data_day > 0 else bd_now.day)
+    else:
+        cutoff_day = last_day
+
+    for d in range(1, cutoff_day + 1):
         dt_obj = datetime.date(y, m, d)
         day_name = dt_obj.strftime("%a")
         full_date = f"{d:02d}-{mon_name}-{y}".upper()
@@ -758,6 +767,10 @@ def main():
 
     if not all_employees_map:
         print("[ERROR] No employee records could be parsed from raw files.")
+        sys.exit(1)
+
+    if len(all_employees_map) < 50:
+        print(f"[ERROR] Parsed employee count ({len(all_employees_map)}) is suspiciously low. Aborting to protect latest.json.")
         sys.exit(1)
 
     if total_month_counts:
