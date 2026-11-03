@@ -911,6 +911,19 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
 </div>
 </div>
 </div>
+<div id="iccContextModal" class="lb-modal" onclick="iccContextModalBackdropClick(event)">
+<div class="lb-modal-content" style="max-width:580px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="iccCtxTitle">
+<div class="lb-modal-header">
+<div class="lb-modal-title-wrap">
+<div class="lb-modal-title" id="iccCtxTitle">Employee Details</div>
+<div class="lb-modal-subtitle" id="iccCtxSubtitle">—</div>
+</div>
+<button type="button" class="lb-modal-close" onclick="closeIccContextModal()" aria-label="Close">✕</button>
+</div>
+<div class="lb-modal-body" id="iccCtxBody"></div>
+<div class="lb-modal-footer" id="iccCtxFooter" style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--surface-2);border-radius:0 0 var(--radius-lg) var(--radius-lg);"></div>
+</div>
+</div>
 <div id="lbFullListModal" class="lb-modal" onclick="lbModalBackdropClick(event)">
 <div class="lb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="lbFullListTitle">
 <div class="lb-modal-header">

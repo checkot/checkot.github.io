@@ -606,6 +606,149 @@ button:disabled {
   font-size: var(--fs-sm);
 }
 
+
+/* Context-Aware Ranking Details Modal */
+#iccContextModal {
+  z-index: 10050;
+}
+.icc-ctx-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 13px;
+  border-radius: 9px;
+  margin-bottom: 12px;
+}
+.icc-ctx-banner.absent {
+  background: var(--danger-bg, #fef2f2);
+  border: 1px solid var(--danger-border, #fecaca);
+}
+.icc-ctx-banner.absent .icc-ctx-banner-title {
+  color: #dc2626;
+}
+.icc-ctx-banner.punch, .icc-ctx-banner.req {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+.icc-ctx-banner.punch .icc-ctx-banner-title,
+.icc-ctx-banner.req .icc-ctx-banner-title {
+  color: #d97706;
+}
+.icc-ctx-banner.duty, .icc-ctx-banner.multi {
+  background: var(--brand-soft, #f0fdf4);
+  border: 1px solid var(--brand-soft-border, #bbf7d0);
+}
+.icc-ctx-banner.duty .icc-ctx-banner-title,
+.icc-ctx-banner.multi .icc-ctx-banner-title {
+  color: var(--brand-text, #15803d);
+}
+.icc-ctx-banner-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.icc-ctx-banner-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.icc-ctx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.icc-ctx-kpi {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+}
+.icc-ctx-kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.icc-ctx-kpi-val {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--text);
+  margin-top: 2px;
+}
+.icc-ctx-date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.icc-ctx-date-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3.5px solid #dc2626;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.icc-ctx-month-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 9px;
+}
+.icc-ctx-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.icc-ctx-month-title {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+}
+.icc-ctx-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.icc-ctx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.icc-ctx-table th {
+  background: var(--surface-2);
+  padding: 7px 10px;
+  font-weight: 700;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.icc-ctx-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.icc-ctx-table tr:last-child td {
+  border-bottom: none;
+}
+
 .rate-table {
   width: 100%;
   border-collapse: collapse;

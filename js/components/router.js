@@ -158,10 +158,14 @@
   }
 
   function closeAnyOpenModal() {
+    if (document.getElementById('iccContextModal')?.classList.contains('open')) {
+      if (typeof closeIccContextModal === 'function') closeIccContextModal();
+      return true;
+    }
     const openModals = [
       'adminCatAuthModal', 'empAdminCatModal', 'lbFullListModal',
       'rateChartModal', 'modeSetupModal', 'erpSupportModal',
-      'confirmActionModal', 'complianceModal', 'welcomeBackModal'
+      'confirmActionModal', 'complianceModal', 'welcomeBackModal', 'iccContextModal'
     ];
     for (const mId of openModals) {
       const el = document.getElementById(mId);

@@ -162,6 +162,7 @@ const { merged } = await aggregateMultiMonthEmployees(monthsToLoad);
 if (merged && merged.length > 0) {
 const lbPayload = buildLeaderboardPayloadFromList(month, merged);
 lbPayload.timeMode = currentLbTimeMode;
+lbPayload.loadedMonths = monthsToLoad;
 currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
@@ -425,17 +426,509 @@ document.body.style.overflow = ''; document.body.style.position = ''; document.b
 currentLbListType = null;
 }
 
-async function viewEmployeeFromLeaderboard(empId) {
-if (document.getElementById('lbFullListModal').classList.contains('open')) closeLbFullList();
-const month = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || getCurrentMonth();
-const [year, mon] = month.split('-');
-document.getElementById('yearSelect').value = year;
-document.getElementById('monthSelect').value = mon;
-document.getElementById('employeeId').value = empId;
-toggleClearIdBtn();
-document.getElementById('backToLbBtn').style.display = "block"; _lbView = true;
-switchPage('search');
-setTimeout(() => { findReport(); }, 100);
+/* ==========================================================================
+   CONTEXT-AWARE RANKING DETAILS MODAL ENGINE
+   ========================================================================== */
+function closeIccContextModal() {
+  const modal = document.getElementById('iccContextModal');
+  if (modal) modal.classList.remove('open');
+  if (typeof iccDrillOpen === 'undefined' || !iccDrillOpen) {
+    if (!document.getElementById('lbFullListModal')?.classList.contains('open')) {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+  }
+}
+
+function iccContextModalBackdropClick(e) {
+  if (e && e.target && e.target.id === 'iccContextModal') {
+    closeIccContextModal();
+  }
+}
+
+async function openFullEmployeeReport(empId, targetMonth) {
+  closeIccContextModal();
+  if (document.getElementById('lbFullListModal')?.classList.contains('open')) closeLbFullList();
+  const m = targetMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const mClean = String(m).includes(' - ') ? m.split(' - ')[1].trim() : String(m).split(' ')[0];
+  const [year, mon] = (mClean.includes('-') ? mClean : (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10')).split('-');
+  const ySel = document.getElementById('yearSelect');
+  const mSel = document.getElementById('monthSelect');
+  if (ySel) ySel.value = year;
+  if (mSel) mSel.value = mon;
+  const empInp = document.getElementById('employeeId');
+  if (empInp) empInp.value = empId;
+  if (typeof toggleClearIdBtn === 'function') toggleClearIdBtn();
+  const backBtn = document.getElementById('backToLbBtn');
+  if (backBtn) backBtn.style.display = "block";
+  _lbView = true;
+  if (typeof switchPage === 'function') switchPage('search');
+  setTimeout(() => { if (typeof findReport === 'function') findReport(); }, 100);
+}
+
+function openIccContextModal(empId, optCrit, optMonth) {
+  if (!empId) return;
+  const modal = document.getElementById('iccContextModal');
+  if (!modal) return;
+
+  const curM = optMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  const cleanM = String(curM).includes(' - ') ? curM.split(' - ')[1].trim() : String(curM).split(' ')[0];
+  const crit = optCrit || (typeof activeIccCriterion !== 'undefined' && activeIccCriterion) || (typeof currentLbListType !== 'undefined' && currentLbListType) || 'duty';
+  const isMultiTime = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.timeMode && currentLeaderboardResult.timeMode !== 'monthly');
+  const incMode = typeof getAppMode === 'function' && getAppMode() === 'incharge';
+
+  // Find employee in active result or cache
+  let emp = null;
+  if (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.allEmployees)) {
+    emp = currentLeaderboardResult.allEmployees.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+  }
+  if (!emp && typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.filtered && Array.isArray(currentLeaderboardResult.filtered._rawFiltered)) {
+    emp = currentLeaderboardResult.filtered._rawFiltered.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+  }
+  if (!emp && typeof monthIndexMemoryCache !== 'undefined') {
+    const list = monthIndexMemoryCache[cleanM] || monthIndexMemoryCache[typeof getCurrentMonth === 'function' ? getCurrentMonth() : ''];
+    if (Array.isArray(list)) {
+      emp = list.find(e => e.id === empId || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(e.id) === resolveEmpAliasId(empId)));
+    }
+  }
+  if (!emp) {
+    const meta = typeof getEmpMeta === 'function' ? getEmpMeta(empId) : {};
+    emp = {
+      id: empId,
+      name: meta.name || empId,
+      area: typeof getAreaForId === 'function' ? getAreaForId(empId, true) : 'RPPF',
+      grade: meta.grade || '',
+      sub: meta.sub || '',
+      totalDuty: 0,
+      otHours: 0,
+      holidayCount: 0,
+      nightCount: 0,
+      plainDaysCount: 0,
+      totalEarned: 0
+    };
+  }
+
+  const titleEl = document.getElementById('iccCtxTitle');
+  const subEl = document.getElementById('iccCtxSubtitle');
+  const bodyEl = document.getElementById('iccCtxBody');
+  const footerEl = document.getElementById('iccCtxFooter');
+  if (!bodyEl || !footerEl) return;
+
+  const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : (typeof OVERALL_AREA !== 'undefined' && a === OVERALL_AREA) ? 'Executives' : (a || 'RPPF');
+  const desig = typeof getDesignation === 'function' ? getDesignation(emp) : (emp.grade || '');
+  const subName = emp.sub || (typeof getEmpMeta === 'function' ? getEmpMeta(emp.id).sub : '') || '';
+  const areaName = typeof getAreaForId === 'function' ? getAreaForId(emp.id, true) : (emp.area || 'RPPF');
+
+  let periodLabel = cleanM;
+  if (isMultiTime) {
+    const mc = emp.monthsCount || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.loadedMonths ? currentLeaderboardResult.loadedMonths.length : (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode === '3m' ? 3 : (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode === '6m' ? 6 : 'Multi')));
+    const modeName = typeof currentLbTimeMode !== 'undefined' ? (currentLbTimeMode === '3m' ? '3 Months' : (currentLbTimeMode === '6m' ? '6 Months' : (currentLbTimeMode === 'ytd' ? 'YTD' : (currentLbTimeMode === '1y' ? '1 Year' : 'All-Time')))) : 'Multi-Month';
+    periodLabel = `${modeName} (${mc}m)`;
+  } else {
+    const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const pts = cleanM.split('-');
+    if (pts.length === 2) {
+      const mi = parseInt(pts[1], 10) - 1;
+      periodLabel = `${mons[mi] || pts[1]} ${pts[0]}`;
+    }
+  }
+
+  if (titleEl) titleEl.innerHTML = `${esc(emp.name || emp.id)} <span style="font-weight:600;font-size:13px;opacity:0.85;">(${esc(emp.id)})</span>`;
+  if (subEl) {
+    const subBadge = subName ? `<span class="badge" style="background:var(--brand-soft);color:var(--brand-text);border:1px solid var(--brand-soft-border);font-size:11px;padding:2px 6px;border-radius:4px;margin-right:4px;">${esc(subName)}</span>` : '';
+    subEl.innerHTML = `${subBadge}${esc(areaShort(areaName))}${desig ? ' • ' + esc(desig) : ''} • <span style="font-weight:700;color:var(--text);">${esc(periodLabel)}</span>`;
+  }
+
+  const prevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(cleanM) : new Set();
+  const prevHas = prevSet.has(String(emp.id).toUpperCase()) || (typeof resolveEmpAliasId === 'function' && prevSet.has(resolveEmpAliasId(emp.id)));
+
+  let loadedMonthsList = [];
+  if (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.loadedMonths)) {
+    loadedMonthsList = [...currentLeaderboardResult.loadedMonths];
+  } else if (typeof monthIndexMemoryCache !== 'undefined') {
+    loadedMonthsList = Object.keys(monthIndexMemoryCache).filter(m => Array.isArray(monthIndexMemoryCache[m]) && monthIndexMemoryCache[m].length > 0).sort();
+  }
+  if (!loadedMonthsList.length) loadedMonthsList = [cleanM];
+
+  let bodyHtml = '';
+
+  // -------------------------------------------------------------
+  // CONTEXT 1: ABSENT CRITERION
+  // -------------------------------------------------------------
+  if (crit === 'absent') {
+    let absCount = 0;
+    if (isMultiTime) {
+      absCount = emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0);
+    } else {
+      const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, cleanM, prevHas) : { count: emp.generalAbsentCount || 0, dates: emp.generalAbsentDays || [] };
+      absCount = absRes.count || (absRes.dates ? absRes.dates.length : 0);
+    }
+
+    bodyHtml += `
+      <div class="icc-ctx-banner absent">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>🔴</span><span>${isMultiTime ? 'Total Period Absent' : 'Monthly Absent'}: <b>${absCount} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">General absent dates (excludes holidays & scheduled off-days)</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    if (!isMultiTime) {
+      const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, cleanM, prevHas) : { dates: (emp.generalAbsentDays || []), count: (emp.generalAbsentCount || 0) };
+      const dList = absRes.dates || [];
+      if (!dList.length) {
+        bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, ${esc(periodLabel)} মাসে কোনো অ্যাবসেন্ট নেই (0 Days Absent - 100% Attendance).</div>`;
+      } else {
+        bodyHtml += `
+          <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+            Specific Absent Calendar Dates (${dList.length} Days)
+          </div>
+          <div class="icc-ctx-date-grid">
+            ${dList.map(d => `<div class="icc-ctx-date-item"><span>📅</span><span>${esc(d)}</span></div>`).join('')}
+          </div>
+        `;
+      }
+
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-top:14px;margin-bottom:8px;">
+          Monthly Duty Summary
+        </div>
+        <div class="icc-ctx-grid">
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Duty Hours</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holidays</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Nights</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+          <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val">${getPunchProblemCount(emp)}d</span></div>
+        </div>
+      `;
+    } else {
+      // Multi-month absent breakdown
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Month-by-Month Absent Breakdown
+        </div>
+      `;
+
+      const monthBlocksHtml = loadedMonthsList.map(mStr => {
+        const mEmp = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+          ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+          : null;
+        if (!mEmp) return '';
+        const mPrevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(mStr) : new Set();
+        const mPrevHas = mPrevSet.has(String(emp.id).toUpperCase()) || (typeof resolveEmpAliasId === 'function' && mPrevSet.has(resolveEmpAliasId(emp.id)));
+        const mAbs = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(mEmp, mStr, mPrevHas) : { dates: (mEmp.generalAbsentDays || []), count: (mEmp.generalAbsentCount || 0) };
+        const dArr = mAbs.dates || [];
+
+        const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mParts = mStr.split('-');
+        const mLbl = mParts.length === 2 ? `${mons[parseInt(mParts[1], 10)-1] || mParts[1]} ${mParts[0]}` : mStr;
+
+        return `
+          <div class="icc-ctx-month-card">
+            <div class="icc-ctx-month-header">
+              <div class="icc-ctx-month-title">${esc(mLbl)} <span style="font-size:12px;font-weight:700;color:${dArr.length > 0 ? '#dc2626' : '#059669'};">(${dArr.length} days absent)</span></div>
+              <button type="button" class="btn-secondary" style="min-height:28px;padding:2px 8px;font-size:11px;" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(mStr)}')">View ${esc(mLbl.split(' ')[0])} Report →</button>
+            </div>
+            ${dArr.length > 0
+              ? `<div class="icc-ctx-date-grid" style="margin-bottom:0;">${dArr.map(d => `<div class="icc-ctx-date-item"><span>📅</span><span>${esc(d)}</span></div>`).join('')}</div>`
+              : `<div style="font-size:11.5px;color:#059669;font-weight:600;">✓ 100% Attendance (0 days absent)</div>`
+            }
+          </div>
+        `;
+      }).filter(Boolean).join('');
+
+      bodyHtml += monthBlocksHtml || `<div class="empty-msg" style="padding:16px;text-align:center;">No monthly records found.</div>`;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 2: PUNCH PROBLEM CRITERION
+  // -------------------------------------------------------------
+  else if (crit === 'punch') {
+    const pCount = getPunchProblemCount(emp);
+    bodyHtml += `
+      <div class="icc-ctx-banner punch">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>⚠️</span><span>Missing In/Out Punches: <b>${pCount} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">Punch missing dates requiring ERP attendance punch adjustment</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    const punchRows = [];
+    const monthsToScan = isMultiTime ? loadedMonthsList : [cleanM];
+    monthsToScan.forEach(mStr => {
+      const mEmp = (isMultiTime && typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+        ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+        : emp;
+      if (!mEmp || !Array.isArray(mEmp.daily)) return;
+      mEmp.daily.forEach(row => {
+        if (!Array.isArray(row) || row.length < 4) return;
+        const [dt, day, inn, out] = row;
+        const inMiss = typeof isPunchMissing === 'function' ? isPunchMissing(inn) : (!inn || inn === '--:--');
+        const outMiss = typeof isPunchMissing === 'function' ? isPunchMissing(out) : (!out || out === '--:--');
+        if (inMiss || outMiss) {
+          punchRows.push({
+            date: dt,
+            day: day || '',
+            in: inMiss ? '--:--' : inn,
+            out: outMiss ? '--:--' : out,
+            inMiss,
+            outMiss,
+            type: inMiss && outMiss ? 'In & Out Missing' : (inMiss ? 'In Punch Missing' : 'Out Punch Missing'),
+            month: mStr
+          });
+        }
+      });
+    });
+
+    if (!punchRows.length) {
+      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, কোনো পাঞ্চ মিসিং সমস্যা নেই (All Punches OK).</div>`;
+    } else {
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Missing Punch Records (${punchRows.length} Days)
+        </div>
+        <div class="icc-ctx-table-wrap">
+          <table class="icc-ctx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>In Punch</th>
+                <th>Out Punch</th>
+                <th>Missing Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${punchRows.map(p => `
+                <tr>
+                  <td style="font-weight:700;">${esc(p.date)}</td>
+                  <td style="color:var(--muted);">${esc(p.day)}</td>
+                  <td style="color:${p.inMiss ? '#dc2626' : 'var(--text)'};font-weight:${p.inMiss ? '800' : '600'};">${esc(p.in)}</td>
+                  <td style="color:${p.outMiss ? '#dc2626' : 'var(--text)'};font-weight:${p.outMiss ? '800' : '600'};">${esc(p.out)}</td>
+                  <td><span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:700;padding:2px 6px;border-radius:4px;font-size:11px;">${esc(p.type)}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 3: REQUISITION CRITERION
+  // -------------------------------------------------------------
+  else if (crit === 'requisition') {
+    const reqProbs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (emp.requisitionProblems || []);
+    bodyHtml += `
+      <div class="icc-ctx-banner req">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>📋</span><span>Pending OT Requisitions: <b>${reqProbs.length} Days</b></span>
+          </div>
+          <div class="icc-ctx-banner-sub">Employee worked overtime hours but In-Charge approval requisition is pending</div>
+        </div>
+        <div>
+          <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+    `;
+
+    if (!reqProbs.length) {
+      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).</div>`;
+    } else {
+      bodyHtml += `
+        <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+          Pending Requisition Dates (${reqProbs.length} Days)
+        </div>
+        <div class="icc-ctx-table-wrap">
+          <table class="icc-ctx-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Punch In/Out</th>
+                <th>Duty</th>
+                <th>Expected OT</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${reqProbs.map(p => `
+                <tr>
+                  <td style="font-weight:700;">${esc(p.date)}</td>
+                  <td style="color:var(--text-2);font-size:11.5px;">${esc(p.in)} - ${esc(p.out)}</td>
+                  <td>${esc(p.duty || p.elapsed)}h</td>
+                  <td style="font-weight:800;color:#d97706;">${esc(p.expectedOt)}</td>
+                  <td style="font-size:11.5px;color:var(--muted);">${esc(p.reason || 'Pending Requisition')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 4: MULTI-MONTH PERFORMANCE (Duty / OT / Earned / Plain / etc.)
+  // -------------------------------------------------------------
+  else if (isMultiTime) {
+    const mc = emp.monthsCount || loadedMonthsList.length || 1;
+    bodyHtml += `
+      <div class="icc-ctx-banner multi">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>📈</span><span>Multi-Month Performance Summary (<b>${mc} Months</b>)</span>
+          </div>
+          <div class="icc-ctx-banner-sub">Aggregated performance across ${esc(periodLabel)}</div>
+        </div>
+        <div>
+          <span class="badge" style="background:var(--brand-soft);color:var(--brand-text);font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(areaShort(areaName))}</span>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+        Multi-Month Total KPIs
+      </div>
+      <div class="icc-ctx-grid">
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Duty</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg Duty/Day</span><span class="icc-ctx-kpi-val">${emp.avgDutyPerDay ? emp.avgDutyPerDay + 'h' : '—'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg In Time</span><span class="icc-ctx-kpi-val">${emp.avgInTimeStr || '08:00'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holiday Duty</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Night Shifts</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Absent</span><span class="icc-ctx-kpi-val" style="color:#dc2626;">${emp.generalAbsentCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val" style="color:#d97706;">${getPunchProblemCount(emp)}d</span></div>
+        ${!incMode ? `<div class="icc-ctx-kpi" style="border-color:var(--brand);"><span class="icc-ctx-kpi-label">Total Earned</span><span class="icc-ctx-kpi-val" style="color:var(--brand-text);">৳ ${Math.round(emp.totalEarned || 0)}</span></div>` : ''}
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-top:14px;margin-bottom:8px;">
+        Month-by-Month Breakdown Table
+      </div>
+      <div class="icc-ctx-table-wrap">
+        <table class="icc-ctx-table">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Duty</th>
+              <th>OT</th>
+              ${!incMode ? '<th>Earned</th>' : ''}
+              <th>Absent</th>
+              <th>Punch</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${loadedMonthsList.map(mStr => {
+              const mEmp = (typeof monthIndexMemoryCache !== 'undefined' && monthIndexMemoryCache && monthIndexMemoryCache[mStr])
+                ? monthIndexMemoryCache[mStr].find(x => x.id === emp.id || (typeof resolveEmpAliasId === 'function' && resolveEmpAliasId(x.id) === resolveEmpAliasId(emp.id)))
+                : null;
+              const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              const mParts = mStr.split('-');
+              const mLbl = mParts.length === 2 ? `${mons[parseInt(mParts[1], 10)-1] || mParts[1]} ${mParts[0]}` : mStr;
+
+              if (!mEmp) {
+                return `<tr><td style="font-weight:700;">${esc(mLbl)}</td><td colspan="${incMode ? 5 : 6}" style="color:var(--muted);text-align:center;">No work record in this month</td></tr>`;
+              }
+              const mDuty = Math.round((Number(mEmp.totalDuty)||0)*10)/10;
+              const mOt = Math.round((Number(mEmp.otHours)||0)*10)/10;
+              const mAbs = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(mEmp, mStr) : 0;
+              const mPunch = getPunchProblemCount(mEmp);
+              const mEarn = Math.round(Number(mEmp.totalEarned || 0));
+
+              return `
+                <tr>
+                  <td style="font-weight:700;">${esc(mLbl)}</td>
+                  <td>${mDuty}h</td>
+                  <td>${mOt}h</td>
+                  ${!incMode ? `<td style="font-weight:700;color:var(--brand-text);">৳ ${mEarn}</td>` : ''}
+                  <td style="color:${mAbs > 0 ? '#dc2626' : 'var(--text)'};font-weight:${mAbs > 0 ? '700' : '400'};">${mAbs}d</td>
+                  <td style="color:${mPunch > 0 ? '#d97706' : 'var(--text)'};font-weight:${mPunch > 0 ? '700' : '400'};">${mPunch}d</td>
+                  <td><button type="button" class="btn-secondary" style="min-height:26px;padding:2px 8px;font-size:11px;" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(mStr)}')">View</button></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // -------------------------------------------------------------
+  // CONTEXT 5: SINGLE MONTH STANDARD PERFORMANCE
+  // -------------------------------------------------------------
+  else {
+    const absCount = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(emp, cleanM) : 0;
+    const punchCount = getPunchProblemCount(emp);
+    bodyHtml += `
+      <div class="icc-ctx-banner duty">
+        <div>
+          <div class="icc-ctx-banner-title">
+            <span>⏱️</span><span>Monthly Performance Summary (<b>${esc(periodLabel)}</b>)</span>
+          </div>
+          <div class="icc-ctx-banner-sub">${esc(areaShort(areaName))} • Regular & Overtime Duty Summary</div>
+        </div>
+        <div>
+          <span class="badge" style="background:var(--brand-soft);color:var(--brand-text);font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
+        Monthly Key Indicators
+      </div>
+      <div class="icc-ctx-grid">
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Total Duty</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.totalDuty)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Overtime</span><span class="icc-ctx-kpi-val">${Math.round((Number(emp.otHours)||0)*10)/10}h</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Avg In Time</span><span class="icc-ctx-kpi-val">${emp.avgInTimeStr || '08:00'}</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">4:30pm Days</span><span class="icc-ctx-kpi-val">${emp.plainDaysCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Holiday Duty</span><span class="icc-ctx-kpi-val">${emp.holidayCount || 0}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Night Shifts</span><span class="icc-ctx-kpi-val">${emp.nightCount || 0}n</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Absent Days</span><span class="icc-ctx-kpi-val" style="color:${absCount > 0 ? '#dc2626' : 'var(--text)'};">${absCount}d</span></div>
+        <div class="icc-ctx-kpi"><span class="icc-ctx-kpi-label">Punch Miss</span><span class="icc-ctx-kpi-val" style="color:${punchCount > 0 ? '#d97706' : 'var(--text)'};">${punchCount}d</span></div>
+        ${!incMode ? `<div class="icc-ctx-kpi" style="border-color:var(--brand);"><span class="icc-ctx-kpi-label">Total Earned</span><span class="icc-ctx-kpi-val" style="color:var(--brand-text);">৳ ${Math.round(emp.totalEarned || 0)}</span></div>` : ''}
+      </div>
+    `;
+  }
+
+  bodyEl.innerHTML = bodyHtml;
+
+  const targetReportMonth = isMultiTime && loadedMonthsList.length ? loadedMonthsList[loadedMonthsList.length - 1] : cleanM;
+  let reportBtnText = '📊 Open Full Monthly Report';
+  if (!incMode && (crit === 'duty' || crit === 'ot' || crit === 'earned' || crit === 'plain')) {
+    reportBtnText = '💰 View Overtime Calculation & Payslip →';
+  } else if (incMode) {
+    reportBtnText = '📋 View Monthly Work Log →';
+  }
+
+  footerEl.innerHTML = `
+    <button type="button" class="btn-secondary" onclick="closeIccContextModal()">✕ Close</button>
+    <button type="button" class="btn-primary" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(targetReportMonth)}')">${reportBtnText}</button>
+  `;
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+async function viewEmployeeFromLeaderboard(empId, forceReport = false) {
+  if (forceReport) {
+    return openFullEmployeeReport(empId);
+  }
+  return openIccContextModal(empId);
 }
 
 async function navigateLbModalMonth(delta) {
