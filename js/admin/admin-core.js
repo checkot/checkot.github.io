@@ -4065,7 +4065,7 @@ function handleAdminLogin() {
 const inp = document.getElementById('adminPassInput');
 const raw = (inp ? inp.value : '').trim();
 const expected = getAdminPassword();
-if (raw !== expected && raw !== DEFAULT_ADMIN_PASS) {
+if (raw !== expected) {
 document.getElementById('adminLoginError')?.classList.add('show');
 showToast('Wrong admin password!', 'error');
 if (inp) inp.focus();
@@ -5928,7 +5928,7 @@ return;
 }
 const passInp = document.getElementById('specialRolePassInput');
 const rawPass = String(passInp ? passInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
-const validPins = [...(spec.pins || []), getAdminPassword(), DEFAULT_ADMIN_PASS, INCHARGE_PIN_CODE];
+const validPins = [...(spec.pins || []), getAdminPassword(), INCHARGE_PIN_CODE];
 if (!rawPass || !validPins.includes(rawPass)) {
 document.getElementById('specialRolePinError')?.classList.add('show');
 showToast('Enter the valid password/PIN for ' + spec.name, 'error');
@@ -5939,7 +5939,7 @@ return;
 const savedId = spec.id === 'ADMIN' ? (getPreferredId() || 'CF8355') : spec.id;
 setPreferredId(savedId);
 setAppMode(spec.mode);
-setAdminLoggedIn(Boolean(spec.isAdmin || rawPass === getAdminPassword() || rawPass === DEFAULT_ADMIN_PASS));
+setAdminLoggedIn(Boolean(spec.isAdmin || rawPass === getAdminPassword()));
 try {
 localStorage.setItem(INCHARGE_ROLE_KEY, `${spec.roleTitle} • ${spec.name}`);
 localStorage.setItem(INCHARGE_AREA_KEY, spec.defaultArea || 'all');
@@ -6072,7 +6072,7 @@ document.getElementById('adminCatAuthModal')?.classList.remove('open');
 function confirmAdminCatQuickAuth() {
 const inp = document.getElementById('adminCatQuickPassInp');
 const trimmed = String(inp?.value || '').trim();
-if (trimmed === getAdminPassword() || trimmed === DEFAULT_ADMIN_PASS || trimmed === '1234') {
+if (trimmed === getAdminPassword()) {
 setAdminLoggedIn(true);
 _iccAdminCatModeManual = true;
 window._iccAdminForceHide = false;
