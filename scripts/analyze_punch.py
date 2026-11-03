@@ -31,6 +31,14 @@ def get_bd_now():
     bd_tz = datetime.timezone(datetime.timedelta(hours=6))
     return datetime.datetime.now(bd_tz)
 
+def mask_name(name):
+    s = str(name or '').strip()
+    return s[:3] + '***' if len(s) > 3 else '***'
+
+def mask_id(eid):
+    s = str(eid or '').strip()
+    return s[:2] + '***' if len(s) > 2 else '***'
+
 def normalize_id(emp_id):
     if not emp_id:
         return ""
@@ -220,6 +228,11 @@ def main():
         if area_name not in allowed_sections:
             continue
 
+        is_night_flag = False
+        shift_str = ""
+        today_is_night = False
+        today_shift_str = ""
+
         emp_meta = area_details.get(emp_id, {})
         emp_sub = emp_meta.get("s", "").strip() or "General"
         emp_type = get_category_type(emp_id, emp_meta_type=emp_meta.get("t", ""))
@@ -239,7 +252,7 @@ def main():
             stats["approved_leave"] += 1
             stats["by_category"][emp_type]["present"] += 1
             leave_info = active_leaves_map[emp_id]
-            print(f"[EXEMPT - LEAVE] {emp_id} ({emp_name}): {leave_info.get('type', 'Approved Leave')}")
+            print(f"[EXEMPT - LEAVE] {mask_id(emp_id)} ({mask_name(emp_name)}): {leave_info.get('type', 'Approved Leave')}")
             continue
 
         daily_log = emp_rec.get("daily", [])
@@ -286,6 +299,15 @@ def main():
             if (not is_punch_missing(today_in)) or (not is_punch_missing(today_out)) or (reg_duty > 0) or (reg_ot > 0) or (do_duty > 0) or (hol_duty > 0):
                 is_present = True
 
+        # Check today's night status
+        if today_row:
+            if len(today_row) > 10 and str(today_row[10]).isdigit():
+                today_is_night = int(today_row[10]) == 1
+            if len(today_row) > 11:
+                today_shift_str = str(today_row[11] or "").strip().upper()
+            if "NIGHT" in today_shift_str or "DN" in today_shift_str or today_shift_str == "C":
+                today_is_night = True
+
         # Check 2: Night Shift Exemption (Including Month-End crossover)
         is_night_exempt = False
 
@@ -294,7 +316,7 @@ def main():
             shift_str = str(yesterday_row[11]).strip().upper() if len(yesterday_row) > 11 else ""
             if is_night_flag or "NIGHT" in shift_str:
                 is_night_exempt = True
-                print(f"[EXEMPT - NIGHT REST] {emp_id} ({emp_name}) worked Night Shift yesterday ({yesterday_emp_format}).")
+                print(f"[EXEMPT - NIGHT REST] {mask_id(emp_id)} ({mask_name(emp_name)}) worked Night Shift yesterday ({yesterday_emp_format}).")
 
         # Night checkout morning punch (04:00 - 07:15 AM OUT without morning IN)
         t_out_mins = parse_time_mins(today_out)
@@ -303,7 +325,7 @@ def main():
         if not is_night_exempt and today_row and not is_punch_missing(today_out) and is_punch_missing(today_in):
             if t_out_mins is not None and (240 <= t_out_mins <= 435): # 04:00 AM - 07:15 AM
                 is_night_exempt = True
-                print(f"[EXEMPT - NIGHT EXIT] {emp_id} ({emp_name}) clocked out this morning at {today_out}.")
+                print(f"[EXEMPT - NIGHT EXIT] {mask_id(emp_id)} ({mask_name(emp_name)}) clocked out this morning at {today_out}.")
 
         if is_night_exempt:
             stats["night_rest"] += 1
@@ -340,7 +362,7 @@ def main():
             detected_ot_desc = ""
 
             # Case A: Night Shift OT Missing Check (e.g. Numan case)
-            if is_night_flag or "NIGHT" in shift_str or "DN" in shift_str:
+            if today_is_night:
                 if elapsed_hrs >= 11.0 or total_duty_today >= 11.0:
                     is_physical_ot = True
                     expected_ot_hrs = min(7.0, max(4.0, round(max(elapsed_hrs, total_duty_today) - 8.5, 1)))
@@ -372,7 +394,8 @@ def main():
             holidays_cfg = areas_data.get("holidays", {})
             cancelled_hols = set(holidays_cfg.get("cancelled", []))
             custom_hols = set(holidays_cfg.get("custom", []))
-            base_govt_hols = {"20-OCT-2026", "21-OCT-2026", "21-FEB-2026", "26-MAR-2026", "14-APR-2026", "01-MAY-2026", "16-DEC-2026", "25-DEC-2026"}
+            today_year = now_bd.year
+            base_govt_hols = {f"20-OCT-{today_year}", f"21-OCT-{today_year}", f"21-FEB-{today_year}", f"26-MAR-{today_year}", f"14-APR-{today_year}", f"01-MAY-{today_year}", f"16-DEC-{today_year}", f"25-DEC-{today_year}"}
             active_hols = (base_govt_hols | custom_hols) - cancelled_hols
 
             is_hol_missing = (today_emp_format in active_hols) and (reg_duty > 0 or reg_ot > 0) and (hol_duty == 0 and hol_ot == 0)
@@ -384,7 +407,7 @@ def main():
                     "in": today_in, "out": today_out, "elapsed": elapsed_hrs,
                     "expected_ot": "Govt Holiday Req Missing (recorded as Regular Duty)"
                 })
-                print(f"[REQUISITION MISSING - HOLIDAY] {emp_id} ({emp_name}): Worked on Holiday, but holDuty = 0.0")
+                print(f"[REQUISITION MISSING - HOLIDAY] {mask_id(emp_id)}: Worked on Holiday, but holDuty = 0.0")
             elif is_weekend_do_missing:
                 stats["ot_req_missing"] += 1
                 missing_ot_requisition_list.append({
@@ -392,7 +415,7 @@ def main():
                     "in": today_in, "out": today_out, "elapsed": elapsed_hrs,
                     "expected_ot": f"Weekend ({today_day_name}) DO Req Missing (recorded as Regular Duty)"
                 })
-                print(f"[REQUISITION MISSING - WEEKEND DO] {emp_id} ({emp_name}): Worked on {today_day_name}, but doDuty = 0.0")
+                print(f"[REQUISITION MISSING - WEEKEND DO] {mask_id(emp_id)}: Worked on {today_day_name}, but doDuty = 0.0")
             elif is_physical_ot:
                 stats["ot_done_total"] += 1
                 if total_recorded_ot == 0.0:
@@ -407,7 +430,7 @@ def main():
                         "elapsed": elapsed_hrs,
                         "expected_ot": detected_ot_desc
                     })
-                    print(f"[REQUISITION MISSING] {emp_id} ({emp_name}): {detected_ot_desc} (Elapsed {elapsed_hrs}h), but Empress OT = 0.0")
+                    print(f"[REQUISITION MISSING] {mask_id(emp_id)}: {detected_ot_desc} (Elapsed {elapsed_hrs}h), but Empress OT = 0.0")
 
             continue
 
@@ -529,22 +552,26 @@ def main():
     if len(full_message) <= 3400:
         messages_to_send.append(full_message)
     else:
-        part1 = (
-            overview_text + 
-            req_missing_block + 
-            "\n📋 *অনুপস্থিত তালিকা (পর্ব ১/২):*\n\n" + 
-            area_blocks["Solid Production"] + 
-            area_blocks["Softgel Production"] + 
-            "_(বাকি অংশ পরবর্তী মেসেজে...)_"
-        )
-        part2 = (
-            f"📋 *অনুপস্থিত তালিকা (পর্ব ২/২) — {formatted_date_bd}*\n" +
-            "━━━━━━━━━━━━━━━━━━━━\n" +
-            area_blocks["Packing Hall"] + 
-            area_blocks["Overall"] + 
-            footer_text
-        )
-        messages_to_send.extend([part1, part2])
+        # Robust multi-part chunker ensuring no chunk exceeds WhatsApp limits
+        current_chunk = overview_text + req_missing_block + late_block
+        current_parts = []
+        for area_key in ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]:
+            b = area_blocks.get(area_key, "")
+            if len(current_chunk) + len(b) > 3400:
+                current_parts.append(current_chunk)
+                current_chunk = f"📋 *অনুপস্থিত তালিকা (চলমান) — {formatted_date_bd}*\n━━━━━━━━━━━━━━━━━━━━\n" + b
+            else:
+                current_chunk += b
+        if len(current_chunk) + len(footer_text) > 3400:
+            current_parts.append(current_chunk)
+            current_parts.append(footer_text)
+        else:
+            current_chunk += footer_text
+            current_parts.append(current_chunk)
+        
+        total_p = len(current_parts)
+        for idx, p in enumerate(current_parts, 1):
+            messages_to_send.append(f"{p}\n_(পর্ব {idx}/{total_p})_")
 
     print(f"\nMessage prepared ({len(messages_to_send)} part(s)).")
 
