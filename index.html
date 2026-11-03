@@ -48,7 +48,8 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/pages.css">
-  <link rel="stylesheet" href="css/manager-ux.css">
+  <link rel="stylesheet" href="css/manager-ux.css?v=20261103">
+  <link rel="stylesheet" href="css/rank-details.css?v=20261103b">
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
@@ -4541,6 +4542,12 @@ let detailsBtnText = 'Show Details →';
 if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
 else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
 else if (activeIccCriterion === 'requisition') detailsBtnText = 'Req Details →';
+else if (activeIccCriterion === 'ot' || activeIccCriterion === 'lessOt') detailsBtnText = isMultiTime ? 'OT by Month →' : 'OT Details →';
+else if (activeIccCriterion === 'duty' || activeIccCriterion === 'lessDuty' || activeIccCriterion === 'avgDuty') detailsBtnText = isMultiTime ? 'Duty by Month →' : 'Duty Details →';
+else if (activeIccCriterion === 'earned') detailsBtnText = isMultiTime ? 'Earnings by Month →' : 'Earning Details →';
+else if (activeIccCriterion === 'plain') detailsBtnText = '4:30pm Days →';
+else if (activeIccCriterion === 'night') detailsBtnText = 'Night Shifts →';
+else if (activeIccCriterion === 'avgInOut') detailsBtnText = 'Punch Times →';
 else if (isMultiTime) detailsBtnText = 'Period Summary →';
 const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}')">${detailsBtnText}</button>`;
 const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
@@ -7428,6 +7435,7 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
 }
 
 </script>
-  <script src="js/patches/manager-ux.js"></script>
+  <script src="js/components/rank-details.js?v=20261103b"></script>
+  <script src="js/patches/manager-ux.js?v=20261103"></script>
 </body>
 </html>

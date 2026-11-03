@@ -38,7 +38,7 @@
   function curMonthStr() { try { return (typeof getCurrentMonth === 'function') ? getCurrentMonth() : ''; } catch (e) { return ''; } }
   function monthLabel(m) { var p = String(m).split('-'); return p.length === 2 ? ((MON[parseInt(p[1], 10) - 1] || p[1]) + ' ' + p[0]) : String(m); }
   function areaShort(a) {
-    var OA = g('OVERALL_AREA');
+    var OA; try { OA = (typeof OVERALL_AREA !== 'undefined') ? OVERALL_AREA : 'Overall'; } catch (e) { OA = 'Overall'; }
     return a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : (OA && a === OA) ? 'Executives' : (a || 'RPPF');
   }
   function lockBody(on) {
@@ -367,6 +367,31 @@
     return secTitle(multi ? 'Period totals — other indicators' : 'Other indicators this month') + '<div class="icc-ctx-grid small">' + items.join('') + '</div>';
   }
 
+
+  /* ---------- rank context: where this employee stands in the ranking the user was viewing ---------- */
+  function rankContext(emp, crit, multi) {
+    var list = null, rank = null, total = 0;
+    try { if (typeof _iccCurrentFilteredList !== 'undefined' && Array.isArray(_iccCurrentFilteredList) && _iccCurrentFilteredList.length) list = _iccCurrentFilteredList; } catch (e) { }
+    if (!list) return '';
+    for (var i = 0; i < list.length; i++) { if (list[i] && sameEmp(list[i].id, emp.id)) { rank = list[i]._iccRank || (i + 1); break; } }
+    if (rank == null) return '';
+    total = list.length;
+    var shown = '';
+    try { if (typeof formatIccMainMetric === 'function') shown = String(formatIccMainMetric(emp, crit)).replace(/<[^>]*>/g, ''); } catch (e) { }
+    var top = '';
+    try { if (rank > 1 && typeof formatIccMainMetric === 'function') top = String(formatIccMainMetric(list[0], crit)).replace(/<[^>]*>/g, ''); } catch (e) { }
+    var items = [kpi('Rank', '#' + rank + ' <span style="font-size:11px;font-weight:600;color:var(--muted)">of ' + total + '</span>', '', true)];
+    if (shown) items.push(kpi('Ranking value', E(shown)));
+    if (top) items.push(kpi('#1 value', E(top)));
+    return secTitle('Ranking position') + grid(items);
+  }
+  function noDailyNote(As) {
+    var missing = As.filter(function (a) { return a.has && !a.days.length && (a.duty > 0 || a.ot > 0); });
+    if (!missing.length) return '';
+    return '<div class="icc-ctx-note" style="color:var(--warning);font-weight:700;">⚠ ' + missing.map(function (a) { return a.label; }).join(', ') +
+      ': daily log is not cached on this device (offline copy). Totals are shown; refresh online to load day-by-day details.</div>';
+  }
+
   /* ==========================================================================
      PUBLIC API
      ========================================================================== */
@@ -443,16 +468,18 @@
       } else {
         var big = topic.fmt(topic.metric(A), A);
         html += banner(topic.cls, topic.icon, E(topic.title) + ': <b>' + E(big) + '</b>', topic.bannerSub, periodLabel);
+        html += rankContext(emp, crit, false);
         html += topic.single(A);
-        html += secTitle(topic.listTitle(A)) + topic.body(A);
+        html += secTitle(topic.listTitle(A)) + topic.body(A) + noDailyNote(As);
         html += otherStrip(emp, As, false, inc);
       }
     } else {
       var totalV = withData.reduce(function (s, a) { return s + topic.metric(a); }, 0);
       var bigT = (crit === 'avgInOut' || crit === 'avgDuty') ? '' : ': <b>' + E(topic.fmt(totalV, null)) + '</b>';
       html += banner(topic.cls, topic.icon, E(topic.title) + bigT, topic.bannerSub, periodLabel);
+      html += rankContext(emp, crit, true);
       html += secTitle('Period summary (' + withData.length + ' months)') + topic.total(As);
-      html += secTitle('Month by month — tap a month to expand') + monthBlocks(topic, As, emp.id);
+      html += secTitle('Month by month — tap a month to expand') + monthBlocks(topic, As, emp.id) + noDailyNote(As);
       html += otherStrip(emp, As, true, inc);
     }
     bodyEl.innerHTML = html;
