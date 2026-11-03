@@ -48,6 +48,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/rank-details.css">
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
@@ -1461,6 +1462,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js"></script>
   <script src="js/pages/leaderboard.js"></script>
+  <script src="js/components/rank-details.js"></script>
 <script>
 /* Config, state, storage, and utility constants moved to js/core/ */
 function didEmpWorkNightOnLastDay(emp, monthStr) {
@@ -3602,7 +3604,7 @@ const rk = ranks[idx];
 if (!e) return `<div class="podium-spot p-${rk}" style="opacity:.4;cursor:default;"><div class="podium-medal">${rk}</div><div class="podium-name">—</div></div>`;
 const val = type === 'duty' ? `${e.totalDuty}h` : type === 'ot' ? `${e.otHours}h` : `৳${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
 const crown = rk === 1 ? '👑 ' : '';
-return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
+return `<div class="podium-spot p-${rk}" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${type}')">
 <div class="podium-medal">${rk}</div>
 <div class="podium-name">${crown}${esc(e.name || e.id)}</div>
 <div class="podium-id">${esc(e.id)}</div>
@@ -4363,7 +4365,7 @@ rowEl.classList.add('show-details-open');
 return;
 }
 }
-viewEmployeeFromLeaderboard(empId);
+viewEmployeeFromLeaderboard(empId, false, activeIccCriterion);
 }
 function buildIccRowHtml(e, myId, adminActive) {
 const areaShort = (a) => a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === OVERALL_AREA ? 'Executives' : (a || 'RPPF');
@@ -4418,12 +4420,9 @@ if (isReqCrit) {
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
-let detailsBtnText = 'Show Details →';
-if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
-else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
-else if (activeIccCriterion === 'requisition') detailsBtnText = 'Req Details →';
-else if (isMultiTime) detailsBtnText = 'Period Summary →';
-const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}')">${detailsBtnText}</button>`;
+const ICC_DETAIL_LABELS = { duty: 'Duty Log →', lessDuty: 'Duty Log →', avgDuty: 'Duty Log →', ot: 'OT Days →', lessOt: 'OT Days →', earned: 'Earning Details →', plain: '4:30pm Days →', absent: 'Absent Dates →', punch: 'Punch Details →', requisition: 'Req Details →', avgInOut: 'Punch Times →', night: 'Night Shifts →' };
+const detailsBtnText = ICC_DETAIL_LABELS[activeIccCriterion] || 'Show Details →';
+const showDetailsBtnHtml = `<button type="button" class="icc-show-details-btn" onclick="event.stopPropagation(); viewEmployeeFromLeaderboard('${esc(e.id)}', false, activeIccCriterion)">${detailsBtnText}</button>`;
 const adminCatBtnHtml = adminActive ? `<button type="button" class="icc-emp-cat-btn" onclick="event.stopPropagation(); openEmpAdminCatModal('${esc(e.id)}', '${esc(e.name || e.id)}')" title="Assign additional categories">+Cat</button>` : '';
 return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${esc(e.id)}" onclick="onIccRowClick(this, '${esc(e.id)}')">
 <div class="icc-rank-col"><span class="icc-rank-num">${rk}</span></div>
@@ -5801,7 +5800,7 @@ function renderInchargeHomeAbsentList() {
     const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
     const subTxt = item.sub || dirRec?.sub ? ` • ${item.sub || dirRec.sub}` : '';
     const noteTxt = item.note ? ` (${item.note})` : '';
-    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}')" title="Tap to view employee profile">
+    return `<div class="inc-absent-item" onclick="viewEmployeeFromLeaderboard('${esc(item.id)}', true)" title="Tap to view employee profile">
       <div class="inc-absent-emp">
         <div class="inc-absent-name">${esc(dispName)} <span style="color:var(--danger);font-size:12px;">(${esc(item.id)})</span></div>
         <div class="inc-absent-sub">${esc(areaShort(item.area))}${esc(subTxt)} • ${esc(item.designation || 'Employee')}</div>
@@ -5896,7 +5895,7 @@ function renderInchargeHomeToppers() {
     const top3 = [...areaFiltered].sort(cat.sortFn).slice(0, 3);
     const rowsHtml = top3.map((e, idx) => {
       const subBadge = e.sub ? ` • ${e.sub}` : '';
-      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}')">
+      return `<div class="inc-topper-row" onclick="viewEmployeeFromLeaderboard('${esc(e.id)}', false, '${cat.key}')">
         <span class="inc-topper-medal m-${idx + 1}">${idx + 1}</span>
         <div class="inc-topper-info">
           <div class="inc-topper-name">${esc(e.name || e.id)}</div>
@@ -6382,7 +6381,7 @@ function wireAllAutocompleteSearchInputs() {
     findReport();
   });
   attachEmployeeAutocompleteToInput(_el('lbQuickSearchInput'), (id) => {
-    viewEmployeeFromLeaderboard(id);
+    viewEmployeeFromLeaderboard(id, true);
   });
   attachEmployeeAutocompleteToInput(_el('iccSearchInput'), () => {
     renderIccDrillList();
