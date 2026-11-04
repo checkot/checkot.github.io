@@ -810,6 +810,25 @@
     return out;
   }
 
+  /** Absent days of one employee-month that fall inside [from,to] (date-range VS) */
+  function absentInRange(emp, m, from, to) {
+    try {
+      const uid = String(emp.id || '').trim().toUpperCase();
+      let prevHas = false;
+      try { const ps = getPrevMonthNightSet(m); prevHas = ps.has(uid) || ps.has(String(resolveEmpAliasId(uid) || '').toUpperCase()); } catch (e) { /* ignore */ }
+      const res = computeEmpGeneralAbsents(emp, m, prevHas);
+      const y = parseInt(String(m).split('-')[0], 10), mo = parseInt(String(m).split('-')[1], 10);
+      let n = 0;
+      (res.shortDates || []).forEach((sd) => {
+        const dd = parseInt(String(sd).split('-')[0], 10);
+        if (!dd) return;
+        const k = y * 10000 + mo * 100 + dd;
+        if (k >= from && k <= to) n++;
+      });
+      return n;
+    } catch (e) { return 0; }
+  }
+
   async function loadMonthList(m) {
     let list = null;
     try { list = monthIndexMemoryCache[m]; } catch (e) { list = null; }
@@ -861,6 +880,8 @@
     try {
       if (typeof loadAreaMap === 'function') { try { await loadAreaMap(); } catch (e) { /* ignore */ } }
       const lists = await Promise.all(period.months.map(loadMonthList));
+      // Previous months are needed to know who worked the last night (affects first-day absent logic)
+      try { await Promise.all(period.months.map((m) => getPrevMonthStr(m)).filter((pm, i, arr) => pm && !period.months.includes(pm) && arr.indexOf(pm) === i).map(loadMonthList)); } catch (e) { /* ignore */ }
       const missing = period.months.filter((m, i) => !lists[i].length);
       if (missing.length === period.months.length) {
         setStatus(`No data available for ${period.label}.`, true);
@@ -879,6 +900,7 @@
           if (period.type === 'dates') {
             const a = aggregateDays(emp, period.from, period.to);
             SUM_KEYS.forEach((k) => { agg[k] += a[k]; });
+            agg.absentCount += absentInRange(emp, m, period.from, period.to);
           } else {
             agg.totalDuty += num(emp.totalDuty);
             agg.otHours += num(emp.otHours);
@@ -886,10 +908,9 @@
             agg.nightCount += num(emp.nightCount != null ? emp.nightCount : emp.night);
             agg.plainDaysCount += num(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays);
             agg.otDaysCount += getEmpOtDays(emp);
+            // Always computed per month from the employee's own daily data (independent of the ranking screen's mode).
             let aCnt = 0;
-            if (emp.generalAbsentCount != null) aCnt = num(emp.generalAbsentCount);
-            else if (Array.isArray(emp.generalAbsentDays)) aCnt = emp.generalAbsentDays.length;
-            else if (typeof getGeneralAbsentCount === 'function') aCnt = getGeneralAbsentCount(emp, m);
+            try { aCnt = getEmpMonthAbsentSafe(emp, m); } catch (e) { aCnt = num(emp.generalAbsentCount); }
             agg.absentCount += aCnt;
           }
         });

@@ -2,7 +2,7 @@
 // Strategy: Pure network pass-through (zero caching)
 // Bumping SW_VERSION forces immediate activation on all clients
 
-const SW_VERSION = '2026-11-04-v6-otdays';
+const SW_VERSION = '2026-11-04-v7-ytd-absent';
 
 // ===== Install =====
 self.addEventListener('install', (event) => {

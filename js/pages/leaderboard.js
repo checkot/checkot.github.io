@@ -119,6 +119,8 @@ if (subLbl) {
 subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
 : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
+: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
 if (currentLeaderboardResult && currentLeaderboardResult.month === month && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
@@ -150,6 +152,8 @@ if (subLbl) {
 subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
 : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
+: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
 if (currentLbTimeMode !== 'monthly') {

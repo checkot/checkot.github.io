@@ -2439,7 +2439,7 @@ return;
 }
 const records = [];
 for (const targetId of ids) {
-const found = fastList.find(e => String(e.id || '').toUpperCase() === targetId);
+let found = fastList.find(e => String(e.id || '').toUpperCase() === targetId);
 if (!found && targetId === currentSearchId && currentResult && periodMode === 'current') {
 records.push({
 id: targetId,
@@ -2476,7 +2476,8 @@ if (isExecHiddenFor(found)) {
 showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
 return;
 }
-records.push(buildCompareRecord(found, targetId));
+const _absOverride = (periodMode === 'current') ? { absentCount: getEmpMonthAbsentSafe(found, month) } : {};
+records.push(buildCompareRecord(Object.assign({}, found, _absOverride), targetId));
 }
 if (records.length === 2 && periodMode === 'current') {
 setCompareCache(month, records[0].id, records[1].id, { other: records[1], otherId: records[1].id });
@@ -2792,9 +2793,31 @@ function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
   return { dates: [], shortDates: [], count: 0 };
 }
 
+/* Mode-independent absent count for ONE employee-month (used by VS compare / profile totals). */
+function getEmpMonthAbsentSafe(emp, monthStr) {
+  if (!emp) return 0;
+  const mStr = monthStr || emp._computedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+  try {
+    if (typeof computeEmpGeneralAbsents === 'function') {
+      const uid = String(emp.id || '').trim().toUpperCase();
+      let prevHas = false;
+      try {
+        const prevSet = getPrevMonthNightSet(mStr);
+        prevHas = prevSet.has(uid) || prevSet.has(String(resolveEmpAliasId(uid) || '').toUpperCase());
+      } catch (e) {}
+      const res = computeEmpGeneralAbsents(emp, mStr, prevHas);
+      if (res && res.count != null) return Number(res.count) || 0;
+    }
+  } catch (e) {}
+  if (Array.isArray(emp.generalAbsentDays)) return emp.generalAbsentDays.length;
+  return Number(emp.generalAbsentCount) || 0;
+}
+window.getEmpMonthAbsentSafe = getEmpMonthAbsentSafe;
+
 function getGeneralAbsentCount(emp, targetMonth) {
   if (!emp) return 0;
-  const isMulti = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || emp.isMultiMonth || (emp.monthsCount && emp.monthsCount > 1);
+  // Decide from the employee object itself (NOT the ranking screen's global time mode, which leaks into other pages like VS compare).
+  const isMulti = Boolean(emp.isMultiMonth || (emp.monthsCount && emp.monthsCount > 1));
   if (isMulti) {
     return Number(emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0));
   }
@@ -3061,6 +3084,8 @@ if (subLbl) {
 subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
 : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
+: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
 if (currentLeaderboardResult && currentLeaderboardResult.month === month && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
@@ -3092,6 +3117,8 @@ if (subLbl) {
 subLbl.innerText = currentLbTimeMode === 'monthly' ? month
 : currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
 : currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
+: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
+: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
 if (currentLbTimeMode !== 'monthly') {
@@ -5216,9 +5243,12 @@ setTimeout(() => document.getElementById('iccSearchInput')?.focus(), 80);
 }
 }
 function getYearToDateMonths(baseMonthStr) {
-const [yy, mm] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
-const year = (yy >= 2020 && yy <= 2032) ? yy : new Date().getFullYear();
-const maxM = mm ? Math.min(12, Math.max(1, mm)) : 12;
+// "This Year So Far" = January up to TODAY's month (current year) or December (past year).
+// It must NOT stop at whichever month happens to be selected in the month dropdown.
+const [yy] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
+const now = new Date();
+const year = (yy >= 2020 && yy <= 2032) ? yy : now.getFullYear();
+const maxM = year === now.getFullYear() ? (now.getMonth() + 1) : 12;
 const out = [];
 for (let m = 1; m <= maxM; m++) {
 out.push(`${year}-${String(m).padStart(2, '0')}`);
