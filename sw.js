@@ -1,29 +1,91 @@
-// RENATA Overtime App — Service Worker
-// Strategy: Pure network pass-through (zero caching)
-// Bumping SW_VERSION forces immediate activation on all clients
+// RENATA Overtime App — Service Worker (Offline PWA + Stale-While-Revalidate)
+const CACHE_NAME = 'checkot-pwa-v20261104c';
 
-const SW_VERSION = '2026-11-04-v7-ytd-absent';
+const PRECACHE_ASSETS = [
+  './',
+  'index.html',
+  'admin.html',
+  'manifest.json',
+  'icon.png',
+  'css/manager-ux.css',
+  'css/rank-details.css',
+  'js/core/config.js',
+  'js/core/state.js',
+  'js/core/storage.js',
+  'js/core/utils.js',
+  'js/calculations/rates.js',
+  'js/calculations/ranking.js',
+  'js/components/router.js',
+  'js/pages/search.js',
+  'js/pages/history.js',
+  'js/pages/settings.js',
+  'js/pages/report.js',
+  'js/pages/vs.js',
+  'js/pages/notices.js',
+  'js/pages/more.js',
+  'js/pages/team.js',
+  'js/pages/leaderboard.js',
+  'js/components/rank-details.js',
+  'js/patches/manager-ux.js',
+  'js/admin/admin-core.js',
+  'js/admin/admin-tools.js',
+  'js/admin/admin-github.js'
+];
 
-// ===== Install =====
 self.addEventListener('install', (event) => {
-    // Activate immediately without waiting for existing clients to release
-    self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS).catch(() => {});
+    })
+  );
+  self.skipWaiting();
 });
 
-// ===== Activate =====
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        (async () => {
-            // Take control of all open pages across origins
-            await self.clients.claim();
-        })()
-    );
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-// ===== Fetch =====
-// Pure network pass-through: All requests pass through directly to the network
-// Dynamic JSON files and app HTML/CSS/JS are never served stale from an offline cache.
+// Network-First for dynamic JSON, Cache-First/Stale-While-Revalidate for app assets
 self.addEventListener('fetch', (event) => {
-    // Browser default network handling
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+
+  // Dynamic JSON files
+  if (url.pathname.includes('/data/') || url.pathname.endsWith('.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
     return;
+  }
+
+  // App shell & static assets
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => cachedResponse);
+
+      return cachedResponse || fetchPromise;
+    })
+  );
 });

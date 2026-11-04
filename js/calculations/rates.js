@@ -65,7 +65,7 @@ const cat = document.getElementById('inpCategory').value;
 const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
 const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
 const night = parseInt(document.getElementById('inpNight').value) || 0;
-const r = RATE_TABLE[cat];
+const r = (RATE_TABLE && RATE_TABLE[cat]) || (RATE_TABLE && RATE_TABLE['CF']) || { otRate: 0, nightRate: 0, holidayType: 'flat', holidayHours: 0, holidayFlat: 0, name: 'Unspecified' };
 const otAmount = otHours * r.otRate;
 let holidayAmount = 0;
 if (r.holidayType === "hourly") holidayAmount = holiday * r.holidayHours * r.otRate;

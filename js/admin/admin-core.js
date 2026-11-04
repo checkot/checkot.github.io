@@ -2226,7 +2226,7 @@ const cat = document.getElementById('inpCategory').value;
 const otHours = parseFloat(document.getElementById('inpOtHours').value) || 0;
 const holiday = parseInt(document.getElementById('inpHoliday').value) || 0;
 const night = parseInt(document.getElementById('inpNight').value) || 0;
-const r = RATE_TABLE[cat];
+const r = (RATE_TABLE && RATE_TABLE[cat]) || (RATE_TABLE && RATE_TABLE['CF']) || { otRate: 0, nightRate: 0, holidayType: 'flat', holidayHours: 0, holidayFlat: 0, name: 'Unspecified' };
 const otAmount = otHours * r.otRate;
 let holidayAmount = 0;
 if (r.holidayType === "hourly") holidayAmount = holiday * r.holidayHours * r.otRate;
@@ -3416,7 +3416,7 @@ if (typeof activeIccCriterion !== 'undefined' && (activeIccCriterion === 'avgDut
 const curMonth = (currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
 ensureEmpAvgStats(filtered, curMonth);
 sortedByAvgDuty = [...filtered].sort((a,b) => ((b.avgDutyPerDay || 0) - (a.avgDutyPerDay || 0)) || (b.totalDuty - a.totalDuty));
-sortedByAvgInOut = [...filtered].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
+sortedByAvgInOut = [...filtered].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
 }
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 const sortedByRequisition = [...filtered].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
@@ -5508,7 +5508,7 @@ if (crit === 'avgInOut') {
 if (!f.sortedByAvgInOut || !f.sortedByAvgInOut.length) {
 const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
 ensureEmpAvgStats(base);
-f.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
+f.sortedByAvgInOut = [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.avgOutMins || 1020) - (a.avgOutMins || 1020)));
 }
 return f.sortedByAvgInOut;
 }
@@ -6038,7 +6038,7 @@ return;
 }
 const passInp = document.getElementById('specialRolePassInput');
 const rawPass = String(passInp ? passInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
-const validPins = [...(spec.pins || []), getAdminPassword(), INCHARGE_PIN_CODE];
+const validPins = [...(spec.pins || []), getAdminPassword()];
 if (!rawPass || !validPins.includes(rawPass)) {
 document.getElementById('specialRolePinError')?.classList.add('show');
 showToast('Enter the valid password/PIN for ' + spec.name, 'error');
@@ -6957,7 +6957,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByLessDuty = [...base].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
     currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
-    currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 currentLeaderboardResult.filtered.sortedByAbsent = [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b) - getGeneralAbsentCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
