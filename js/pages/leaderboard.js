@@ -311,7 +311,7 @@ setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
 setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
 const absCount = (filteredList || []).filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).length;
 setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
-setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees absent on general days` : 'No general day absents');
+setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees with ≥1 absent day` : 'No general day absents');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
 if (iccDrillOpen) renderIccDrillList();
@@ -1212,7 +1212,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByEarned = [...base].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
     currentLeaderboardResult.filtered.sortedByPlain = [...base].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByLessDuty = [...base].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
-    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));

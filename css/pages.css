@@ -3070,6 +3070,24 @@ body.norate-view #compareMyAmount {
     color: var(--success);
     background: var(--success-bg);
   }
+  .compare-table th:first-child,
+  .compare-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+    z-index: 2;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  }
+  .compare-table th:first-child {
+    background: var(--surface-2);
+    z-index: 3;
+  }
+  @media (max-width: 600px) {
+    .icc-row {
+      padding: 8px 10px !important;
+      gap: 8px !important;
+    }
+  }
 
   /* Rank Page: Hub Menu & ICC-Style Drill-Down View */
   .rank-hub-menu {

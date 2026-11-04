@@ -2530,7 +2530,16 @@ div.innerHTML = `
 <div class="compare-table-wrap">
 <table class="compare-table">
 <tr><th>Details</th>${list.map(r => `<th>${labelFor(r)}</th>`).join('')}</tr>
-<tr><td>Category</td>${list.map(r => `<td>${esc(RATE_TABLE[r.category]?.name || r.categoryName || '—')}</td>`).join('')}</tr>
+<tr><td>Category</td>${list.map(r => {
+  const cat = r.category || r.categoryName;
+  if (!cat) return '<td>—</td>';
+  if (cat === 'CF') return '<td>CF · ৳38/h</td>';
+  if (cat === 'JO') return '<td>JO · ৳40/h</td>';
+  if (cat === 'JO_B') return '<td>JO-B · ৳45/h</td>';
+  if (cat === 'UNSPEC') return '<td>Unspecified</td>';
+  const name = (typeof RATE_TABLE !== 'undefined' && RATE_TABLE[cat]?.name) || cat;
+  return `<td>${esc(String(name).replace(/\s*\(.*?\)/g, ''))}</td>`;
+}).join('')}</tr>
 <tr><td>Total duty (hrs)</td>${list.map(r => tdCell(r.totalDuty || 0, r.totalDuty || 0, maxDuty)).join('')}</tr>
 <tr><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
 <tr><td>OT days (days)</td>${list.map(r => r.otDays == null ? '<td>—</td>' : tdCell(r.otDays, r.otDays, maxOtDays)).join('')}</tr>
@@ -2847,7 +2856,7 @@ area: getAreaForId(e.id, true),
 punchProblemsCount: getPunchProblemCount(e)
 }));
 ensureEmpAvgStats(normalized, month);
-const sortedByDuty = [...normalized].sort((a,b) => b.totalDuty - a.totalDuty);
+const sortedByDuty = [...normalized].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...normalized].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...normalized].sort((a,b) => b.totalEarned - a.totalEarned);
 const sortedByPlain = [...normalized].sort((a,b) => (b.plainDaysCount - a.plainDaysCount) || (b.totalDuty - a.totalDuty));
@@ -3368,7 +3377,7 @@ const filtered = allEmps.filter(e =>
 (st.gender === 'all' || e.gender === st.gender) &&
 (st.type === 'all' || e.empType === st.type) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
-const sortedByDuty = [...filtered].sort((a,b) => b.totalDuty - a.totalDuty);
+const sortedByDuty = [...filtered].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
 const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
 const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
 const sortedByPlain = [...filtered].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
@@ -5191,7 +5200,7 @@ setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
 setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
 const absCount = (filteredList || []).filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).length;
 setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
-setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees absent on general days` : 'No general day absents');
+setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees with ≥1 absent day` : 'No general day absents');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time & Out-Time');
 if (iccDrillOpen) renderIccDrillList();
@@ -6916,7 +6925,7 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByEarned = [...base].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
     currentLeaderboardResult.filtered.sortedByPlain = [...base].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByLessDuty = [...base].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
-    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - a.totalDuty));
+    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => ((a.avgInMins || 480) - (b.avgInMins || 480)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));

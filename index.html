@@ -3298,7 +3298,16 @@ div.innerHTML = `
 <div class="compare-table-wrap">
 <table class="compare-table">
 <tr><th>Details</th>${list.map(r => `<th>${labelFor(r)}</th>`).join('')}</tr>
-<tr><td>Category</td>${list.map(r => `<td>${esc(RATE_TABLE[r.category]?.name || r.categoryName || '—')}</td>`).join('')}</tr>
+<tr><td>Category</td>${list.map(r => {
+  const cat = r.category || r.categoryName;
+  if (!cat) return '<td>—</td>';
+  if (cat === 'CF') return '<td>CF · ৳38/h</td>';
+  if (cat === 'JO') return '<td>JO · ৳40/h</td>';
+  if (cat === 'JO_B') return '<td>JO-B · ৳45/h</td>';
+  if (cat === 'UNSPEC') return '<td>Unspecified</td>';
+  const name = (typeof RATE_TABLE !== 'undefined' && RATE_TABLE[cat]?.name) || cat;
+  return `<td>${esc(String(name).replace(/\s*\(.*?\)/g, ''))}</td>`;
+}).join('')}</tr>
 <tr><td>Total duty (hrs)</td>${list.map(r => tdCell(r.totalDuty || 0, r.totalDuty || 0, maxDuty)).join('')}</tr>
 <tr><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
 <tr><td>OT days (days)</td>${list.map(r => r.otDays == null ? '<td>—</td>' : tdCell(r.otDays, r.otDays, maxOtDays)).join('')}</tr>
@@ -7402,9 +7411,19 @@ async function autoLoad() {
       normalized.forEach(e => { getEmpOtDays(e); });
       monthIndexMemoryCache[j.month] = normalized;
 
+      // Persist slim data (strip daily) to prevent QuotaExceededError in mobile localStorage
       try {
-        localStorage.setItem(MONTH_DATA_CACHE_PREFIX + j.month, JSON.stringify({ ts: Date.now(), employees: normalized }));
-      } catch (e) {}
+        const slim = normalized.map(e => {
+          if (!Array.isArray(e.activeDayNums) && Array.isArray(e.daily) && e.daily.length > 0) _buildEmpDayMap(e);
+          didEmpWorkNightOnLastDay(e, j.month);
+          const c = { ...e };
+          delete c.daily;
+          return c;
+        });
+        localStorage.setItem(MONTH_DATA_CACHE_PREFIX + j.month, JSON.stringify({ ts: Date.now(), employees: slim }));
+      } catch (e) {
+        console.warn('[AutoLoad] Cache store quota exceeded or failed:', e);
+      }
 
       // Update dropdowns to the latest month if available (unless arriving on a deep-linked report)
       const hasRouteReport = typeof window !== 'undefined' && window.location && window.location.hash && window.location.hash.includes('id=');
@@ -7425,13 +7444,24 @@ async function autoLoad() {
         const lbY = document.getElementById('lbYearSelect');
         const lbM = document.getElementById('lbMonthSelect');
         if (lbY && lbM) {
-          if (![...lbY.options].some(o => o.value === y)) {
+          // If the latest month is early in the month (e.g. <= 7 days active), default leaderboard to the previous complete month
+          let targetLbY = y, targetLbM = m;
+          const dsMeta = typeof getMonthDatasetMeta === 'function' ? getMonthDatasetMeta(j.month) : null;
+          const maxDay = dsMeta ? (dsMeta.maxActiveDay || 0) : 0;
+          if (maxDay > 0 && maxDay <= 7 && typeof getPreviousMonthStrings === 'function') {
+            const prevMonths = getPreviousMonthStrings(j.month, 2);
+            if (prevMonths.length >= 2 && prevMonths[1]) {
+              const [py, pm] = prevMonths[1].split('-');
+              targetLbY = py; targetLbM = pm;
+            }
+          }
+          if (![...lbY.options].some(o => o.value === targetLbY)) {
             const opt = document.createElement('option');
-            opt.value = y; opt.textContent = bn(y);
+            opt.value = targetLbY; opt.textContent = bn(targetLbY);
             lbY.appendChild(opt);
           }
-          lbY.value = y;
-          lbM.value = m;
+          lbY.value = targetLbY;
+          lbM.value = targetLbM;
         }
       }
 

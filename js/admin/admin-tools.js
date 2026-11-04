@@ -150,6 +150,19 @@ function parseExcelWorkbook(workbook, sourceName) {
   const summaryMap = buildSummaryMap(workbook);
   const ci = detectWorkLogColumns(json);
   let cur = null;
+
+  // Auto-detect Empress recognized Government/Company Holidays for this month
+  const detectedHolidays = new Set();
+  for (let hi = 0; hi < json.length; hi++) {
+    const hr = json[hi];
+    if (!hr || !hr[0]) continue;
+    const hc0 = String(hr[0]).trim().toUpperCase();
+    if (/^\d{2}-[A-Z]{3}-\d{4}$/.test(hc0)) {
+      const holD = (ci.holDuty >= 0 && ci.holDuty < hr.length) ? (Number(hr[ci.holDuty]) || 0) : 0;
+      const holO = (ci.holOT >= 0 && ci.holOT < hr.length) ? (Number(hr[ci.holOT]) || 0) : 0;
+      if (holD > 0 || holO > 0) detectedHolidays.add(hc0);
+    }
+  }
   const flush = () => { if (cur) out.push(finalizeExcelEmployee(cur, sourceName)); cur = null; };
 
   const getNum = (row, colIdx) => (colIdx >= 0 && colIdx < row.length ? (Number(row[colIdx]) || 0) : 0);
@@ -234,7 +247,7 @@ function parseExcelWorkbook(workbook, sourceName) {
       const nightRaw = getVal(row, ci.night).toLowerCase();
 
       // Robust Night Detection
-      const isNight = nightRaw === 'yes' || shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C' || elapsedHrs >= 14.0;
+      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) || shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C' || elapsedHrs >= 14.0 || (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
 
       cur.daily.push([date, dayVal, inVal, outVal, regDuty, regOT, doDuty, doOT, holDuty, holOT, isNight ? 1 : 0, shiftVal]);
       cur.dailyDuty += regDuty + regOT + doDuty + doOT + holDuty + holOT;
@@ -252,38 +265,53 @@ function parseExcelWorkbook(workbook, sourceName) {
 
       // -------------------------------------------------------------
       // REQUISITION PROBLEM DETECTION (Client-side Manual Upload)
+      // Synced with to_json.py Comprehensive Requisition Audit
       // -------------------------------------------------------------
       const totalOtToday = regOT + doOT + holOT;
       const totalDutyToday = regDuty + doDuty + holDuty;
-      if (totalOtToday === 0 && !missIn && !missOut) {
-        let isReqProb = false;
-        let expectedOtStr = '';
+      let isReqProb = false;
+      let expectedOtStr = '';
+      let probReason = '';
 
-        if (!isNight) {
-          if (tOutMins !== null && tOutMins >= 1150 && tOutMins <= 1215) {
-            isReqProb = true; expectedOtStr = '3.0h (04:30 - 07:30 PM)';
-          } else if (tOutMins !== null && tOutMins >= 1216 && tOutMins <= 1350) {
-            isReqProb = true; expectedOtStr = '5.0h (04:30 - 09:30 PM)';
-          } else if (tInMins !== null && tInMins <= 435) {
-            isReqProb = true; expectedOtStr = tInMins <= 390 ? '2.5h Morning OT' : '1.0h Morning OT';
-          } else if (elapsedHrs >= 9.5 && elapsedHrs <= 13.5 && (tOutMins !== null && tOutMins > 1035)) {
-            isReqProb = true; expectedOtStr = `${(elapsedHrs - 8.5).toFixed(1)}h Extended OT`;
-          }
-        } else if (isNight && (elapsedHrs >= 11.0 || totalDutyToday >= 11.0)) {
-          // Night Shift OT Missing (e.g. Numan case)
-          isReqProb = true;
-          const expHrs = Math.min(7.0, Math.max(4.0, Number((Math.max(elapsedHrs, totalDutyToday) - 8.5).toFixed(1))));
-          expectedOtStr = `${expHrs}h (Night Shift OT Error / Missing)`;
+      // 1. Government Holiday Requisition Missing
+      if (detectedHolidays.has(date) && (regDuty > 0 || regOT > 0) && holDuty === 0 && holOT === 0) {
+        isReqProb = true;
+        expectedOtStr = 'Govt Holiday Requisition Missing';
+        probReason = 'Worked on Govt Holiday, but recorded as Regular Duty';
+      }
+      // 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only)
+      else if ((dayVal === 'Thu' || dayVal === 'Fri') && (regDuty > 0 || regOT > 0) && doDuty === 0 && doOT === 0) {
+        isReqProb = true;
+        expectedOtStr = `Weekend (${dayVal}) DO Req Missing`;
+        probReason = 'Worked on Weekend (Thu/Fri), but recorded as Regular Duty';
+      }
+      // 3. Night Shift OT Missing
+      else if (isNight && (elapsedHrs >= 11.0 || totalDutyToday >= 11.0) && totalOtToday === 0 && !missIn && !missOut) {
+        isReqProb = true;
+        const expHrs = Math.min(7.0, Math.max(4.0, Number((Math.max(elapsedHrs, totalDutyToday) - 8.5).toFixed(1))));
+        expectedOtStr = `${expHrs}h (Night Shift OT Error / Missing)`;
+        probReason = 'Night Shift OT Missing';
+      }
+      // 4. Standard Evening/Morning Overtime Missing
+      else if (!isNight && totalOtToday === 0 && !missIn && !missOut) {
+        if (tOutMins !== null && tOutMins >= 1150 && tOutMins <= 1215) {
+          isReqProb = true; expectedOtStr = '3.0h (04:30 - 07:30 PM)'; probReason = '3h Evening OT Missing';
+        } else if (tOutMins !== null && tOutMins >= 1216 && tOutMins <= 1350) {
+          isReqProb = true; expectedOtStr = '5.0h (04:30 - 09:30 PM)'; probReason = '5h Evening OT Missing';
+        } else if (tInMins !== null && tInMins <= 435) {
+          isReqProb = true; expectedOtStr = tInMins <= 390 ? '2.5h Morning OT' : '1.0h Morning OT'; probReason = 'Morning OT Missing';
+        } else if (elapsedHrs >= 9.5 && elapsedHrs <= 13.5 && (tOutMins !== null && tOutMins > 1035)) {
+          isReqProb = true; expectedOtStr = `${(elapsedHrs - 8.5).toFixed(1)}h Extended OT`; probReason = 'Day OT Missing';
         }
+      }
 
-        if (isReqProb) {
-          cur.requisitionProblems.push({
-            date, day: dayVal, in: inVal, out: outVal,
-            duty: Number(totalDutyToday.toFixed(2)),
-            elapsed: elapsedHrs, isNight, expectedOt: expectedOtStr,
-            reason: isNight ? 'Night Shift OT Missing' : 'Day/Evening OT Missing'
-          });
-        }
+      if (isReqProb) {
+        cur.requisitionProblems.push({
+          date, day: dayVal, in: inVal, out: outVal,
+          duty: Number(totalDutyToday.toFixed(2)),
+          elapsed: elapsedHrs, isNight, expectedOt: expectedOtStr,
+          reason: probReason || (isNight ? 'Night Shift OT Missing' : 'Day/Evening OT Missing')
+        });
       }
     }
   }
