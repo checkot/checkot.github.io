@@ -639,7 +639,7 @@
   });
 
   /* ---------------------------------------------------------- 7. VS MODE */
-  const SUM_KEYS = ['totalDuty', 'otHours', 'holidayCount', 'nightCount', 'plainDaysCount'];
+  const SUM_KEYS = ['totalDuty', 'otHours', 'holidayCount', 'nightCount', 'plainDaysCount', 'otDaysCount'];
 
   function vsMonthChoices() {
     const set = new Set(monthChoices());
@@ -787,7 +787,7 @@
 
   /** Day-wise aggregate of one employee-month between from/to (inclusive) */
   function aggregateDays(emp, from, to) {
-    const out = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0 };
+    const out = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0, otDaysCount: 0 };
     const daily = Array.isArray(emp.daily) ? emp.daily : [];
     daily.forEach((r) => {
       if (!Array.isArray(r)) return;
@@ -800,6 +800,7 @@
       out.otHours += ot;
       if (doD > 0 || doO > 0 || holD > 0 || holO > 0) out.holidayCount += 1;
       if (isNight) out.nightCount += 1;
+      if (ot > 0 && !isNight) out.otDaysCount += 1;
       let missing = false;
       try { missing = isPunchMissing(r[2]) || isPunchMissing(r[3]); } catch (e) { missing = !r[2] || !r[3]; }
       if (!missing && (regD + doD + holD) > 0 && !isNight && ot === 0) out.plainDaysCount += 1;
@@ -868,7 +869,7 @@
       const records = [];
       for (const id of ids) {
         let base = null;
-        const agg = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0, absentCount: 0 };
+        const agg = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0, otDaysCount: 0, absentCount: 0 };
         let hits = 0;
         period.months.forEach((m, i) => {
           const emp = findEmp(lists[i], id);
@@ -884,6 +885,7 @@
             agg.holidayCount += num(emp.holidayCount != null ? emp.holidayCount : emp.holiday);
             agg.nightCount += num(emp.nightCount != null ? emp.nightCount : emp.night);
             agg.plainDaysCount += num(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays);
+            agg.otDaysCount += getEmpOtDays(emp);
             let aCnt = 0;
             if (emp.generalAbsentCount != null) aCnt = num(emp.generalAbsentCount);
             else if (Array.isArray(emp.generalAbsentDays)) aCnt = emp.generalAbsentDays.length;
@@ -901,7 +903,7 @@
         }
         if (!base && hits === 0) { setStatus(`"${id}" was not found in ${period.label} data.`, true); return; }
         try { if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(base)) { toast(`"${id}" calculation is visible only in in-charge mode`, 'warn'); setStatus('', false); return; } } catch (e) { /* ignore */ }
-        const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount, absentCount: agg.absentCount, generalAbsentCount: agg.absentCount });
+        const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount, otDaysCount: agg.otDaysCount, absentCount: agg.absentCount, generalAbsentCount: agg.absentCount });
         delete merged.holiday; delete merged.night; delete merged.plainDays;
         delete merged.otAmount; delete merged.holidayAmount; delete merged.nightAmount; delete merged.totalEarned;
         delete merged.daily;

@@ -100,6 +100,7 @@ function buildCompareRecord(emp, idStr) {
     categoryName: r.name || cat,
     totalDuty,
     otHours,
+    otDays: getEmpOtDays(emp),
     holiday: holidayCount,
     night: nightCount,
     plainDays: Number(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays || 0),
@@ -124,6 +125,7 @@ function buildCustomSimRecord(label, cat, otHours, holiday, night) {
     categoryName: r.name || cat,
     totalDuty: Number((otHours + holiday * 8).toFixed(1)),
     otHours,
+    otDays: null,
     holiday,
     night,
     plainDays: 0,
@@ -299,6 +301,7 @@ async function runComparison() {
       let holiday = 0;
       let night = 0;
       let plainDays = 0;
+      let otDays = 0;
       let totalAbsent = 0;
       let otAmount = 0;
       let holidayAmount = 0;
@@ -324,6 +327,7 @@ async function runComparison() {
           holiday += Number(found.holidayCount != null ? found.holidayCount : found.holiday || 0);
           night += Number(found.nightCount != null ? found.nightCount : found.night || 0);
           plainDays += Number(found.plainDaysCount != null ? found.plainDaysCount : found.plainDays || 0);
+          otDays += getEmpOtDays(found);
           totalAbsent += getEmpMonthAbsentCount(found, monthsToLoad[i]);
           if (found.totalEarned != null) {
             totalEarned += Number(found.totalEarned || 0);
@@ -375,6 +379,7 @@ async function runComparison() {
         nightCount: night,
         plainDays: plainDays,
         plainDaysCount: plainDays,
+        otDaysCount: otDays,
         absentCount: totalAbsent,
         generalAbsentCount: totalAbsent
       };

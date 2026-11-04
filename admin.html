@@ -1879,6 +1879,36 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
 </div>
 <span class="rank-hub-chev">›</span>
 </button>
+<button type="button" class="rank-hub-item" onclick="openRankDrillDown('otDays')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">OT</span>
+<div>
+<div class="rank-hub-title">Most OT Days</div>
+<div class="rank-hub-sub" id="hubSubOtDays">Most days with overtime (night days not included)</div>
+</div>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<button type="button" class="rank-hub-item" onclick="openRankDrillDown('holiday')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">H</span>
+<div>
+<div class="rank-hub-title">Holiday Duty</div>
+<div class="rank-hub-sub" id="hubSubHoliday">Most holiday / day-off duty days</div>
+</div>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<button type="button" class="rank-hub-item" onclick="openRankDrillDown('night')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">N</span>
+<div>
+<div class="rank-hub-title">Night Duty</div>
+<div class="rank-hub-sub" id="hubSubNight">Most night shifts</div>
+</div>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
 <button type="button" class="rank-hub-item" onclick="openRankDrillDown('lessDuty')">
 <div class="rank-hub-left">
 <span class="rank-hub-icon">↓D</span>
@@ -1988,6 +2018,9 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
 <button type="button" class="icc-crit-tab" data-icc-crit="ot" onclick="openRankDrillDown('ot')">Best OT</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="earned" onclick="openRankDrillDown('earned')">Best Earning</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="plain" onclick="openRankDrillDown('plain')">Top 4:30pm</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="otDays" onclick="openRankDrillDown('otDays')">OT Days</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="holiday" onclick="openRankDrillDown('holiday')">Holiday Duty</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="night" onclick="openRankDrillDown('night')">Night Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessDuty" onclick="openRankDrillDown('lessDuty')">Less Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
@@ -2327,8 +2360,8 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
 
   <!-- Modular Admin Scripts (Step 7) -->
   <script src="js/admin/admin-github.js"></script>
-  <script src="js/admin/admin-core.js"></script>
-  <script src="js/admin/admin-tools.js"></script>
+  <script src="js/admin/admin-core.js?v=20261104"></script>
+  <script src="js/admin/admin-tools.js?v=20261104"></script>
   <script src="js/admin/admin-sync-bar.js"></script>
   <script>
     ensureDefaultSubsections();

@@ -7,7 +7,7 @@
    openIccContextModal(empId, crit, month)
      crit  : ranking criterion the user was looking at
              duty | ot | earned | plain | lessDuty | lessOt | punch | absent |
-             requisition | avgDuty | avgInOut | night
+             requisition | avgDuty | avgInOut | night | otDays | holiday
      month : optional 'YYYY-MM' (single-month ranking). Ignored in multi-month
              modes, where the loaded months of the ranking are used.
 
@@ -109,7 +109,7 @@
 
   function analyzeMonth(mStr, rec) {
     var A = { month: mStr, label: monthLabel(mStr), has: !!rec, rec: rec || null,
-      days: [], worked: [], otDays: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [],
+      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [],
       duty: 0, ot: 0, earned: 0, otAmt: 0, holAmt: 0, nightAmt: 0, avgIn: null, earliestIn: null, latestIn: null, avgPerDay: 0 };
     if (!rec) return A;
     var days = parseDaily(rec);
@@ -121,6 +121,7 @@
     A.plainCount = num(rec.plainDaysCount);
     A.worked = days.filter(function (d) { return d.duty > 0; });
     A.otDays = days.filter(function (d) { return d.ot > 0; });
+    A.otDayList = days.filter(function (d) { return d.ot > 0 && !d.night; }); // OT Days rule: night days are counted as Nights only
     A.plainDays = days.filter(function (d) { return d.plain; });
     A.nightDays = days.filter(function (d) { return d.night; });
     A.holDays = days.filter(function (d) { return d.hol || d.off; });
@@ -221,11 +222,11 @@
       body: function (A) { return A.otDays.length ? table(DAY_HEAD, dayRows(A.otDays)) : empty('No overtime recorded'); },
       total: function (as) {
         var t = sum(as, 'ot'), d = sumLen(as, 'otDays');
-        return grid([kpi('Total OT', r1(t) + 'h', 'var(--brand-text)', true), kpi('OT Days', d + 'd'), kpi('Avg OT / Month', r1(t / Math.max(1, countHas(as))) + 'h'), kpi('Peak Month', best(as, function (a) { return a.ot; }, 'h'))]);
+        return grid([kpi('Total OT', r1(t) + 'h', 'var(--brand-text)', true), kpi('Days with OT hrs', d + 'd'), kpi('Avg OT / Month', r1(t / Math.max(1, countHas(as))) + 'h'), kpi('Peak Month', best(as, function (a) { return a.ot; }, 'h'))]);
       },
       single: function (A) {
         var mx = A.otDays.reduce(function (m, d) { return Math.max(m, d.ot); }, 0);
-        return grid([kpi('Total OT', r1(A.ot) + 'h', 'var(--brand-text)', true), kpi('OT Days', A.otDays.length + 'd'), kpi('Avg / OT Day', A.otDays.length ? r1(A.ot / A.otDays.length) + 'h' : '—'), kpi('Longest OT', r1(mx) + 'h')]);
+        return grid([kpi('Total OT', r1(A.ot) + 'h', 'var(--brand-text)', true), kpi('Days with OT hrs', A.otDays.length + 'd'), kpi('Avg / OT Day', A.otDays.length ? r1(A.ot / A.otDays.length) + 'h' : '—'), kpi('Longest OT', r1(mx) + 'h')]);
       },
       listTitle: function (A) { return 'Overtime days (' + A.otDays.length + ')'; }
     },
@@ -269,8 +270,32 @@
       single: function (A) { return grid([kpi('Total Earned', taka(A.earned), 'var(--brand-text)', true), kpi('OT', taka(A.otAmt)), kpi('Holiday / Off', taka(A.holAmt)), kpi('Night', taka(A.nightAmt))]); },
       listTitle: function (A) { return 'Earning breakdown'; }
     },
-    night: {
-      icon: '🌙', cls: 'duty', color: 'var(--brand-text)', title: 'Night Shifts', bannerSub: 'Dates of night shifts',
+    otDays: {
+      icon: '📆', cls: 'duty', color: 'var(--brand-text)', title: 'OT Days', bannerSub: 'Days with overtime. Night-duty days count as Nights only; holiday OT counts here too.',
+      metric: function (A) { return A.otDayList.length; }, fmt: function (v) { return v + 'd'; },
+      body: function (A) { return A.otDayList.length ? table(DAY_HEAD, dayRows(A.otDayList)) : empty('No overtime days'); },
+      total: function (as) {
+        var d = sumLen(as, 'otDayList'), h = as.reduce(function (s, a) { return s + (a.has ? a.otDayList.reduce(function (x, y) { return x + y.ot; }, 0) : 0); }, 0);
+        return grid([kpi('OT Days', d + 'd', 'var(--brand-text)', true), kpi('OT hrs on these days', r1(h) + 'h'), kpi('Avg OT / OT Day', d ? r1(h / d) + 'h' : '—'), kpi('Peak Month', best(as, function (a) { return a.otDayList.length; }, 'd'))]);
+      },
+      single: function (A) {
+        var h = A.otDayList.reduce(function (x, y) { return x + y.ot; }, 0);
+        return grid([kpi('OT Days', A.otDayList.length + 'd', 'var(--brand-text)', true), kpi('OT hrs on these days', r1(h) + 'h'), kpi('Of which holiday', A.otDayList.filter(function (d) { return d.hol || d.off; }).length + 'd'), kpi('Night Shifts', A.nightDays.length + 'n')]);
+      },
+      listTitle: function (A) { return 'Overtime days (' + A.otDayList.length + ')'; }
+    },
+    holiday: {
+      icon: '🏖️', cls: 'duty', color: 'var(--brand-text)', title: 'Holiday Duty', bannerSub: 'Days worked on a holiday / weekly day-off (OT done on these days also counts under OT Days)',
+      metric: function (A) { return A.holDays.length; }, fmt: function (v) { return v + 'd'; },
+      body: function (A) { return A.holDays.length ? table(DAY_HEAD, dayRows(A.holDays)) : empty('No holiday duty'); },
+      total: function (as) {
+        var d = sumLen(as, 'holDays'), withOt = as.reduce(function (s, a) { return s + (a.has ? a.holDays.filter(function (x) { return x.ot > 0; }).length : 0); }, 0);
+        return grid([kpi('Holiday Duty', d + 'd', 'var(--brand-text)', true), kpi('With OT', withOt + 'd'), kpi('Peak Month', best(as, function (a) { return a.holDays.length; }, 'd'))]);
+      },
+      single: function (A) { return grid([kpi('Holiday Duty', A.holDays.length + 'd', 'var(--brand-text)', true), kpi('With OT', A.holDays.filter(function (x) { return x.ot > 0; }).length + 'd'), kpi('Holiday hrs', r1(A.holDays.reduce(function (x, y) { return x + y.duty; }, 0)) + 'h'), kpi('Night Shifts', A.nightDays.length + 'n')]); },
+      listTitle: function (A) { return 'Holiday / day-off duty (' + A.holDays.length + ' days)'; }
+    },
+    night: {      icon: '🌙', cls: 'duty', color: 'var(--brand-text)', title: 'Night Shifts', bannerSub: 'Dates of night shifts',
       metric: function (A) { return A.nightDays.length; }, fmt: function (v) { return v + 'n'; },
       body: function (A) {
         return A.nightDays.length ? table(['Date', 'Day', 'In', 'Out', 'Duty', 'OT'], A.nightDays.map(function (d) {
@@ -360,7 +385,7 @@
     var ot = multi ? num(emp.otHours) : (As[0] && As[0].has ? As[0].ot : num(emp.otHours));
     var earned = multi ? num(emp.totalEarned) : (As[0] && As[0].has ? As[0].earned : num(emp.totalEarned));
     var items = [
-      kpi('Duty', r1(duty) + 'h'), kpi('Overtime', r1(ot) + 'h'), kpi('Holiday', num(emp.holidayCount) + 'd'), kpi('Night', num(emp.nightCount) + 'n'),
+      kpi('Duty', r1(duty) + 'h'), kpi('Overtime', r1(ot) + 'h'), kpi('OT Days', (multi ? sumLen(As, 'otDayList') : (As[0] ? As[0].otDayList.length : 0)) + 'd'), kpi('Holiday', num(emp.holidayCount) + 'd'), kpi('Night', num(emp.nightCount) + 'n'),
       kpi('4:30pm', num(emp.plainDaysCount) + 'd'), kpi('Absent', abs + 'd', abs > 0 ? 'var(--danger)' : ''), kpi('Punch Miss', pun + 'd', pun > 0 ? 'var(--warning)' : '')
     ];
     if (!incMode) items.push(kpi('Earned', taka(earned)));

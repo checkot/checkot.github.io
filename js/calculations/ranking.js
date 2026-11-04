@@ -54,6 +54,7 @@ function buildLeaderboardPayloadFromList(month, allList) {
   const normalized = rppfEmployees.map(e => ({
     ...e,
     plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
+    otDaysCount: getEmpOtDays(e),
     area: getAreaForId(e.id, true),
     punchProblemsCount: getPunchProblemCount(e)
   }));

@@ -1151,6 +1151,7 @@ isRppf: e.isRppf !== false,
 area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facility')
 };
 if (Array.isArray(obj.daily) && obj.daily.length > 0) _buildEmpDayMap(obj);
+getEmpOtDays(obj);
 didEmpWorkNightOnLastDay(obj, month);
 return obj;
 });
@@ -1492,9 +1493,43 @@ activateLbCriteriaTab(target);
 }
 function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; } return d; } catch (e) { return null; } }
 function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+
+/* ==========================================================================
+   OT-DAY RULES (used by ranking + comparison)
+   - OT Day      : a day with OT hours > 0 that is NOT a night-duty day.
+                   (Night duty days are counted only as Nights, even if they carry fixed OT.)
+   - Holiday Duty: any day with Day-Off / Holiday duty or OT (same as holidayCount).
+   - A holiday day with OT counts BOTH as an OT Day and as a Holiday Duty day.
+   ========================================================================== */
+function isNightDailyRow(r) {
+  if (!Array.isArray(r)) return false;
+  const code = String(r[11] || '').toUpperCase();
+  return Number(r[10]) === 1 || code.indexOf('NIGHT') >= 0 || code === 'DN';
+}
+function computeOtDaysFromDaily(daily) {
+  let n = 0;
+  (Array.isArray(daily) ? daily : []).forEach(r => {
+    if (!Array.isArray(r)) return;
+    const ot = (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0);
+    if (ot > 0 && !isNightDailyRow(r)) n++;
+  });
+  return n;
+}
+function getEmpOtDays(e) {
+  if (!e) return 0;
+  if (typeof e.otDaysCount === 'number' && isFinite(e.otDaysCount)) return e.otDaysCount;
+  if (Array.isArray(e.daily) && e.daily.length > 0) {
+    const n = computeOtDaysFromDaily(e.daily);
+    try { e.otDaysCount = n; } catch (err) {}
+    return n;
+  }
+  return 0;
+}
+if (typeof window !== 'undefined') { window.computeOtDaysFromDaily = computeOtDaysFromDaily; window.getEmpOtDays = getEmpOtDays; window.isNightDailyRow = isNightDailyRow; }
+
 function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
 function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
-function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
+function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS || (Array.isArray(d.allEmployees) && d.allEmployees.length && d.allEmployees[0] && d.allEmployees[0].otDaysCount === undefined)) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
 function setLeaderboardCache(month, payload) {
 setTimeout(() => {
 try {
@@ -2325,6 +2360,7 @@ category: cat,
 categoryName: r.name || cat,
 totalDuty,
 otHours,
+otDays: (typeof emp.otDaysCount === 'number' || (Array.isArray(emp.daily) && emp.daily.length)) ? getEmpOtDays(emp) : null,
 holiday: holidayCount,
 night: nightCount,
 plainDays: Number(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays || 0),
@@ -2348,6 +2384,7 @@ category: cat,
 categoryName: r.name || cat,
 totalDuty: Number((otHours + holiday * 8).toFixed(1)),
 otHours,
+otDays: null,
 holiday,
 night,
 plainDays: 0,
@@ -2465,6 +2502,7 @@ return `<div>${base}</div>${nm}`;
 const maxVal = (fn) => Math.max(...list.map(fn));
 const maxDuty = maxVal(r => r.totalDuty || 0);
 const maxOt = maxVal(r => r.otHours || 0);
+const maxOtDays = maxVal(r => r.otDays || 0);
 const maxHol = maxVal(r => r.holiday || 0);
 const maxNight = maxVal(r => r.night || 0);
 const maxPlain = maxVal(r => r.plainDays || 0);
@@ -2495,7 +2533,8 @@ div.innerHTML = `
 <tr><td>Category</td>${list.map(r => `<td>${esc(RATE_TABLE[r.category]?.name || r.categoryName || '—')}</td>`).join('')}</tr>
 <tr><td>Total duty (hrs)</td>${list.map(r => tdCell(r.totalDuty || 0, r.totalDuty || 0, maxDuty)).join('')}</tr>
 <tr><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
-<tr><td>Holiday Allowance (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
+<tr><td>OT days (days)</td>${list.map(r => r.otDays == null ? '<td>—</td>' : tdCell(r.otDays, r.otDays, maxOtDays)).join('')}</tr>
+<tr><td>Holiday duty (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
 <tr><td>Night Allowance (nights)</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
 <tr><td>4:30 pm (days)</td>${list.map(r => tdCell(r.plainDays || 0, r.plainDays || 0, maxPlain)).join('')}</tr>
 <tr><td>Total Absent (days)</td>${list.map(r => tdCellAbsent(r.absentCount != null ? r.absentCount : 0, Number(r.absentCount != null ? r.absentCount : 0))).join('')}</tr>
@@ -2803,6 +2842,7 @@ window.ensureEmpAvgStats = ensureEmpAvgStats;
 const normalized = rppfEmployees.map(e => ({
 ...e,
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
+otDaysCount: getEmpOtDays(e),
 area: getAreaForId(e.id, true),
 punchProblemsCount: getPunchProblemCount(e)
 }));
@@ -2927,6 +2967,7 @@ otHours: Number(e.otHours || 0),
 holidayCount: Number(e.holidayCount || 0),
 nightCount: Number(e.nightCount || 0),
 plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),
+otDaysCount: getEmpOtDays(e),
 totalEarned: Number(e.totalEarned || 0),
 punchProblems: [...pArr],
 generalAbsentDays: [...absArr],
@@ -2946,6 +2987,7 @@ cur.otHours = Number((cur.otHours + Number(e.otHours || 0)).toFixed(2));
 cur.holidayCount += Number(e.holidayCount || 0);
 cur.nightCount += Number(e.nightCount || 0);
 cur.plainDaysCount = (cur.plainDaysCount || 0) + Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0);
+cur.otDaysCount = (cur.otDaysCount || 0) + getEmpOtDays(e);
 cur.totalEarned = Number((cur.totalEarned + Number(e.totalEarned || 0)).toFixed(2));
 cur.punchProblems.push(...pArr);
 if (!Array.isArray(cur.generalAbsentDays)) cur.generalAbsentDays = [];
@@ -5338,6 +5380,9 @@ earned: 'Best Earning RPPF',
 plain: 'Top 4:30pm RPPF',
 lessDuty: 'Less Duty RPPF',
 lessOt: 'Less OT RPPF',
+otDays: 'Most OT Days RPPF',
+holiday: 'Most Holiday Duty RPPF',
+night: 'Most Night Duty RPPF',
 avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In & Out Time RPPF',
 punch: 'Punch Problem RPPF',
@@ -5351,6 +5396,9 @@ earned: 'Earning',
 plain: '4:30pm Days',
 lessDuty: 'Duty Hrs',
 lessOt: 'OT Hrs',
+otDays: 'OT Days',
+holiday: 'Holiday Days',
+night: 'Night Shifts',
 avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In / Out',
 punch: 'Missing',
@@ -5437,9 +5485,17 @@ if (crit === 'requisition') {
   const base = f._rawFiltered || f.allEmployees || [];
   return [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
 }
+if (crit === 'otDays' || crit === 'holiday' || crit === 'night') {
+  const cntOf = crit === 'otDays' ? (e => getEmpOtDays(e)) : crit === 'holiday' ? (e => Number(e.holidayCount || 0)) : (e => Number(e.nightCount || 0));
+  const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
+  return [...base].filter(e => cntOf(e) > 0).sort((a,b) => (cntOf(b) - cntOf(a)) || (crit === 'otDays' ? ((b.otHours || 0) - (a.otHours || 0)) : 0) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+}
 return f.sortedByDuty || [];
 }
 function formatIccMainMetric(e, crit) {
+if (crit === 'otDays') return `${getEmpOtDays(e)}d`;
+if (crit === 'holiday') return `${Number(e.holidayCount || 0)}d`;
+if (crit === 'night') return `${Number(e.nightCount || 0)}n`;
 if (crit === 'duty' || crit === 'lessDuty') return `${e.totalDuty || 0} hrs`;
 if (crit === 'ot' || crit === 'lessOt') return `${e.otHours || 0} hrs`;
 if (crit === 'earned') return `৳ ${Math.round(e.totalEarned || 0).toLocaleString('en-IN')}`;
@@ -7569,8 +7625,7 @@ function renderInchargeHomeToppers() {
       key: 'night',
       title: 'Most Night Shifts',
       sortFn: (a, b) => ((b.nightCount || 0) - (a.nightCount || 0)) || (b.totalDuty - a.totalDuty),
-      valFn: e => `${e.nightCount || 0} nights`,
-      drillKey: 'duty'
+      valFn: e => `${e.nightCount || 0} nights`
     }
   ];
 

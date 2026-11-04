@@ -94,3 +94,36 @@ function isPunchMissing(val) {
 
 window.cleanPunchValue = cleanPunchValue;
 window.isPunchMissing = isPunchMissing;
+
+/* ==========================================================================
+   OT-DAY RULES (used by ranking + comparison)
+   - OT Day      : a day with OT hours > 0 that is NOT a night-duty day.
+                   (Night duty days are counted only as Nights, even if they carry fixed OT.)
+   - Holiday Duty: any day with Day-Off / Holiday duty or OT (same as holidayCount).
+   - A holiday day with OT counts BOTH as an OT Day and as a Holiday Duty day.
+   ========================================================================== */
+function isNightDailyRow(r) {
+  if (!Array.isArray(r)) return false;
+  const code = String(r[11] || '').toUpperCase();
+  return Number(r[10]) === 1 || code.indexOf('NIGHT') >= 0 || code === 'DN';
+}
+function computeOtDaysFromDaily(daily) {
+  let n = 0;
+  (Array.isArray(daily) ? daily : []).forEach(r => {
+    if (!Array.isArray(r)) return;
+    const ot = (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0);
+    if (ot > 0 && !isNightDailyRow(r)) n++;
+  });
+  return n;
+}
+function getEmpOtDays(e) {
+  if (!e) return 0;
+  if (typeof e.otDaysCount === 'number' && isFinite(e.otDaysCount)) return e.otDaysCount;
+  if (Array.isArray(e.daily) && e.daily.length > 0) {
+    const n = computeOtDaysFromDaily(e.daily);
+    try { e.otDaysCount = n; } catch (err) {}
+    return n;
+  }
+  return 0;
+}
+if (typeof window !== 'undefined') { window.computeOtDaysFromDaily = computeOtDaysFromDaily; window.getEmpOtDays = getEmpOtDays; window.isNightDailyRow = isNightDailyRow; }
