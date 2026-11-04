@@ -109,13 +109,18 @@ def get_val(row, col_idx):
         return clean_punch_value(row[col_idx])
     return "" 
 
-def is_punch_missing(val):
+def is_punch_missing(val, other_val=None, duty_val=0):
     cleaned = clean_punch_value(val).upper()
     if not cleaned:
         return True
-    if cleaned in ("-", "--", "N/A", "NA", "NULL", "NONE", "MISSING", "0000", "000000"):
+    if cleaned in ("-", "--", "N/A", "NA", "NULL", "NONE", "MISSING"):
         return True
+    if cleaned in ("0000", "000000"):
+        return True
+    # If this punch is 00:00 (midnight), it is valid if the other punch exists or duty > 0
     if re.match(r'^0{1,2}:00(:00)?$', cleaned):
+        if (other_val and not is_punch_missing(other_val)) or duty_val > 0:
+            return False
         return True
     if not re.match(r'^\d{1,2}:\d{2}(:\d{2})?([AP]M)?$', cleaned, re.IGNORECASE):
         return True
@@ -130,20 +135,28 @@ def parse_time_mins(val):
     m = re.match(r'^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$', s)
     if m:
         hh, mm, ampm = int(m.group(1)), int(m.group(2)), m.group(3)
+        if hh >= 24 or mm >= 60:
+            return None
         if ampm == 'PM' and hh < 12: hh += 12
         elif ampm == 'AM' and hh == 12: hh = 0
         return hh * 60 + mm
     return None
 
-def calc_elapsed_hours(in_str, out_str):
+def calc_elapsed_hours(in_str, out_str, shift_str="", duty_hrs=0.0):
     t_in = parse_time_mins(in_str)
     t_out = parse_time_mins(out_str)
     if t_in is None or t_out is None:
         return 0.0
+    shift_upper = (shift_str or "").upper()
+    is_24h_shift = "DN" in shift_upper or duty_hrs >= 20.0
     if t_out < t_in:
         diff_mins = (1440 - t_in) + t_out
+    elif t_out == t_in and is_24h_shift:
+        diff_mins = 1440
     else:
         diff_mins = t_out - t_in
+        if is_24h_shift and diff_mins < 360:
+            diff_mins += 1440
     return round(diff_mins / 60.0, 2)
 
 def clean_emp_name(raw):
@@ -179,9 +192,20 @@ def parse_emp_header(col0, emp_id):
         return clean_emp_name(g.group(1)), clean_designation(g.group(2))
     return clean_emp_name(name_desig), ""
 
-def detect_category(grade_text, emp_id):
+def detect_category(grade_text, emp_id, desig_rates=None):
     g = (grade_text or "").upper().strip()
     id_upper = (emp_id or "").upper().strip()
+    raw_key = (grade_text or "").strip().lower()
+
+    # 1. Match designationRates from areas.json (e.g. Officer A -> R_55)
+    if desig_rates and raw_key in desig_rates:
+        r_cat = desig_rates[raw_key]
+        return {"category": r_cat, "valid": True, "reason": f"Designation Match ({grade_text})", "gradeText": g}
+
+    # 2. Casual workers (numeric ID or Casual grade)
+    if re.match(r"^\d{5,8}$", id_upper) or "CASUAL" in g:
+        return {"category": "CF", "valid": True, "reason": "Casual Worker", "gradeText": g or "Casual"}
+
     if id_upper.startswith("CF") or re.search(r'\bHELPER\b', g):
         return {"category": "CF", "valid": True, "reason": "Contractual", "gradeText": g or "CF"}
     if re.search(r'\b(EXECUTIVE|SENIOR\s+OFFICER|ASSISTANT\s+MANAGER|MANAGER|DEPUTY|DIRECTOR|HEAD)\b', g) and not re.search(r'JUNIOR\s+OFFICER', g):
@@ -623,13 +647,18 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
             
             # Robust Night Shift Detection:
             # 1. Night column is Yes/1
-            # 2. Shift text contains 'NIGHT' or 'C'
-            # 3. Elapsed hours is 14h+ (typical night 14-16h)
+            # 2. Shift text contains 'NIGHT' or 'C' or 'DN'
+            # 3. Crosses midnight window (out < in or late night out/early morning in) with 14h+ elapsed
+            crosses_night = False
+            if t_in_mins is not None and t_out_mins is not None:
+                if t_out_mins < t_in_mins or t_in_mins <= 240 or t_out_mins >= 1320:
+                    crosses_night = True
             is_night = (
                 night_raw in ("yes", "1", "true", "y") or
                 "NIGHT" in shift_upper or
                 shift_upper == "C" or
-                elapsed_hrs >= 14.0 or
+                "DN" in shift_upper or
+                (elapsed_hrs >= 14.0 and crosses_night) or
                 (out_val and miss_in and (t_out_mins is not None and 240 <= t_out_mins <= 435))
             )
 

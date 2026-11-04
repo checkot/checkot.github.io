@@ -71,20 +71,28 @@ def parse_time_mins(val):
     m = re.match(r'^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$', s)
     if m:
         hh, mm, ampm = int(m.group(1)), int(m.group(2)), m.group(3)
+        if hh >= 24 or mm >= 60:
+            return None
         if ampm == 'PM' and hh < 12: hh += 12
         elif ampm == 'AM' and hh == 12: hh = 0
         return hh * 60 + mm
     return None
 
-def calc_elapsed_hours(in_str, out_str):
+def calc_elapsed_hours(in_str, out_str, shift_str="", duty_hrs=0.0):
     t_in = parse_time_mins(in_str)
     t_out = parse_time_mins(out_str)
     if t_in is None or t_out is None:
         return 0.0
+    shift_upper = (shift_str or "").upper()
+    is_24h_shift = "DN" in shift_upper or duty_hrs >= 20.0
     if t_out < t_in:
         diff_mins = (1440 - t_in) + t_out
+    elif t_out == t_in and is_24h_shift:
+        diff_mins = 1440
     else:
         diff_mins = t_out - t_in
+        if is_24h_shift and diff_mins < 360:
+            diff_mins += 1440
     return round(diff_mins / 60.0, 2)
 
 def get_category_type(emp_id, emp_grade="", emp_meta_type=""):
