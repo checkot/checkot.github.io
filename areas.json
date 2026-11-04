@@ -1557,7 +1557,9 @@
     ],
     "__deleted_subs__": []
   },
-  "designationRates": {},
+  "designationRates": {
+    "officer a": "CF"
+  },
   "rateTable": {
     "CF": {
       "otRate": 38,
