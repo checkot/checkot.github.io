@@ -1558,7 +1558,7 @@
     "__deleted_subs__": []
   },
   "designationRates": {
-    "officer a": "CF"
+    "officer a": "R_55"
   },
   "rateTable": {
     "CF": {
@@ -1593,6 +1593,14 @@
       "holidayFlat": 0,
       "noRate": true,
       "name": "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)"
+    },
+    "R_55": {
+      "otRate": 55,
+      "nightRate": 600,
+      "holidayType": "flat",
+      "holidayHours": 8,
+      "holidayFlat": 500,
+      "name": "O A"
     }
   }
 }
