@@ -52,6 +52,16 @@ function onVsPeriodChange() {
   const p = document.getElementById('vsPeriodSelect')?.value || 'current';
   const mSel = document.getElementById('vsMonthOverrideSelect');
   if (mSel) mSel.style.display = p === 'current' ? '' : 'none';
+  const sub = document.getElementById('vsPageSub');
+  if (sub) {
+    if (p === 'current') {
+      const ym = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+      sub.textContent = `Compare overtime & allowances (${ym})`;
+    } else {
+      const pText = document.getElementById('vsPeriodSelect')?.options[document.getElementById('vsPeriodSelect')?.selectedIndex]?.text || p;
+      sub.textContent = `Compare overtime & allowances (${pText})`;
+    }
+  }
 }
 
 function onVsMonthOverrideChange() {
@@ -124,6 +134,47 @@ function buildCustomSimRecord(label, cat, otHours, holiday, night) {
   };
 }
 
+function getVsMonthsForPeriod(periodMode, baseMonth) {
+  const base = baseMonth || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
+  if (periodMode === 'current') return [base];
+  
+  const getPrev = (count) => {
+    if (typeof getPreviousMonthStrings === 'function') {
+      return getPreviousMonthStrings(base, count);
+    }
+    const [yy, mm] = base.split('-').map(Number);
+    const out = [];
+    let y = yy || 2026, m = mm || 11;
+    for (let i = 0; i < count; i++) {
+      out.push(`${y}-${String(m).padStart(2, '0')}`);
+      m -= 1;
+      if (m < 1) { m = 12; y -= 1; }
+    }
+    return out;
+  };
+
+  if (periodMode === '3m') return getPrev(3);
+  if (periodMode === '6m') return getPrev(6);
+  if (periodMode === '1y') return getPrev(12);
+  if (periodMode === 'ytd') {
+    if (typeof getYearToDateMonths === 'function') return getYearToDateMonths(base);
+    const [yy, mm] = base.split('-').map(Number);
+    const out = [];
+    for (let m = 1; m <= (mm || 12); m++) {
+      out.push(`${yy || 2026}-${String(m).padStart(2, '0')}`);
+    }
+    return out;
+  }
+  if (periodMode === 'alltime') {
+    if (typeof getAllTime2026Months === 'function') return getAllTime2026Months(base);
+    if (Array.isArray(window.availableServerMonths) && window.availableServerMonths.length) {
+      return [...window.availableServerMonths];
+    }
+    return getPrev(12);
+  }
+  return [base];
+}
+
 async function runComparison() {
   const statusDiv = document.getElementById('compareStatus');
   const compareBtn = document.getElementById('compareBtn');
@@ -133,46 +184,160 @@ async function runComparison() {
   const id2 = (document.getElementById('compareId')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
   if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
   if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
-  const _cmpIds = [id1, id2];
+  
+  let _cmpIds = [id1, id2];
   if (currentVsMode === 3) {
     const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
     if (id3) _cmpIds.push(id3);
+  } else if (currentVsMode === 'custom') {
+    const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (id3) _cmpIds.push(id3);
+    const extraInputs = document.querySelectorAll('#vsExtraSlotsContainer input.vs-emp-id-input');
+    extraInputs.forEach(inp => {
+      const v = (inp.value || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (v) _cmpIds.push(v);
+    });
   }
+
   const _unlisted = _cmpIds.filter(id => !isListedEmployeeId(id));
   if (_unlisted.length > 0) {
     showToast(`ID ${_unlisted.join(', ')} is not listed in RPPF sections`, 'error');
     return;
   }
-  if (id1 === id2) { showToast("Both ID numbers are the same. Enter a different ID.", "warn"); return; }
+  if (new Set(_cmpIds).size !== _cmpIds.length) {
+    showToast("Duplicate ID numbers entered. Enter different IDs.", "warn");
+    return;
+  }
   
   if (statusDiv) { statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Comparing..."; }
   if (compareBtn) compareBtn.disabled = true;
 
   try {
-    const month = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-    const fastList = await fetchMonthPreIndexedData(month);
+    const periodSelect = document.getElementById('vsPeriodSelect');
+    const periodMode = periodSelect?.value || 'current';
+    const periodLabel = periodSelect?.options[periodSelect.selectedIndex]?.text || (periodMode === 'current' ? 'Selected Month' : periodMode);
+    const month = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
+    
+    const monthsToLoad = getVsMonthsForPeriod(periodMode, month);
+    const loadedLists = await Promise.all(
+      monthsToLoad.map(m => fetchMonthPreIndexedData(m, false, false).catch(() => []))
+    );
+
     const records = [];
     for (const targetId of _cmpIds) {
-      const found = fastList.find(e => String(e.id || '').toUpperCase() === targetId);
-      if (!found) {
-        if (statusDiv) { statusDiv.style.color = "var(--danger)"; statusDiv.innerText = `"${targetId}" ID was not found in ${month} data.`; }
+      let baseFound = null;
+      let totalDuty = 0;
+      let otHours = 0;
+      let holiday = 0;
+      let night = 0;
+      let plainDays = 0;
+      let otAmount = 0;
+      let holidayAmount = 0;
+      let nightAmount = 0;
+      let totalEarned = 0;
+      let monthsHit = 0;
+
+      for (let i = 0; i < monthsToLoad.length; i++) {
+        const list = loadedLists[i];
+        if (!Array.isArray(list) || !list.length) continue;
+        const found = list.find(e => {
+          const u = String(e && e.id || '').toUpperCase();
+          if (u === targetId) return true;
+          if (typeof resolveEmpAliasId === 'function' && String(resolveEmpAliasId(u) || '').toUpperCase() === targetId) return true;
+          return false;
+        });
+
+        if (found) {
+          monthsHit++;
+          if (!baseFound) baseFound = found;
+          totalDuty += Number(found.totalDuty || 0);
+          otHours += Number(found.otHours || 0);
+          holiday += Number(found.holidayCount != null ? found.holidayCount : found.holiday || 0);
+          night += Number(found.nightCount != null ? found.nightCount : found.night || 0);
+          plainDays += Number(found.plainDaysCount != null ? found.plainDaysCount : found.plainDays || 0);
+          if (found.totalEarned != null) {
+            totalEarned += Number(found.totalEarned || 0);
+            otAmount += Number(found.otAmount || 0);
+            holidayAmount += Number(found.holidayAmount || 0);
+            nightAmount += Number(found.nightAmount || 0);
+          }
+        }
+      }
+
+      // Fallback: If not in any loaded month list, check master directory
+      if (!baseFound) {
+        if (typeof searchEmployeeDirectory === 'function') {
+          const dirMatch = searchEmployeeDirectory(targetId, 1);
+          if (dirMatch && dirMatch[0] && String(dirMatch[0].id || '').toUpperCase() === targetId) {
+            baseFound = dirMatch[0];
+          }
+        }
+      }
+
+      // If employee has no data in ANY of the period months AND not in directory
+      if (!baseFound && monthsHit === 0) {
+        if (statusDiv) {
+          statusDiv.style.color = "var(--danger)";
+          statusDiv.innerText = `"${targetId}" ID was not found in ${periodMode === 'current' ? month : periodLabel} data.`;
+        }
         if (compareBtn) compareBtn.disabled = false;
         return;
       }
-      if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(found)) {
+
+      if (baseFound && typeof isExecHiddenFor === 'function' && isExecHiddenFor(baseFound)) {
         showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
         if (compareBtn) compareBtn.disabled = false;
         return;
       }
-      records.push(buildCompareRecord(found, targetId));
+
+      // Build synthetic record for multi-month or single month
+      const syntheticEmp = {
+        ...(baseFound || {}),
+        id: targetId,
+        name: baseFound?.name || targetId,
+        grade: baseFound?.grade || baseFound?.designation || '',
+        category: baseFound?.category,
+        totalDuty: Number(totalDuty.toFixed(2)),
+        otHours: Number(otHours.toFixed(2)),
+        holiday: holiday,
+        holidayCount: holiday,
+        night: night,
+        nightCount: night,
+        plainDays: plainDays,
+        plainDaysCount: plainDays
+      };
+
+      if (monthsToLoad.length > 1 && totalEarned > 0) {
+        syntheticEmp.otAmount = Number(otAmount.toFixed(2));
+        syntheticEmp.holidayAmount = Number(holidayAmount.toFixed(2));
+        syntheticEmp.nightAmount = Number(nightAmount.toFixed(2));
+        syntheticEmp.totalEarned = Number(totalEarned.toFixed(2));
+      }
+
+      records.push(buildCompareRecord(syntheticEmp, targetId));
     }
+
     if (statusDiv) statusDiv.innerText = "";
     if (compareBtn) compareBtn.disabled = false;
     if (resultDiv) {
       resultDiv.style.display = "block";
       resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    if (typeof showComparison === "function") showComparison(records[0], records[1], records[1].id, records[2] || null, records);
+    if (typeof showComparison === "function") {
+      showComparison(records[0], records[1], records[1].id, records[2] || null, records);
+      // Insert period note if multi-month
+      if (periodMode !== 'current') {
+        const target = document.getElementById('vsExportTarget');
+        if (target && !target.querySelector('.vs-period-note')) {
+          const note = document.createElement('div');
+          note.className = 'vs-period-note';
+          note.style.cssText = 'padding:6px 10px;margin-bottom:8px;border-radius:6px;background:var(--brand-soft);color:var(--brand-text);font-size:11.5px;font-weight:700;text-align:center;';
+          const chrono = monthsToLoad.slice().sort();
+          note.textContent = `Period: ${periodLabel} (${chrono[0]} to ${chrono[chrono.length - 1]})`;
+          target.insertBefore(note, target.firstChild);
+        }
+      }
+    }
   } catch (err) {
     console.error(err);
     if (statusDiv) { statusDiv.style.color = "var(--danger)"; statusDiv.innerText = "Failed to load comparison data."; }

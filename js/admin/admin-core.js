@@ -2422,9 +2422,17 @@ grade: currentResult.grade || ''
 continue;
 }
 if (!found) {
-statusDiv.style.color = "var(--danger)";
-statusDiv.innerText = `"${targetId}" ID was not found in ${month} data.`;
-return;
+  if (typeof searchEmployeeDirectory === 'function') {
+    const dirMatch = searchEmployeeDirectory(targetId, 1);
+    if (dirMatch && dirMatch[0] && String(dirMatch[0].id || '').toUpperCase() === targetId) {
+      found = { ...dirMatch[0], totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0, totalEarned: 0 };
+    }
+  }
+}
+if (!found) {
+  statusDiv.style.color = "var(--danger)";
+  statusDiv.innerText = `"${targetId}" ID was not found in ${periodMode === 'current' ? month : 'selected period'} data.`;
+  return;
 }
 if (isExecHiddenFor(found)) {
 showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
@@ -8000,7 +8008,7 @@ function attachEmployeeAutocompleteToInput(inputEl, onSelectCallback) {
         <div class="emp-suggest-left">
           <div class="emp-suggest-name">
             <span class="emp-suggest-id-pill">${esc(emp.id)}</span>
-            <span>${esc(dispName)}</span>
+            <span class="emp-suggest-label">${esc(dispName)}</span>
           </div>
           <div class="emp-suggest-meta">${areaBadge}${subBadge}${desigBadge}</div>
         </div>

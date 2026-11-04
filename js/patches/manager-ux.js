@@ -880,7 +880,15 @@
             agg.plainDaysCount += num(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays);
           }
         });
-        if (!base) { setStatus(`"${id}" was not found in ${period.label} data.`, true); return; }
+        if (!base) {
+          if (typeof searchEmployeeDirectory === 'function') {
+            const dirMatch = searchEmployeeDirectory(id, 1);
+            if (dirMatch && dirMatch[0] && String(dirMatch[0].id || '').toUpperCase() === id) {
+              base = dirMatch[0];
+            }
+          }
+        }
+        if (!base && hits === 0) { setStatus(`"${id}" was not found in ${period.label} data.`, true); return; }
         try { if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(base)) { toast(`"${id}" calculation is visible only in in-charge mode`, 'warn'); setStatus('', false); return; } } catch (e) { /* ignore */ }
         const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount });
         delete merged.holiday; delete merged.night; delete merged.plainDays;
