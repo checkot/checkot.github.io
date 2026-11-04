@@ -732,7 +732,13 @@
 
   function getVsPeriod() {
     const type = ($('vsPeriodSelect') && $('vsPeriodSelect').value) || 'current';
-    const base = ($('vsMonthOverrideSelect') && $('vsMonthOverrideSelect').value) || curMonth() || ymNow();
+    let base = ($('vsMonthOverrideSelect') && $('vsMonthOverrideSelect').value) || curMonth() || ymNow();
+    if (type === 'ytd' || type === 'alltime') {
+      const latest = (Array.isArray(window.availableServerMonths) && window.availableServerMonths.length)
+        ? window.availableServerMonths.slice().sort().reverse()[0]
+        : (curMonth() || ymNow());
+      if (latest) base = latest;
+    }
     const prev = (n) => { try { return getPreviousMonthStrings(base, n).slice().reverse(); } catch (e) { return [base]; } };
     let months = [base], from = null, to = null, label = monLabel(base), error = '';
     if (type === '3m') months = prev(3);

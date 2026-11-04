@@ -136,7 +136,14 @@ function buildCustomSimRecord(label, cat, otHours, holiday, night) {
 }
 
 function getVsMonthsForPeriod(periodMode, baseMonth) {
-  const base = baseMonth || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
+  let base = baseMonth || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
+  // For YTD or All-Time, always default to the latest available month of the year
+  if (periodMode === 'ytd' || periodMode === 'alltime') {
+    const latest = (Array.isArray(window.availableServerMonths) && window.availableServerMonths.length)
+      ? window.availableServerMonths.slice().sort().reverse()[0]
+      : (currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11');
+    if (latest) base = latest;
+  }
   if (periodMode === 'current') return [base];
   
   const getPrev = (count) => {
