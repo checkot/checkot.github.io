@@ -862,7 +862,7 @@
       const records = [];
       for (const id of ids) {
         let base = null;
-        const agg = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0 };
+        const agg = { totalDuty: 0, otHours: 0, holidayCount: 0, nightCount: 0, plainDaysCount: 0, absentCount: 0 };
         let hits = 0;
         period.months.forEach((m, i) => {
           const emp = findEmp(lists[i], id);
@@ -878,6 +878,11 @@
             agg.holidayCount += num(emp.holidayCount != null ? emp.holidayCount : emp.holiday);
             agg.nightCount += num(emp.nightCount != null ? emp.nightCount : emp.night);
             agg.plainDaysCount += num(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays);
+            let aCnt = 0;
+            if (emp.generalAbsentCount != null) aCnt = num(emp.generalAbsentCount);
+            else if (Array.isArray(emp.generalAbsentDays)) aCnt = emp.generalAbsentDays.length;
+            else if (typeof getGeneralAbsentCount === 'function') aCnt = getGeneralAbsentCount(emp, m);
+            agg.absentCount += aCnt;
           }
         });
         if (!base) {
@@ -890,7 +895,7 @@
         }
         if (!base && hits === 0) { setStatus(`"${id}" was not found in ${period.label} data.`, true); return; }
         try { if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(base)) { toast(`"${id}" calculation is visible only in in-charge mode`, 'warn'); setStatus('', false); return; } } catch (e) { /* ignore */ }
-        const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount });
+        const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount, absentCount: agg.absentCount, generalAbsentCount: agg.absentCount });
         delete merged.holiday; delete merged.night; delete merged.plainDays;
         delete merged.otAmount; delete merged.holidayAmount; delete merged.nightAmount; delete merged.totalEarned;
         delete merged.daily;

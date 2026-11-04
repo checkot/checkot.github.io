@@ -2328,6 +2328,7 @@ otHours,
 holiday: holidayCount,
 night: nightCount,
 plainDays: Number(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays || 0),
+absentCount: Number(emp.absentCount != null ? emp.absentCount : (emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0))),
 otAmount,
 holidayAmount,
 nightAmount,
@@ -2468,7 +2469,12 @@ const maxHol = maxVal(r => r.holiday || 0);
 const maxNight = maxVal(r => r.night || 0);
 const maxPlain = maxVal(r => r.plainDays || 0);
 const maxTotal = maxVal(r => r.totalEarned || 0);
+const minAbsent = Math.min(...list.map(r => Number(r.absentCount != null ? r.absentCount : 0)));
 const tdCell = (valStr, numVal, maxNum) => `<td class="${numVal > 0 && numVal === maxNum ? 'win-cell' : ''}">${valStr}</td>`;
+const tdCellAbsent = (valStr, numVal) => {
+  const isBest = list.length > 1 && numVal === minAbsent && !list.every(x => Number(x.absentCount != null ? x.absentCount : 0) === minAbsent);
+  return `<td class="${isBest ? 'win-cell' : ''}">${valStr}</td>`;
+};
 let diffText = '';
 if (!third) {
 const diff = mine.totalEarned - other.totalEarned;
@@ -2492,6 +2498,7 @@ div.innerHTML = `
 <tr><td>Holiday Allowance (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
 <tr><td>Night Allowance (nights)</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
 <tr><td>4:30 pm (days)</td>${list.map(r => tdCell(r.plainDays || 0, r.plainDays || 0, maxPlain)).join('')}</tr>
+<tr><td>Total Absent (days)</td>${list.map(r => tdCellAbsent(r.absentCount != null ? r.absentCount : 0, Number(r.absentCount != null ? r.absentCount : 0))).join('')}</tr>
 <tr><td>OT Allowance</td>${list.map(r => `<td>৳ ${r.otAmount.toFixed(2)}</td>`).join('')}</tr>
 <tr><td>Holiday Allowance</td>${list.map(r => `<td>৳ ${r.holidayAmount.toFixed(2)}</td>`).join('')}</tr>
 <tr><td>Night Allowance</td>${list.map(r => `<td>৳ ${r.nightAmount.toFixed(2)}</td>`).join('')}</tr>

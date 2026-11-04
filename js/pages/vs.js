@@ -103,6 +103,7 @@ function buildCompareRecord(emp, idStr) {
     holiday: holidayCount,
     night: nightCount,
     plainDays: Number(emp.plainDaysCount != null ? emp.plainDaysCount : emp.plainDays || 0),
+    absentCount: Number(emp.absentCount != null ? emp.absentCount : (emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0))),
     otAmount,
     holidayAmount,
     nightAmount,
@@ -175,6 +176,66 @@ function getVsMonthsForPeriod(periodMode, baseMonth) {
   return [base];
 }
 
+
+function getEmpMonthAbsentCount(emp, monthStr) {
+  if (!emp) return 0;
+  if (emp.generalAbsentCount != null && Number(emp.generalAbsentCount) >= 0) {
+    return Number(emp.generalAbsentCount);
+  }
+  if (Array.isArray(emp.generalAbsentDays) && emp.generalAbsentDays.length > 0) {
+    return emp.generalAbsentDays.length;
+  }
+  if (typeof getGeneralAbsentCount === 'function') {
+    try {
+      const c = getGeneralAbsentCount(emp, monthStr);
+      if (c != null && !isNaN(c)) return Number(c);
+    } catch (e) {}
+  }
+  if (!Array.isArray(emp.daily) || !emp.daily.length) return 0;
+  try {
+    const ym = (monthStr || '2026-10').split('-');
+    const yy = parseInt(ym[0], 10) || 2026;
+    const mm = parseInt(ym[1], 10) || 10;
+    const lastDay = (mm === 12) ? 31 : new Date(yy, mm, 0).getDate();
+    const worked = new Set();
+    const nights = new Set();
+    let maxDay = 0;
+    emp.daily.forEach(r => {
+      if (!r || !r[0]) return;
+      const parts = String(r[0]).split('-');
+      if (parts.length >= 1 && !isNaN(parts[0])) {
+        const d = parseInt(parts[0], 10);
+        maxDay = Math.max(maxDay, d);
+        const inStr = String(r[2] || '').trim();
+        const outStr = String(r[3] || '').trim();
+        const duty = Number(r[4]||0) + Number(r[6]||0) + Number(r[8]||0);
+        const ot = Number(r[5]||0) + Number(r[7]||0) + Number(r[9]||0);
+        const isNight = r[10] === 1 || String(r[11]||'').toUpperCase().includes('NIGHT') || String(r[11]||'').toUpperCase().includes('DN');
+        if (duty > 0 || ot > 0 || (inStr && inStr !== '-') || (outStr && outStr !== '-')) {
+          worked.add(d);
+        }
+        if (isNight) nights.add(d);
+      }
+    });
+
+    const nowD = new Date();
+    const isCurrentM = (yy === nowD.getFullYear() && mm === (nowD.getMonth() + 1));
+    const cutoff = isCurrentM ? Math.min(lastDay, maxDay > 0 ? maxDay : nowD.getDate()) : lastDay;
+
+    let absCnt = 0;
+    for (let d = 1; d <= cutoff; d++) {
+      const dt = new Date(yy, mm - 1, d);
+      const dayName = dt.toLocaleString('en-US', { weekday: 'short' });
+      if (dayName === 'Thu' || dayName === 'Fri') continue;
+      if (d > 1 && nights.has(d - 1)) continue;
+      if (!worked.has(d)) absCnt++;
+    }
+    return absCnt;
+  } catch (err) {
+    return 0;
+  }
+}
+
 async function runComparison() {
   const statusDiv = document.getElementById('compareStatus');
   const compareBtn = document.getElementById('compareBtn');
@@ -231,6 +292,7 @@ async function runComparison() {
       let holiday = 0;
       let night = 0;
       let plainDays = 0;
+      let totalAbsent = 0;
       let otAmount = 0;
       let holidayAmount = 0;
       let nightAmount = 0;
@@ -255,6 +317,7 @@ async function runComparison() {
           holiday += Number(found.holidayCount != null ? found.holidayCount : found.holiday || 0);
           night += Number(found.nightCount != null ? found.nightCount : found.night || 0);
           plainDays += Number(found.plainDaysCount != null ? found.plainDaysCount : found.plainDays || 0);
+          totalAbsent += getEmpMonthAbsentCount(found, monthsToLoad[i]);
           if (found.totalEarned != null) {
             totalEarned += Number(found.totalEarned || 0);
             otAmount += Number(found.otAmount || 0);
@@ -304,7 +367,9 @@ async function runComparison() {
         night: night,
         nightCount: night,
         plainDays: plainDays,
-        plainDaysCount: plainDays
+        plainDaysCount: plainDays,
+        absentCount: totalAbsent,
+        generalAbsentCount: totalAbsent
       };
 
       if (monthsToLoad.length > 1 && totalEarned > 0) {
