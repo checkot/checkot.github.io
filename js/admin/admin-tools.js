@@ -47,6 +47,8 @@ plainDaysCount: c.plainDaysCount,
 otDaysCount: computeOtDaysFromDaily(c.daily),
 holidayDays: c.holidayDays,
 nightDays: c.nightDays,
+nightSuspects: c.nightSuspects || [],
+nightSuspectCount: (c.nightSuspects || []).length,
 punchProblems: c.punchProblems,
 requisitionProblems: c.requisitionProblems || [],
 requisitionProblemCount: (c.requisitionProblems || []).length,
@@ -185,7 +187,7 @@ function parseExcelWorkbook(workbook, sourceName) {
         isRppf: isRppfText(col0) || col0.toUpperCase().includes('RAJENDRAPUR'),
         totalRow: null, dailyDuty: 0, dailyOt: 0,
         regularDaysCount: 0, plainDaysCount: 0,
-        holidayDays: [], nightDays: [], punchProblems: [], requisitionProblems: [], daily: []
+        holidayDays: [], nightDays: [], nightSuspects: [], punchProblems: [], requisitionProblems: [], daily: []
       };
       continue;
     }
@@ -246,8 +248,20 @@ function parseExcelWorkbook(workbook, sourceName) {
       const shiftUpper = String(shiftVal || '').toUpperCase();
       const nightRaw = getVal(row, ci.night).toLowerCase();
 
-      // Robust Night Detection
-      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) || shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C' || elapsedHrs >= 14.0 || (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
+      // NIGHT RULE (strict): a Night is declared ONLY when the Empress 'Night' column says YES.
+      // Shift code, elapsed hours or punch times NEVER declare a night - they only raise a "suspect" flag.
+      const isNight = ['yes', 'y'].includes(nightRaw);
+      let nightSuspectReason = '';
+      if (!isNight) {
+        const totalAllToday = regDuty + regOT + doDuty + doOT + holDuty + holOT;
+        if (shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C') {
+          nightSuspectReason = `Shift '${shiftVal}' but Night is not marked YES in Empress`;
+        } else if (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435) {
+          nightSuspectReason = 'Morning punch-out without In punch (possible night duty)';
+        } else if (elapsedHrs >= 15 || totalAllToday >= 15) {
+          nightSuspectReason = `Very long duty (${Math.max(elapsedHrs, totalAllToday).toFixed(1)}h) but Night is not marked YES in Empress`;
+        }
+      }
 
       cur.daily.push([date, dayVal, inVal, outVal, regDuty, regOT, doDuty, doOT, holDuty, holOT, isNight ? 1 : 0, shiftVal]);
       cur.dailyDuty += regDuty + regOT + doDuty + doOT + holDuty + holOT;
@@ -257,6 +271,13 @@ function parseExcelWorkbook(workbook, sourceName) {
         cur.holidayDays.push({ date, doDuty, doExtra: doOT, holDuty, holExtra: holOT });
       }
       if (isNight) cur.nightDays.push(date);
+      else if (nightSuspectReason) {
+        cur.nightSuspects.push({
+          date, day: dayVal, in: inVal, out: outVal,
+          duty: Number((regDuty + regOT + doDuty + doOT + holDuty + holOT).toFixed(2)),
+          elapsed: elapsedHrs, shift: shiftVal, reason: nightSuspectReason
+        });
+      }
       if (missIn || missOut) {
         cur.punchProblems.push(date);
       } else if ((regDuty + doDuty + holDuty) > 0 && !isNight && (regOT + doOT + holOT) === 0) {

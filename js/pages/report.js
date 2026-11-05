@@ -157,6 +157,24 @@ if (totOt === 0 && !mi && !mo) {
 }
 }
 }
+// NIGHT SUSPECT FLAG (never declares a night; Night is ONLY when Empress says YES)
+if (o && !o.night) {
+  const _m = (t) => { const mm = String(t || '').replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/); return mm ? parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10) : null; };
+  const _ti = _m(o.inn), _to = _m(o.out);
+  let _el = 0;
+  if (_ti !== null && _to !== null) _el = ((_to < _ti ? (1440 - _ti) + _to : _to - _ti) / 60);
+  const _tot = o.v.reduce((a, x) => a + (Number(x) || 0), 0);
+  const _sh = String(o.shift || '').toUpperCase();
+  let _why = '';
+  if (_sh.indexOf('NIGHT') >= 0 || _sh === 'DN' || _sh === 'C') _why = 'Shift shows night';
+  else if (_to !== null && _ti === null && _to >= 240 && _to <= 435) _why = 'Morning out, no In';
+  else if (_el >= 15 || _tot >= 15) _why = 'Very long duty';
+  if (_why) {
+    row.nightSuspect = true;
+    if (!row.tone || row.tone === 'hol' || row.tone === 'do') row.tone = 'req';
+    row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected (' + _why + ') but not marked in Empress — contact ERP team';
+  }
+}
 rows.push(row);
 }
 return { rows, y, m };
@@ -165,14 +183,15 @@ return { rows, y, m };
 function _rptHtml(ctx, forExport) {
   const e = ctx.emp, { rows, y, m } = _rptRows(ctx);
   const sum = [0, 0, 0, 0, 0, 0];
-  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0;
+  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0, nightSus = 0;
   rows.forEach(r => {
     r.v.forEach((x, i) => sum[i] += x);
     if (r.inn || r.out) present++;
     if (r.night) nights++;
     if (r.afterNight) offAfterNight++;
     if (r.tone === 'bad') issues++;
-    if (r.tone === 'req') reqIssues++;
+    if (r.tone === 'req' && !r.nightSuspect) reqIssues++;
+    if (r.nightSuspect) nightSus++;
   });
   const displayRows = (typeof _rptHideEmptyDays !== 'undefined' && _rptHideEmptyDays)
     ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
@@ -219,6 +238,7 @@ ${pc(r.inn, r.missIn)}${pc(r.out, r.missOut)}${r.v.map(x => cell(x)).join('')}
 <div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
 <div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}
 ${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
+${nightSus ? chip('Night Check: ' + nightSus + 'd', '#9a3412', '#ffedd5') : ''}
 ${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}
 ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
@@ -238,6 +258,7 @@ ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + row
 <td style="${tdBase}background:#0f172a;color:#fff;font-size:10.5px;">OT: ${_rN(sum[1] + sum[3] + sum[5])}h</td>
 </tr></tfoot></table>
 <div style="margin-top:6px;font-size:10.5px;color:#64748b;line-height:1.25;">${issues ? `• Punch correction needed on ${issues} day(s): ${rows.filter(r => r.tone === 'bad').map(r => r.date).join(', ')}<br>` : ''}
+${nightSus ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#9a3412;background:#ffedd5;padding:4px 8px;border-radius:4px;border:1px solid #fb923c;">⚠️ আপনার নাইট ডিউটির সমস্যা আছে / Night duty issue on ${nightSus} day(s): ${rows.filter(r => r.nightSuspect).map(r => r.date).join(', ')} — আপনি হয়তো নাইট করেছেন কিন্তু Empress-এ নাইট ওঠেনি। ERP টিমের সাথে যোগাযোগ করুন। (Night is counted only when Empress shows YES)</div>` : ''}
 ${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
 <div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
 }

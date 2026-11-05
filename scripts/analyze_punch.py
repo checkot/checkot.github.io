@@ -313,8 +313,7 @@ def main():
                 today_is_night = int(today_row[10]) == 1
             if len(today_row) > 11:
                 today_shift_str = str(today_row[11] or "").strip().upper()
-            if "NIGHT" in today_shift_str or "DN" in today_shift_str or today_shift_str == "C":
-                today_is_night = True
+            # NOTE: shift text (DN/NIGHT/C) never declares a night. Only Empress Night=YES (flag col 10) does.
 
         # Check 2: Night Shift Exemption (Including Month-End crossover)
         is_night_exempt = False
@@ -322,7 +321,7 @@ def main():
         if yesterday_row:
             is_night_flag = int(yesterday_row[10]) == 1 if len(yesterday_row) > 10 and str(yesterday_row[10]).isdigit() else False
             shift_str = str(yesterday_row[11]).strip().upper() if len(yesterday_row) > 11 else ""
-            if is_night_flag or "NIGHT" in shift_str:
+            if is_night_flag:
                 is_night_exempt = True
                 print(f"[EXEMPT - NIGHT REST] {mask_id(emp_id)} ({mask_name(emp_name)}) worked Night Shift yesterday ({yesterday_emp_format}).")
 

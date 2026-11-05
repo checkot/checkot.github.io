@@ -189,7 +189,7 @@ if (daily.length > 0) {
   if (lastCalDay > 0) {
     for (let i = 0; i < daily.length; i++) {
       const r = daily[i];
-      if (r && _parseEmpDayNo(r[0]) === lastCalDay && (!!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN')) {
+      if (r && _parseEmpDayNo(r[0]) === lastCalDay && Number(r[10]) === 1) {
         emp.lastDayNight = true;
         return true;
       }
@@ -410,12 +410,12 @@ const k = _parseEmpDayNo(r[0]);
 const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
 const inStr = String(r[2] || '').trim();
 const outStr = String(r[3] || '').trim();
-const isNight = !!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+const isNight = Number(r[10]) === 1;
 if (dHrs > 0 || inStr || outStr || isNight) {
 activeDays++;
 if (k >= 1) {
   activeNums.push(k);
-  byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true };
+  byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true, shift: r[11] };
 }
 }
 });
@@ -1503,8 +1503,8 @@ function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX 
    ========================================================================== */
 function isNightDailyRow(r) {
   if (!Array.isArray(r)) return false;
-  const code = String(r[11] || '').toUpperCase();
-  return Number(r[10]) === 1 || code.indexOf('NIGHT') >= 0 || code === 'DN';
+  // Night = Empress Night column YES only (stored in r[10]). Shift code never declares a night.
+  return Number(r[10]) === 1;
 }
 function computeOtDaysFromDaily(daily) {
   let n = 0;
@@ -2677,7 +2677,7 @@ function computeEmpRequisitionProblems(e) {
     const doO = Number(r[7]) || 0;
     const holD = Number(r[8]) || 0;
     const holO = Number(r[9]) || 0;
-    const isNight = Number(r[10]) === 1 || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+    const isNight = Number(r[10]) === 1;
 
     const totOt = regO + doO + holO;
     const totDuty = regD + doD + holD;

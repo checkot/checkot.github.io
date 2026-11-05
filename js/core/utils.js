@@ -104,8 +104,8 @@ window.isPunchMissing = isPunchMissing;
    ========================================================================== */
 function isNightDailyRow(r) {
   if (!Array.isArray(r)) return false;
-  const code = String(r[11] || '').toUpperCase();
-  return Number(r[10]) === 1 || code.indexOf('NIGHT') >= 0 || code === 'DN';
+  // Night = Empress Night column YES only (stored in r[10]). Shift code never declares a night.
+  return Number(r[10]) === 1;
 }
 function computeOtDaysFromDaily(daily) {
   let n = 0;

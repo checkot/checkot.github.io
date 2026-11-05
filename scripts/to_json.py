@@ -10,7 +10,8 @@ Matches the exact parsing algorithms from RPPF_Dedicated_Admin_Control_Panel_v7-
 - Summary sheet mapping (buildSummaryMap)
 - Punch problem & missing time validation (cleanPunchValue & isPunchMissing)
 - Regular/Holiday/DO/Night shift calculation
-- Robust Night Shift detection (checks Night column, Shift text, or 14h+ elapsed)
+- Night = ONLY when Empress 'Night' column says YES. The app never declares a night by itself;
+  it only raises a 'nightSuspects' flag when a day looks like a night but Empress has no YES.
 - Requisition Problem Detection:
   * Detects days where duty is between 9.2h and 13.5h (e.g. 7:30 PM / 9:30 PM exit)
     but OT is 0.0 because ERP team hasn't created the OT requisition!
@@ -36,6 +37,11 @@ DATA_DIR = pathlib.Path("data")
 MONTH_NAMES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 RPPF_FACILITY_REGEX = re.compile(r'RAJENDRAPUR\s*POTENT\s*PRODUCT\s*FACILITY', re.IGNORECASE)
+
+# Night is declared ONLY by Empress 'Night' column = YES (case-insensitive).
+NIGHT_YES_VALUES = ("yes", "y")
+# Day without YES but with this many hours of elapsed/recorded duty => raise a "night suspect" flag only.
+NIGHT_SUSPECT_HOURS = 15.0
 
 DEFAULT_RATE_TABLE = {
     "CF": {
@@ -395,7 +401,7 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
             out_str = str(r[3] or '').strip()
             duty = float(r[4] or 0) + float(r[6] or 0) + float(r[8] or 0)
             ot = float(r[5] or 0) + float(r[7] or 0) + float(r[9] or 0)
-            is_night = int(r[10] or 0) == 1 or 'NIGHT' in str(r[11] or '').upper() or 'DN' in str(r[11] or '').upper()
+            is_night = int(r[10] or 0) == 1  # Empress Night=YES only (never from shift code)
 
             if duty > 0 or ot > 0 or (in_str and in_str != '-') or (out_str and out_str != '-'):
                 worked_days.add(d_num)
@@ -498,6 +504,8 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         "plainDaysCount": c["plainDaysCount"],
         "holidayDays": c["holidayDays"],
         "nightDays": c["nightDays"],
+        "nightSuspects": c.get("nightSuspects", []),
+        "nightSuspectCount": len(c.get("nightSuspects", [])),
         "punchProblems": c["punchProblems"],
         "requisitionProblems": req_problems,
         "requisitionProblemCount": len(req_problems),
@@ -600,6 +608,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
                 "plainDaysCount": 0,
                 "holidayDays": [],
                 "nightDays": [],
+                "nightSuspects": [],
                 "punchProblems": [],
                 "requisitionProblems": [],
                 "daily": []
@@ -651,17 +660,20 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
             night_raw = get_val(row, ci["night"]).lower()
             shift_upper = (shift_val or "").upper()
             
-            # Robust Night Shift Detection:
-            # 1. Night column is Yes/1/True
-            # 2. Shift text contains 'NIGHT' or 'C' or 'DN'
-            # 3. Day 1 morning checkout (night duty from previous month/day)
-            is_night = (
-                night_raw in ("yes", "1", "true", "y") or
-                "NIGHT" in shift_upper or
-                shift_upper in ("C", "DN") or
-                "DN" in shift_upper or
-                (out_val and miss_in and (t_out_mins is not None and 240 <= t_out_mins <= 435))
-            )
+            # NIGHT RULE (strict): a day is a Night ONLY if the Empress 'Night' column says YES.
+            # Shift code (DN/G/C), elapsed hours, morning punch-out etc. NEVER declare a night.
+            is_night = night_raw in NIGHT_YES_VALUES
+
+            # Night SUSPECT (flag only, never counted as night)
+            night_suspect_reason = ""
+            if not is_night:
+                total_all_today = regDuty + regOT + doDuty + doOT + holDuty + holOT
+                if "NIGHT" in shift_upper or shift_upper in ("C", "DN"):
+                    night_suspect_reason = f"Shift '{shift_val}' but Night is not marked YES in Empress"
+                elif (out_val and miss_in and t_out_mins is not None and 240 <= t_out_mins <= 435):
+                    night_suspect_reason = "Morning punch-out without In punch (possible night duty)"
+                elif elapsed_hrs >= NIGHT_SUSPECT_HOURS or total_all_today >= NIGHT_SUSPECT_HOURS:
+                    night_suspect_reason = f"Very long duty ({max(elapsed_hrs, total_all_today):.1f}h) but Night is not marked YES in Empress"
 
             cur["daily"].append([
                 date_str, day_val, in_val, out_val,
@@ -686,6 +698,13 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
 
             if is_night:
                 cur["nightDays"].append(date_str)
+            elif night_suspect_reason:
+                cur["nightSuspects"].append({
+                    "date": date_str, "day": day_val, "in": in_val, "out": out_val,
+                    "duty": round(regDuty + regOT + doDuty + doOT + holDuty + holOT, 2),
+                    "elapsed": elapsed_hrs, "shift": shift_val,
+                    "reason": night_suspect_reason
+                })
 
             if miss_in or miss_out:
                 cur["punchProblems"].append(date_str)
