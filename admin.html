@@ -631,8 +631,8 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 <div class="admin-section-pane" id="admPaneData">
 <div class="card" style="padding:14px;">
-<div class="card-title">Monthly Excel data manager (data/YYYY-MM.json)</div>
-<div class="card-sub" style="white-space:normal;">Select a month and upload an Excel (.xlsx) file to process all employee calculations automatically and save them to the RPPF Cloud Server.</div>
+<div class="card-title">Monthly Excel data manager (Auto-converted via to_json.py)</div>
+<div class="card-sub" style="white-space:normal;">Select an Excel (.xlsx) file exported from Empress. The file is uploaded directly to the server where <code>scripts/to_json.py</code> automatically converts it into official JSON.</div>
 <div class="row" style="margin-top:8px;">
 <select id="adminPdfYear" aria-label="Year" onchange="adminCheckMonthData()"></select>
 <select id="adminPdfMonth" aria-label="Month" onchange="adminCheckMonthData()">
@@ -2360,8 +2360,8 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
 
   <!-- Modular Admin Scripts (Step 7) -->
   <script src="js/admin/admin-github.js"></script>
-  <script src="js/admin/admin-core.js?v=20261105b"></script>
-  <script src="js/admin/admin-tools.js?v=20261105b"></script>
+  <script src="js/admin/admin-core.js?v=20261105cc"></script>
+  <script src="js/admin/admin-tools.js?v=20261105cc"></script>
   <script src="js/admin/admin-sync-bar.js"></script>
   <script>
     ensureDefaultSubsections();

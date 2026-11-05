@@ -223,9 +223,11 @@ function parseExcelWorkbook(workbook, sourceName) {
       const parseTimeMins = (val) => {
         if (!val) return null;
         const s = String(val).replace(/[^0-9:APM]/gi, '').toUpperCase().trim();
-        const m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$/);
+        if (['-', '--', 'NA', 'N/A', 'NULL', 'NONE', 'MISSING', '0000', '000000'].includes(s)) return null;
+        const m = s.match(/^(\d{1,2}):(\d{2})(?:::?\d{2})?\s*([AP]M)?$/);
         if (m) {
           let hh = parseInt(m[1], 10), mm = parseInt(m[2], 10), ampm = m[3];
+          if (hh >= 24 || mm >= 60) return null;
           if (ampm === 'PM' && hh < 12) hh += 12;
           else if (ampm === 'AM' && hh === 12) hh = 0;
           return hh * 60 + mm;
@@ -233,25 +235,40 @@ function parseExcelWorkbook(workbook, sourceName) {
         return null;
       };
 
-      const calcElapsed = (iVal, oVal) => {
+      const calcElapsed = (iVal, oVal, shiftStr, dutyHrs) => {
         const ti = parseTimeMins(iVal), to = parseTimeMins(oVal);
         if (ti === null || to === null) return 0;
-        const diff = to < ti ? (1440 - ti) + to : to - ti;
+        const is24h = (shiftStr || '').toUpperCase().includes('DN') || (dutyHrs >= 20.0);
+        let diff = 0;
+        if (to < ti) {
+          diff = (1440 - ti) + to;
+        } else if (to === ti && is24h) {
+          diff = 1440;
+        } else {
+          diff = to - ti;
+          if (is24h && diff < 360) diff += 1440;
+        }
         return Number((diff / 60).toFixed(2));
       };
 
-      const elapsedHrs = calcElapsed(inVal, outVal);
+      const totalDutyRaw = regDuty + doDuty + holDuty;
+      const elapsedHrs = calcElapsed(inVal, outVal, shiftVal, totalDutyRaw);
       const tInMins = parseTimeMins(inVal);
       const tOutMins = parseTimeMins(outVal);
       const shiftUpper = String(shiftVal || '').toUpperCase();
       const nightRaw = getVal(row, ci.night).toLowerCase();
 
-      // Robust Night Detection
-      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) || shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C' || elapsedHrs >= 14.0 || (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
-
-      cur.daily.push([date, dayVal, inVal, outVal, regDuty, regOT, doDuty, doOT, holDuty, holOT, isNight ? 1 : 0, shiftVal]);
-      cur.dailyDuty += regDuty + regOT + doDuty + doOT + holDuty + holOT;
-      cur.dailyOt += regOT + doOT + holOT;
+      // Robust Night Detection (synced with to_json.py)
+      let crossesNight = false;
+      if (tInMins !== null && tOutMins !== null) {
+        if (tOutMins < tInMins || tInMins <= 240 || tOutMins >= 1320) crossesNight = true;
+      }
+      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) ||
+                      shiftUpper.includes('NIGHT') ||
+                      shiftUpper === 'DN' ||
+                      shiftUpper === 'C' ||
+                      (elapsedHrs >= 14.0 && crossesNight) ||
+                      (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
       if (regDuty > 0) cur.regularDaysCount++;
       if (doDuty > 0 || doOT > 0 || holDuty > 0 || holOT > 0) {
         cur.holidayDays.push({ date, doDuty, doExtra: doOT, holDuty, holExtra: holOT });
@@ -320,15 +337,46 @@ function parseExcelWorkbook(workbook, sourceName) {
 }
 
 async function processExcelUpload() {
-const y = document.getElementById('adminPdfYear')?.value;
-const m = document.getElementById('adminPdfMonth')?.value;
-const fileInp = document.getElementById('adminExcelFileInput');
-const files = fileInp?.files;
-if (!files || files.length === 0) { showToast('Please select at least one Excel file', 'warn'); return; }
-if (typeof XLSX === 'undefined') {
-try {
-showToast('Loading Excel engine...', 'info');
-await _loadScript('https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js');
+  const fileInp = document.getElementById('adminExcelFileInput');
+  const files = fileInp?.files;
+  if (!files || files.length === 0) {
+    showToast('Please select at least one Excel file (.xlsx)', 'warn');
+    return;
+  }
+  const btn = document.getElementById('adminUploadExcelBtn');
+  const progWrap = document.getElementById('adminPdfUploadProgress');
+  const progTxt = document.getElementById('adminPdfStatusText');
+  const progFill = document.getElementById('adminPdfProgressFill');
+
+  if (btn) btn.disabled = true;
+  if (progWrap) progWrap.style.display = 'block';
+
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (progTxt) progTxt.textContent = `Uploading ${file.name} to server (${i + 1}/${files.length})...`;
+      if (progFill) progFill.style.width = `${Math.round(((i + 1) / files.length) * 70)}%`;
+
+      const buf = await file.arrayBuffer();
+      const b64 = arrayBufferToBase64(buf);
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const targetPath = `raw/${cleanFileName}`;
+
+      await githubPutFile(targetPath, b64, `Upload raw Excel ${cleanFileName} for conversion via to_json.py`);
+    }
+
+    if (progFill) progFill.style.width = '100%';
+    if (progTxt) progTxt.innerHTML = `✓ Upload complete! GitHub Actions is now converting the file with <code>to_json.py</code>.<br><span style="font-size:11.5px;color:var(--muted)">The updated report will be live on site in ~30–45 seconds.</span>`;
+
+    if (fileInp) fileInp.value = '';
+    showToast('Excel uploaded! Auto-converting via to_json.py...', 'success');
+  } catch (err) {
+    console.error(err);
+    if (progTxt) progTxt.textContent = `Upload failed: ${err.message}`;
+    showToast('Upload failed: ' + err.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 } catch (e) {
 showToast('Excel library could not load. Check internet connection.', 'error');
 return;
