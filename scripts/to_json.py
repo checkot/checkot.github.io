@@ -778,30 +778,116 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     flush()
     return out, month_counts
 
-def main():
-    print("=== Empress Excel to JSON Converter ===")
-    
-    if not RAW_DIR.exists():
-        print(f"[WARN] Directory '{RAW_DIR}' does not exist. Creating it.")
-        RAW_DIR.mkdir(parents=True, exist_ok=True)
+# =============================================================================
+# RAW ARCHIVE  (lossless copy of the Excel, so logic can be re-run WITHOUT re-uploading Excel)
+# -----------------------------------------------------------------------------
+# data/YYYY-MM.raw.json holds every cell of every sheet of every Excel file used for that month.
+# scripts/recompute_from_raw.py rebuilds data/YYYY-MM.json from it using the SAME parser code above.
+# See DATA_GUIDE.md for the format and the "how do I change a rule" cheat-sheet.
+# =============================================================================
+PARSER_VERSION = "2026-11-05-night-yes-only"
+ARCHIVE_DIR = DATA_DIR  # data/YYYY-MM.raw.json (matches the existing workflows' `git add data/*.json`)
+ARCHIVE_SCHEMA = 1
 
-    xlsx_files = sorted(RAW_DIR.glob("*.xlsx"))
-    if not xlsx_files:
-        print(f"[INFO] No .xlsx files found in '{RAW_DIR}'. Nothing to process.")
-        sys.exit(0)
 
+def _enc_cell(v):
+    if v is None or isinstance(v, (str, bool, int, float)):
+        return v
+    if isinstance(v, datetime.datetime):
+        return "@dt:" + v.isoformat()
+    if isinstance(v, datetime.date):
+        return "@d:" + v.isoformat()
+    if isinstance(v, datetime.time):
+        return "@t:" + v.isoformat()
+    if isinstance(v, datetime.timedelta):
+        return "@td:" + repr(v.total_seconds())
+    return str(v)
+
+
+def _dec_cell(v):
+    if isinstance(v, str) and v.startswith("@"):
+        try:
+            if v.startswith("@dt:"):
+                return datetime.datetime.fromisoformat(v[4:])
+            if v.startswith("@d:"):
+                return datetime.date.fromisoformat(v[3:])
+            if v.startswith("@t:"):
+                return datetime.time.fromisoformat(v[3:])
+            if v.startswith("@td:"):
+                return datetime.timedelta(seconds=float(v[4:]))
+        except ValueError:
+            return v
+    return v
+
+
+def dump_workbook(wb):
+    """Every sheet, every row, every cell. Empty rows are kept as [] so row positions never shift."""
+    sheets = []
+    for ws in wb.worksheets:
+        rows = []
+        for r in ws.iter_rows(values_only=True):
+            cells = [_enc_cell(c) for c in r]
+            while cells and cells[-1] is None:
+                cells.pop()
+            rows.append(cells)
+        while rows and not rows[-1]:
+            rows.pop()
+        sheets.append({"name": ws.title, "rows": rows})
+    return {"sheets": sheets}
+
+
+def rebuild_workbook(dump):
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    for sh in dump.get("sheets", []):
+        ws = wb.create_sheet(title=sh.get("name") or "Sheet")
+        for r in sh.get("rows", []):
+            ws.append([_dec_cell(c) for c in r])
+    return wb
+
+
+def write_archive(month, file_dumps):
+    """file_dumps = [(source_file_name, dump_workbook(...)), ...]. One row per line so git diffs / AI reads stay sane."""
+    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+    path = ARCHIVE_DIR / f"{month}.raw.json"
+    head = {
+        "schema": ARCHIVE_SCHEMA,
+        "month": month,
+        "parserVersion": PARSER_VERSION,
+        "archivedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "about": "Lossless copy of the Empress Excel cells. Cell tags: @dt:/@d:/@t:/@td: = datetime/date/time/duration. "
+                 "Rebuild data/<month>.json with: python scripts/recompute_from_raw.py <month>. See DATA_GUIDE.md."
+    }
+    out = ["{"]
+    out.append(json.dumps(head, ensure_ascii=False)[1:-1] + ',')
+    out.append('"files":[')
+    fparts = []
+    for name, dump in file_dumps:
+        sparts = []
+        for sh in dump["sheets"]:
+            rows = ",\n".join(json.dumps(r, ensure_ascii=False, separators=(",", ":")) for r in sh["rows"])
+            sparts.append('{"name":' + json.dumps(sh["name"], ensure_ascii=False) + ',"rows":[\n' + rows + '\n]}')
+        fparts.append('{"name":' + json.dumps(name, ensure_ascii=False) + ',"sheets":[\n' + ",\n".join(sparts) + '\n]}')
+    out.append(",\n".join(fparts))
+    out.append("]}")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(out) + "\n")
+    print(f"[SUCCESS] Archived raw Excel cells: {path} ({os.path.getsize(path):,} bytes)")
+
+
+def build_month(named_workbooks, archive=True, update_latest=True, force_month=None):
+    """named_workbooks = [(file_name, openpyxl_workbook), ...] -> writes data/<month>.json (+ archive, + latest)."""
     area_map, details, rate_table, holidays_cfg, desig_rates = load_areas_json()
     print(f"[INFO] Loaded {len(area_map)} area assignments from areas.json")
 
     all_employees_map = {}
     total_month_counts = Counter()
-    processed_files = 0
+    file_dumps = []
 
-    for fpath in xlsx_files:
-        print(f"[INFO] Parsing '{fpath.name}'...")
+    for fname, wb in named_workbooks:
+        print(f"[INFO] Parsing '{fname}'...")
         try:
-            wb = openpyxl.load_workbook(fpath, data_only=True)
-            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates)
+            employees, month_counts = parse_workbook(wb, fname, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -810,30 +896,27 @@ def main():
                 else:
                     all_employees_map[eid] = e
             total_month_counts.update(month_counts)
-            processed_files += 1
+            if archive:
+                file_dumps.append((fname, dump_workbook(wb)))
         except Exception as err:
-            print(f"[ERROR] Failed to parse '{fpath.name}': {err}")
+            print(f"[ERROR] Failed to parse '{fname}': {err}")
 
     if not all_employees_map:
-        print("[ERROR] No employee records could be parsed from raw files.")
-        sys.exit(1)
-
-    if len(all_employees_map) == 0:
-        print("[ERROR] No employee records found in Excel files.")
+        print("[ERROR] No employee records could be parsed from the Excel data.")
         sys.exit(1)
 
     if total_month_counts:
         detected_month = total_month_counts.most_common(1)[0][0]
     else:
-        now = datetime.datetime.now()
-        detected_month = now.strftime("%Y-%m")
+        detected_month = datetime.datetime.now().strftime("%Y-%m")
+    if force_month and force_month != detected_month:
+        print(f"[WARN] Detected month {detected_month} differs from archive month {force_month}; using {force_month}.")
+        detected_month = force_month
 
     print(f"[INFO] Target Month Detected: {detected_month}")
     print(f"[INFO] Total Unique Employees: {len(all_employees_map)}")
 
     employees_list = sorted(all_employees_map.values(), key=lambda x: x["id"])
-
-    # Count total requisition problems across all employees
     total_req_probs = sum(e.get("requisitionProblemCount", 0) for e in employees_list)
     print(f"[INFO] Detected {total_req_probs} Overtime Requisition Problems across employees.")
 
@@ -844,20 +927,48 @@ def main():
     }
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-
     month_file = DATA_DIR / f"{detected_month}.json"
     with open(month_file, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
     print(f"[SUCCESS] Saved: {month_file} ({os.path.getsize(month_file):,} bytes)")
 
-    if len(all_employees_map) >= 50:
+    if archive and file_dumps:
+        try:
+            write_archive(detected_month, file_dumps)
+        except Exception as err:
+            # Archive must never break the normal data update.
+            print(f"[WARN] Could not write raw archive: {err}")
+
+    if update_latest and len(all_employees_map) >= 50:
         latest_file = DATA_DIR / "latest.json"
         with open(latest_file, "w", encoding="utf-8") as f:
             json.dump(payload, f, ensure_ascii=False, indent=2)
         print(f"[SUCCESS] Saved: {latest_file} ({os.path.getsize(latest_file):,} bytes)")
     else:
-        print(f"[INFO] Parsed {len(all_employees_map)} employees (< 50). Preserving existing latest.json.")
+        print(f"[INFO] latest.json not touched (employees={len(all_employees_map)}, update_latest={update_latest}).")
+    return detected_month
 
+
+def main():
+    print("=== Empress Excel to JSON Converter ===")
+
+    if not RAW_DIR.exists():
+        print(f"[WARN] Directory '{RAW_DIR}' does not exist. Creating it.")
+        RAW_DIR.mkdir(parents=True, exist_ok=True)
+
+    xlsx_files = sorted(RAW_DIR.glob("*.xlsx"))
+    if not xlsx_files:
+        print(f"[INFO] No .xlsx files found in '{RAW_DIR}'. Nothing to process.")
+        sys.exit(0)
+
+    named = []
+    for fpath in xlsx_files:
+        try:
+            named.append((fpath.name, openpyxl.load_workbook(fpath, data_only=True)))
+        except Exception as err:
+            print(f"[ERROR] Failed to open '{fpath.name}': {err}")
+
+    build_month(named, archive=True, update_latest=True)
     print("[SUCCESS] Conversion completed successfully.")
 
 if __name__ == "__main__":
