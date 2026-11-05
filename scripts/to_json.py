@@ -84,11 +84,12 @@ def load_areas_json():
                         data.get("areas", {}),
                         data.get("details", {}),
                         data.get("rateTable", DEFAULT_RATE_TABLE),
-                        data.get("holidays", {})
+                        data.get("holidays", {}),
+                        data.get("designationRates", {})
                     )
             except Exception as e:
                 print(f"[WARN] Could not parse {p}: {e}")
-    return {}, {}, DEFAULT_RATE_TABLE, {}
+    return {}, {}, DEFAULT_RATE_TABLE, {}, {}
 
 def clean_punch_value(val):
     if val is None:
@@ -187,7 +188,7 @@ def parse_emp_header(col0, emp_id):
     m = re.match(r'^(.*?)\s{2,}(.+)$', name_desig)
     if m:
         return clean_emp_name(m.group(1)), clean_designation(m.group(2))
-    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Helper|Casual)\b.*)$', name_desig, re.IGNORECASE)
+    g = re.match(r'^(.*?)\s+((?:Junior\s+Officer\s+[A-F]|Officer\s+[A-F]|Senior\s+Officer|Helper|Casual|Executive)\b.*)$', name_desig, re.IGNORECASE)
     if g:
         return clean_emp_name(g.group(1)), clean_designation(g.group(2))
     return clean_emp_name(name_desig), ""
@@ -198,9 +199,13 @@ def detect_category(grade_text, emp_id, desig_rates=None):
     raw_key = (grade_text or "").strip().lower()
 
     # 1. Match designationRates from areas.json (e.g. Officer A -> R_55)
-    if desig_rates and raw_key in desig_rates:
-        r_cat = desig_rates[raw_key]
-        return {"category": r_cat, "valid": True, "reason": f"Designation Match ({grade_text})", "gradeText": g}
+    if desig_rates:
+        clean_k = re.sub(r'[\s ]+', ' ', re.split(r'[,/]', raw_key)[0]).strip()
+        if clean_k in desig_rates:
+            return {"category": desig_rates[clean_k], "valid": True, "reason": f"Designation Match ({clean_k})", "gradeText": g}
+        for dk, dv in desig_rates.items():
+            if re.search(r'' + re.escape(dk) + r'', raw_key):
+                return {"category": dv, "valid": True, "reason": f"Designation Match ({dk})", "gradeText": g}
 
     # 2. Casual workers (numeric ID or Casual grade)
     if re.match(r"^\d{5,8}$", id_upper) or "CASUAL" in g:
@@ -436,8 +441,8 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
 
     return absent_dates, len(absent_dates)
 
-def finalize_excel_employee(c, source_name, area_map, rate_table, details=None):
-    detection = detect_category(c["designation"], c["id"])
+def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None):
+    detection = detect_category(c["designation"], c["id"], desig_rates=desig_rates)
     valid = bool(detection["valid"] and detection["category"])
     category = detection["category"] if valid else None
     
@@ -529,7 +534,7 @@ def pick_best_employee(a, b):
         return a if a.get("holidayCount", 0) > b.get("holidayCount", 0) else b
     return a
 
-def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None):
+def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None, desig_rates=None):
     sheet_name = "Work Log" if "Work Log" in wb.sheetnames else wb.sheetnames[0]
     ws = wb[sheet_name]
     rows = list(ws.iter_rows(values_only=True))
@@ -544,7 +549,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     def flush():
         nonlocal cur
         if cur:
-            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details))
+            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates))
             cur = None
 
     # Step A: Auto-detect Empress recognized Government/Company Holidays for this month
@@ -628,15 +633,16 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
             out_val = get_val(row, ci["out"])
             shift_val = get_val(row, ci["shift"]) if ci["shift"] >= 0 else ""
 
-            miss_in = is_punch_missing(in_val)
-            miss_out = is_punch_missing(out_val)
-
             regDuty = get_num(row, ci["regDuty"])
             regOT = get_num(row, ci["regOT"])
             doDuty = get_num(row, ci["doDuty"])
             doOT = get_num(row, ci["doOT"])
             holDuty = get_num(row, ci["holDuty"])
             holOT = get_num(row, ci["holOT"])
+            row_duty = regDuty + doDuty + holDuty
+
+            miss_in = is_punch_missing(in_val, other_val=out_val, duty_val=row_duty)
+            miss_out = is_punch_missing(out_val, other_val=in_val, duty_val=row_duty)
 
             elapsed_hrs = calc_elapsed_hours(in_val, out_val)
             t_in_mins = parse_time_mins(in_val)
@@ -646,19 +652,14 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
             shift_upper = (shift_val or "").upper()
             
             # Robust Night Shift Detection:
-            # 1. Night column is Yes/1
+            # 1. Night column is Yes/1/True
             # 2. Shift text contains 'NIGHT' or 'C' or 'DN'
-            # 3. Crosses midnight window (out < in or late night out/early morning in) with 14h+ elapsed
-            crosses_night = False
-            if t_in_mins is not None and t_out_mins is not None:
-                if t_out_mins < t_in_mins or t_in_mins <= 240 or t_out_mins >= 1320:
-                    crosses_night = True
+            # 3. Day 1 morning checkout (night duty from previous month/day)
             is_night = (
                 night_raw in ("yes", "1", "true", "y") or
                 "NIGHT" in shift_upper or
-                shift_upper == "C" or
+                shift_upper in ("C", "DN") or
                 "DN" in shift_upper or
-                (elapsed_hrs >= 14.0 and crosses_night) or
                 (out_val and miss_in and (t_out_mins is not None and 240 <= t_out_mins <= 435))
             )
 
@@ -770,7 +771,7 @@ def main():
         print(f"[INFO] No .xlsx files found in '{RAW_DIR}'. Nothing to process.")
         sys.exit(0)
 
-    area_map, details, rate_table, holidays_cfg = load_areas_json()
+    area_map, details, rate_table, holidays_cfg, desig_rates = load_areas_json()
     print(f"[INFO] Loaded {len(area_map)} area assignments from areas.json")
 
     all_employees_map = {}
@@ -781,7 +782,7 @@ def main():
         print(f"[INFO] Parsing '{fpath.name}'...")
         try:
             wb = openpyxl.load_workbook(fpath, data_only=True)
-            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details, holidays_cfg=holidays_cfg)
+            employees, month_counts = parse_workbook(wb, fpath.name, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -798,8 +799,8 @@ def main():
         print("[ERROR] No employee records could be parsed from raw files.")
         sys.exit(1)
 
-    if len(all_employees_map) < 50:
-        print(f"[ERROR] Parsed employee count ({len(all_employees_map)}) is suspiciously low. Aborting to protect latest.json.")
+    if len(all_employees_map) == 0:
+        print("[ERROR] No employee records found in Excel files.")
         sys.exit(1)
 
     if total_month_counts:
@@ -830,10 +831,13 @@ def main():
         json.dump(payload, f, ensure_ascii=False, indent=2)
     print(f"[SUCCESS] Saved: {month_file} ({os.path.getsize(month_file):,} bytes)")
 
-    latest_file = DATA_DIR / "latest.json"
-    with open(latest_file, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-    print(f"[SUCCESS] Saved: {latest_file} ({os.path.getsize(latest_file):,} bytes)")
+    if len(all_employees_map) >= 50:
+        latest_file = DATA_DIR / "latest.json"
+        with open(latest_file, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        print(f"[SUCCESS] Saved: {latest_file} ({os.path.getsize(latest_file):,} bytes)")
+    else:
+        print(f"[INFO] Parsed {len(all_employees_map)} employees (< 50). Preserving existing latest.json.")
 
     print("[SUCCESS] Conversion completed successfully.")
 
