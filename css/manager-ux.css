@@ -283,7 +283,7 @@ body.incharge-mode-active #reportEmptyCard { display: none !important; }
 .mgr-rf-nums { font-size: 12.5px; font-weight: 800; color: var(--brand); display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
 .mgr-rf-nums small { font-size: 10.5px; font-weight: 600; color: var(--muted); }
 .mgr-rf-go { font-size: 20px; color: var(--muted); }
-.mgr-bd { font-style: normal; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 8px; margin-left: 3px; }
+.mgr-bd { display: none !important; }
 .bd-p { background: var(--danger-bg); color: var(--danger); }
 .bd-r { background: var(--warning-bg); color: var(--warning); }
 .bd-a { background: var(--indigo-soft); color: var(--indigo-strong); }

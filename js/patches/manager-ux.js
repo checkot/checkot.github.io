@@ -575,10 +575,10 @@
     }
     const part = rows.slice(0, RF.shown);
     list.innerHTML = part.map((e) => {
-      const badges = (e.pp ? `<i class="mgr-bd bd-p" title="Punch problems">P${e.pp}</i>` : '') + (e.rq ? `<i class="mgr-bd bd-r" title="OT missing days">OT${e.rq}</i>` : '') + (e.ab ? `<i class="mgr-bd bd-a" title="Absent days">A${e.ab}</i>` : '');
+      const badges = "";
       return `<button type="button" class="mgr-rf-item" data-id="${esc(e.id)}"><span class="mgr-av">${esc(initials(e.name))}</span>` +
         `<span class="mgr-rf-info"><b>${esc(e.name)}</b><small>${esc(e.id)} · ${esc(areaShort(e.area))}${e.grade ? ' · ' + esc(e.grade) : ''}</small></span>` +
-        `<span class="mgr-rf-meta">${badges}<span class="mgr-rf-nums">${r2(e.duty)}h<small>${r2(e.ot)}h OT</small></span></span></button>`;
+        `<span class="mgr-rf-meta"><span class="mgr-rf-nums">${r2(e.duty)}h<small>${r2(e.ot)}h OT</small></span></span></button>`;
     }).join('') + (rows.length > part.length ? `<button type="button" class="mgr-more" data-more="1">Show ${Math.min(40, rows.length - part.length)} more (${rows.length - part.length} left)</button>` : '');
   }
   function areaShort(a) { return a === 'Packing Hall' ? 'Packing' : a === 'Solid Production' ? 'Solid' : a === 'Softgel Production' ? 'Softgel' : a === 'Overall' ? 'Exec' : (a || 'RPPF'); }
