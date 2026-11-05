@@ -72,7 +72,7 @@ const dStr = String(d).padStart(2, '0');
 const isoDateStr = `${y}-${mNumStr}-${dStr}`;
 const row = { date: dStr + '/' + mNumStr, dayNum: dStr, monthNum: mNumStr, day: dn, v: [0, 0, 0, 0, 0, 0], inn: '', out: '', night: false, tone: '', note: '' };
 if (!o) {
-const holCheck = isPlantOrGovtHolidayDate(y, m, d, dn, consensusHols);
+const holCheck = typeof isPlantOrGovtHolidayDate === 'function' ? isPlantOrGovtHolidayDate(y, m, d, dn, consensusHols) : { isOffOrHol: (dn === 'Thu' || dn === 'Fri'), isWeekend: (dn === 'Thu' || dn === 'Fri'), isHoliday: false, label: '' };
 const wk = holCheck.isWeekend;
 const afterPrevMonthNight = (d === 1 && prevMonthNight);
 const afterSameMonthNight = (d > 1 && byDay[d - 1] && byDay[d - 1].night);
@@ -429,7 +429,10 @@ async function searchFromReportPage() {
 function renderInstantEmployeeRecord(emp, month, searchId) {
   const prevNight = hasPrevMonthLastNight(searchId, month, emp);
   emp._prevMonthLastNight = prevNight;
-  computeEmpGeneralAbsents(emp, month, prevNight);
+  const absRes = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, month, prevNight) : { dates: [], shortDates: [], count: 0 };
+  emp.generalAbsentDays = absRes.dates;
+  emp.generalAbsentShortDates = absRes.shortDates;
+  emp.generalAbsentCount = absRes.count;
   emp.requisitionProblems = computeEmpRequisitionProblems(emp);
   emp.requisitionProblemCount = emp.requisitionProblems.length;
   window._rptCtx = { emp, month, id: searchId, prevNight };

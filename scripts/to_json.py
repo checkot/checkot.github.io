@@ -484,7 +484,6 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
     sub_val = details.get(c["id"], {}).get("s", "") if details else ""
 
     req_problems = c.get("requisitionProblems", [])
-    gen_abs_days, gen_abs_cnt = compute_general_absents_for_employee(c.get("daily", []))
 
     return {
         "valid": valid,
@@ -509,8 +508,6 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         "punchProblems": c["punchProblems"],
         "requisitionProblems": req_problems,
         "requisitionProblemCount": len(req_problems),
-        "generalAbsentDays": gen_abs_days,
-        "generalAbsentCount": gen_abs_cnt,
         "daily": c["daily"],
         "otAmount": ot_amount,
         "holidayAmount": holiday_amount,

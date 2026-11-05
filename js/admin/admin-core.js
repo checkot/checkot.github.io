@@ -311,11 +311,20 @@ const shortDate = `${dStr}-${monName}`.toUpperCase();
 let cancelledHols = [];
 let customHols = [];
 try {
-  const raw = localStorage.getItem(PLANT_HOLIDAYS_KEY);
-  if (raw) {
-    const cfg = JSON.parse(raw);
+  let cfg = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : (typeof window !== 'undefined' && window.PLANT_HOLIDAYS);
+  if (!cfg) {
+    const raw = localStorage.getItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1');
+    if (raw) cfg = JSON.parse(raw);
+  }
+  if (cfg) {
     cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase().trim());
-    customHols = (cfg.custom || []).map(x => String(x).toUpperCase().trim());
+    customHols = (cfg.custom || []).concat(cfg.declared || []).map(x => String(x).toUpperCase().trim());
+    if (cfg.byMonth && typeof cfg.byMonth === 'object') {
+      const mKey = `${y}-${String(m).padStart(2, '0')}`;
+      if (Array.isArray(cfg.byMonth[mKey])) {
+        customHols.push(...cfg.byMonth[mKey].map(x => String(x).toUpperCase().trim()));
+      }
+    }
   }
 } catch (e) {}
 
@@ -397,6 +406,7 @@ if (consensusSet && consensusSet.has(d)) {
 }
 return { isOffOrHol: false, isWeekend: false, isHoliday: false, label: '' };
 }
+window.isPlantOrGovtHolidayDate = isPlantOrGovtHolidayDate;
 
 function _buildEmpDayMap(e) {
 const byDay = {};
@@ -1319,6 +1329,9 @@ DESIG_RATES = (parsed.rates && typeof parsed.rates === 'object') ? parsed.rates 
 if (parsed.rateTable && typeof parsed.rateTable === 'object') {
 RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), parsed.rateTable);
 }
+if (parsed.holidays && typeof parsed.holidays === 'object') {
+window.PLANT_HOLIDAYS = parsed.holidays;
+}
 }
 }
 } catch (e) {}
@@ -1330,6 +1343,12 @@ AREA_SUBS = (data && data.subsections && typeof data.subsections === 'object') ?
 DESIG_RATES = (data && data.designationRates && typeof data.designationRates === 'object') ? data.designationRates : {};
 if (data && data.rateTable && typeof data.rateTable === 'object') {
 RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), data.rateTable);
+}
+if (data && data.holidays && typeof data.holidays === 'object') {
+window.PLANT_HOLIDAYS = data.holidays;
+try {
+  localStorage.setItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1', JSON.stringify(data.holidays));
+} catch (e) {}
 }
 AREA_MAP_LOADED = true;
 saveAreaCache();
@@ -1357,7 +1376,8 @@ data: AREA_MAP,
 details: AREA_DETAILS,
 subs: AREA_SUBS,
 rates: DESIG_RATES,
-rateTable: RATE_TABLE
+rateTable: RATE_TABLE,
+holidays: (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : (typeof window !== 'undefined' ? window.PLANT_HOLIDAYS : null)
 }));
 } catch (e) {}
 }
@@ -2760,15 +2780,7 @@ function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
     || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
     || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
 
-  const hasDailyOrActive = (Array.isArray(e.daily) && e.daily.length > 0) || (Array.isArray(e.activeDayNums) && e.activeDayNums.length > 0);
-  if (!hasDailyOrActive && Array.isArray(e.generalAbsentDays) && e._computedMonth === mStr) {
-    return {
-      dates: e.generalAbsentDays,
-      shortDates: Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : e.generalAbsentDays,
-      count: e.generalAbsentCount != null ? Number(e.generalAbsentCount) : e.generalAbsentDays.length
-    };
-  }
-
+  // Dynamic live calculation using _rptRows
   if (typeof _rptRows === 'function') {
     const { rows, y, m } = _rptRows({ emp: e, month: mStr, prevNight: prevNightSetOrBool });
     const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -2787,11 +2799,84 @@ function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
     e.generalAbsentShortDates = shortDates;
     e.generalAbsentCount = absentDates.length;
     e._computedMonth = mStr;
+    e._computedPrevNight = prevNightSetOrBool;
     return { dates: absentDates, shortDates, count: absentDates.length };
   }
 
-  return { dates: [], shortDates: [], count: 0 };
+  // Self-contained in-memory fallback from e.daily and areas.json holiday rules if _rptRows is not available
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  let y = 0, m = 0;
+  const mm = String(mStr || '').match(/(\d{4})-(\d{2})/);
+  if (mm) { y = +mm[1]; m = +mm[2]; }
+  else if (daily.length > 0 && daily[0] && daily[0][0]) {
+    const s0 = String(daily[0][0]).trim();
+    const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
+    const _RMON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    if (qAlpha) {
+      y = +qAlpha[3];
+      m = _RMON.findIndex(x => x === qAlpha[2].toUpperCase()) + 1;
+    }
+  }
+  if (!y || m < 1 || m > 12) {
+    const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
+  }
+  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const monName = mons[m - 1];
+  const mmPad = String(m).padStart(2, '0');
+  const lastDay = new Date(y, m, 0).getDate();
+  const workedDays = new Set();
+  const nightDays = new Set();
+  let day1MorningOut = false;
+
+  daily.forEach(r => {
+    if (!r || !r[0]) return;
+    const parts = String(r[0]).split('-');
+    const dNum = parseInt(parts[0], 10);
+    if (!dNum || dNum < 1 || dNum > 31) return;
+    const inStr = String(r[2] || '').trim();
+    const outStr = String(r[3] || '').trim();
+    const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
+    const isNight = !!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+    if (dHrs > 0 || (inStr && inStr !== '-') || (outStr && outStr !== '-')) {
+      workedDays.add(dNum);
+    }
+    if (isNight) nightDays.add(dNum);
+    if (dNum === 1 && outStr && (!inStr || inStr === '-')) {
+      const q = outStr.match(/^(\d{1,2}):(\d{2})/);
+      if (q && (+q[1] * 60 + +q[2]) <= 435) day1MorningOut = true;
+    }
+  });
+
+  const prevNight = (typeof prevNightSetOrBool === 'boolean')
+    ? prevNightSetOrBool
+    : (prevNightSetOrBool instanceof Set ? (prevNightSetOrBool.has(String(e.id || '').toUpperCase()) || prevNightSetOrBool.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(e.id) : String(e.id || '').toUpperCase())) : false);
+
+  const absentDates = [];
+  const shortDates = [];
+  const _RDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  for (let d = 1; d <= lastDay; d++) {
+    const dn = _RDAY[new Date(y, m - 1, d).getDay()];
+    const dStr = String(d).padStart(2, '0');
+    if (dn === 'Thu' || dn === 'Fri') continue;
+    const holCheck = typeof isPlantOrGovtHolidayDate === 'function' ? isPlantOrGovtHolidayDate(y, m, d, dn) : { isOffOrHol: false };
+    if (holCheck.isOffOrHol) continue;
+    if (d === 1 && (prevNight || day1MorningOut)) continue;
+    if (d > 1 && nightDays.has(d - 1)) continue;
+    if (!workedDays.has(d)) {
+      absentDates.push(`${dStr}-${monName} (${dn})`);
+      shortDates.push(`${dStr}-${mmPad}`);
+    }
+  }
+
+  e.generalAbsentDays = absentDates;
+  e.generalAbsentShortDates = shortDates;
+  e.generalAbsentCount = absentDates.length;
+  e._computedMonth = mStr;
+  e._computedPrevNight = prevNight;
+  return { dates: absentDates, shortDates, count: absentDates.length };
 }
+window.computeEmpGeneralAbsents = computeEmpGeneralAbsents;
 
 /* Mode-independent absent count for ONE employee-month (used by VS compare / profile totals). */
 function getEmpMonthAbsentSafe(emp, monthStr) {
@@ -2822,15 +2907,16 @@ function getGeneralAbsentCount(emp, targetMonth) {
     return Number(emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0));
   }
   const mStr = targetMonth || emp._computedMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-  const prevSet = getPrevMonthNightSet(mStr);
-  const prevHas = prevSet.has(String(emp.id || '').toUpperCase()) || prevSet.has(resolveEmpAliasId(emp.id));
+  const prevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(mStr) : new Set();
+  const prevHas = prevSet.has(String(emp.id || '').toUpperCase()) || prevSet.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(emp.id) : String(emp.id || '').toUpperCase());
   if (emp.generalAbsentCount != null && emp._computedMonth === mStr && emp._computedPrevNight === prevHas) {
     return Number(emp.generalAbsentCount) || 0;
   }
-  const res = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, mStr, prevHas) : { count: Number(emp.generalAbsentCount) || 0 };
+  const res = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, mStr, prevHas) : { count: 0 };
   emp._computedPrevNight = prevHas;
-  return res.count;
+  return res.count || 0;
 }
+window.getGeneralAbsentCount = getGeneralAbsentCount;
 
 function ensureEmpAvgStats(list, targetMonth) {
 const isMulti = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(list && list[0] && (list[0].isMultiMonth || (list[0].monthsCount && list[0].monthsCount > 1)));

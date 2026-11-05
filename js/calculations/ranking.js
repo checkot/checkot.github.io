@@ -1,16 +1,16 @@
 function ensureEmpAvgStats(list, targetMonth) {
 const isMulti = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(list && list[0] && (list[0].isMultiMonth || (list[0].monthsCount && list[0].monthsCount > 1)));
 const mStr = targetMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-const prevNightSet = !isMulti ? getPrevMonthNightSet(mStr) : new Set();
+const prevNightSet = !isMulti ? (typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(mStr) : new Set()) : new Set();
 (list || []).forEach(e => {
   if (!e) return;
   if (!isMulti) {
     const uid = String(e.id || '').toUpperCase();
-    const prevHas = prevNightSet.has(uid) || prevNightSet.has(resolveEmpAliasId(uid));
+    const prevHas = prevNightSet.has(uid) || prevNightSet.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(uid) : uid);
     e._prevMonthLastNight = prevHas;
     if (!e._metricsComputed || e._computedMonth !== mStr || e._computedPrevNight !== prevHas) {
-      const rps = computeEmpRequisitionProblems(e);
-      const abs = computeEmpGeneralAbsents(e, mStr, prevHas);
+      const rps = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : [];
+      const abs = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(e, mStr, prevHas) : { dates: [], shortDates: [], count: 0 };
       e.requisitionProblems = rps;
       e.requisitionProblemCount = rps.length;
       e.generalAbsentDays = abs.dates;
@@ -84,5 +84,24 @@ function buildLeaderboardPayloadFromList(month, allList) {
     sortedByPunch,
     sortedByRequisition,
     sortedByAbsent
+  };
+}
+
+if (typeof getGeneralAbsentCount !== 'function') {
+  window.getGeneralAbsentCount = function(emp, targetMonth) {
+    if (!emp) return 0;
+    const isMulti = Boolean(emp.isMultiMonth || (emp.monthsCount && emp.monthsCount > 1));
+    if (isMulti) {
+      return Number(emp.generalAbsentCount != null ? emp.generalAbsentCount : (Array.isArray(emp.generalAbsentDays) ? emp.generalAbsentDays.length : 0));
+    }
+    const mStr = targetMonth || emp._computedMonth || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+    const prevSet = typeof getPrevMonthNightSet === 'function' ? getPrevMonthNightSet(mStr) : new Set();
+    const prevHas = prevSet.has(String(emp.id || '').toUpperCase()) || prevSet.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(emp.id) : String(emp.id || '').toUpperCase());
+    if (emp.generalAbsentCount != null && emp._computedMonth === mStr && emp._computedPrevNight === prevHas) {
+      return Number(emp.generalAbsentCount) || 0;
+    }
+    const res = typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(emp, mStr, prevHas) : { count: 0 };
+    emp._computedPrevNight = prevHas;
+    return res.count || 0;
   };
 }

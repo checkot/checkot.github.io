@@ -32,7 +32,7 @@ data/YYYY-MM.raw.json ──► scripts/recompute_from_raw.py ──► data/YYY
 `{ month, updatedAt, employees:[...] }`। প্রতিটি employee-তে:
 - পরিচয়: `id, name, grade, kind, category, area, sub, isRppf, valid`
 - যোগফল: `totalDuty, otHours, holidayCount, nightCount, regularDaysCount, plainDaysCount`
-- তালিকা: `holidayDays[], nightDays[], punchProblems[], requisitionProblems[], nightSuspects[], generalAbsentDays[]`
+- তালিকা:  (অ্যাবসেন্ট ডেটা স্টোর হয় না, রানটাইমে  ও -এর  থেকে লাইভ হিসাব হয়)`holidayDays[], nightDays[], punchProblems[], requisitionProblems[], nightSuspects[], generalAbsentDays[]`
 - টাকা: `otAmount, holidayAmount, nightAmount, totalEarned`
 - `daily[]`: প্রতিদিনের সারি, ক্রম:
   `[0 date, 1 day, 2 in, 3 out, 4 regDuty, 5 regOT, 6 doDuty, 7 doOT, 8 holDuty, 9 holOT, 10 nightFlag(0/1), 11 shift]`

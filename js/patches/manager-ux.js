@@ -505,7 +505,7 @@
       let pp = 0, rq = 0, ab = 0;
       try { pp = getPunchProblemCount(e); } catch (x) { /* ignore */ }
       try { rq = (typeof getRequisitionProblemCount === 'function' && getRequisitionProblemCount(e)) || computeEmpRequisitionProblems(e).length; } catch (x) { /* ignore */ }
-      try { ab = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : num(e.generalAbsentCount); } catch (x) { ab = num(e.generalAbsentCount); }
+      try { ab = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : (typeof computeEmpGeneralAbsents === 'function' ? computeEmpGeneralAbsents(e, month).count : (num(e.generalAbsentCount) || 0)); } catch (x) { ab = (num(e.generalAbsentCount) || 0); }
       out.push({ id: String(e.id), name: e.name || e.id, area: area, grade: e.grade || e.designation || '', kind: e.kind || '', duty: num(e.totalDuty), ot: num(e.otHours), pp: num(pp), rq: num(rq), ab: num(ab) });
     });
     return out;
