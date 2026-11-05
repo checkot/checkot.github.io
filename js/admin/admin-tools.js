@@ -223,11 +223,9 @@ function parseExcelWorkbook(workbook, sourceName) {
       const parseTimeMins = (val) => {
         if (!val) return null;
         const s = String(val).replace(/[^0-9:APM]/gi, '').toUpperCase().trim();
-        if (['-', '--', 'NA', 'N/A', 'NULL', 'NONE', 'MISSING', '0000', '000000'].includes(s)) return null;
-        const m = s.match(/^(\d{1,2}):(\d{2})(?:::?\d{2})?\s*([AP]M)?$/);
+        const m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AP]M)?$/);
         if (m) {
           let hh = parseInt(m[1], 10), mm = parseInt(m[2], 10), ampm = m[3];
-          if (hh >= 24 || mm >= 60) return null;
           if (ampm === 'PM' && hh < 12) hh += 12;
           else if (ampm === 'AM' && hh === 12) hh = 0;
           return hh * 60 + mm;
@@ -235,40 +233,25 @@ function parseExcelWorkbook(workbook, sourceName) {
         return null;
       };
 
-      const calcElapsed = (iVal, oVal, shiftStr, dutyHrs) => {
+      const calcElapsed = (iVal, oVal) => {
         const ti = parseTimeMins(iVal), to = parseTimeMins(oVal);
         if (ti === null || to === null) return 0;
-        const is24h = (shiftStr || '').toUpperCase().includes('DN') || (dutyHrs >= 20.0);
-        let diff = 0;
-        if (to < ti) {
-          diff = (1440 - ti) + to;
-        } else if (to === ti && is24h) {
-          diff = 1440;
-        } else {
-          diff = to - ti;
-          if (is24h && diff < 360) diff += 1440;
-        }
+        const diff = to < ti ? (1440 - ti) + to : to - ti;
         return Number((diff / 60).toFixed(2));
       };
 
-      const totalDutyRaw = regDuty + doDuty + holDuty;
-      const elapsedHrs = calcElapsed(inVal, outVal, shiftVal, totalDutyRaw);
+      const elapsedHrs = calcElapsed(inVal, outVal);
       const tInMins = parseTimeMins(inVal);
       const tOutMins = parseTimeMins(outVal);
       const shiftUpper = String(shiftVal || '').toUpperCase();
       const nightRaw = getVal(row, ci.night).toLowerCase();
 
-      // Robust Night Detection (synced with to_json.py)
-      let crossesNight = false;
-      if (tInMins !== null && tOutMins !== null) {
-        if (tOutMins < tInMins || tInMins <= 240 || tOutMins >= 1320) crossesNight = true;
-      }
-      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) ||
-                      shiftUpper.includes('NIGHT') ||
-                      shiftUpper === 'DN' ||
-                      shiftUpper === 'C' ||
-                      (elapsedHrs >= 14.0 && crossesNight) ||
-                      (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
+      // Robust Night Detection
+      const isNight = ['yes', '1', 'true', 'y'].includes(nightRaw) || shiftUpper.includes('NIGHT') || shiftUpper === 'DN' || shiftUpper === 'C' || elapsedHrs >= 14.0 || (outVal && missIn && tOutMins !== null && tOutMins >= 240 && tOutMins <= 435);
+
+      cur.daily.push([date, dayVal, inVal, outVal, regDuty, regOT, doDuty, doOT, holDuty, holOT, isNight ? 1 : 0, shiftVal]);
+      cur.dailyDuty += regDuty + regOT + doDuty + doOT + holDuty + holOT;
+      cur.dailyOt += regOT + doOT + holOT;
       if (regDuty > 0) cur.regularDaysCount++;
       if (doDuty > 0 || doOT > 0 || holDuty > 0 || holOT > 0) {
         cur.holidayDays.push({ date, doDuty, doExtra: doOT, holDuty, holExtra: holOT });
@@ -377,64 +360,8 @@ async function processExcelUpload() {
   } finally {
     if (btn) btn.disabled = false;
   }
-} catch (e) {
-showToast('Excel library could not load. Check internet connection.', 'error');
-return;
 }
-}
-const monthFolder = `${y}-${m}`;
-const btn = document.getElementById('adminUploadExcelBtn');
-const progWrap = document.getElementById('adminPdfUploadProgress');
-const progTxt = document.getElementById('adminPdfStatusText');
-const progFill = document.getElementById('adminPdfProgressFill');
-if (btn) btn.disabled = true;
-if (progWrap) progWrap.style.display = 'block';
-try {
-await loadAreaMap();
-const employeesMap = new Map();
-for (let i = 0; i < files.length; i++) {
-const file = files[i];
-if (progTxt) progTxt.textContent = `Reading file: ${file.name}...`;
-if (progFill) progFill.style.width = `${10 + Math.round((i / files.length) * 40)}%`;
-const buf = await file.arrayBuffer();
-const workbook = XLSX.read(new Uint8Array(buf), { type: 'array' });
-const list = parseExcelWorkbook(workbook, file.name);
-for (const e of list) {
-const existing = employeesMap.get(e.id);
-employeesMap.set(e.id, existing ? pickBestEmployee(existing, e) : e);
-}
-await new Promise(res => setTimeout(res, 10));
-}
-const allEmployees = Array.from(employeesMap.values());
-if (allEmployees.length === 0) throw new Error('No employee data found in the file. Check that the Excel format is correct (existing server data is unchanged).');
-if (progFill) progFill.style.width = '65%';
-if (progTxt) progTxt.textContent = `${allEmployees.length} employee calculations created, saving to the server...`;
-const payload = { month: monthFolder, updatedAt: new Date().toISOString(), employees: allEmployees };
-await githubPutFile(`data/${monthFolder}.json`, utf8ToBase64(JSON.stringify(payload)), `Upload Excel data for ${monthFolder} via RPPF Admin Panel`);
-monthIndexMemoryCache[monthFolder] = allEmployees;
-try {
-localStorage.setItem(MONTH_DATA_CACHE_PREFIX + monthFolder, JSON.stringify({ ts: Date.now(), employees: allEmployees }));
-localStorage.removeItem(LEADERBOARD_PREFIX + monthFolder);
-Object.keys(localStorage).forEach(k => {
-if (k.startsWith(COMPARE_CACHE_PREFIX + monthFolder + '_') || k.startsWith(CACHE_PREFIX + monthFolder + '_')) localStorage.removeItem(k);
-});
-} catch (e) {}
-const rppf = allEmployees.filter(e => e.isRppf !== false && e.valid !== false).length;
-const skipped = allEmployees.filter(e => e.valid === false).length;
-const punch = allEmployees.filter(e => getPunchProblemCount(e) > 0).length;
-if (progFill) progFill.style.width = '100%';
-if (progTxt) progTxt.textContent = `Done: total ${allEmployees.length} (RPPF ${rppf}, out of grade ${skipped}, punch problems ${punch})`;
-if (fileInp) fileInp.value = '';
-showToast(`${monthFolder} data was uploaded successfully`, 'success');
-adminCheckMonthData();
-} catch (err) {
-console.error(err);
-if (progTxt) progTxt.textContent = `Upload failed: ${err.message}`;
-showToast(err.message, 'error');
-} finally {
-if (btn) btn.disabled = false;
-}
-}
+
 async function adminCheckMonthData() {
   try { adminRenderPlantHolidays(); } catch (e) {}
 const y = document.getElementById('adminPdfYear')?.value;
