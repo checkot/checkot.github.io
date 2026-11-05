@@ -1,0 +1,59 @@
+name: Process Manual Excel Upload
+
+on:
+  push:
+    paths:
+      - 'raw/**.xlsx'
+      - 'raw/**.XLSX'
+      - 'raw/**.xls'
+      - 'raw/**.XLS'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: excel-processing
+  cancel-in-progress: false
+
+jobs:
+  process-excel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install openpyxl requests
+
+      - name: Run to_json.py converter
+        run: python scripts/to_json.py
+
+      - name: Cleanup Raw Excel & Commit Output JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Remove processed Excel files so repo size remains compact
+          git rm -f --ignore-unmatch raw/*.xlsx raw/*.XLSX raw/*.xls raw/*.XLS || true
+          rm -rf raw/*.xlsx raw/*.XLSX raw/*.xls raw/*.XLS || true
+
+          # Pull rebase in case of any concurrent commits
+          git pull --rebase origin HEAD:${{ github.ref }} || true
+
+          git add data/*.json
+          if git diff --cached --quiet; then
+            echo "No data changes detected to commit."
+          else
+            git commit -m "Auto-convert: process uploaded Excel via to_json.py [$(date +'%Y-%m-%d %H:%M')]"
+            git push origin HEAD:${{ github.ref }}
+          fi
