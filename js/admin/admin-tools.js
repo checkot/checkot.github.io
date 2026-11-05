@@ -1137,21 +1137,34 @@ function adminSetHolidayFilterMode(mode) {
   adminRenderPlantHolidays();
 }
 
-function adminSavePlantHolidays() {
+async function adminSavePlantHolidays() {
   try {
     localStorage.setItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1', JSON.stringify(PLANT_HOLIDAYS));
-    Object.keys(_monthDatasetMetaCache).forEach(k => delete _monthDatasetMetaCache[k]);
-    Object.keys(monthIndexMemoryCache).forEach(m => {
-      (monthIndexMemoryCache[m] || []).forEach(e => { if (e) e._metricsComputed = false; });
-    });
+    if (typeof _monthDatasetMetaCache !== 'undefined') Object.keys(_monthDatasetMetaCache).forEach(k => delete _monthDatasetMetaCache[k]);
+    if (typeof monthIndexMemoryCache !== 'undefined') {
+      Object.keys(monthIndexMemoryCache).forEach(m => {
+        (monthIndexMemoryCache[m] || []).forEach(e => { if (e) e._metricsComputed = false; });
+      });
+    }
   } catch (e) {}
 
   if (typeof saveAreaCache === 'function') {
     saveAreaCache();
   }
 
-  showToast('Plant holidays and duty coordination saved successfully!', 'success');
   adminRenderPlantHolidays();
+
+  if (typeof adminPushAreasToGithub === 'function' && typeof getGhToken === 'function' && getGhToken()) {
+    showToast('Saving plant holidays to RPPF Cloud Server...', 'info');
+    try {
+      await adminPushAreasToGithub();
+      showToast('Plant holidays saved & synced to server successfully!', 'success');
+    } catch (err) {
+      showToast('Saved locally, but server sync failed: ' + err.message, 'warn');
+    }
+  } else {
+    showToast('Plant holidays saved locally. Set Server Access Key to push to server.', 'success');
+  }
 }
 
 function adminToggleHoliday(dateStr, isChecked, isGeneralDay = false) {

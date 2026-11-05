@@ -89,7 +89,8 @@ const statusEl = document.getElementById('adminAreaPushStatus');
 if (btn) btn.disabled = true;
 if (statusEl) { statusEl.style.color = 'var(--brand-text)'; statusEl.textContent = 'Saving areas.json to RPPF Cloud Server...'; }
 try {
-const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2);
+const hols = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {});
+const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: hols }, null, 2);
 await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Admin Panel`);
 try { Object.keys(localStorage).forEach(k => { const _ns = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : ''); if (k.startsWith(_ns + 'renata_lb_') || k.startsWith(_ns + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
 if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'areas.json was successfully updated on the RPPF Cloud Server.'; }

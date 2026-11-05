@@ -123,6 +123,7 @@ def main():
     now_bd = get_bd_now()
     today_iso = now_bd.strftime("%Y-%m-%d")
     today_emp_format = now_bd.strftime("%d-%b-%Y").upper()
+    today_day_name = now_bd.strftime("%a")
     current_month_str = now_bd.strftime("%Y-%m")
     
     yesterday_bd = now_bd - datetime.timedelta(days=1)
@@ -139,6 +140,7 @@ def main():
     areas_data = load_json_file("areas.json", {})
     area_map = areas_data.get("areas", {})
     area_details = areas_data.get("details", {})
+    holidays_cfg = areas_data.get("holidays", {})
 
     if not area_map:
         print("[ERROR] areas.json is empty or missing! Cannot map employees to production areas.")
@@ -241,13 +243,13 @@ def main():
         today_is_night = False
         today_shift_str = ""
 
-        emp_meta = area_details.get(emp_id, {})
-        emp_sub = emp_meta.get("s", "").strip() or "General"
-        emp_type = get_category_type(emp_id, emp_meta_type=emp_meta.get("t", ""))
-
         emp_rec = emp_records.get(emp_id, {})
         emp_name = emp_rec.get("name") or fallback_names.get(emp_id) or emp_id
         emp_grade = emp_rec.get("grade") or ""
+
+        emp_meta = area_details.get(emp_id, {})
+        emp_sub = emp_meta.get("s", "").strip() or "General"
+        emp_type = get_category_type(emp_id, emp_grade=emp_grade, emp_meta_type=emp_meta.get("t", ""))
 
         if emp_type == "CON" and "JUNIOR OFFICER" in emp_grade.upper():
             emp_type = "JO"
@@ -267,13 +269,11 @@ def main():
         today_row = None
         yesterday_row = None
 
-        for idx, row in enumerate(daily_log):
+        for row in daily_log:
             r_date = str(row[0]).strip().upper() if len(row) > 0 else ""
             if r_date == today_emp_format:
                 today_row = row
-                if idx > 0:
-                    yesterday_row = daily_log[idx - 1]
-            elif r_date == yesterday_emp_format and yesterday_row is None:
+            elif r_date == yesterday_emp_format:
                 yesterday_row = row
 
         # If Day 1 of month, check previous month file for yesterday's night shift
@@ -383,7 +383,7 @@ def main():
                     detected_ot_desc = "5h Evening OT (04:30 - 09:30 PM)"
                 else:
                     detected_ot_desc = "Extended Night OT"
-            elif t_in_mins is not None and t_in_mins <= 435: # In at or before 07:15 AM
+            elif t_in_mins is not None and t_in_mins <= 435 and elapsed_hrs >= 9.5: # In at or before 07:15 AM (only if full duty >= 9.5h)
                 is_physical_ot = True
                 if t_in_mins <= 390:
                     detected_ot_desc = "2.5h Morning OT (06:00 - 08:30 AM)"
@@ -442,7 +442,23 @@ def main():
 
             continue
 
-        # Employee is Absent
+        # Check if today is a Weekend (Thu & Fri) or Declared Holiday
+        # Weekends and plant holidays must NEVER be counted as absent!
+        is_weekend = today_day_name in ("Thu", "Fri")
+        is_holiday = False
+        declared_hols = set(holidays_cfg.get("custom", []) + holidays_cfg.get("declared", []))
+        cancelled_hols = set(holidays_cfg.get("cancelled", []))
+        
+        # Check if today_emp_format (DD-MON-YYYY) or short date (DD-MON) is in declared holidays
+        t_short = today_emp_format[:6] # e.g. 21-FEB
+        if (today_emp_format in declared_hols or t_short in declared_hols) and today_emp_format not in cancelled_hols:
+            is_holiday = True
+
+        if is_weekend or is_holiday:
+            # Weekend / Holiday off day - NOT absent!
+            continue
+
+        # Employee is genuinely Absent on a regular working day
         stats["absent"] += 1
         stats["by_category"][emp_type]["absent"] += 1
 
