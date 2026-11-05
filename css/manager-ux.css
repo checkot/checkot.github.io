@@ -105,12 +105,14 @@ body.incharge-mode-active:not(.has-result) .inc-home-overview { order: 1; gap: 8
   position: sticky; top: 0; z-index: 30;
   display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
   padding: 6px 2px; background: var(--bg);
+  -webkit-overflow-scrolling: touch;
 }
 .mgr-ov-tabs::-webkit-scrollbar { display: none; }
 .mgr-ov-tab {
   flex: 0 0 auto; min-height: 34px; padding: 0 14px; border-radius: 999px;
   border: 1px solid var(--border); background: var(--surface); color: var(--text-2);
   font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
 }
 .mgr-ov-tab.active { background: var(--brand); border-color: var(--brand); color: #fff; }
 .mgr-ov-cnt {
@@ -118,11 +120,39 @@ body.incharge-mode-active:not(.has-result) .inc-home-overview { order: 1; gap: 8
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--danger); color: #fff;
 }
+#inchargeHomeOverview > #mgrOvTabs {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+}
+@media (min-width: 768px) {
+  .mgr-ov-tabs {
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+  }
+}
+@media (min-width: 900px) {
+  .mgr-ov-tabs {
+    top: 64px !important; /* Avoid getting covered by sticky desktop topnav */
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+  }
+  #inchargeHomeOverview > [data-ov-panel] {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+}
 #inchargeHomeOverview[data-tab="summary"] > [data-ov-panel]:not([data-ov-panel="summary"]),
 #inchargeHomeOverview[data-tab="absent"] > [data-ov-panel]:not([data-ov-panel="absent"]),
 #inchargeHomeOverview[data-tab="leaves"] > [data-ov-panel]:not([data-ov-panel="leaves"]),
 #inchargeHomeOverview[data-tab="toppers"] > [data-ov-panel]:not([data-ov-panel="toppers"]),
 #inchargeHomeOverview[data-tab="risk"] > [data-ov-panel]:not([data-ov-panel="risk"]) { display: none !important; }
+
+/* Watchlist tabs inside Risk card */
+.inc-watchlist-tabs {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
 
 /* hero */
 body.incharge-mode-active .inc-ov-hero { padding: 10px !important; border-radius: 12px !important; }
