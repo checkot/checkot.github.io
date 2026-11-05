@@ -215,7 +215,14 @@
 
   /* ---------- areas.json: dirty tracking, merge, save ---------- */
   let lastSeen = null, baseline = null, remoteStr = '', remoteObj = null, timer = null, loading = 0, saving = false;
-  const payloadObj = () => ({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE });
+  const payloadObj = () => ({
+    areas: AREA_MAP,
+    details: AREA_DETAILS,
+    subsections: AREA_SUBS,
+    designationRates: DESIG_RATES,
+    rateTable: RATE_TABLE,
+    holidays: (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {})
+  });
   const cur = () => { try { return JSON.stringify(payloadObj()); } catch (e) { return ''; } };
 
   const _fjr = fetchJsonResource;
@@ -312,7 +319,8 @@
           const m = {
             areas: merge3(b.areas, mine.areas, theirs.areas), details: merge3(b.details, mine.details, theirs.details),
             subsections: merge3(b.subsections, mine.subsections, theirs.subsections), designationRates: merge3(b.designationRates, mine.designationRates, theirs.designationRates),
-            rateTable: merge3(bRates, mine.rateTable, tRates)
+            rateTable: merge3(bRates, mine.rateTable, tRates),
+            holidays: mine.holidays || theirs.holidays || b.holidays || {}
           };
           applyPayload(m); merged = true;
         }
