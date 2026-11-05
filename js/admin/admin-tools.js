@@ -843,7 +843,8 @@ window.__qmMove = async () => {
   try {
     if (typeof getGhToken === 'function' && !getGhToken()) { st.style.color = 'var(--warning)'; st.textContent = `Done on this device (${ids.length} moved). Server key is not set, so it is not synced yet.`; }
     else {
-      await githubPutFile('areas.json', utf8ToBase64(JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2)), 'Update sub-sections via Quick Move');
+      const hols = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {});
+      await githubPutFile('areas.json', utf8ToBase64(JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: hols }, null, 2)), 'Update sub-sections via Quick Move');
       try { Object.keys(localStorage).forEach(k => { const _ns = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : ''); if (k.startsWith(_ns + 'renata_lb_') || k.startsWith(_ns + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
       st.style.color = 'var(--success)'; st.textContent = `Done ✓ ${ids.length} moved to "${sub}" and saved to the server.`;
     }

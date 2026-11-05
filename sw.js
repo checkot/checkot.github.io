@@ -1,5 +1,5 @@
 // RENATA Overtime App — Service Worker (Offline PWA + Stale-While-Revalidate)
-const CACHE_NAME = 'checkot-pwa-v20261105nt';
+const CACHE_NAME = 'checkot-pwa-v20261105-02';
 
 const PRECACHE_ASSETS = [
   './',
@@ -7,6 +7,13 @@ const PRECACHE_ASSETS = [
   'admin.html',
   'manifest.json',
   'icon.png',
+  'og-image.png',
+  'css/tokens.css',
+  'css/base.css',
+  'css/components.css',
+  'css/nav.css',
+  'css/pages.css',
+  'css/admin.css',
   'css/manager-ux.css',
   'css/rank-details.css',
   'js/core/config.js',
@@ -29,7 +36,11 @@ const PRECACHE_ASSETS = [
   'js/patches/manager-ux.js',
   'js/admin/admin-core.js',
   'js/admin/admin-tools.js',
-  'js/admin/admin-github.js'
+  'js/admin/admin-github.js',
+  'js/admin/admin-sync-bar.js',
+  'areas.json',
+  'team.json',
+  'notices.json'
 ];
 
 self.addEventListener('install', (event) => {

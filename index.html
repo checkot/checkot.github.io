@@ -4165,7 +4165,8 @@ return await delResp.json();
 }
 async function adminPushAreasToGithub() {
 try {
-const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE }, null, 2);
+const hols = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {});
+const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: hols }, null, 2);
 await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Ranking Category Editor`);
 try { Object.keys(localStorage).forEach(k => { const _ns = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : ''); if (k.startsWith(_ns + 'renata_lb_') || k.startsWith(_ns + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
 showToast('Saved to RPPF Cloud Server', 'success');
