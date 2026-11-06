@@ -854,20 +854,26 @@
     return ids;
   }
 
-  window.runComparison = async function () {
+  window.runComparison = async function (customIdsList, customHeaderNote) {
     const statusDiv = $('compareStatus'), btn = $('compareBtn');
     const setStatus = (msg, bad) => { if (statusDiv) { statusDiv.style.color = bad ? 'var(--danger)' : 'var(--primary-blue)'; statusDiv.innerText = msg || ''; } };
-    const inp1 = $('compareId1');
-    if (inp1 && !inp1.value.trim()) {
-      let pref = '';
-      try { pref = currentSearchId || getPreferredId() || ''; } catch (e) { /* ignore */ }
-      if (pref) inp1.value = pref;
+    
+    let ids = [];
+    if (Array.isArray(customIdsList) && customIdsList.length >= 2) {
+      ids = customIdsList.map(x => String(x || '').trim().toUpperCase().replace(/\s+/g, '')).filter(Boolean);
+    } else {
+      const inp1 = $('compareId1');
+      if (inp1 && !inp1.value.trim()) {
+        let pref = '';
+        try { pref = currentSearchId || getPreferredId() || ''; } catch (e) { /* ignore */ }
+        if (pref) inp1.value = pref;
+      }
+      ids = collectVsIds();
+      const filled = ids.filter(Boolean);
+      if (!ids[0]) { toast('Enter the 1st employee ID', 'warn'); inp1 && inp1.focus(); return; }
+      if (!ids[1]) { toast('Enter the 2nd employee ID', 'warn'); const i2 = $('compareId'); i2 && i2.focus(); return; }
+      ids = filled;
     }
-    let ids = collectVsIds();
-    const filled = ids.filter(Boolean);
-    if (!ids[0]) { toast('Enter the 1st employee ID', 'warn'); inp1 && inp1.focus(); return; }
-    if (!ids[1]) { toast('Enter the 2nd employee ID', 'warn'); const i2 = $('compareId'); i2 && i2.focus(); return; }
-    ids = filled;
     if (new Set(ids).size !== ids.length) { toast('Some ID numbers are repeated. Use different IDs.', 'warn'); return; }
     const unlisted = ids.filter((id) => { try { return !isListedEmployeeId(id); } catch (e) { return false; } });
     if (unlisted.length) { toast(`ID ${unlisted.join(', ')} is not listed in RPPF sections`, 'error'); return; }
@@ -937,10 +943,19 @@
       showComparison(records[0], records[1], records[1].id, records[2] || null, records);
       const target = $('vsExportTarget');
       if (target) {
+        if (customHeaderNote) {
+          const subNote = document.createElement('div');
+          subNote.className = 'vs-subsection-header-badge';
+          subNote.style.cssText = 'padding:8px 12px;margin-bottom:8px;border-radius:8px;background:var(--surface-2);color:var(--brand-text);border:1px solid var(--brand-soft-border);font-size:13px;font-weight:800;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;';
+          subNote.innerHTML = `<span>🏭</span> <span>${esc(customHeaderNote)}</span> <span style="font-size:11px;font-weight:600;color:var(--muted);">(All Subsection Staff)</span>`;
+          if (typeof target.prepend === 'function') target.prepend(subNote);
+          else target.insertBefore(subNote, target.firstChild);
+        }
         const note = document.createElement('div');
         note.className = 'vs-period-note';
         note.textContent = 'Period: ' + window._vsPeriodLabel;
-        target.insertBefore(note, target.firstChild);
+        if (typeof target.prepend === 'function') target.prepend(note);
+        else target.insertBefore(note, target.firstChild);
       }
       if (res) res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (err) {

@@ -1676,7 +1676,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js"></script>
   <script src="js/pages/report.js"></script>
-  <script src="js/pages/vs.js?v=20261105nt"></script>
+  <script src="js/pages/vs.js?v=20261106a"></script>
   <script src="js/pages/notices.js"></script>
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js"></script>
@@ -3378,7 +3378,8 @@ diffText = diff > 0 ? `${l1} received ৳ ${Math.abs(diff).toFixed(2)} more` : d
 const sorted = [...list].sort((a, b) => b.totalEarned - a.totalEarned);
 const top = sorted[0];
 const lead = top.totalEarned - sorted[1].totalEarned;
-diffText = lead > 0 ? `Top in 1:1:1 is ${esc(top.name || top.id)} (${esc(top.id)}) with ৳ ${top.totalEarned.toFixed(2)} (+৳ ${lead.toFixed(2)} ahead of #2)` : `Tied at the top with ৳ ${top.totalEarned.toFixed(2)}`;
+const compTitle = list.length === 3 ? "Top in 1:1:1" : `Top among ${list.length} colleagues`;
+diffText = lead > 0 ? `${compTitle} is ${esc(top.name || top.id)} (${esc(top.id)}) with ৳ ${top.totalEarned.toFixed(2)} (+৳ ${lead.toFixed(2)} ahead of #2)` : `Tied at the top with ৳ ${top.totalEarned.toFixed(2)}`;
 }
 div.innerHTML = `
 <div id="vsExportTarget">
@@ -7693,6 +7694,6 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
 
 </script>
   <script src="js/components/rank-details.js?v=20261105nt"></script>
-  <script src="js/patches/manager-ux.js?v=20261105nt"></script>
+  <script src="js/patches/manager-ux.js?v=20261106a"></script>
 </body>
 </html>
