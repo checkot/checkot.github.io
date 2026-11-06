@@ -82,7 +82,7 @@ function onVsPeriodChange() {
       const ym = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
       sub.textContent = `Compare overtime & allowances (${ym})`;
     } else {
-      const pText = document.getElementById('vsPeriodSelect')?.options[document.getElementById('vsPeriodSelect')?.selectedIndex]?.text || p;
+      const pText = document.getElementById('vsPeriodSelect')?.selectedOptions?.[0]?.text || document.getElementById('vsPeriodSelect')?.options?.[document.getElementById('vsPeriodSelect')?.selectedIndex]?.text || p;
       sub.textContent = `Compare overtime & allowances (${pText})`;
     }
   }
@@ -460,7 +460,7 @@ async function runComparison() {
   try {
     const periodSelect = document.getElementById('vsPeriodSelect');
     const periodMode = periodSelect?.value || 'current';
-    const periodLabel = periodSelect?.options[periodSelect.selectedIndex]?.text || (periodMode === 'current' ? 'Selected Month' : periodMode);
+    const periodLabel = (periodSelect?.options && periodSelect.selectedIndex >= 0 && periodSelect.options[periodSelect.selectedIndex]) ? periodSelect.options[periodSelect.selectedIndex].text : "" || (periodMode === 'current' ? 'Selected Month' : periodMode);
     const month = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
     
     const monthsToLoad = getVsMonthsForPeriod(periodMode, month);

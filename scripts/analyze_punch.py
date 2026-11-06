@@ -203,6 +203,34 @@ def main():
         prev_month_records = {normalize_id(e.get("id")): e for e in p_list if e.get("id")}
         print(f"Loaded {len(prev_month_records)} records from previous month ({yesterday_month_str}) for month-end night rest check.")
 
+        # Pre-parse Holiday Configuration once for the entire analysis run
+    holidays_cfg = areas_data.get("holidays", {})
+    cancelled_hols = {str(x).upper().strip() for x in holidays_cfg.get("cancelled", [])}
+    custom_declared_hols = {str(x).upper().strip() for x in (holidays_cfg.get("custom", []) + holidays_cfg.get("declared", []))}
+    if holidays_cfg.get("byMonth") and isinstance(holidays_cfg["byMonth"], dict):
+        for m_hols in holidays_cfg["byMonth"].values():
+            if isinstance(m_hols, list):
+                custom_declared_hols.update(str(x).upper().strip() for x in m_hols)
+    today_year = now_bd.year
+    base_govt_hols = {
+        f"04-FEB-{today_year}", f"10-FEB-{today_year}", f"11-FEB-{today_year}", f"12-FEB-{today_year}",
+        f"21-FEB", f"21-FEB-{today_year}",
+        f"17-MAR-{today_year}", f"18-MAR-{today_year}", f"19-MAR-{today_year}", f"20-MAR-{today_year}",
+        f"21-MAR-{today_year}", f"22-MAR-{today_year}", f"23-MAR-{today_year}",
+        f"26-MAR", f"26-MAR-{today_year}",
+        f"14-APR", f"14-APR-{today_year}",
+        f"01-MAY", f"01-MAY-{today_year}",
+        f"26-MAY-{today_year}", f"27-MAY-{today_year}", f"28-MAY-{today_year}", f"29-MAY-{today_year}", f"30-MAY-{today_year}", f"31-MAY-{today_year}",
+        f"26-JUN-{today_year}", f"05-AUG-{today_year}", f"04-SEP-{today_year}",
+        f"20-OCT-{today_year}", f"21-OCT-{today_year}",
+        f"16-DEC", f"16-DEC-{today_year}",
+        f"25-DEC", f"25-DEC-{today_year}"
+    }
+    all_active_hols = {h.upper().strip() for h in (base_govt_hols | custom_declared_hols)}
+    t_short = today_emp_format[:6]
+    today_day_name = now_bd.strftime("%a")
+    is_today_holiday = (today_emp_format in all_active_hols or t_short in all_active_hols) and (today_emp_format not in cancelled_hols and t_short not in cancelled_hols)
+
     allowed_sections = ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]
 
     stats = {
@@ -397,32 +425,7 @@ def main():
             is_weekend_today = today_day_name in ("Thu", "Fri")
             is_weekend_do_missing = is_weekend_today and (reg_duty > 0 or reg_ot > 0) and (do_duty == 0 and do_ot == 0)
 
-            # Check Govt Holiday Requisition Missing (with Admin Overrides & areas.json holidays)
-            holidays_cfg = areas_data.get("holidays", {})
-            cancelled_hols = {str(x).upper().strip() for x in holidays_cfg.get("cancelled", [])}
-            custom_declared_hols = {str(x).upper().strip() for x in (holidays_cfg.get("custom", []) + holidays_cfg.get("declared", []))}
-            if holidays_cfg.get("byMonth") and isinstance(holidays_cfg["byMonth"], dict):
-                for m_hols in holidays_cfg["byMonth"].values():
-                    if isinstance(m_hols, list):
-                        custom_declared_hols.update(str(x).upper().strip() for x in m_hols)
-            today_year = now_bd.year
-            base_govt_hols = {
-                f"04-FEB-{today_year}", f"10-FEB-{today_year}", f"11-FEB-{today_year}", f"12-FEB-{today_year}",
-                f"21-FEB", f"21-FEB-{today_year}",
-                f"17-MAR-{today_year}", f"18-MAR-{today_year}", f"19-MAR-{today_year}", f"20-MAR-{today_year}",
-                f"21-MAR-{today_year}", f"22-MAR-{today_year}", f"23-MAR-{today_year}",
-                f"26-MAR", f"26-MAR-{today_year}",
-                f"14-APR", f"14-APR-{today_year}",
-                f"01-MAY", f"01-MAY-{today_year}",
-                f"26-MAY-{today_year}", f"27-MAY-{today_year}", f"28-MAY-{today_year}", f"29-MAY-{today_year}", f"30-MAY-{today_year}", f"31-MAY-{today_year}",
-                f"26-JUN-{today_year}", f"05-AUG-{today_year}", f"04-SEP-{today_year}",
-                f"20-OCT-{today_year}", f"21-OCT-{today_year}",
-                f"16-DEC", f"16-DEC-{today_year}",
-                f"25-DEC", f"25-DEC-{today_year}"
-            }
-            all_active_hols = {h.upper().strip() for h in (base_govt_hols | custom_declared_hols)}
-            t_short = today_emp_format[:6] # e.g. 21-FEB
-            is_today_holiday = (today_emp_format in all_active_hols or t_short in all_active_hols) and (today_emp_format not in cancelled_hols and t_short not in cancelled_hols)
+            # Check Govt Holiday Requisition Missing (uses pre-parsed all_active_hols & is_today_holiday)
 
             is_hol_missing = is_today_holiday and (reg_duty > 0 or reg_ot > 0) and (hol_duty == 0 and hol_ot == 0)
 
