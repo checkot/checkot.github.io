@@ -4272,13 +4272,16 @@ body.norate-view #compareMyAmount {
     }
   }
 
-  /* In-Charge / Manager Mode: Hide Money Calculations on Home & Style Full Employee Profile Card */
+  /* In-Charge / Manager Mode: Hide Money Calculations on Home & VS Comparison */
   body.incharge-mode-active #payslipCard,
   body.incharge-mode-active #step3 .grand-total-block,
   body.incharge-mode-active #step3 .rate-line,
   body.incharge-mode-active #step3 .bill-list,
   body.incharge-mode-active #step3 details.adjust,
-  body.incharge-mode-active #step3 .card-head button {
+  body.incharge-mode-active #step3 .card-head button,
+  body.incharge-mode-active .vs-money-row,
+  body.incharge-mode-active #vsExportTarget .compare-table .vs-money-row,
+  body.incharge-mode-active #vsExportTarget .compare-table tr.total-row {
     display: none !important;
   }
   .inc-profile-card {

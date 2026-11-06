@@ -995,7 +995,7 @@
       let FONT = '"Hind Siliguri","Noto Sans Bengali","Noto Sans","Segoe UI",Roboto,Arial,sans-serif';
       try { if (typeof PAY_FONT !== 'undefined') FONT = PAY_FONT; } catch (e) { /* ignore */ }
 
-      const trs = [...table.querySelectorAll('tr')];
+      const trs = [...table.querySelectorAll('tr')].filter(tr => !tr.classList.contains('vs-money-row') && tr.style.display !== 'none');
       const data = trs.map((tr, ri) => ({
         head: ri === 0,
         total: tr.classList.contains('total-row'),
@@ -1031,7 +1031,7 @@
       if (W < MINW) { const extra = (MINW - W) / nData; colW = colW0.map((w) => w + extra); W = MINW; }
       const tableW = W - PAD * 2;
 
-      const title = 'RPPF • VS Overtime Comparison';
+      const title = isInc() ? 'RPPF • VS Overtime & Duty Comparison' : 'RPPF • VS Overtime Comparison';
       const period = window._vsPeriodLabel || curMonth();
       m.font = font(600, 14);
       const subLines = wrapLines(m, `Period: ${period}`, W - PAD * 2);

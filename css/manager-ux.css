@@ -322,3 +322,10 @@ body.incharge-mode-active #reportEmptyCard { display: none !important; }
 @media print {
   .mgr-q, .mgr-rf, .drawer-topbar, #mgrBusyBar, .mgr-ov, .mgr-ov-tabs { display: none !important; }
 }
+
+/* Manager Mode: strictly hide money rows in comparison tables */
+body.incharge-mode-active .vs-money-row,
+body.incharge-mode-active #vsExportTarget .compare-table .vs-money-row,
+body.incharge-mode-active #vsExportTarget .compare-table tr.total-row {
+  display: none !important;
+}

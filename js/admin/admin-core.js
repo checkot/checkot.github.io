@@ -2515,8 +2515,9 @@ function showComparison(mine, other, otherId, third, allRecords) {
 const div = document.getElementById('compareResult');
 const list = (Array.isArray(allRecords) && allRecords.length >= 2) ? allRecords : (third ? [mine, other, third] : [mine, other]);
 const myPref = getPreferredId();
+const isInc = (typeof getAppMode === 'function' && getAppMode() === 'incharge') || document.body.classList.contains('incharge-mode-active');
 const labelFor = (r) => {
-const base = r.id === myPref ? `You (${esc(r.id)})` : esc(r.id);
+const base = (!isInc && r.id === myPref) ? `You (${esc(r.id)})` : esc(r.id);
 const nm = r.name && r.name !== r.id ? `<div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;margin-left:auto;">${esc(r.name)}</div>` : '';
 return `<div>${base}</div>${nm}`;
 };
@@ -2534,17 +2535,54 @@ const tdCellAbsent = (valStr, numVal) => {
   const isBest = list.length > 1 && numVal === minAbsent && !list.every(x => Number(x.absentCount != null ? x.absentCount : 0) === minAbsent);
   return `<td class="${isBest ? 'win-cell' : ''}">${valStr}</td>`;
 };
+
 let diffText = '';
-if (!third) {
-const diff = mine.totalEarned - other.totalEarned;
-const l1 = mine.id === myPref ? `You (${esc(mine.id)})` : esc(mine.id);
-const l2 = other.id === myPref ? `You (${esc(other.id)})` : esc(other.id);
-diffText = diff > 0 ? `${l1} received ৳ ${Math.abs(diff).toFixed(2)} more` : diff < 0 ? `${l2} received ৳ ${Math.abs(diff).toFixed(2)} more` : `Both received the same amount`;
+if (isInc) {
+  // Manager View: compare OT hours and duty hours (strictly no money/taka)
+  if (!third) {
+    const otDiff = Number(((mine.otHours || 0) - (other.otHours || 0)).toFixed(2));
+    const l1 = esc(mine.name ? `${mine.name} (${mine.id})` : mine.id);
+    const l2 = esc(other.name ? `${other.name} (${other.id})` : other.id);
+    if (otDiff > 0) {
+      diffText = `${l1} completed ${otDiff.toFixed(1)} hrs more OT`;
+    } else if (otDiff < 0) {
+      diffText = `${l2} completed ${Math.abs(otDiff).toFixed(1)} hrs more OT`;
+    } else {
+      const dutyDiff = Number(((mine.totalDuty || 0) - (other.totalDuty || 0)).toFixed(2));
+      if (dutyDiff > 0) {
+        diffText = `Both worked ${mine.otHours || 0} hrs OT (${l1} completed ${dutyDiff.toFixed(1)} hrs more duty)`;
+      } else if (dutyDiff < 0) {
+        diffText = `Both worked ${mine.otHours || 0} hrs OT (${l2} completed ${Math.abs(dutyDiff).toFixed(1)} hrs more duty)`;
+      } else {
+        diffText = `Both worked equal OT (${mine.otHours || 0} hrs) and duty (${mine.totalDuty || 0} hrs)`;
+      }
+    }
+  } else {
+    const sorted = [...list].sort((a, b) => ((b.otHours || 0) - (a.otHours || 0)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    const top = sorted[0];
+    const second = sorted[1];
+    const lead = Number(((top.otHours || 0) - (second.otHours || 0)).toFixed(2));
+    const compTitle = list.length === 3 ? "Top in 1:1:1" : `Top among ${list.length} colleagues`;
+    if (lead > 0) {
+      diffText = `${compTitle} in OT is ${esc(top.name || top.id)} (${esc(top.id)}) with ${top.otHours || 0} hrs OT (+${lead.toFixed(1)} hrs ahead of #2)`;
+    } else {
+      diffText = `Tied at the top with ${top.otHours || 0} hrs OT`;
+    }
+  }
 } else {
-const sorted = [...list].sort((a, b) => b.totalEarned - a.totalEarned);
-const top = sorted[0];
-const lead = top.totalEarned - sorted[1].totalEarned;
-diffText = lead > 0 ? `Top in 1:1:1 is ${esc(top.name || top.id)} (${esc(top.id)}) with ৳ ${top.totalEarned.toFixed(2)} (+৳ ${lead.toFixed(2)} ahead of #2)` : `Tied at the top with ৳ ${top.totalEarned.toFixed(2)}`;
+  // Normal Employee View: show taka/earnings comparison
+  if (!third) {
+    const diff = mine.totalEarned - other.totalEarned;
+    const l1 = mine.id === myPref ? `You (${esc(mine.id)})` : esc(mine.id);
+    const l2 = other.id === myPref ? `You (${esc(other.id)})` : esc(other.id);
+    diffText = diff > 0 ? `${l1} received ৳ ${Math.abs(diff).toFixed(2)} more` : diff < 0 ? `${l2} received ৳ ${Math.abs(diff).toFixed(2)} more` : `Both received the same amount`;
+  } else {
+    const sorted = [...list].sort((a, b) => b.totalEarned - a.totalEarned);
+    const top = sorted[0];
+    const lead = top.totalEarned - sorted[1].totalEarned;
+    const compTitle = list.length === 3 ? "Top in 1:1:1" : `Top among ${list.length} colleagues`;
+    diffText = lead > 0 ? `${compTitle} is ${esc(top.name || top.id)} (${esc(top.id)}) with ৳ ${top.totalEarned.toFixed(2)} (+৳ ${lead.toFixed(2)} ahead of #2)` : `Tied at the top with ৳ ${top.totalEarned.toFixed(2)}`;
+  }
 }
 div.innerHTML = `
 <div id="vsExportTarget">
@@ -2554,6 +2592,14 @@ div.innerHTML = `
 <tr><td>Category</td>${list.map(r => {
   const cat = r.category || r.categoryName;
   if (!cat) return '<td>—</td>';
+  if (isInc) {
+    if (cat === 'CF') return '<td>CF</td>';
+    if (cat === 'JO') return '<td>JO</td>';
+    if (cat === 'JO_B') return '<td>JO-B</td>';
+    if (cat === 'UNSPEC') return '<td>Unspecified</td>';
+    const name = (typeof RATE_TABLE !== 'undefined' && RATE_TABLE[cat]?.name) || cat;
+    return `<td>${esc(String(name).replace(/\s*\(.*?\)/g, ''))}</td>`;
+  }
   if (cat === 'CF') return '<td>CF · ৳38/h</td>';
   if (cat === 'JO') return '<td>JO · ৳40/h</td>';
   if (cat === 'JO_B') return '<td>JO-B · ৳45/h</td>';
@@ -2565,13 +2611,15 @@ div.innerHTML = `
 <tr><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
 <tr><td>OT days (days)</td>${list.map(r => r.otDays == null ? '<td>—</td>' : tdCell(r.otDays, r.otDays, maxOtDays)).join('')}</tr>
 <tr><td>Holiday duty (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
-<tr><td>Night Allowance (nights)</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
+<tr><td>${isInc ? 'Night duty (nights)' : 'Night Allowance (nights)'}</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
 <tr><td>4:30 pm (days)</td>${list.map(r => tdCell(r.plainDays || 0, r.plainDays || 0, maxPlain)).join('')}</tr>
 <tr><td>Total Absent (days)</td>${list.map(r => tdCellAbsent(r.absentCount != null ? r.absentCount : 0, Number(r.absentCount != null ? r.absentCount : 0))).join('')}</tr>
-<tr><td>OT Allowance</td>${list.map(r => `<td>৳ ${r.otAmount.toFixed(2)}</td>`).join('')}</tr>
-<tr><td>Holiday Allowance</td>${list.map(r => `<td>৳ ${r.holidayAmount.toFixed(2)}</td>`).join('')}</tr>
-<tr><td>Night Allowance</td>${list.map(r => `<td>৳ ${r.nightAmount.toFixed(2)}</td>`).join('')}</tr>
-<tr class="total-row"><td>Total</td>${list.map(r => tdCell('৳ ' + r.totalEarned.toFixed(2), r.totalEarned, maxTotal)).join('')}</tr>
+${!isInc ? `
+<tr class="vs-money-row"><td>OT Allowance</td>${list.map(r => `<td>৳ ${r.otAmount.toFixed(2)}</td>`).join('')}</tr>
+<tr class="vs-money-row"><td>Holiday Allowance</td>${list.map(r => `<td>৳ ${r.holidayAmount.toFixed(2)}</td>`).join('')}</tr>
+<tr class="vs-money-row"><td>Night Allowance</td>${list.map(r => `<td>৳ ${r.nightAmount.toFixed(2)}</td>`).join('')}</tr>
+<tr class="total-row vs-money-row"><td>Total</td>${list.map(r => tdCell('৳ ' + r.totalEarned.toFixed(2), r.totalEarned, maxTotal)).join('')}</tr>
+` : ''}
 </table>
 </div>
 <div class="compare-diff"><strong>${diffText}</strong></div>
@@ -8579,7 +8627,7 @@ downloadVsComparisonPNG = async function(share = false) {
     const table = target.querySelector('table.compare-table');
     if (!table) return _origDownloadVsPNG(share);
     await ensurePayslipFonts();
-    const trs = Array.from(table.querySelectorAll('tr'));
+    const trs = Array.from(table.querySelectorAll('tr')).filter(tr => !tr.classList.contains('vs-money-row') && tr.style.display !== 'none');
     const colCount = Math.max(2, trs[0] ? trs[0].children.length : 2);
     const W = Math.max(960, colCount * 260);
     const PAD = 40;

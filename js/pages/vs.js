@@ -77,13 +77,15 @@ function onVsPeriodChange() {
   const mCol = document.getElementById('vsMonthCol');
   if (mCol) mCol.style.display = p === 'current' ? 'flex' : 'none';
   const sub = document.getElementById('vsPageSub');
+  const isInc = (typeof getAppMode === 'function' && getAppMode() === 'incharge') || document.body.classList.contains('incharge-mode-active');
+  const prefix = isInc ? 'Compare overtime & duty hours' : 'Compare overtime & allowances';
   if (sub) {
     if (p === 'current') {
       const ym = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-      sub.textContent = `Compare overtime & allowances (${ym})`;
+      sub.textContent = `${prefix} (${ym})`;
     } else {
       const pText = document.getElementById('vsPeriodSelect')?.selectedOptions?.[0]?.text || document.getElementById('vsPeriodSelect')?.options?.[document.getElementById('vsPeriodSelect')?.selectedIndex]?.text || p;
-      sub.textContent = `Compare overtime & allowances (${pText})`;
+      sub.textContent = `${prefix} (${pText})`;
     }
   }
 }
@@ -91,7 +93,9 @@ function onVsPeriodChange() {
 function onVsMonthOverrideChange() {
   const sub = document.getElementById('vsPageSub');
   const ym = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-  if (sub) sub.textContent = `Compare overtime & allowances (${ym})`;
+  const isInc = (typeof getAppMode === 'function' && getAppMode() === 'incharge') || document.body.classList.contains('incharge-mode-active');
+  const prefix = isInc ? 'Compare overtime & duty hours' : 'Compare overtime & allowances';
+  if (sub) sub.textContent = `${prefix} (${ym})`;
   updateVsAllPreviews();
 }
 
@@ -303,7 +307,9 @@ function initVsPage() {
   updateVsAllPreviews();
   const sub = document.getElementById('vsPageSub');
   const mStr = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-  if (sub && mStr) sub.textContent = `Compare overtime & allowances (${mStr})`;
+  const isInc = (typeof getAppMode === 'function' && getAppMode() === 'incharge') || document.body.classList.contains('incharge-mode-active');
+  const prefix = isInc ? 'Compare overtime & duty hours' : 'Compare overtime & allowances';
+  if (sub && mStr) sub.textContent = `${prefix} (${mStr})`;
 }
 
 function buildCompareRecord(emp, idStr) {
