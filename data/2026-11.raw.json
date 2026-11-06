@@ -1,11 +1,11 @@
 {
-"schema": 1, "month": "2026-11", "parserVersion": "2026-11-05-night-yes-only", "archivedAt": "2026-11-06T20:29:34.196286Z", "about": "Lossless copy of the Empress Excel cells. Cell tags: @dt:/@d:/@t:/@td: = datetime/date/time/duration. Rebuild data/<month>.json with: python scripts/recompute_from_raw.py <month>. See DATA_GUIDE.md.",
+"schema": 1, "month": "2026-11", "parserVersion": "2026-11-05-night-yes-only", "archivedAt": "2026-11-06T22:04:17.544779Z", "about": "Lossless copy of the Empress Excel cells. Cell tags: @dt:/@d:/@t:/@td: = datetime/date/time/duration. Rebuild data/<month>.json with: python scripts/recompute_from_raw.py <month>. See DATA_GUIDE.md.",
 "files":[
 {"name":"rf20716.xlsx","sheets":[
 {"name":"Work Log","rows":[
 ["Renata PLC"],
 ["Monthly Work Log - 01 Nov 2026 to 06 Nov 2026"],
-["Generated 07 Nov 2026 02:31"],
+["Generated 07 Nov 2026 04:06"],
 ["Date","Day","Shift","In","Out","Duty (h)","OT (h)","Day Off Duty (h)","Day Off OT (h)","Holiday Duty (h)","Holiday OT (h)","Night"],
 ["556490  Mr. Siratun Nabi   Casual, Production Department, Rajendrapur Site"],
 ["01-Nov-2026","Sun","G","07:49","19:32",11.72,0,0,0,0,0,""],
