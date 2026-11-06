@@ -12,7 +12,7 @@
   }
 })(typeof window !== 'undefined' ? window : this, function () {
 
-  const VALID_PAGES = ['search', 'report', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings'];
+  const VALID_PAGES = ['search', 'report', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings', 'assessment'];
   let _isNavigating = false;
   let _lastExitBackTs = 0;
   let _hasInitialized = false;
