@@ -297,6 +297,81 @@ async function quickCompareSolidCross(sub1, sub2) {
   runComparison();
 }
 
+/* ===== Executive Quick Comparison Shortcuts ===== */
+const CANONICAL_RPPF_EXECS = [
+  { id: 'RF23849', name: 'Asrar Mahamud Neloy', desig: 'Officer', sub: 'Plant Operations' },
+  { id: 'RF23848', name: 'Md Faysal Miah', desig: 'Officer', sub: 'Plant Operations' },
+  { id: 'RF23810', name: 'Mehedi Hasan', desig: 'Officer', sub: 'Plant Operations' },
+  { id: 'RF22690', name: 'Md. Mehdi Hasan', desig: 'Senior Officer', sub: 'Plant Operations' },
+  { id: 'RF0364',  name: 'Md. Mokaddesh Uddin Khan', desig: 'Officer', sub: 'Plant Operations' },
+  { id: 'RF23234', name: 'Sabbir Ahmed', desig: 'Officer', sub: 'Plant Operations' },
+  { id: 'RF21291', name: 'Sabuj Karmoker', desig: 'Assistant Manager', sub: 'Plant Operations' },
+  { id: 'RF20716', name: 'Milon Ahamed', desig: 'Senior Assistant Manager', sub: 'Production Management' },
+  { id: 'RF21062', name: 'Namita Rani Nath', desig: 'Assistant Manager', sub: 'Plant Operations' },
+  { id: 'RF21283', name: 'Tanzina Aktar', desig: 'Assistant Manager', sub: 'Plant Operations' },
+  { id: 'RF8941',  name: 'Debashish Mitra', desig: 'Deputy Manager', sub: 'Production Management' }
+];
+
+async function quickCompareExecutives(filterType = 'all') {
+  const statusDiv = document.getElementById('compareStatus');
+  if (statusDiv) {
+    statusDiv.style.color = 'var(--brand)';
+    statusDiv.innerText = 'Loading Executives comparison...';
+  }
+
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const list = await getVsLoadedEmployees(m);
+
+  let targetIds = [];
+  let headerLabel = 'All Executives';
+
+  if (filterType === 'mgmt' || filterType === 'Production Management') {
+    targetIds = ['RF20716', 'RF8941'];
+    headerLabel = 'Production Management';
+  } else if (filterType === 'officers') {
+    targetIds = ['RF23849', 'RF23848', 'RF23810', 'RF22690', 'RF0364', 'RF23234'];
+    headerLabel = 'Plant Officers';
+  } else if (filterType === 'managers') {
+    targetIds = ['RF21291', 'RF21062', 'RF21283'];
+    headerLabel = 'Assistant Managers';
+  } else {
+    targetIds = CANONICAL_RPPF_EXECS.map(x => x.id);
+    headerLabel = 'All Executives';
+  }
+
+  // Populate first two slots
+  const inp1 = document.getElementById('compareId1');
+  const inp2 = document.getElementById('compareId');
+  if (inp1 && targetIds[0]) { inp1.value = targetIds[0]; updateVsSlotPreview(1, targetIds[0]); }
+  if (inp2 && targetIds[1]) { inp2.value = targetIds[1]; updateVsSlotPreview(2, targetIds[1]); }
+
+  // Update active chip state
+  document.querySelectorAll('.vs-chip-exec, .vs-sub-chip').forEach(c => {
+    const dataSub = c.getAttribute('data-sub');
+    c.classList.toggle('active', dataSub === (filterType === 'all' ? 'All Executives' : (filterType === 'mgmt' ? 'Production Management' : (filterType === 'officers' ? 'Plant Officers' : 'Assistant Managers'))));
+  });
+
+  if (typeof showToast === 'function') {
+    showToast(`Executives: Comparing ${targetIds.length} staff (${headerLabel})`, 'success');
+  }
+
+  if (statusDiv) statusDiv.innerText = '';
+
+  runComparison(targetIds, `Executives → ${headerLabel} (${targetIds.length} Staff)`);
+}
+
+async function quickCompareExecPair(id1, id2) {
+  const inp1 = document.getElementById('compareId1');
+  const inp2 = document.getElementById('compareId');
+  if (inp1) { inp1.value = id1; updateVsSlotPreview(1, id1); }
+  if (inp2) { inp2.value = id2; updateVsSlotPreview(2, id2); }
+  setVsMode(2);
+  if (typeof showToast === 'function') {
+    showToast(`Comparing ${id1} vs ${id2}`, 'info');
+  }
+  runComparison([id1, id2]);
+}
+
 function initVsPage() {
   const inp1 = document.getElementById('compareId1');
   if (inp1 && !inp1.value.trim()) {
@@ -546,9 +621,11 @@ async function runComparison(customIdsList, customHeaderNote) {
       }
 
       if (baseFound && typeof isExecHiddenFor === 'function' && isExecHiddenFor(baseFound)) {
-        showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
-        if (compareBtn) compareBtn.disabled = false;
-        return;
+        if (!Array.isArray(customIdsList)) {
+          showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
+          if (compareBtn) compareBtn.disabled = false;
+          return;
+        }
       }
 
       // Build synthetic record for multi-month or single month

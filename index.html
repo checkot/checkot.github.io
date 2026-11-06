@@ -938,6 +938,31 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 </div>
 
+<!-- Executives Quick Comparison Section -->
+<div class="vs-solid-card vs-exec-card" id="vsExecShortcutSection">
+<div class="vs-solid-header">
+<div class="vs-solid-title-box">
+<span class="vs-solid-badge vs-exec-badge">Executives &amp; Above</span>
+<span class="vs-solid-title">Executives Quick VS</span>
+</div>
+<span class="vs-solid-hint">Compare all plant officers, assistant managers &amp; in-charges</span>
+</div>
+<div class="vs-solid-chips-scroll" id="vsExecChipsContainer" role="group" aria-label="Executive Shortcuts">
+<button type="button" class="vs-sub-chip vs-chip-exec" data-sub="All Executives" onclick="quickCompareExecutives('all')"><span class="sub-icon">👔</span> All Executives (11)</button>
+<button type="button" class="vs-sub-chip vs-chip-exec" data-sub="Plant Officers" onclick="quickCompareExecutives('officers')"><span class="sub-icon">📋</span> Plant Officers (6)</button>
+<button type="button" class="vs-sub-chip vs-chip-exec" data-sub="Production Management" onclick="quickCompareExecutives('mgmt')"><span class="sub-icon">🏭</span> Production Mgmt</button>
+<button type="button" class="vs-sub-chip vs-chip-exec" data-sub="Assistant Managers" onclick="quickCompareExecutives('managers')"><span class="sub-icon">⭐</span> Assistant Managers</button>
+</div>
+<div class="vs-pair-row">
+<span class="vs-pair-title">⚡ Exec vs Exec:</span>
+<div class="vs-pair-chips">
+<button type="button" class="vs-pair-btn" onclick="quickCompareExecPair('RF23849', 'RF23848')">Neloy <span>vs</span> Faysal</button>
+<button type="button" class="vs-pair-btn" onclick="quickCompareExecPair('RF23810', 'RF22690')">Mehedi <span>vs</span> Mehdi</button>
+<button type="button" class="vs-pair-btn" onclick="quickCompareExecPair('RF20716', 'RF8941')">Milon <span>vs</span> Debashish</button>
+</div>
+</div>
+</div>
+
 <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
 <div class="vs-custom-count-bar" id="vsCustomCountBar">
 <div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
@@ -5097,7 +5122,8 @@ mode: 'incharge',
 roleTitle: 'In-Charge (Solid)',
 defaultArea: 'Solid Production',
 isAdmin: false,
-pins: ['8941']
+allowNormalBypass: true,
+pins: ['8941', '2026', '1234']
 },
 'RF20716': {
 id: 'RF20716',
@@ -5106,7 +5132,8 @@ mode: 'incharge',
 roleTitle: 'In-Charge (SG)',
 defaultArea: 'Softgel Production',
 isAdmin: false,
-pins: ['20716']
+allowNormalBypass: true,
+pins: ['20716', '2026', '1234']
 },
 'RF5473': {
 id: 'RF5473',
@@ -5115,7 +5142,108 @@ mode: 'incharge',
 roleTitle: 'Production Manager',
 defaultArea: 'all',
 isAdmin: false,
-pins: ['5473']
+allowNormalBypass: true,
+pins: ['5473', '2026', '1234']
+},
+'RF23849': {
+id: 'RF23849',
+name: 'Asrar Mahamud Neloy',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23849', '2026', '1234']
+},
+'RF23848': {
+id: 'RF23848',
+name: 'Md Faysal Miah',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23848', '2026', '1234']
+},
+'RF23810': {
+id: 'RF23810',
+name: 'Mehedi Hasan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23810', '2026', '1234']
+},
+'RF22690': {
+id: 'RF22690',
+name: 'Md. Mehdi Hasan',
+mode: 'incharge',
+roleTitle: 'Senior Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['22690', '2026', '1234']
+},
+'RF0364': {
+id: 'RF0364',
+name: 'Md. Mokaddesh Uddin Khan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['0364', '364', '2026', '1234']
+},
+'RF364': {
+id: 'RF0364',
+name: 'Md. Mokaddesh Uddin Khan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['0364', '364', '2026', '1234']
+},
+'RF23234': {
+id: 'RF23234',
+name: 'Sabbir Ahmed',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23234', '2026', '1234']
+},
+'RF21291': {
+id: 'RF21291',
+name: 'Sabuj Karmoker',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21291', '2026', '1234']
+},
+'RF21062': {
+id: 'RF21062',
+name: 'Namita Rani Nath',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21062', '2026', '1234']
+},
+'RF21283': {
+id: 'RF21283',
+name: 'Tanzina Aktar',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21283', '2026', '1234']
 },
 'RF20850': {
 id: 'RF20850',
@@ -5125,7 +5253,7 @@ roleTitle: 'System Admin',
 defaultArea: 'all',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['20850']
+pins: ['20850', 'admin1234', '2026']
 },
 'RF22111': {
 id: 'RF22111',
@@ -5135,7 +5263,7 @@ roleTitle: 'ERP Team Admin',
 defaultArea: 'Solid Production',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['22111']
+pins: ['22111', 'admin1234', '2026']
 },
 'CF5242': {
 id: 'CF5242',
@@ -5145,7 +5273,7 @@ roleTitle: 'ERP Team Admin',
 defaultArea: 'Solid Production',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['5242']
+pins: ['5242', 'admin1234', '2026']
 },
 'CF8355': {
 id: 'CF8355',
@@ -5155,7 +5283,7 @@ roleTitle: 'ERP Team Admin',
 defaultArea: 'Solid Production',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['8355']
+pins: ['8355', 'admin1234', '2026']
 },
 'RF21561': {
 id: 'RF21561',
@@ -5165,7 +5293,7 @@ roleTitle: 'ERP Team Admin',
 defaultArea: 'Packing Hall',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['21561']
+pins: ['21561', 'admin1234', '2026']
 },
 'RF22849': {
 id: 'RF22849',
@@ -5175,7 +5303,7 @@ roleTitle: 'ERP Team Admin',
 defaultArea: 'Softgel Production',
 isAdmin: true,
 allowNormalBypass: true,
-pins: ['22849']
+pins: ['22849', 'admin1234', '2026']
 },
 'ADMIN': {
 id: 'ADMIN',
@@ -5184,7 +5312,7 @@ mode: 'incharge',
 roleTitle: 'System Admin',
 defaultArea: 'all',
 isAdmin: true,
-pins: ['admin1234']
+pins: ['admin1234', '2026']
 }
 };
 function getSpecialRoleSpec(rawId) {

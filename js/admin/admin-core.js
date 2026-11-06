@@ -5943,7 +5943,8 @@ mode: 'incharge',
 roleTitle: 'In-Charge (Solid)',
 defaultArea: 'Solid Production',
 isAdmin: false,
-pins: ['2026', '8941', '1234', 'admin1234']
+allowNormalBypass: true,
+pins: ['8941', '2026', '1234', 'admin1234']
 },
 'RF20716': {
 id: 'RF20716',
@@ -5952,7 +5953,8 @@ mode: 'incharge',
 roleTitle: 'In-Charge (SG)',
 defaultArea: 'Softgel Production',
 isAdmin: false,
-pins: ['2026', '20716', '1234', 'admin1234']
+allowNormalBypass: true,
+pins: ['20716', '2026', '1234', 'admin1234']
 },
 'RF5473': {
 id: 'RF5473',
@@ -5961,7 +5963,108 @@ mode: 'incharge',
 roleTitle: 'Production Manager',
 defaultArea: 'all',
 isAdmin: false,
-pins: ['2026', '5473', '1234', 'admin1234']
+allowNormalBypass: true,
+pins: ['5473', '2026', '1234', 'admin1234']
+},
+'RF23849': {
+id: 'RF23849',
+name: 'Asrar Mahamud Neloy',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23849', '2026', '1234']
+},
+'RF23848': {
+id: 'RF23848',
+name: 'Md Faysal Miah',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23848', '2026', '1234']
+},
+'RF23810': {
+id: 'RF23810',
+name: 'Mehedi Hasan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23810', '2026', '1234']
+},
+'RF22690': {
+id: 'RF22690',
+name: 'Md. Mehdi Hasan',
+mode: 'incharge',
+roleTitle: 'Senior Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['22690', '2026', '1234']
+},
+'RF0364': {
+id: 'RF0364',
+name: 'Md. Mokaddesh Uddin Khan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['0364', '364', '2026', '1234']
+},
+'RF364': {
+id: 'RF0364',
+name: 'Md. Mokaddesh Uddin Khan',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['0364', '364', '2026', '1234']
+},
+'RF23234': {
+id: 'RF23234',
+name: 'Sabbir Ahmed',
+mode: 'incharge',
+roleTitle: 'Officer (Executive)',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['23234', '2026', '1234']
+},
+'RF21291': {
+id: 'RF21291',
+name: 'Sabuj Karmoker',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21291', '2026', '1234']
+},
+'RF21062': {
+id: 'RF21062',
+name: 'Namita Rani Nath',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21062', '2026', '1234']
+},
+'RF21283': {
+id: 'RF21283',
+name: 'Tanzina Aktar',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['21283', '2026', '1234']
 },
 'RF20850': {
 id: 'RF20850',
