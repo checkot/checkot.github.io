@@ -820,7 +820,7 @@ document.documentElement.setAttribute('data-theme', t);
 <img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header">
 <h2 id="vsPageTitle">VS Comparison</h2>
-<p id="vsPageSub">Compare overtime &amp; allowances (1:1 or 1:1:1)</p>
+<p id="vsPageSub">Compare overtime &amp; allowances</p>
 </div>
 <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
 <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -828,20 +828,22 @@ document.documentElement.setAttribute('data-theme', t);
 </button>
 </div>
 <div class="card" id="step4">
-<div class="collapse-header" onclick="toggleCollapse('step4Body', this)" style="display:none;">
+<div class="collapse-header" onclick="toggleCollapse(step4Body, this)" style="display:none;">
 <span class="title">Compare with another colleague</span>
 <span class="arrow">▼</span>
 </div>
 <div class="collapse-body show" id="step4Body" style="padding:0;">
-<div class="vs-mode-switch" role="tablist" aria-label="Comparison Mode" style="grid-template-columns:repeat(3,1fr);">
+<div class="vs-mode-switch" role="tablist" aria-label="Comparison Mode">
 <button type="button" class="vs-mode-btn active" id="vsModeBtn2" onclick="setVsMode(2)">1 : 1 Mode</button>
 <button type="button" class="vs-mode-btn" id="vsModeBtn3" onclick="setVsMode(3)">1 : 1 : 1 Mode</button>
 <button type="button" class="vs-mode-btn" id="vsModeBtnCustom" onclick="setVsMode('custom')">Custom VS</button>
 </div>
 <div id="compareInputArea">
 <div id="vsMonthBarWrap" class="vs-custom-bar">
-<div class="vs-bar-row">
-<span class="vs-bar-lbl">Period:</span>
+<div class="vs-period-grid">
+<div class="vs-field-group">
+<label for="vsPeriodSelect" class="vs-mini-label">Comparison Period</label>
+<div class="vs-select-wrapper">
 <select id="vsPeriodSelect" onchange="onVsPeriodChange()" aria-label="Comparison Period">
 <option value="current">Selected Month</option>
 <option value="3m">Last 3 Months Total</option>
@@ -850,10 +852,50 @@ document.documentElement.setAttribute('data-theme', t);
 <option value="1y">Last 1 Year (12 Months)</option>
 <option value="alltime">All-Time</option>
 </select>
+<span class="vs-select-chevron">▾</span>
+</div>
+</div>
+<div class="vs-field-group" id="vsMonthCol">
+<label for="vsMonthOverrideSelect" class="vs-mini-label">Target Month</label>
+<div class="vs-select-wrapper">
 <select id="vsMonthOverrideSelect" onchange="onVsMonthOverrideChange()" aria-label="Comparison Month"></select>
+<span class="vs-select-chevron">▾</span>
+</div>
+</div>
 </div>
 <div class="vs-quick-picks" id="vsQuickPicksRow"></div>
 </div>
+
+<!-- Solid Subsections Quick Comparison Section -->
+<div class="vs-solid-card" id="vsSolidShortcutSection">
+<div class="vs-solid-header">
+<div class="vs-solid-title-box">
+<span class="vs-solid-badge">Solid Production</span>
+<span class="vs-solid-title">Subsections Quick VS</span>
+</div>
+<span class="vs-solid-hint">Tap any line to compare top operators</span>
+</div>
+<div class="vs-solid-chips-scroll" id="vsSolidChipsContainer" role="group" aria-label="Solid Subsections">
+<button type="button" class="vs-sub-chip" data-sub="Granulation" onclick="quickCompareSolidSub('Granulation')"><span class="sub-icon">🌿</span> Granulation</button>
+<button type="button" class="vs-sub-chip" data-sub="Compression" onclick="quickCompareSolidSub('Compression')"><span class="sub-icon">⚙️</span> Compression</button>
+<button type="button" class="vs-sub-chip" data-sub="Coating" onclick="quickCompareSolidSub('Coating')"><span class="sub-icon">🧪</span> Coating</button>
+<button type="button" class="vs-sub-chip" data-sub="Dispensing" onclick="quickCompareSolidSub('Dispensing')"><span class="sub-icon">⚖️</span> Dispensing</button>
+<button type="button" class="vs-sub-chip" data-sub="Defoiling" onclick="quickCompareSolidSub('Defoiling')"><span class="sub-icon">📦</span> Defoiling</button>
+<button type="button" class="vs-sub-chip" data-sub="Pri. Packing" onclick="quickCompareSolidSub('Pri. Packing')"><span class="sub-icon">📦</span> Pri. Packing</button>
+<button type="button" class="vs-sub-chip" data-sub="IBC Wash" onclick="quickCompareSolidSub('IBC Wash')"><span class="sub-icon">🧼</span> IBC Wash</button>
+<button type="button" class="vs-sub-chip" data-sub="ERP" onclick="quickCompareSolidSub('ERP')"><span class="sub-icon">💻</span> ERP</button>
+</div>
+<div class="vs-pair-row">
+<span class="vs-pair-title">⚡ Line vs Line:</span>
+<div class="vs-pair-chips">
+<button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Granulation', 'Compression')">Granulation <span>vs</span> Compression</button>
+<button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Compression', 'Coating')">Compression <span>vs</span> Coating</button>
+<button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Dispensing', 'Granulation')">Dispensing <span>vs</span> Granulation</button>
+<button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Defoiling', 'Pri. Packing')">Defoiling <span>vs</span> Packing</button>
+</div>
+</div>
+</div>
+
 <div id="compareMyAmount" class="grade-info" style="display:none;"></div>
 <div class="vs-custom-count-bar" id="vsCustomCountBar">
 <div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
@@ -862,22 +904,47 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="calc-mini-btn btn-success-solid" onclick="changeCustomVsSlots(1)">+ Add Employee</button>
 </div>
 </div>
+
+<div class="vs-inputs-container">
 <div class="vs-inputs-grid mode-2" id="vsInputsGrid">
-<div class="vs-slot-box">
-<label for="compareId1">1st Employee ID</label>
-<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text">
+<div class="vs-slot-card" id="vsSlot1Card">
+<div class="vs-slot-head">
+<label for="compareId1" class="vs-slot-label"><span class="vs-slot-num-badge">1</span> 1st Colleague ID</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId1')" title="Clear" aria-label="Clear input">✕</button>
 </div>
-<div class="vs-slot-box">
-<label for="compareId">2nd Employee ID (VS)</label>
-<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF20850" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8351" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(1, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId1" style="display:none;"></div>
 </div>
-<div class="vs-slot-box" id="vsSlot3Wrap" style="display:none;">
-<label for="compareId3">3rd Employee ID (VS)</label>
-<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF9012" autocomplete="off" autocapitalize="characters" inputmode="text">
+
+<div class="vs-swap-container" id="vsSwapContainer">
+<button type="button" class="vs-swap-btn" onclick="swapVsSlots(1, 2)" title="Swap Colleague 1 and 2" aria-label="Swap Colleagues">⇄</button>
+</div>
+
+<div class="vs-slot-card" id="vsSlot2Card">
+<div class="vs-slot-head">
+<label for="compareId" class="vs-slot-label"><span class="vs-slot-num-badge">2</span> 2nd Colleague ID (VS)</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId')" title="Clear" aria-label="Clear input">✕</button>
+</div>
+<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF22034" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(2, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId2" style="display:none;"></div>
+</div>
+
+<div class="vs-slot-card" id="vsSlot3Wrap" style="display:none;">
+<div class="vs-slot-head">
+<label for="compareId3" class="vs-slot-label"><span class="vs-slot-num-badge">3</span> 3rd Colleague ID (VS)</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId3')" title="Clear" aria-label="Clear input">✕</button>
+</div>
+<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF10278" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(3, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId3" style="display:none;"></div>
 </div>
 <div id="vsExtraSlotsContainer" style="display:contents;"></div>
 </div>
-<button id="compareBtn" class="btn-primary" onclick="runComparison()" style="margin-top:12px;">Compare Now (VS)</button>
+</div>
+
+<button id="compareBtn" class="btn-primary vs-submit-btn" onclick="runComparison()">
+<span class="vs-btn-icon">⚖️</span>
+<span>Compare Overtime &amp; Allowances</span>
+</button>
 <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
 </div>
 <div id="compareResult" style="display:none;"></div>

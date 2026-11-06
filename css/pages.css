@@ -2989,68 +2989,485 @@ body.norate-view #compareMyAmount {
     font-weight: 500;
   }
 
-  /* VS Page (1:1 & 1:1:1 Modes) */
+  /* ==========================================================================
+     VS Page (1:1 & 1:1:1 Modes & Solid Subsections - Mukhon Design Standard)
+     ========================================================================== */
   .vs-mode-switch {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
     padding: 4px;
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
   }
   .vs-mode-btn {
     width: 100%;
-    min-height: 40px;
+    min-height: 38px;
     background: transparent;
     color: var(--text-2);
-    border-radius: 7px;
-    font-size: 13.5px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.16s ease-in-out;
     box-shadow: none;
   }
   .vs-mode-btn:hover {
-    background: transparent;
+    background: var(--surface-3);
     color: var(--text);
   }
   .vs-mode-btn.active {
     background: var(--brand);
     color: #FFFFFF;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.28);
+  }
+
+  /* Period & Month Layout */
+  .vs-custom-bar {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .vs-period-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+  @media (max-width: 480px) {
+    .vs-period-grid {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .vs-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+  .vs-mini-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .vs-select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .vs-select-wrapper select {
+    width: 100%;
+    min-height: 38px;
+    padding: 6px 26px 6px 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .vs-select-wrapper select:focus {
+    border-color: var(--brand);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--brand-soft-border);
+  }
+  .vs-select-chevron {
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .vs-quick-picks {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
+  .vs-Quick-chip {
+    width: auto;
+    min-height: 26px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--brand-text);
+    border: 1px solid var(--brand-soft-border);
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+  .vs-Quick-chip:hover {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+  }
+
+  /* Solid Subsections Quick VS Section */
+  .vs-solid-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .vs-solid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .vs-solid-title-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vs-solid-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 5px;
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    border: 1px solid var(--brand-soft-border);
+  }
+  .vs-solid-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .vs-solid-hint {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .vs-solid-chips-scroll {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px 1px 6px 1px;
+    scrollbar-width: thin;
+  }
+  .vs-solid-chips-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  .vs-solid-chips-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 4px;
+  }
+  .vs-sub-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.16s ease-in-out;
+  }
+  .vs-sub-chip:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+    background: var(--brand-soft);
+    transform: translateY(-1px);
+  }
+  .vs-sub-chip.active {
+    background: var(--brand);
+    color: #FFFFFF;
+    border-color: var(--brand-strong);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  }
+  .vs-sub-chip .sub-icon {
+    font-size: 12px;
+  }
+  
+  /* Solid Line vs Line Pairing Row */
+  .vs-pair-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .vs-pair-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .vs-pair-chips {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+  .vs-pair-btn {
+    padding: 3px 8px;
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .vs-pair-btn span {
+    color: var(--brand);
+    font-weight: 800;
+  }
+  .vs-pair-btn:hover {
+    border-color: var(--brand);
+    color: var(--brand-text);
+    background: var(--brand-soft);
+  }
+
+  /* Enhanced Input Slots & Cards */
+  .vs-inputs-container {
+    position: relative;
+    margin-bottom: 12px;
   }
   .vs-inputs-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
+    align-items: stretch;
   }
   @media (min-width: 600px) {
     .vs-inputs-grid.mode-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
     }
     .vs-inputs-grid.mode-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-  .vs-slot-box {
+  .vs-slot-card, .vs-slot-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    position: relative;
+    transition: border-color 0.18s ease;
+  }
+  .vs-slot-card:focus-within, .vs-slot-box:focus-within {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 2px var(--brand-soft-border);
+  }
+  .vs-slot-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .vs-slot-num-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--text-2);
+    font-size: 10px;
+    font-weight: 800;
+    margin-right: 5px;
+  }
+  .vs-slot-label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+  }
+  .vs-slot-clear {
+    width: 20px;
+    height: 20px;
+    min-height: 20px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .vs-slot-clear:hover {
+    background: var(--surface-3);
+    color: var(--danger);
+  }
+  .vs-slot-card input.vs-emp-id-input, .vs-slot-box input.vs-emp-id-input {
+    width: 100%;
+    min-height: 40px;
+    padding: 6px 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-  }
-  .vs-slot-box label {
-    margin-top: 0;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--brand-text);
-    text-transform: uppercase;
+    border-radius: 8px;
     letter-spacing: 0.03em;
-  }
-  .vs-slot-box input {
-    margin-top: 5px;
-    font-weight: 700;
     text-transform: uppercase;
   }
+  .vs-slot-card input.vs-emp-id-input:focus, .vs-slot-box input.vs-emp-id-input:focus {
+    background: var(--surface);
+    border-color: var(--brand);
+    outline: none;
+  }
+
+  /* Swap Button */
+  .vs-swap-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+  }
+  .vs-swap-btn {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--brand-text);
+    border: 1px solid var(--border-strong);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .vs-swap-btn:hover {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    transform: rotate(180deg) scale(1.08);
+  }
+  .vs-swap-btn:active {
+    transform: rotate(180deg) scale(0.95);
+  }
+
+  /* Live Colleague Preview Badge under slot */
+  .vs-emp-preview-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 4px 8px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    font-size: 11.5px;
+    overflow: hidden;
+  }
+  .vs-preview-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .vs-preview-name {
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vs-preview-sub {
+    font-size: 10.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vs-preview-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    border: 1px solid var(--brand-soft-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Compare Submit CTA */
+  .vs-submit-btn {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--brand);
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .vs-submit-btn:hover {
+    background: var(--brand-strong);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.36);
+    transform: translateY(-1px);
+  }
+  .vs-submit-btn:active {
+    transform: translateY(1px);
+  }
+
   .compare-table-wrap {
     width: 100%;
     overflow-x: auto;

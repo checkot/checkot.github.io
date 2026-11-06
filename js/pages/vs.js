@@ -2,6 +2,21 @@
    VS.JS - 1v1 / 1v1v1 Overtime & Allowance Comparison Controller
    ========================================================================== */
 
+let _vsCachedEmps = {};
+
+async function getVsLoadedEmployees(monthStr) {
+  const m = monthStr || document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  if (_vsCachedEmps[m] && Array.isArray(_vsCachedEmps[m]) && _vsCachedEmps[m].length > 0) return _vsCachedEmps[m];
+  try {
+    const list = await fetchMonthPreIndexedData(m, false, false);
+    if (Array.isArray(list) && list.length > 0) {
+      _vsCachedEmps[m] = list;
+      return list;
+    }
+  } catch (e) {}
+  return [];
+}
+
 function setVsMode(mode) {
   currentVsMode = mode === 3 ? 3 : mode === 'custom' ? 'custom' : 2;
   document.getElementById('vsModeBtn2')?.classList.toggle('active', currentVsMode === 2);
@@ -10,12 +25,14 @@ function setVsMode(mode) {
   const grid = document.getElementById('vsInputsGrid');
   const countBar = document.getElementById('vsCustomCountBar');
   const slot3 = document.getElementById('vsSlot3Wrap');
+  const swapBtn = document.getElementById('vsSwapContainer');
   if (grid) {
     grid.style.display = 'grid';
     grid.classList.toggle('mode-2', currentVsMode === 2 || currentVsMode === 'custom');
     grid.classList.toggle('mode-3', currentVsMode === 3);
   }
   if (slot3) slot3.style.display = (currentVsMode === 3 || currentVsMode === 'custom') ? 'block' : 'none';
+  if (swapBtn) swapBtn.style.display = currentVsMode === 2 ? 'flex' : 'none';
   if (countBar) countBar.classList.toggle('show', currentVsMode === 'custom');
   if (typeof renderExtraVsSlots === 'function') renderExtraVsSlots();
 }
@@ -37,21 +54,28 @@ function renderVsQuickPicks() {
   const topLb = (currentLeaderboardResult?.sortedByDuty || []).slice(0, 4).map(e => e.id);
   const candidates = [...new Set([...hist, ...topLb])].filter(id => id && id !== (document.getElementById('compareId1')?.value || '')).slice(0, 5);
   if (!candidates.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<span style="font-size:11px;color:var(--muted);font-weight:600;">Quick pick:</span>` + candidates.map(id => `<button type="button" class="vs-Quick-chip" onclick="fillVsCandidateId('${esc(id)}')">${esc(id)}</button>`).join('');
+  box.innerHTML = `<span style="font-size:11px;color:var(--muted);font-weight:700;">🕒 Recent:</span>` + candidates.map(id => `<button type="button" class="vs-Quick-chip" onclick="fillVsCandidateId('${esc(id)}')">${esc(id)}</button>`).join('');
 }
 
 function fillVsCandidateId(id) {
   const inputs = [...document.querySelectorAll('#vsInputsGrid input.vs-emp-id-input')].filter(el => el.offsetParent !== null);
   for (let i = 1; i < inputs.length; i++) {
-    if (!inputs[i].value.trim()) { inputs[i].value = id; return; }
+    if (!inputs[i].value.trim()) {
+      inputs[i].value = id;
+      updateVsSlotPreview(i === 1 ? 2 : (i + 1), id);
+      return;
+    }
   }
-  if (inputs[1]) inputs[1].value = id;
+  if (inputs[1]) {
+    inputs[1].value = id;
+    updateVsSlotPreview(2, id);
+  }
 }
 
 function onVsPeriodChange() {
   const p = document.getElementById('vsPeriodSelect')?.value || 'current';
-  const mSel = document.getElementById('vsMonthOverrideSelect');
-  if (mSel) mSel.style.display = p === 'current' ? '' : 'none';
+  const mCol = document.getElementById('vsMonthCol');
+  if (mCol) mCol.style.display = p === 'current' ? 'flex' : 'none';
   const sub = document.getElementById('vsPageSub');
   if (sub) {
     if (p === 'current') {
@@ -68,6 +92,207 @@ function onVsMonthOverrideChange() {
   const sub = document.getElementById('vsPageSub');
   const ym = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
   if (sub) sub.textContent = `Compare overtime & allowances (${ym})`;
+  updateVsAllPreviews();
+}
+
+function swapVsSlots(slotA, slotB) {
+  const inpA = slotA === 1 ? document.getElementById('compareId1') : document.getElementById(slotA === 2 ? 'compareId' : 'compareId' + slotA);
+  const inpB = slotB === 1 ? document.getElementById('compareId1') : document.getElementById(slotB === 2 ? 'compareId' : 'compareId' + slotB);
+  if (!inpA || !inpB) return;
+  const temp = inpA.value;
+  inpA.value = inpB.value;
+  inpB.value = temp;
+  updateVsSlotPreview(slotA, inpA.value);
+  updateVsSlotPreview(slotB, inpB.value);
+  if (typeof showToast === 'function') showToast('Swapped Colleague 1 & 2 ⇄', 'info');
+  if (inpA.value.trim() && inpB.value.trim()) {
+    runComparison();
+  }
+}
+
+function clearVsSlot(inputId) {
+  const inp = document.getElementById(inputId);
+  if (inp) {
+    inp.value = '';
+    inp.focus();
+    const slotNum = inputId === 'compareId1' ? 1 : inputId === 'compareId' ? 2 : 3;
+    updateVsSlotPreview(slotNum, '');
+  }
+}
+
+let _vsInputTimers = {};
+function onVsIdInput(slotNum, val) {
+  clearTimeout(_vsInputTimers[slotNum]);
+  _vsInputTimers[slotNum] = setTimeout(() => {
+    updateVsSlotPreview(slotNum, val);
+  }, 100);
+}
+
+async function updateVsSlotPreview(slotNum, rawId) {
+  const el = document.getElementById(`vsPreviewId${slotNum}`);
+  if (!el) return;
+  const id = String(rawId || '').trim().toUpperCase();
+  if (!id) {
+    el.innerHTML = '';
+    el.style.display = 'none';
+    return;
+  }
+  
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const list = await getVsLoadedEmployees(m);
+  const targetId = (typeof resolveEmpAliasId === 'function') ? resolveEmpAliasId(id) : id;
+  const found = list.find(e => {
+    const eid = String(e && e.id || '').toUpperCase();
+    return eid === id || eid === targetId;
+  });
+  
+  if (found) {
+    const name = found.name || id;
+    const sub = found.sub || found.subsection || '';
+    const area = found.area || '';
+    const ot = Number(found.otHours || 0);
+    const badgeTxt = sub ? sub : (area ? area : (found.grade || ''));
+    el.innerHTML = `
+      <span class="vs-preview-avatar">${esc(name.charAt(0))}</span>
+      <div style="display:flex;flex-direction:column;min-width:0;flex:1;">
+        <span class="vs-preview-name">${esc(name)}</span>
+        <span class="vs-preview-sub">${esc(badgeTxt)}</span>
+      </div>
+      <span class="vs-preview-badge">${ot > 0 ? ot + 'h OT' : 'Active'}</span>
+    `;
+    el.style.display = 'flex';
+  } else {
+    if (typeof isListedEmployeeId === 'function' && !isListedEmployeeId(id)) {
+      el.innerHTML = `<span style="color:var(--danger);font-weight:700;font-size:11px;">⚠️ ID not listed in RPPF sections</span>`;
+    } else {
+      el.innerHTML = `<span style="color:var(--muted);font-weight:600;font-size:11px;">ID: ${esc(id)}</span>`;
+    }
+    el.style.display = 'flex';
+  }
+}
+
+async function updateVsAllPreviews() {
+  const id1 = document.getElementById('compareId1')?.value || '';
+  const id2 = document.getElementById('compareId')?.value || '';
+  const id3 = document.getElementById('compareId3')?.value || '';
+  if (id1) updateVsSlotPreview(1, id1);
+  if (id2) updateVsSlotPreview(2, id2);
+  if (id3) updateVsSlotPreview(3, id3);
+}
+
+/* ===== Solid Subsections Quick Comparison Shortcuts ===== */
+async function quickCompareSolidSub(subName) {
+  const statusDiv = document.getElementById('compareStatus');
+  if (statusDiv) {
+    statusDiv.style.color = 'var(--brand)';
+    statusDiv.innerText = `Loading top operators from Solid → ${subName}...`;
+  }
+  
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const list = await getVsLoadedEmployees(m);
+  if (!list.length) {
+    if (typeof showToast === 'function') showToast('Could not load data for ' + m, 'error');
+    if (statusDiv) statusDiv.innerText = '';
+    return;
+  }
+  
+  const subLower = String(subName || '').trim().toLowerCase();
+  const matched = list.filter(e => {
+    if (!e || !e.id) return false;
+    const a = String(e.area || '').toLowerCase();
+    const s = String(e.sub || e.subsection || '').toLowerCase();
+    const isSolid = a.includes('solid') || a === 'solid production';
+    return isSolid && (s === subLower || s.includes(subLower));
+  });
+  
+  if (matched.length < 2) {
+    if (typeof showToast === 'function') showToast(`Found ${matched.length} employees in Solid → ${subName}. Minimum 2 needed to compare.`, 'warn');
+    if (matched.length === 1) {
+      const inp1 = document.getElementById('compareId1');
+      if (inp1) { inp1.value = matched[0].id; updateVsSlotPreview(1, matched[0].id); }
+    }
+    if (statusDiv) statusDiv.innerText = '';
+    return;
+  }
+  
+  // Sort by OT hours descending, then duty descending
+  matched.sort((a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)));
+  
+  const emp1 = matched[0];
+  const emp2 = matched[1];
+  
+  const inp1 = document.getElementById('compareId1');
+  const inp2 = document.getElementById('compareId');
+  if (inp1) { inp1.value = emp1.id; updateVsSlotPreview(1, emp1.id); }
+  if (inp2) { inp2.value = emp2.id; updateVsSlotPreview(2, emp2.id); }
+  
+  if (currentVsMode === 3 && matched.length >= 3) {
+    const inp3 = document.getElementById('compareId3');
+    if (inp3) { inp3.value = matched[2].id; updateVsSlotPreview(3, matched[2].id); }
+  }
+  
+  // Mark active chip
+  document.querySelectorAll('.vs-sub-chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-sub') === subName);
+  });
+  
+  if (typeof showToast === 'function') {
+    showToast(`Solid → ${subName}: Loaded top 2 (${emp1.id} vs ${emp2.id})`, 'success');
+  }
+  
+  if (statusDiv) statusDiv.innerText = '';
+  runComparison();
+}
+
+async function quickCompareSolidCross(sub1, sub2) {
+  const statusDiv = document.getElementById('compareStatus');
+  if (statusDiv) {
+    statusDiv.style.color = 'var(--brand)';
+    statusDiv.innerText = `Loading top operators: ${sub1} vs ${sub2}...`;
+  }
+  
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const list = await getVsLoadedEmployees(m);
+  if (!list.length) {
+    if (typeof showToast === 'function') showToast('Could not load data for ' + m, 'error');
+    if (statusDiv) statusDiv.innerText = '';
+    return;
+  }
+  
+  const getTopInSub = (sName) => {
+    const sl = String(sName).trim().toLowerCase();
+    const emps = list.filter(e => {
+      if (!e || !e.id) return false;
+      const a = String(e.area || '').toLowerCase();
+      const s = String(e.sub || e.subsection || '').toLowerCase();
+      return (a.includes('solid') || a === 'solid production') && (s === sl || s.includes(sl));
+    });
+    emps.sort((a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)));
+    return emps[0];
+  };
+  
+  const emp1 = getTopInSub(sub1);
+  const emp2 = getTopInSub(sub2);
+  
+  if (!emp1 || !emp2) {
+    if (typeof showToast === 'function') showToast(`Could not find active operators in ${!emp1 ? sub1 : sub2}`, 'warn');
+    if (statusDiv) statusDiv.innerText = '';
+    return;
+  }
+  
+  const inp1 = document.getElementById('compareId1');
+  const inp2 = document.getElementById('compareId');
+  if (inp1) { inp1.value = emp1.id; updateVsSlotPreview(1, emp1.id); }
+  if (inp2) { inp2.value = emp2.id; updateVsSlotPreview(2, emp2.id); }
+  
+  document.querySelectorAll('.vs-sub-chip').forEach(c => c.classList.remove('active'));
+  
+  if (typeof showToast === 'function') {
+    showToast(`${sub1} vs ${sub2}: Loaded #1 of each (${emp1.id} vs ${emp2.id})`, 'success');
+  }
+  
+  if (statusDiv) statusDiv.innerText = '';
+  runComparison();
 }
 
 function initVsPage() {
@@ -77,6 +302,7 @@ function initVsPage() {
   }
   populateVsMonthSelect();
   renderVsQuickPicks();
+  updateVsAllPreviews();
   const sub = document.getElementById('vsPageSub');
   const mStr = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
   if (sub && mStr) sub.textContent = `Compare overtime & allowances (${mStr})`;
