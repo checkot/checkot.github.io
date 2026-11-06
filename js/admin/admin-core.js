@@ -6176,6 +6176,9 @@ const modeRow = document.getElementById('settingsModeRow');
 if (modeRow) modeRow.style.display = isPriv ? 'flex' : 'none';
 const incAreaRow = document.getElementById('settingsInchargeAreaRow');
 if (incAreaRow) incAreaRow.style.display = isPriv ? 'flex' : 'none';
+// Show Executive Quick VS card ONLY for In-Charge / Manager / Admin
+const execVsCard = document.getElementById('vsExecShortcutSection');
+if (execVsCard) execVsCard.style.display = isPriv ? 'block' : 'none';
 // Update Ranking Hub In-Charge items visibility
 ['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
 const el = document.getElementById(id);

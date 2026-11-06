@@ -313,6 +313,12 @@ const CANONICAL_RPPF_EXECS = [
 ];
 
 async function quickCompareExecutives(filterType = 'all') {
+  if (typeof getAppMode === 'function' && getAppMode() !== 'incharge') {
+    if (typeof showToast === 'function') {
+      showToast('Executives calculation is visible only in in-charge mode', 'warn');
+    }
+    return;
+  }
   const statusDiv = document.getElementById('compareStatus');
   if (statusDiv) {
     statusDiv.style.color = 'var(--brand)';
@@ -621,11 +627,9 @@ async function runComparison(customIdsList, customHeaderNote) {
       }
 
       if (baseFound && typeof isExecHiddenFor === 'function' && isExecHiddenFor(baseFound)) {
-        if (!Array.isArray(customIdsList)) {
-          showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
-          if (compareBtn) compareBtn.disabled = false;
-          return;
-        }
+        showToast(`"${targetId}" calculation is visible only in in-charge mode`, 'warn');
+        if (compareBtn) compareBtn.disabled = false;
+        return;
       }
 
       // Build synthetic record for multi-month or single month

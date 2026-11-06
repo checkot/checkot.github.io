@@ -931,11 +931,9 @@
         if (!base && hits === 0) { setStatus(`"${id}" was not found in ${period.label} data.`, true); return; }
         try {
           if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(base)) {
-            if (!Array.isArray(customIdsList)) {
-              toast(`"${id}" calculation is visible only in in-charge mode`, 'warn');
-              setStatus('', false);
-              return;
-            }
+            toast(`"${id}" calculation is visible only in in-charge mode`, 'warn');
+            setStatus('', false);
+            return;
           }
         } catch (e) { /* ignore */ }
         const merged = Object.assign({}, base, { totalDuty: r2(agg.totalDuty), otHours: r2(agg.otHours), holidayCount: agg.holidayCount, nightCount: agg.nightCount, plainDaysCount: agg.plainDaysCount, otDaysCount: agg.otDaysCount, absentCount: agg.absentCount, generalAbsentCount: agg.absentCount });

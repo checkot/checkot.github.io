@@ -6778,3 +6778,11 @@ body.norate-view #compareMyAmount {
   color: var(--muted);
   font-weight: 600;
 }
+
+/* Executive Quick VS: strictly visible only in In-Charge mode */
+#vsExecShortcutSection {
+  display: none !important;
+}
+body.incharge-mode-active #vsExecShortcutSection {
+  display: block !important;
+}
