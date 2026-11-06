@@ -27,8 +27,9 @@
       if (stored) return JSON.parse(stored);
     } catch (e) {}
 
-    if (typeof FIREBASE_TELEMETRY_CONFIG !== 'undefined' && FIREBASE_TELEMETRY_CONFIG && FIREBASE_TELEMETRY_CONFIG.databaseURL) {
-      return FIREBASE_TELEMETRY_CONFIG;
+    const liveCfg = (typeof window !== 'undefined' && window.FIREBASE_TELEMETRY_CONFIG) || (typeof FIREBASE_TELEMETRY_CONFIG !== 'undefined' ? FIREBASE_TELEMETRY_CONFIG : null);
+    if (liveCfg && liveCfg.databaseURL) {
+      return liveCfg;
     }
     return null;
   }

@@ -143,11 +143,11 @@ const NIGHT_REST_CREDIT_HOURS = 8;
 
 // Firebase Realtime Database Telemetry Configuration (Free Spark Plan)
 const FIREBASE_TELEMETRY_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "", // e.g. "https://rppf-overtime-telemetry-default-rtdb.firebaseio.com"
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyD-RPPF-Overtime-Firebase-Telemetry",
+  authDomain: "otchecker-2bfa1.firebaseapp.com",
+  databaseURL: "https://otchecker-2bfa1-default-rtdb.firebaseio.com",
+  projectId: "otchecker-2bfa1"
 };
+if (typeof window !== 'undefined') {
+  window.FIREBASE_TELEMETRY_CONFIG = FIREBASE_TELEMETRY_CONFIG;
+}
