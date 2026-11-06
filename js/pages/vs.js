@@ -218,18 +218,13 @@ async function quickCompareSolidSub(subName) {
   // Sort by OT hours descending, then duty descending
   matched.sort((a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)));
   
+  // Fill the first two slots for consistency
   const emp1 = matched[0];
   const emp2 = matched[1];
-  
   const inp1 = document.getElementById('compareId1');
   const inp2 = document.getElementById('compareId');
   if (inp1) { inp1.value = emp1.id; updateVsSlotPreview(1, emp1.id); }
   if (inp2) { inp2.value = emp2.id; updateVsSlotPreview(2, emp2.id); }
-  
-  if (currentVsMode === 3 && matched.length >= 3) {
-    const inp3 = document.getElementById('compareId3');
-    if (inp3) { inp3.value = matched[2].id; updateVsSlotPreview(3, matched[2].id); }
-  }
   
   // Mark active chip
   document.querySelectorAll('.vs-sub-chip').forEach(c => {
@@ -237,11 +232,14 @@ async function quickCompareSolidSub(subName) {
   });
   
   if (typeof showToast === 'function') {
-    showToast(`Solid → ${subName}: Loaded top 2 (${emp1.id} vs ${emp2.id})`, 'success');
+    showToast(`Solid → ${subName}: Comparing all ${matched.length} employees`, 'success');
   }
   
   if (statusDiv) statusDiv.innerText = '';
-  runComparison();
+  
+  // Compare ALL employees of this subsection directly!
+  const allSubIds = matched.map(e => e.id);
+  runComparison(allSubIds, `Solid → ${subName} (${matched.length} Employees)`);
 }
 
 async function quickCompareSolidCross(sub1, sub2) {
@@ -420,28 +418,34 @@ function getEmpMonthAbsentCount(emp, monthStr) {
   return Number(emp.generalAbsentCount) || 0;
 }
 
-async function runComparison() {
+async function runComparison(customIdsList, customHeaderNote) {
   const statusDiv = document.getElementById('compareStatus');
   const compareBtn = document.getElementById('compareBtn');
   const resultDiv = document.getElementById('compareResult');
-  const inp1El = document.getElementById('compareId1');
-  const id1 = (inp1El && inp1El.value.trim() ? inp1El.value.trim() : (currentSearchId || (typeof getPreferredId === 'function' ? getPreferredId() : '') || '')).toUpperCase().replace(/\s+/g, '');
-  const id2 = (document.getElementById('compareId')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
-  if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
-  if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
   
-  let _cmpIds = [id1, id2];
-  if (currentVsMode === 3) {
-    const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
-    if (id3) _cmpIds.push(id3);
-  } else if (currentVsMode === 'custom') {
-    const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
-    if (id3) _cmpIds.push(id3);
-    const extraInputs = document.querySelectorAll('#vsExtraSlotsContainer input.vs-emp-id-input');
-    extraInputs.forEach(inp => {
-      const v = (inp.value || '').trim().toUpperCase().replace(/\s+/g, '');
-      if (v) _cmpIds.push(v);
-    });
+  let _cmpIds = [];
+  if (Array.isArray(customIdsList) && customIdsList.length >= 2) {
+    _cmpIds = customIdsList.map(x => String(x).trim().toUpperCase().replace(/\s+/g, '')).filter(Boolean);
+  } else {
+    const inp1El = document.getElementById('compareId1');
+    const id1 = (inp1El && inp1El.value.trim() ? inp1El.value.trim() : (currentSearchId || (typeof getPreferredId === 'function' ? getPreferredId() : '') || '')).toUpperCase().replace(/\s+/g, '');
+    const id2 = (document.getElementById('compareId')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
+    if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
+    
+    _cmpIds = [id1, id2];
+    if (currentVsMode === 3) {
+      const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (id3) _cmpIds.push(id3);
+    } else if (currentVsMode === 'custom') {
+      const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (id3) _cmpIds.push(id3);
+      const extraInputs = document.querySelectorAll('#vsExtraSlotsContainer input.vs-emp-id-input');
+      extraInputs.forEach(inp => {
+        const v = (inp.value || '').trim().toUpperCase().replace(/\s+/g, '');
+        if (v) _cmpIds.push(v);
+      });
+    }
   }
 
   const _unlisted = _cmpIds.filter(id => !isListedEmployeeId(id));
@@ -579,16 +583,24 @@ async function runComparison() {
     }
     if (typeof showComparison === "function") {
       showComparison(records[0], records[1], records[1].id, records[2] || null, records);
-      // Insert period note if multi-month
-      if (periodMode !== 'current') {
-        const target = document.getElementById('vsExportTarget');
-        if (target && !target.querySelector('.vs-period-note')) {
+      const target = document.getElementById('vsExportTarget');
+      if (target) {
+        if (customHeaderNote) {
+          const subNote = document.createElement('div');
+          subNote.className = 'vs-subsection-header-badge';
+          subNote.style.cssText = 'padding:8px 12px;margin-bottom:8px;border-radius:8px;background:var(--surface-2);color:var(--brand-text);border:1px solid var(--brand-soft-border);font-size:13px;font-weight:800;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;';
+          subNote.innerHTML = `<span>🏭</span> <span>${esc(customHeaderNote)}</span> <span style="font-size:11px;font-weight:600;color:var(--muted);">(All Subsection Staff)</span>`;
+          if (typeof target.prepend === 'function') target.prepend(subNote);
+          else target.insertBefore(subNote, target.firstChild);
+        }
+        if (periodMode !== 'current' && !target.querySelector('.vs-period-note')) {
           const note = document.createElement('div');
           note.className = 'vs-period-note';
           note.style.cssText = 'padding:6px 10px;margin-bottom:8px;border-radius:6px;background:var(--brand-soft);color:var(--brand-text);font-size:11.5px;font-weight:700;text-align:center;';
           const chrono = monthsToLoad.slice().sort();
           note.textContent = `Period: ${periodLabel} (${chrono[0]} to ${chrono[chrono.length - 1]})`;
-          target.insertBefore(note, target.firstChild);
+          if (typeof target.prepend === 'function') target.prepend(note);
+          else target.insertBefore(note, target.firstChild);
         }
       }
     }
