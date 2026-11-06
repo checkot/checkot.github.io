@@ -98,7 +98,16 @@ def calc_elapsed_hours(in_str, out_str, shift_str="", duty_hrs=0.0):
 def get_category_type(emp_id, emp_grade="", emp_meta_type=""):
     u_id = normalize_id(emp_id)
     if emp_meta_type:
-        return emp_meta_type
+        m = str(emp_meta_type).upper().strip()
+        if m in ("JO", "JO_B", "JO_A", "JO-B", "JO-A"):
+            return "JO"
+        if m in ("CF", "CON"):
+            return "CON"
+        if m in ("EXEC", "EXECUTIVE", "STAFF"):
+            return "EXEC"
+        if m in ("CAS", "CASUAL"):
+            return "CAS"
+        return m
     if u_id.startswith("CF") or "HELPER" in str(emp_grade).upper() or "CONTRACTUAL" in str(emp_grade).upper():
         return "CON"
     if u_id.startswith("RF"):
@@ -245,7 +254,9 @@ def main():
         "ot_req_missing": 0,
         "by_category": {
             "JO": {"total": 0, "present": 0, "absent": 0},
+            "JO_B": {"total": 0, "present": 0, "absent": 0},
             "CON": {"total": 0, "present": 0, "absent": 0},
+            "CF": {"total": 0, "present": 0, "absent": 0},
             "EXEC": {"total": 0, "present": 0, "absent": 0},
             "CAS": {"total": 0, "present": 0, "absent": 0}
         }
@@ -279,8 +290,13 @@ def main():
         emp_sub = emp_meta.get("s", "").strip() or "General"
         emp_type = get_category_type(emp_id, emp_grade=emp_grade, emp_meta_type=emp_meta.get("t", ""))
 
-        if emp_type == "CON" and "JUNIOR OFFICER" in emp_grade.upper():
+        if emp_type in ("JO_B", "JO_A", "JO-B", "JO-A") or (emp_type == "CON" and "JUNIOR OFFICER" in emp_grade.upper()):
             emp_type = "JO"
+        elif emp_type in ("CF", "CON"):
+            emp_type = "CON"
+
+        if emp_type not in stats["by_category"]:
+            stats["by_category"][emp_type] = {"total": 0, "present": 0, "absent": 0}
 
         stats["total_listed"] += 1
         stats["by_category"][emp_type]["total"] += 1
