@@ -459,7 +459,8 @@
     },
     "RF8366": {
       "s": "Pri. Packing",
-      "g": "M"
+      "g": "M",
+      "t": "JO_B"
     },
     "RF20177": {
       "s": "Pri. Packing",
@@ -1558,7 +1559,9 @@
     "__deleted_subs__": []
   },
   "designationRates": {
-    "officer a": "R_55"
+    "officer a": "R_55",
+    "junior officer a": "JO_B",
+    "junior officer b": "JO_B"
   },
   "rateTable": {
     "CF": {

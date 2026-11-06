@@ -6,6 +6,26 @@ function getDefaultRateCat(e) {
   const kind = deriveEmpKind(e);
   if (kind === 'CAS') return 'CF';
   if (kind === 'EXEC') return 'UNSPEC';
+  
+  // 1. If already explicitly set to a valid rate category in pre-indexed data (e.g. JO_B)
+  if (e.category && typeof RATE_TABLE !== 'undefined' && RATE_TABLE[e.category] && !RATE_TABLE[e.category].noRate) {
+    return e.category;
+  }
+  
+  // 2. Use detectCategory from grade/id if available
+  if (typeof detectCategory === 'function') {
+    const d = detectCategory(e.grade || '', e.id);
+    if (d && d.valid && d.category && typeof RATE_TABLE !== 'undefined' && RATE_TABLE[d.category] && !RATE_TABLE[d.category].noRate) {
+      return d.category;
+    }
+  }
+  
+  // 3. Direct regex check for Junior Officer A / B or JO_B
+  const g = String(e.grade || '').toUpperCase().trim();
+  if (/JUNIOR\s+OFFICER\s+[AB]\b/i.test(g) || /\bM(16|17)\b/.test(g) || g === 'JO_B' || g === 'JO B' || g === 'JO-B') {
+    return 'JO_B';
+  }
+  
   const u = String(e.id || '').toUpperCase();
   if (u.startsWith('CF')) return 'CF';
   if (u.startsWith('RF')) return 'JO';
@@ -13,8 +33,10 @@ function getDefaultRateCat(e) {
 }
 
 function getRateCategory(e) {
-  const o = DESIG_RATES[desigKey(e.grade)];
-  if (o && RATE_TABLE[o]) return { cat: o, src: 'admin' };
+  if (typeof DESIG_RATES !== 'undefined' && DESIG_RATES && typeof desigKey === 'function') {
+    const o = DESIG_RATES[desigKey(e.grade)];
+    if (o && typeof RATE_TABLE !== 'undefined' && RATE_TABLE[o]) return { cat: o, src: 'admin' };
+  }
   return { cat: getDefaultRateCat(e), src: '' };
 }
 
@@ -22,7 +44,16 @@ function deriveEmpKind(e) {
   if (e.kind) return e.kind;
   const id = String(e.id || '').toUpperCase();
   if (/^\d{5,8}$/.test(id) || /^CASUAL/i.test(e.grade || '')) return 'CAS';
-  if (/^RF/.test(id) && !detectCategory(e.grade || '', id).valid) return 'EXEC';
+  if (/^RF/.test(id)) {
+    if (typeof detectCategory === 'function') {
+      try {
+        if (!detectCategory(e.grade || '', id).valid) return 'EXEC';
+      } catch (err) {}
+    } else {
+      const g = String(e.grade || '').toUpperCase().trim();
+      if (!/JUNIOR\s+OFFICER/i.test(g) && /\b(EXECUTIVE|SENIOR\s+OFFICER|MANAGER)\b/i.test(g)) return 'EXEC';
+    }
+  }
   return '';
 }
 
