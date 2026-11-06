@@ -1517,6 +1517,41 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" data-theme-opt="dark" onclick="setTheme('dark')">Dark</button>
 </div>
 </div>
+<div class="card" id="settingsTelemetryCard" style="margin-bottom:12px;">
+<div class="card-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
+<span>RPPF Plant Telemetry</span>
+<span class="telemetry-live-pill" id="telemetryStatusPill"><span class="live-dot"></span> Live</span>
+</div>
+<div class="card-sub" style="white-space:normal;margin-bottom:12px;">Anonymous real-time plant workforce engagement monitor.</div>
+<div class="telemetry-grid">
+<div class="telemetry-box">
+<div class="telemetry-box-head">
+<span class="telemetry-dot-wrap"><span class="live-pulse-dot"></span></span>
+<span class="telemetry-box-title">Online Now</span>
+</div>
+<div class="telemetry-val-wrap">
+<span class="telemetry-val" id="telemetryOnlineCount">—</span>
+<span class="telemetry-unit">Staff</span>
+</div>
+<div class="telemetry-sub" id="telemetryOnlineSub">Live active devices</div>
+</div>
+<div class="telemetry-box">
+<div class="telemetry-box-head">
+<span class="telemetry-icon">👥</span>
+<span class="telemetry-box-title" id="telemetryMauTitle">Monthly Active</span>
+</div>
+<div class="telemetry-val-wrap">
+<span class="telemetry-val" id="telemetryMauCount">—</span>
+<span class="telemetry-unit">Staff</span>
+</div>
+<div class="telemetry-sub" id="telemetryMauSub">Active this month</div>
+</div>
+</div>
+<div class="telemetry-footer-note">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+<span>100% Anonymous Telemetry • Zero Personal Data Leaked</span>
+</div>
+</div>
 <div class="card">
 <div class="settings-row"><span class="label">App Version</span><span class="value">3.2.0 (Enterprise Edition)</span></div>
 <div class="settings-row"><span class="label">Server Engine</span><span class="value">RPPF Cloud Server</span></div>
@@ -7796,5 +7831,8 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
   <script src="js/components/rank-details.js?v=20261105nt"></script>
   <script src="js/patches/manager-ux.js?v=20261106a"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="js/components/telemetry.js?v=20261106a"></script>
 </body>
 </html>

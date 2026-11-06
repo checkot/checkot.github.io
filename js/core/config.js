@@ -140,3 +140,14 @@ const ADMIN_GH_TOKEN_KEY = STORAGE_NAMESPACE + 'renata_gh_pat_v1';
 
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NIGHT_REST_CREDIT_HOURS = 8;
+
+// Firebase Realtime Database Telemetry Configuration (Free Spark Plan)
+const FIREBASE_TELEMETRY_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "", // e.g. "https://rppf-overtime-telemetry-default-rtdb.firebaseio.com"
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
