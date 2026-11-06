@@ -1,5 +1,5 @@
 // RENATA Overtime App — Service Worker (Offline PWA + Stale-While-Revalidate)
-const CACHE_NAME = 'checkot-pwa-v20261106-07';
+const CACHE_NAME = 'checkot-pwa-v20261106-08';
 
 const PRECACHE_ASSETS = [
   './',
@@ -64,12 +64,28 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Network-First for dynamic JSON, Cache-First/Stale-While-Revalidate for app assets
+// Network-First for HTML navigation & dynamic JSON, Cache-First/Stale-While-Revalidate for static assets
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Dynamic JSON files
+  // 1. HTML Navigation & Page Documents: Network-First (always fresh when online, offline fallback)
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/') || url.pathname === '') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((c) => c || caches.match('index.html') || caches.match('./')))
+    );
+    return;
+  }
+
+  // 2. Dynamic JSON files
   if (url.pathname.includes('/data/') || url.pathname.endsWith('.json')) {
     event.respondWith(
       fetch(event.request)

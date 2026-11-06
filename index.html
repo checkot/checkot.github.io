@@ -4265,6 +4265,12 @@ setDefaultMonth();
 window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+let _swReloading = false;
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (_swReloading) return;
+  _swReloading = true;
+  window.location.reload();
+});
 window.addEventListener('load', async () => {
 try {
 const swUrl = new URL('sw.js', window.location.href).href;
@@ -4273,7 +4279,11 @@ await registration.update();
 registration.addEventListener('updatefound', () => {
 const newWorker = registration.installing;
 if (!newWorker) return;
-newWorker.addEventListener('statechange', () => { if (newWorker.state === 'activated') console.log('[App] New SW activated'); });
+newWorker.addEventListener('statechange', () => {
+  if (newWorker.state === 'activated') {
+    console.log('[App] New SW activated');
+  }
+});
 });
 if (registration.waiting) { registration.waiting.postMessage({ type: 'SKIP_WAITING' }); }
 } catch (e) { console.warn('[App] SW registration skipped/failed:', e); }
