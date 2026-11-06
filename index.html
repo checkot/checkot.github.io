@@ -43,14 +43,14 @@ document.documentElement.setAttribute('data-theme', t);
 
 
 
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/nav.css">
-  <link rel="stylesheet" href="css/pages.css">
-  <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
-  <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
-  <link rel="stylesheet" href="css/assessment.css?v=20261107a">
+  <link rel="stylesheet" href="css/tokens.css?v=20261108ui">
+  <link rel="stylesheet" href="css/base.css?v=20261108ui">
+  <link rel="stylesheet" href="css/components.css?v=20261108ui">
+  <link rel="stylesheet" href="css/nav.css?v=20261108ui">
+  <link rel="stylesheet" href="css/pages.css?v=20261108ui">
+  <link rel="stylesheet" href="css/manager-ux.css?v=20261108ui">
+  <link rel="stylesheet" href="css/rank-details.css?v=20261108ui">
+  <link rel="stylesheet" href="css/assessment.css?v=20261108ui">
 </head>
 <body data-page="search">
 <div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
@@ -70,8 +70,8 @@ document.documentElement.setAttribute('data-theme', t);
 <label for="adminCatQuickPassInp" style="margin-top:0;">Admin Password / PIN</label>
 <input type="password" id="adminCatQuickPassInp" placeholder="Enter password or PIN" autocomplete="off">
 <div class="btn-grid-2" style="margin-top:12px;">
-<button type="button" class="btn-primary" style="margin-top:0;" onclick="confirmAdminCatQuickAuth()">Enable +Cat Mode</button>
 <button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeAdminCatAuthModal()">Cancel</button>
+<button type="button" class="btn-primary" style="margin-top:0;" onclick="confirmAdminCatQuickAuth()">Enable +Cat Mode</button>
 </div>
 </div>
 </div>
@@ -569,8 +569,8 @@ document.documentElement.setAttribute('data-theme', t);
         <div id="qmAbsentCurrentList" style="max-height:200px;overflow-y:auto;"></div>
       </div>
       <div class="btn-grid-2" style="margin-top:12px;">
-        <button type="button" class="btn-primary" style="margin-top:0;" onclick="saveAbsentAndPushServer()">Save &amp; Sync Server</button>
-        <button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeQuickAbsentModal()">Done</button>
+        <button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeQuickAbsentModal()">Close</button>
+        <button type="button" class="btn-primary" style="margin-top:0;" onclick="saveAbsentAndPushServer()">Save &amp; Sync</button>
       </div>
     </div>
   </div>
@@ -615,9 +615,9 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="vc-actions" id="vcActions"></div>
 </div>
 <div class="month-nav-bar" id="monthNavBar" style="display:none;">
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)" id="prevMonthBtn">&lt; Previous month</button>
+<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)" id="prevMonthBtn">‹ Prev</button>
 <div class="month-nav-center" id="monthNavCurrentLabel">—</div>
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)" id="nextMonthBtn">Next month &gt;</button>
+<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)" id="nextMonthBtn">Next ›</button>
 </div>
 <div class="card" id="payslipCard" style="display:none;">
 <h3 class="card-h">How much will you get in total?</h3>
@@ -909,6 +909,58 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="vs-quick-picks" id="vsQuickPicksRow"></div>
 </div>
 
+<div id="compareMyAmount" class="grade-info" style="display:none !important;"></div>
+<div class="vs-custom-count-bar" id="vsCustomCountBar">
+<div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
+<div style="display:flex;gap:6px;">
+<button type="button" class="calc-mini-btn" onclick="changeCustomVsSlots(-1)">− Remove</button>
+<button type="button" class="calc-mini-btn btn-success-solid" onclick="changeCustomVsSlots(1)">+ Add Employee</button>
+</div>
+</div>
+
+<div class="vs-inputs-container">
+<div class="vs-inputs-grid mode-2" id="vsInputsGrid">
+<div class="vs-slot-card" id="vsSlot1Card">
+<div class="vs-slot-head">
+<label for="compareId1" class="vs-slot-label"><span class="vs-slot-num-badge">1</span> 1st Colleague ID</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId1')" title="Clear" aria-label="Clear input">✕</button>
+</div>
+<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8351" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(1, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId1" style="display:none;"></div>
+</div>
+
+<div class="vs-swap-container" id="vsSwapContainer">
+<button type="button" class="vs-swap-btn" onclick="swapVsSlots(1, 2)" title="Swap Colleague 1 and 2" aria-label="Swap Colleagues">⇄</button>
+</div>
+
+<div class="vs-slot-card" id="vsSlot2Card">
+<div class="vs-slot-head">
+<label for="compareId" class="vs-slot-label"><span class="vs-slot-num-badge">2</span> 2nd Colleague ID (VS)</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId')" title="Clear" aria-label="Clear input">✕</button>
+</div>
+<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF22034" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(2, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId2" style="display:none;"></div>
+</div>
+
+<div class="vs-slot-card" id="vsSlot3Wrap" style="display:none;">
+<div class="vs-slot-head">
+<label for="compareId3" class="vs-slot-label"><span class="vs-slot-num-badge">3</span> 3rd Colleague ID (VS)</label>
+<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId3')" title="Clear" aria-label="Clear input">✕</button>
+</div>
+<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF10278" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(3, this.value)">
+<div class="vs-emp-preview-box" id="vsPreviewId3" style="display:none;"></div>
+</div>
+<div id="vsExtraSlotsContainer" style="display:contents;"></div>
+</div>
+</div>
+
+<button id="compareBtn" class="btn-primary vs-submit-btn" onclick="runComparison()">
+<span class="vs-btn-icon">⚖️</span>
+<span>Compare Overtime &amp; Allowances</span>
+</button>
+<div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
+<details class="vs-shortcuts-collapse">
+<summary><span>⚡ Section &amp; Line Quick VS (সেকশন তুলনা)</span></summary>
 <!-- Solid Subsections Quick Comparison Section -->
 <div class="vs-solid-card" id="vsSolidShortcutSection">
 <div class="vs-solid-header">
@@ -964,56 +1016,8 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 </div>
 
-<div id="compareMyAmount" class="grade-info" style="display:none;"></div>
-<div class="vs-custom-count-bar" id="vsCustomCountBar">
-<div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn" onclick="changeCustomVsSlots(-1)">− Remove</button>
-<button type="button" class="calc-mini-btn btn-success-solid" onclick="changeCustomVsSlots(1)">+ Add Employee</button>
-</div>
-</div>
 
-<div class="vs-inputs-container">
-<div class="vs-inputs-grid mode-2" id="vsInputsGrid">
-<div class="vs-slot-card" id="vsSlot1Card">
-<div class="vs-slot-head">
-<label for="compareId1" class="vs-slot-label"><span class="vs-slot-num-badge">1</span> 1st Colleague ID</label>
-<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId1')" title="Clear" aria-label="Clear input">✕</button>
-</div>
-<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8351" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(1, this.value)">
-<div class="vs-emp-preview-box" id="vsPreviewId1" style="display:none;"></div>
-</div>
-
-<div class="vs-swap-container" id="vsSwapContainer">
-<button type="button" class="vs-swap-btn" onclick="swapVsSlots(1, 2)" title="Swap Colleague 1 and 2" aria-label="Swap Colleagues">⇄</button>
-</div>
-
-<div class="vs-slot-card" id="vsSlot2Card">
-<div class="vs-slot-head">
-<label for="compareId" class="vs-slot-label"><span class="vs-slot-num-badge">2</span> 2nd Colleague ID (VS)</label>
-<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId')" title="Clear" aria-label="Clear input">✕</button>
-</div>
-<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF22034" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(2, this.value)">
-<div class="vs-emp-preview-box" id="vsPreviewId2" style="display:none;"></div>
-</div>
-
-<div class="vs-slot-card" id="vsSlot3Wrap" style="display:none;">
-<div class="vs-slot-head">
-<label for="compareId3" class="vs-slot-label"><span class="vs-slot-num-badge">3</span> 3rd Colleague ID (VS)</label>
-<button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId3')" title="Clear" aria-label="Clear input">✕</button>
-</div>
-<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF10278" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(3, this.value)">
-<div class="vs-emp-preview-box" id="vsPreviewId3" style="display:none;"></div>
-</div>
-<div id="vsExtraSlotsContainer" style="display:contents;"></div>
-</div>
-</div>
-
-<button id="compareBtn" class="btn-primary vs-submit-btn" onclick="runComparison()">
-<span class="vs-btn-icon">⚖️</span>
-<span>Compare Overtime &amp; Allowances</span>
-</button>
-<div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
+</details>
 </div>
 <div id="compareResult" style="display:none;"></div>
 </div>
@@ -1261,8 +1265,8 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="icc-search-row" id="iccSearchRowWrap" style="display:none;">
 <input type="text" id="iccSearchInput" placeholder="Search employee name or ID..." oninput="renderIccDrillList()">
 <button type="button" class="calc-mini-btn btn-wa-solid" id="iccPunchWaBtn" style="display:none;" onclick="openBulkPunchErpForward()">Forward to ERP</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccAbsentErpBtn" style="display:none;background:#dc2626;border-color:#dc2626;" onclick="openBulkAbsentForward()">Forward Absentees to In-Charge / HR</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccAbsentErpBtn" style="display:none;background:#dc2626;border-color:#dc2626;" onclick="openBulkAbsentForward()">Forward to HR</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Req to ERP</button>
 </div>
 </div>
 <div class="icc-mypos-banner" id="iccMyPosBanner" style="display:none;"></div>
@@ -1564,7 +1568,7 @@ document.documentElement.setAttribute('data-theme', t);
 <span>RPPF Plant Telemetry</span>
 <span class="telemetry-live-pill" id="telemetryStatusPill"><span class="live-dot"></span> Live</span>
 </div>
-<div class="card-sub" style="white-space:normal;margin-bottom:12px;">Anonymous real-time plant workforce engagement monitor.</div>
+
 <div class="telemetry-grid">
 <div class="telemetry-box">
 <div class="telemetry-box-head">
@@ -1589,10 +1593,7 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="telemetry-sub" id="telemetryMauSub">Active this month</div>
 </div>
 </div>
-<div class="telemetry-footer-note">
-<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-<span>100% Anonymous Telemetry • Zero Personal Data Leaked</span>
-</div>
+
 </div>
 <div class="card">
 <div class="settings-row"><span class="label">App Version</span><span class="value">3.2.0 (Enterprise Edition)</span></div>
@@ -1779,8 +1780,8 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="wb-sub">Do you want to view the report with your saved ID?</div>
 <div id="wbSavedId" class="wb-id-badge">—</div>
 <div class="wb-actions">
-<button class="btn-primary wb-btn-primary" onclick="handleWelcomeBackSearch()">Yes, show</button>
 <button class="btn-secondary wb-btn-secondary" onclick="handleWelcomeBackChange()">Another ID</button>
+<button class="btn-primary wb-btn-primary" onclick="handleWelcomeBackSearch()">Yes, show</button>
 </div>
 </div>
 </div>
@@ -1789,23 +1790,23 @@ document.documentElement.setAttribute('data-theme', t);
 <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 </a>
   <!-- Core & Calculations Modules (Step 4) -->
-  <script src="js/core/config.js"></script>
-  <script src="js/core/state.js"></script>
-  <script src="js/core/storage.js"></script>
-  <script src="js/core/utils.js?v=20261105nt"></script>
-  <script src="js/calculations/rates.js?v=20261106b"></script>
-  <script src="js/calculations/ranking.js?v=20261105nt"></script>
-  <script src="js/components/router.js"></script>
-  <script src="js/pages/search.js"></script>
-  <script src="js/pages/history.js"></script>
-  <script src="js/pages/settings.js"></script>
-  <script src="js/pages/report.js"></script>
-  <script src="js/pages/vs.js?v=20261106a"></script>
-  <script src="js/pages/notices.js"></script>
-  <script src="js/pages/more.js"></script>
-  <script src="js/pages/team.js"></script>
-  <script src="js/pages/assessment.js?v=20261107a"></script>
-  <script src="js/pages/leaderboard.js?v=20261105nt"></script>
+  <script src="js/core/config.js?v=20261108ui"></script>
+  <script src="js/core/state.js?v=20261108ui"></script>
+  <script src="js/core/storage.js?v=20261108ui"></script>
+  <script src="js/core/utils.js?v=20261108ui"></script>
+  <script src="js/calculations/rates.js?v=20261108ui"></script>
+  <script src="js/calculations/ranking.js?v=20261108ui"></script>
+  <script src="js/components/router.js?v=20261108ui"></script>
+  <script src="js/pages/search.js?v=20261108ui"></script>
+  <script src="js/pages/history.js?v=20261108ui"></script>
+  <script src="js/pages/settings.js?v=20261108ui"></script>
+  <script src="js/pages/report.js?v=20261108ui"></script>
+  <script src="js/pages/vs.js?v=20261108ui"></script>
+  <script src="js/pages/notices.js?v=20261108ui"></script>
+  <script src="js/pages/more.js?v=20261108ui"></script>
+  <script src="js/pages/team.js?v=20261108ui"></script>
+  <script src="js/pages/assessment.js?v=20261108ui"></script>
+  <script src="js/pages/leaderboard.js?v=20261108ui"></script>
 <script>
 /* Config, state, storage, and utility constants moved to js/core/ */
 function didEmpWorkNightOnLastDay(emp, monthStr) {
@@ -3213,7 +3214,7 @@ const lbl = document.getElementById('monthNavCurrentLabel');
 if (!bar || !lbl || !monthStr) return;
 const [yy, mm] = String(monthStr).split('-');
 const mIdx = (parseInt(mm, 10) || 1) - 1;
-lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)} (${monthStr})`;
+lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)}`;
 bar.style.display = 'grid';
 }
 /* function navigateReportMonth moved to js/pages/ */
@@ -4919,7 +4920,12 @@ const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
 const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
-const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
+const _subParts = [];
+if (activeIccCriterion !== 'duty' && activeIccCriterion !== 'lessDuty') _subParts.push(`D:${dutyNum}h`);
+if (activeIccCriterion !== 'ot' && activeIccCriterion !== 'lessOt') _subParts.push(`OT:${otNum}h`);
+if (activeIccCriterion !== 'holiday') _subParts.push(`H:${holNum}`);
+if (activeIccCriterion !== 'night') _subParts.push(`N:${ngtNum}`);
+const subVal = _subParts.slice(0, 3).join(' · ');
 const isReqCrit = activeIccCriterion === 'requisition';
 const isAbsCrit = activeIccCriterion === 'absent';
 const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (rk <= 3 ? `icc-rank-${rk}` : '')));
@@ -7998,11 +8004,11 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
 }
 
 </script>
-  <script src="js/components/rank-details.js?v=20261105nt"></script>
-  <script src="js/patches/manager-ux.js?v=20261106a"></script>
-  <script src="js/components/pwa-install.js?v=20261106a"></script>
+  <script src="js/components/rank-details.js?v=20261108ui"></script>
+  <script src="js/patches/manager-ux.js?v=20261108ui"></script>
+  <script src="js/components/pwa-install.js?v=20261108ui"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/components/telemetry.js?v=20261106a"></script>
+  <script src="js/components/telemetry.js?v=20261108ui"></script>
 </body>
 </html>

@@ -189,7 +189,7 @@
       metric: function (A) { return A.absent.length; }, fmt: function (v) { return v + 'd'; },
       body: function (A) { return A.absent.length ? chips(A.absent, 'red') : empty('✓ 100% Attendance — 0 days absent'); },
       total: function (as) { return grid([kpi('Total Absent', sum(as, 'absent', true) + 'd', 'var(--danger)', true), kpi('Months with Absent', as.filter(function (a) { return a.absent.length; }).length + ' / ' + as.length), kpi('Avg / Month', r1(sum(as, 'absent', true) / Math.max(1, as.length)) + 'd'), kpi('Worst Month', worst(as, function (a) { return a.absent.length; }, 'd'))]); },
-      single: function (A) { return grid([kpi('Absent Days', A.absent.length + 'd', 'var(--danger)', true), kpi('Worked Days', A.worked.length + 'd'), kpi('Duty', r1(A.duty) + 'h'), kpi('Overtime', r1(A.ot) + 'h')]); },
+      single: function (A) { return grid([kpi('Worked Days', A.worked.length + 'd'), kpi('Duty', r1(A.duty) + 'h'), kpi('Overtime', r1(A.ot) + 'h')]); },
       listTitle: function (A) { return 'Absent calendar dates (' + A.absent.length + ' days)'; }
     },
     punch: {
@@ -201,7 +201,7 @@
         })) : empty('✓ All punches OK');
       },
       total: function (as) { return grid([kpi('Total Missing', sum(as, 'punchRows', true) + 'd', 'var(--warning)', true), kpi('Months Affected', as.filter(function (a) { return a.punchRows.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.punchRows.length; }, 'd'))]); },
-      single: function (A) { return grid([kpi('Missing Punch', A.punchRows.length + 'd', 'var(--warning)', true), kpi('In Missing', A.punchRows.filter(function (p) { return p.inMiss; }).length + 'd'), kpi('Out Missing', A.punchRows.filter(function (p) { return p.outMiss; }).length + 'd'), kpi('Worked Days', A.worked.length + 'd')]); },
+      single: function (A) { return grid([kpi('In Missing', A.punchRows.filter(function (p) { return p.inMiss; }).length + 'd'), kpi('Out Missing', A.punchRows.filter(function (p) { return p.outMiss; }).length + 'd'), kpi('Worked Days', A.worked.length + 'd')]); },
       listTitle: function (A) { return 'Missing punch records (' + A.punchRows.length + ' days)'; }
     },
     requisition: {
@@ -226,7 +226,7 @@
       },
       single: function (A) {
         var mx = A.otDays.reduce(function (m, d) { return Math.max(m, d.ot); }, 0);
-        return grid([kpi('Total OT', r1(A.ot) + 'h', 'var(--brand-text)', true), kpi('Days with OT hrs', A.otDays.length + 'd'), kpi('Avg / OT Day', A.otDays.length ? r1(A.ot / A.otDays.length) + 'h' : '—'), kpi('Longest OT', r1(mx) + 'h')]);
+        return grid([kpi('Days with OT hrs', A.otDays.length + 'd'), kpi('Avg / OT Day', A.otDays.length ? r1(A.ot / A.otDays.length) + 'h' : '—'), kpi('Longest OT', r1(mx) + 'h')]);
       },
       listTitle: function (A) { return 'Overtime days (' + A.otDays.length + ')'; }
     },
@@ -240,7 +240,7 @@
       },
       single: function (A) {
         var mx = A.worked.reduce(function (m, d) { return Math.max(m, d.duty); }, 0);
-        return grid([kpi('Total Duty', r1(A.duty) + 'h', 'var(--brand-text)', true), kpi('Days Worked', A.worked.length + 'd'), kpi('Avg / Day', A.worked.length ? r1(A.duty / A.worked.length) + 'h' : '—'), kpi('Longest Day', r1(mx) + 'h')]);
+        return grid([kpi('Days Worked', A.worked.length + 'd'), kpi('Avg / Day', A.worked.length ? r1(A.duty / A.worked.length) + 'h' : '—'), kpi('Longest Day', r1(mx) + 'h')]);
       },
       listTitle: function (A) { return 'Daily duty log (' + A.worked.length + ' days)'; }
     },
@@ -253,7 +253,7 @@
         })) : empty('No 4:30 pm days');
       },
       total: function (as) { return grid([kpi('4:30pm Days', sumLen(as, 'plainDays') + 'd', 'var(--brand-text)', true), kpi('Worked Days', sumLen(as, 'worked') + 'd'), kpi('Total OT', r1(sum(as, 'ot')) + 'h'), kpi('Peak Month', best(as, function (a) { return a.plainDays.length; }, 'd'))]); },
-      single: function (A) { return grid([kpi('4:30pm Days', A.plainDays.length + 'd', 'var(--brand-text)', true), kpi('Worked Days', A.worked.length + 'd'), kpi('OT Days', A.otDays.length + 'd'), kpi('Night Shifts', A.nightDays.length + 'n')]); },
+      single: function (A) { return grid([kpi('Worked Days', A.worked.length + 'd'), kpi('OT Days', A.otDays.length + 'd'), kpi('Night Shifts', A.nightDays.length + 'n')]); },
       listTitle: function (A) { return '4:30 pm days (' + A.plainDays.length + ')'; }
     },
     earned: {
@@ -267,7 +267,7 @@
         return parts;
       },
       total: function (as) { return grid([kpi('Total Earned', taka(sum(as, 'earned')), 'var(--brand-text)', true), kpi('OT', taka(sum(as, 'otAmt'))), kpi('Holiday / Off', taka(sum(as, 'holAmt'))), kpi('Night', taka(sum(as, 'nightAmt'))), kpi('Avg / Month', taka(sum(as, 'earned') / Math.max(1, countHas(as))))]); },
-      single: function (A) { return grid([kpi('Total Earned', taka(A.earned), 'var(--brand-text)', true), kpi('OT', taka(A.otAmt)), kpi('Holiday / Off', taka(A.holAmt)), kpi('Night', taka(A.nightAmt))]); },
+      single: function (A) { return ''; },
       listTitle: function (A) { return 'Earning breakdown'; }
     },
     otDays: {
@@ -378,37 +378,36 @@
   }
 
   /* ---------- other-indicators strip ---------- */
-  function otherStrip(emp, As, multi, incMode) {
+  function otherStrip(emp, As, multi, incMode, crit) {
     var abs = multi ? sumLen(As, 'absent') : (As[0] ? As[0].absent.length : 0);
     var pun = multi ? sumLen(As, 'punchRows') : (As[0] ? As[0].punchRows.length : 0);
     var duty = multi ? num(emp.totalDuty) : (As[0] && As[0].has ? As[0].duty : num(emp.totalDuty));
     var ot = multi ? num(emp.otHours) : (As[0] && As[0].has ? As[0].ot : num(emp.otHours));
     var earned = multi ? num(emp.totalEarned) : (As[0] && As[0].has ? As[0].earned : num(emp.totalEarned));
-    var items = [
-      kpi('Duty', r1(duty) + 'h'), kpi('Overtime', r1(ot) + 'h'), kpi('OT Days', (multi ? sumLen(As, 'otDayList') : (As[0] ? As[0].otDayList.length : 0)) + 'd'), kpi('Holiday', num(emp.holidayCount) + 'd'), kpi('Night', num(emp.nightCount) + 'n'),
-      kpi('4:30pm', num(emp.plainDaysCount) + 'd'), kpi('Absent', abs + 'd', abs > 0 ? 'var(--danger)' : ''), kpi('Punch Miss', pun + 'd', pun > 0 ? 'var(--warning)' : '')
-    ];
-    if (!incMode) items.push(kpi('Earned', taka(earned)));
-    return secTitle(multi ? 'Period totals — other indicators' : 'Other indicators this month') + '<div class="icc-ctx-grid small">' + items.join('') + '</div>';
+    var items = [];
+    if (crit !== 'duty' && crit !== 'lessDuty') items.push(kpi('Duty', r1(duty) + 'h'));
+    if (crit !== 'ot' && crit !== 'lessOt') items.push(kpi('Overtime', r1(ot) + 'h'));
+    if (crit !== 'otDays') items.push(kpi('OT Days', (multi ? sumLen(As, 'otDayList') : (As[0] ? As[0].otDayList.length : 0)) + 'd'));
+    if (crit !== 'holiday') items.push(kpi('Holiday', num(emp.holidayCount) + 'd'));
+    if (crit !== 'night') items.push(kpi('Night', num(emp.nightCount) + 'n'));
+    if (crit !== 'plain') items.push(kpi('4:30pm', num(emp.plainDaysCount) + 'd'));
+    if (crit !== 'absent') items.push(kpi('Absent', abs + 'd', abs > 0 ? 'var(--danger)' : ''));
+    if (crit !== 'punch') items.push(kpi('Punch Miss', pun + 'd', pun > 0 ? 'var(--warning)' : ''));
+    if (!incMode && crit !== 'earned') items.push(kpi('Earned', taka(earned)));
+    return secTitle(multi ? 'Other indicators (period)' : 'Other indicators') + '<div class="icc-ctx-grid small">' + items.join('') + '</div>';
   }
 
 
   /* ---------- rank context: where this employee stands in the ranking the user was viewing ---------- */
-  function rankContext(emp, crit, multi) {
-    var list = null, rank = null, total = 0;
+  function getRankBadgeStr(emp, crit) {
+    var list = null, rank = null;
     try { if (typeof _iccCurrentFilteredList !== 'undefined' && Array.isArray(_iccCurrentFilteredList) && _iccCurrentFilteredList.length) list = _iccCurrentFilteredList; } catch (e) { }
     if (!list) return '';
     for (var i = 0; i < list.length; i++) { if (list[i] && sameEmp(list[i].id, emp.id)) { rank = list[i]._iccRank || (i + 1); break; } }
-    if (rank == null) return '';
-    total = list.length;
-    var shown = '';
-    try { if (typeof formatIccMainMetric === 'function') shown = String(formatIccMainMetric(emp, crit)).replace(/<[^>]*>/g, ''); } catch (e) { }
-    var top = '';
-    try { if (rank > 1 && typeof formatIccMainMetric === 'function') top = String(formatIccMainMetric(list[0], crit)).replace(/<[^>]*>/g, ''); } catch (e) { }
-    var items = [kpi('Rank', '#' + rank + ' <span style="font-size:11px;font-weight:600;color:var(--muted)">of ' + total + '</span>', '', true)];
-    if (shown) items.push(kpi('Ranking value', E(shown)));
-    if (top) items.push(kpi('#1 value', E(top)));
-    return secTitle('Ranking position') + grid(items);
+    return rank != null ? ('Rank #' + rank + ' / ' + list.length) : '';
+  }
+  function rankContext(emp, crit, multi) {
+    return '';
   }
   function noDailyNote(As) {
     var missing = As.filter(function (a) { return a.has && !a.days.length && (a.duty > 0 || a.ot > 0); });
@@ -492,20 +491,20 @@
         html += banner(topic.cls, topic.icon, E(topic.title), topic.bannerSub, periodLabel) + empty('এই মাসে এই কর্মীর কোনো রেকর্ড নেই (No work record in ' + E(periodLabel) + ').');
       } else {
         var big = topic.fmt(topic.metric(A), A);
-        html += banner(topic.cls, topic.icon, E(topic.title) + ': <b>' + E(big) + '</b>', topic.bannerSub, periodLabel);
+        html += banner(topic.cls, topic.icon, E(topic.title) + ': <b>' + E(big) + '</b>', topic.bannerSub, getRankBadgeStr(emp, crit) || areaShort(areaName));
         html += rankContext(emp, crit, false);
         html += topic.single(A);
         html += secTitle(topic.listTitle(A)) + topic.body(A) + noDailyNote(As);
-        html += otherStrip(emp, As, false, inc);
+        html += otherStrip(emp, As, false, inc, crit);
       }
     } else {
       var totalV = withData.reduce(function (s, a) { return s + topic.metric(a); }, 0);
       var bigT = (crit === 'avgInOut' || crit === 'avgDuty') ? '' : ': <b>' + E(topic.fmt(totalV, null)) + '</b>';
-      html += banner(topic.cls, topic.icon, E(topic.title) + bigT, topic.bannerSub, periodLabel);
+      html += banner(topic.cls, topic.icon, E(topic.title) + bigT, topic.bannerSub, getRankBadgeStr(emp, crit) || areaShort(areaName));
       html += rankContext(emp, crit, true);
       html += secTitle('Period summary (' + withData.length + ' months)') + topic.total(As);
       html += secTitle('Month by month — tap a month to expand') + monthBlocks(topic, As, emp.id) + noDailyNote(As);
-      html += otherStrip(emp, As, true, inc);
+      html += otherStrip(emp, As, true, inc, crit);
     }
     bodyEl.innerHTML = html;
 

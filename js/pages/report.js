@@ -98,7 +98,6 @@ if (afterNight) {
   row.tone = 'none';
   row.note = 'No daily log cached';
 } else {
-  // True General Working Day Absent
   row.tone = 'absent';
   row.note = '🔴 Absent (General Working Day)';
   row.isGeneralAbsent = true;
@@ -117,7 +116,6 @@ else if (row.v[2] || row.v[3]) { row.tone = 'do'; row.note = 'Day off duty'; }
 else if (row.v[1]) row.note = 'Overtime';
 if (o.night) row.note += (row.note ? ' + ' : '') + 'Night';
 
-// REQUISITION PROBLEM DETECTION & HIGHLIGHT
 const parseM = (t) => {
   if (!t) return null;
   const mm = String(t).replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/);
@@ -157,7 +155,6 @@ if (totOt === 0 && !mi && !mo) {
 }
 }
 }
-// NIGHT SUSPECT FLAG (never declares a night; Night is ONLY when Empress says YES)
 if (o && !o.night) {
   const _m = (t) => { const mm = String(t || '').replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/); return mm ? parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10) : null; };
   const _ti = _m(o.inn), _to = _m(o.out);
@@ -172,7 +169,7 @@ if (o && !o.night) {
   if (_why) {
     row.nightSuspect = true;
     if (!row.tone || row.tone === 'hol' || row.tone === 'do') row.tone = 'req';
-    row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected (' + _why + ') but not marked in Empress — contact ERP team';
+    row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected (' + _why + ') — check with ERP';
   }
 }
 rows.push(row);
@@ -197,13 +194,13 @@ function _rptHtml(ctx, forExport) {
     ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
     : rows;
   const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', absent: '#fee2e2' };
-  const fsCell = forExport ? '12.5px' : '11px';
-  const fsSmall = forExport ? '11.5px' : '10.5px';
-  const fsHead = forExport ? '11.5px' : '10px';
+  const fsCell = forExport ? '12.5px' : '11.5px';
+  const fsSmall = forExport ? '11.5px' : '11px';
+  const fsHead = forExport ? '11.5px' : '10.5px';
   const padCell = forExport ? '5px 3px' : '4px 2px';
   const tdBase = `padding:${padCell};border:1px solid #cbd5e1;font-size:${fsCell};line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;`;
   const thBase = `padding:7px 2px;border:1px solid #0f172a;background:#0f172a;color:#fff;font-size:${fsHead};font-weight:800;line-height:1.15;text-align:center;vertical-align:middle;word-break:normal;overflow-wrap:normal;`;
-  const chip = (t, c, bg) => `<span style="display:inline-block;margin:0 4px 4px 0;padding:3px 8px;border-radius:99px;font-size:${forExport ? '12px' : '11px'};font-weight:800;color:${c};background:${bg};">${t}</span>`;
+  const chip = (t, c, bg) => `<span style="display:inline-block;margin:0 4px 4px 0;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:800;color:${c};background:${bg};">${t}</span>`;
   const colHeaders = [
     { label: 'Date<br><span style="font-weight:600;opacity:.85;">Day</span>', w: '14.5%' },
     { label: 'In<br>Time', w: '8.5%' },
@@ -231,23 +228,31 @@ ${pc(r.inn, r.missIn)}${pc(r.out, r.missOut)}${r.v.map(x => cell(x)).join('')}
   }).join('');
   const containerStyle = forExport
     ? 'background:#fff;color:#0f172a;font-family:"Hind Siliguri",Arial,Helvetica,sans-serif;padding:14px 12px;width:720px;box-sizing:border-box;'
-    : 'background:#fff;color:#0f172a;font-family:"Hind Siliguri",Arial,Helvetica,sans-serif;padding:10px 6px;width:100%;min-width:540px;box-sizing:border-box;';
+    : 'background:#fff;color:#0f172a;font-family:"Hind Siliguri",Arial,Helvetica,sans-serif;padding:8px 6px;width:100%;min-width:540px;box-sizing:border-box;';
+  // Only render duplicate employee header & duplicate issue footer when exporting PNG (#reportEmpStrip and #remarksBox already display them on screen)
+  const headerHtml = forExport ? `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:7px;margin-bottom:7px;">
+<div style="min-width:0;"><div style="font-size:19px;font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RPPF</div><div style="font-size:12.5px;font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${(typeof _rptHideEmptyDays !== 'undefined' && _rptHideEmptyDays) ? ' (Duty Days)' : ''}</div></div>
+<div style="text-align:right;min-width:0;"><div style="font-size:15px;font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:12px;font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>` : '';
+  const footerHtml = forExport
+    ? `<div style="margin-top:6px;font-size:11px;color:#64748b;line-height:1.25;">${issues ? `• Punch correction needed on ${issues} day(s): ${rows.filter(r => r.tone === 'bad').map(r => r.date).join(', ')}<br>` : ''}
+${nightSus ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#9a3412;background:#ffedd5;padding:4px 8px;border-radius:4px;border:1px solid #fb923c;">⚠️ Night duty issue on ${nightSus} day(s): ${rows.filter(r => r.nightSuspect).map(r => r.date).join(', ')} — contact ERP team.</div>` : ''}
+${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')}</div>` : ''}
+<div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`
+    : (nightSus ? `<div style="margin-top:6px;font-size:12px;font-weight:800;color:#9a3412;background:#ffedd5;padding:5px 8px;border-radius:6px;border:1px solid #fb923c;">⚠️ Night duty check needed on ${nightSus} day(s): ${rows.filter(r => r.nightSuspect).map(r => r.date).join(', ')} — contact ERP team.</div>` : '');
   return `<div style="${containerStyle}">
-<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #0f172a;padding-bottom:7px;margin-bottom:7px;">
-<div style="min-width:0;"><div style="font-size:${forExport ? '19px' : '16px'};font-weight:900;color:#0f172a;letter-spacing:-.01em;line-height:1.15;">RPPF</div><div style="font-size:${forExport ? '12.5px' : '11.5px'};font-weight:700;color:#475569;margin-top:2px;">Monthly Work Log • ${_RMON[m - 1]} ${y}${(typeof _rptHideEmptyDays !== 'undefined' && _rptHideEmptyDays) ? ' (Duty Days)' : ''}</div></div>
-<div style="text-align:right;min-width:0;"><div style="font-size:${forExport ? '15px' : '13.5px'};font-weight:900;color:#0f172a;line-height:1.2;">${_rE(ctx.id)} — ${_rE(e.name || '')}</div><div style="font-size:${forExport ? '12px' : '11px'};font-weight:700;color:#475569;margin-top:1px;">${_rE([e.grade, e.area, e.designation].filter(Boolean).join(' | '))}</div></div></div>
-<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}
+${headerHtml}
+<div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Rest after night: ' + offAfterNight + 'd', '#4338ca', '#e0e7ff') : ''}
 ${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
 ${nightSus ? chip('Night Check: ' + nightSus + 'd', '#9a3412', '#ffedd5') : ''}
 ${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}
-${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
+${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
 <colgroup>${colHeaders.map(c => `<col style="width:${c.w};">`).join('')}</colgroup>
-<thead><tr style="height:40px;">${colHeaders.map(c => `<th style="${thBase}">${c.label}</th>`).join('')}</tr></thead>
+<thead><tr style="height:38px;">${colHeaders.map(c => `<th style="${thBase}">${c.label}</th>`).join('')}</tr></thead>
 <tbody>${body}</tbody>
 <tfoot><tr style="background:#0f172a;color:#fff;font-weight:800;font-size:${fsSmall};text-align:center;">
 <td style="${tdBase}background:#0f172a;color:#fff;text-align:left;padding-left:4px;">Total</td>
-<td style="${tdBase}background:#0f172a;color:#fff;" colspan="2">${present} duty days</td>
+<td style="${tdBase}background:#0f172a;color:#fff;" colspan="2">${present}d</td>
 <td style="${tdBase}background:#0f172a;color:#fff;">${_rN(sum[0])}</td>
 <td style="${tdBase}background:#0f172a;color:#facc15;">${_rN(sum[1])}</td>
 <td style="${tdBase}background:#0f172a;color:#fff;">${_rN(sum[2])}</td>
@@ -255,12 +260,9 @@ ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + row
 <td style="${tdBase}background:#0f172a;color:#fff;">${_rN(sum[4])}</td>
 <td style="${tdBase}background:#0f172a;color:#facc15;">${_rN(sum[5])}</td>
 <td style="${tdBase}background:#0f172a;color:#c084fc;">${nights}</td>
-<td style="${tdBase}background:#0f172a;color:#fff;font-size:10.5px;">OT: ${_rN(sum[1] + sum[3] + sum[5])}h</td>
+<td style="${tdBase}background:#0f172a;color:#fff;font-size:11px;">OT: ${_rN(sum[1] + sum[3] + sum[5])}h</td>
 </tr></tfoot></table>
-<div style="margin-top:6px;font-size:10.5px;color:#64748b;line-height:1.25;">${issues ? `• Punch correction needed on ${issues} day(s): ${rows.filter(r => r.tone === 'bad').map(r => r.date).join(', ')}<br>` : ''}
-${nightSus ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#9a3412;background:#ffedd5;padding:4px 8px;border-radius:4px;border:1px solid #fb923c;">⚠️ আপনার নাইট ডিউটির সমস্যা আছে / Night duty issue on ${nightSus} day(s): ${rows.filter(r => r.nightSuspect).map(r => r.date).join(', ')} — আপনি হয়তো নাইট করেছেন কিন্তু Empress-এ নাইট ওঠেনি। ERP টিমের সাথে যোগাযোগ করুন। (Night is counted only when Empress shows YES)</div>` : ''}
-${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
-<div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
+${footerHtml}</div>`;
 }
 
 function _rptReset() {
@@ -377,8 +379,14 @@ function syncReportPageBanner() {
     const [yy, mm] = String(ym).split('-');
     const mIdx = (parseInt(mm, 10) || 1) - 1;
     const niceMonth = `${BN_MONTHS[mIdx] || mm} ${yy}`;
-    if (subLbl) subLbl.textContent = `${areaName}${currentResult.grade ? ' • ' + currentResult.grade : ''} • Total: ৳${currentResult.totalEarned.toFixed(2)}`;
-    if (monthLbl) monthLbl.textContent = `${niceMonth} (${ym})`;
+    const isInc = typeof getAppMode === 'function' && getAppMode() === 'incharge';
+    const isNoRate = typeof isNoRateCat === 'function' && isNoRateCat(currentResult.category);
+    if (subLbl) {
+      subLbl.textContent = (isInc || isNoRate)
+        ? `${areaName}${currentResult.grade ? ' • ' + currentResult.grade : ''} • OT: ${currentResult.otHours || 0}h`
+        : `${areaName}${currentResult.grade ? ' • ' + currentResult.grade : ''} • ৳${Math.round(currentResult.totalEarned || 0).toLocaleString('en-IN')}`;
+    }
+    if (monthLbl) monthLbl.textContent = niceMonth;
     if (currentPermanentPage === 'report' && window._rptCtx && window._rptCtx.emp) {
       const h = document.getElementById('rptPreviewHost');
       if (h && h.style.display !== 'block') toggleReportPreview();
@@ -486,7 +494,8 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const viewCtx = getReportViewContext(currentSearchId);
   const myAmountDiv = document.getElementById('compareMyAmount');
   if (myAmountDiv) {
-    myAmountDiv.style.display = "block";
+    const isInc = typeof getAppMode === 'function' && getAppMode() === 'incharge';
+    myAmountDiv.style.display = isInc ? "none" : "block";
     myAmountDiv.innerText = viewCtx === 'own'
       ? `Your earnings: ৳ ${currentResult.totalEarned.toFixed(2)}`
       : `${currentSearchId} earnings: ৳ ${currentResult.totalEarned.toFixed(2)}`;
