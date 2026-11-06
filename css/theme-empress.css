@@ -1,0 +1,1970 @@
+/* ==========================================================================
+   THEME-EMPRESS.CSS — Empress HR Portal Visual Language Restyle
+   Loaded LAST in index.html.
+   STRICT SCOPING: Never touches #page-leaderboard, .lb-*, .rank-*, .podium*,
+   or ranking modals (#lbFullListModal, #iccContextModal, #adminCatAuthModal,
+   #empAdminCatModal).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL PAGE SURFACE & MONOSPACE TABULAR NUMERALS (Non-Ranking Scope)
+   -------------------------------------------------------------------------- */
+body:not([data-page="leaderboard"]):not(.drawer-open-left) {
+  background: var(--ui-bg);
+}
+
+#page-leaderboard,
+#lbFullListModal,
+#iccContextModal,
+#adminCatAuthModal,
+#empAdminCatModal {
+  color: var(--text);
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+}
+
+/* Tabular Monospace Typography for all numbers, times, dates, IDs & KPIs */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(
+  .gt-value,
+  .bill-amt,
+  .bill-calc,
+  .ds-value,
+  .inc-kpi-val,
+  .inc-count-num,
+  .inc-ov-total-num,
+  .inc-ytd-val,
+  .telemetry-val,
+  .id-badge,
+  .subpage-emp-id,
+  .id-chip,
+  .vs-Quick-chip,
+  .vs-preview-badge,
+  .history-item .id,
+  .history-item .meta,
+  .history-item .time,
+  .team-id,
+  .notice-date,
+  .emp-mono,
+  .emp-time-lbl,
+  .emp-worked-val,
+  #yearSelect,
+  #employeeId,
+  #inpSalary,
+  #inpOtHours,
+  #inpHoliday,
+  #inpNight,
+  #compareId1,
+  #compareId,
+  #compareId3,
+  #reportQuickIdInput,
+  #settingsNewIdInput,
+  #settingsRegisteredIdLabel
+),
+#rateChartModal :is(#qcTotalValue, #qcOt, #qcHol, #qcNight, .rate-table td strong),
+#welcomeBackModal .wb-id-badge,
+#modeSetupModal :is(#regEmpIdInput, #inchargePinInput) {
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   2. FULL-BLEED DEEP NAVY HERO HEADER (.app-header & .drawer-topbar)
+   -------------------------------------------------------------------------- */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header {
+  background: var(--ui-hero-grad) !important;
+  color: var(--ui-hero-text) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0 !important;
+  margin: -10px -12px 16px -12px !important;
+  padding: 20px 16px 18px 16px !important;
+  box-shadow: 0 4px 18px rgba(11, 22, 44, 0.14) !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (min-width: 600px) {
+  :is(
+    #page-search,
+    #page-report,
+    #page-vs,
+    #page-notices,
+    #page-more,
+    #page-team,
+    #page-history,
+    #page-settings,
+    #page-assessment
+  ) > .app-header {
+    margin: 0 0 18px 0 !important;
+  }
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .header h2 {
+  font-size: clamp(23px, 5.2vw, 28px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.18 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .header p {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ui-hero-muted) !important;
+  margin: 3px 0 0 0 !important;
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Square-ish 48px Glass Icon Buttons & Mode Pill on Navy Hero */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .icon-btn {
+  width: var(--ui-icon-btn) !important;
+  height: var(--ui-icon-btn) !important;
+  min-width: var(--ui-icon-btn) !important;
+  min-height: var(--ui-icon-btn) !important;
+  border-radius: var(--ui-radius-btn) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+  transition: background 0.16s ease, transform 0.15s ease;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .mode-pill-btn {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+  border-radius: var(--ui-radius-btn) !important;
+  background: var(--ui-active-pill-bg) !important;
+  border: 1px solid rgba(52, 211, 153, 0.35) !important;
+  color: var(--ui-active-pill-text) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:is(
+  #page-search,
+  #page-report
+) > .app-header .mode-pill-btn::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--ui-active-pill-dot);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Drawer Topbar on Non-Ranking Pages */
+:is(
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .drawer-topbar {
+  background: #0F2C5E !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 10px 14px !important;
+  min-height: 56px !important;
+}
+
+:is(
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .drawer-topbar .drawer-topbar-title {
+  color: #FFFFFF !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+}
+
+:is(
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .drawer-topbar .drawer-back-btn {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+/* Desktop Top Navigation Bar */
+.topnav {
+  background: var(--ui-hero-grad) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 18px rgba(11, 22, 44, 0.18) !important;
+}
+.topnav-brand strong {
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+}
+.topnav-brand small {
+  color: var(--ui-hero-muted) !important;
+}
+.topnav-item {
+  color: rgba(255, 255, 255, 0.78) !important;
+  border-radius: 10px !important;
+  min-height: 40px !important;
+  font-weight: 600 !important;
+}
+.topnav-item:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #FFFFFF !important;
+}
+.topnav-item.active {
+  background: #FFFFFF !important;
+  color: #0F2C5E !important;
+  font-weight: 700 !important;
+}
+.topnav .mode-pill-btn {
+  background: var(--ui-active-pill-bg) !important;
+  color: var(--ui-active-pill-text) !important;
+  border: 1px solid rgba(52, 211, 153, 0.35) !important;
+  border-radius: 12px !important;
+  min-height: 40px !important;
+}
+.topnav .icon-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  border-radius: 12px !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. CARDS, SURFACES, BUTTONS, INPUTS & SELECTS (Non-Ranking Scope)
+   -------------------------------------------------------------------------- */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(.card, .collapse-card, .inc-leaves-card, .inc-absent-card, .inc-history-card, .inc-toppers-card, .inc-watchlist-card, .inc-profile-card) {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: var(--ui-radius-card) !important;
+  box-shadow: var(--ui-shadow-card) !important;
+  padding: 18px 16px !important;
+  margin-bottom: 14px !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(.card-title, .card-h, .inc-section-title) {
+  color: var(--ui-navy-700) !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  letter-spacing: -0.01em;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .card-sub {
+  color: var(--ui-muted) !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+
+/* Primary Buttons: Solid Navy (#12356B / #0F2C5E), White Bold Text, 46px height, 14px radius */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .btn-primary,
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .btn-primary,
+.pwa-install-banner .pwa-btn-primary {
+  background: linear-gradient(180deg, #12356B 0%, #0F2C5E 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: var(--ui-radius-btn) !important;
+  min-height: var(--ui-btn-h) !important;
+  height: auto !important;
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: 0 2px 8px rgba(15, 44, 94, 0.18) !important;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+:root[data-theme="dark"] :is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .btn-primary,
+:root[data-theme="dark"] .lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .btn-primary {
+  background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
+  border-color: rgba(147, 197, 253, 0.25) !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .btn-primary:active,
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .btn-primary:active {
+  transform: scale(0.98) !important;
+}
+
+/* Secondary / Outline Buttons: White bg, 1px #D5DEEC border, Navy text, 46px height, 14px radius */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(.btn-secondary, .reset-btn),
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) :is(.btn-secondary, .reset-btn) {
+  background: var(--ui-card) !important;
+  color: var(--ui-navy-700) !important;
+  border: 1px solid var(--ui-border-btn) !important;
+  border-radius: var(--ui-radius-btn) !important;
+  min-height: var(--ui-btn-h) !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 2px rgba(15, 44, 94, 0.04) !important;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(.btn-secondary, .reset-btn):hover {
+  background: var(--ui-card-2) !important;
+  border-color: #B8C7DF !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .danger-btn,
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .danger-btn {
+  background: var(--ui-status-abs-bg) !important;
+  color: var(--ui-status-abs-fg) !important;
+  border-color: rgba(185, 28, 28, 0.25) !important;
+}
+
+/* Small Outline Action Buttons (38px height, 11px radius) */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) .calc-mini-btn {
+  background: var(--ui-card) !important;
+  color: var(--ui-navy-700) !important;
+  border: 1px solid var(--ui-border-btn) !important;
+  border-radius: var(--ui-radius-sm) !important;
+  min-height: var(--ui-btn-sm-h) !important;
+  height: var(--ui-btn-sm-h) !important;
+  padding: 0 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* Inputs & Selects (48px height, 14px radius) */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(input[type="text"], input[type="number"], input[type="password"], input[type="date"], select),
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) :is(input[type="text"], input[type="number"], input[type="password"], input[type="date"], select) {
+  min-height: 46px !important;
+  height: 46px !important;
+  border-radius: var(--ui-radius-btn) !important;
+  border: 1px solid var(--ui-border-btn) !important;
+  background-color: var(--ui-card) !important;
+  color: var(--ui-text) !important;
+  padding: 0 14px !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 2px rgba(15, 44, 94, 0.03) !important;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) :is(input, select, button):focus-visible {
+  outline: none !important;
+  box-shadow: var(--ui-focus-ring) !important;
+}
+
+/* Eyebrow Labels */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) label,
+.vs-mini-label {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  color: var(--ui-muted) !important;
+  margin-bottom: 6px !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. SEARCH PAGE — NAVY HERO DASHBOARD, GLASS TILES & WHITE KPI CARDS
+   -------------------------------------------------------------------------- */
+/* Search Form Card styled as Deep-Navy Empress Hero Block */
+#page-search #searchFormCard {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: var(--ui-radius-card) !important;
+  box-shadow: 0 10px 28px rgba(15, 44, 94, 0.18) !important;
+  padding: 20px 16px !important;
+}
+
+#page-search #searchFormCard label {
+  color: var(--ui-hero-muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase;
+}
+
+#page-search #searchFormCard :is(#yearSelect, #monthSelect, #employeeId) {
+  background-color: #FFFFFF !important;
+  color: #0F1E36 !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  border-radius: 14px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+#page-search #searchFormCard #searchBtn {
+  background: #2F6BDD !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  border-radius: 14px !important;
+  margin-top: 14px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+}
+
+#page-search #searchFormCard .recent-chips-label {
+  color: var(--ui-hero-muted) !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#page-search #searchFormCard .id-chip {
+  background: var(--ui-glass-bg) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  border-radius: 999px !important;
+  min-height: 36px !important;
+  padding: 4px 12px !important;
+  font-family: var(--ui-mono);
+  font-size: 12.5px !important;
+}
+
+/* Welcome Slider & Quick Actions in Empress Navy/Glass & Clean Pill Style */
+#page-search .welcome-slider {
+  border-radius: var(--ui-radius-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: var(--ui-shadow-card) !important;
+}
+
+#page-search .ws-slide {
+  background: var(--ui-hero-grad) !important;
+}
+
+#page-search .ws-badge {
+  background: var(--ui-active-pill-bg) !important;
+  color: var(--ui-active-pill-text) !important;
+  border: 1px solid rgba(52, 211, 153, 0.32) !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.10em !important;
+  text-transform: uppercase;
+}
+
+#page-search .ws-cta {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+#page-search .quick-actions-grid .qa-tile {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--ui-shadow-card) !important;
+  min-height: 68px !important;
+  color: var(--ui-navy-700) !important;
+  font-weight: 700 !important;
+}
+
+#page-search .quick-actions-grid .qa-icon {
+  background: #E8F0FE !important;
+  color: #12356B !important;
+  border-radius: 12px !important;
+}
+
+:root[data-theme="dark"] #page-search .quick-actions-grid .qa-icon {
+  background: rgba(59, 130, 246, 0.18) !important;
+  color: #93C5FD !important;
+}
+
+/* Search Summary Compact Strip & Month Nav Bar styled as Empress Hero Profile Block */
+#page-search .search-summary {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  padding: 16px !important;
+  box-shadow: 0 8px 22px rgba(15, 44, 94, 0.16) !important;
+}
+
+#page-search .search-summary .id-badge {
+  background: var(--ui-active-pill-bg) !important;
+  color: var(--ui-active-pill-text) !important;
+  border: 1px solid rgba(52, 211, 153, 0.35) !important;
+  border-radius: 999px !important;
+  padding: 5px 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#page-search .search-summary .id-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--ui-active-pill-dot);
+  display: inline-block;
+}
+
+#page-search .search-summary .month-info {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+}
+
+#page-search .search-summary .edit-icon {
+  min-height: 40px !important;
+  height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700 !important;
+}
+
+/* Month Navigation Bar on Search Page (Empress REPORTING PERIOD style) */
+#page-search .month-nav-bar {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 18px !important;
+  padding: 12px 14px !important;
+  margin-bottom: 14px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#page-search .month-nav-bar .month-nav-center {
+  color: #FFFFFF !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#page-search .month-nav-bar .month-nav-center::before {
+  content: "REPORTING PERIOD";
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--ui-hero-muted);
+  margin-bottom: 2px;
+}
+
+#page-search .month-nav-bar .month-nav-btn {
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+}
+
+/* Section Heading with Thin 2px Navy Divider Line (#step3) */
+#page-search #step3 .card-head {
+  position: relative;
+  padding-top: 16px !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 2px solid var(--ui-divider-navy) !important;
+}
+
+#page-search #step3 .card-head::before {
+  content: "MONTH SUMMARY";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--ui-muted);
+  text-transform: uppercase;
+}
+
+#page-search #step3 .card-head h3 {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: var(--ui-text) !important;
+  letter-spacing: -0.02em;
+}
+
+/* Grand Total Block as Deep-Navy Glass Hero Tile */
+#page-search .grand-total-block,
+#rateChartModal .grand-total-block {
+  background: var(--ui-hero-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  padding: 18px 18px !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 22px rgba(15, 44, 94, 0.16) !important;
+}
+
+#page-search .grand-total-block .gt-label,
+#rateChartModal .grand-total-block .gt-label {
+  color: var(--ui-hero-muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase;
+}
+
+#page-search .grand-total-block .gt-value,
+#rateChartModal .grand-total-block .gt-value {
+  font-family: var(--ui-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: clamp(32px, 7vw, 38px) !important;
+  font-weight: 400 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Bill Rows & Day Summary Grid as Empress White KPI Cards with Delta Pill & Sparkline */
+#page-search .bill-list {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  margin: 12px 0 !important;
+}
+
+#page-search .bill-row {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 20px !important;
+  padding: 16px !important;
+  box-shadow: var(--ui-shadow-card) !important;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#page-search .bill-row .bill-name {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: var(--ui-navy-700) !important;
+}
+
+#page-search .bill-row .bill-calc {
+  display: inline-block;
+  margin-top: 8px !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  background: var(--ui-pill-delta-bg) !important;
+  color: var(--ui-pill-delta-text) !important;
+  font-family: var(--ui-mono) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+#page-search .bill-row .bill-amt {
+  font-family: var(--ui-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: 28px !important;
+  font-weight: 400 !important;
+  color: var(--ui-text) !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* 2x2 KPI Summary Grid with Mini Sparkline Accent (matches Screenshot 3) */
+#page-search .day-summary-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+#page-search .day-summary-grid .ds-cell {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 20px !important;
+  padding: 15px 14px 40px 14px !important;
+  box-shadow: var(--ui-shadow-card) !important;
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  text-align: left !important;
+  position: relative;
+  overflow: hidden;
+}
+
+#page-search .day-summary-grid .ds-cell .ds-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--ui-navy-700) !important;
+  margin-bottom: 6px !important;
+}
+
+#page-search .day-summary-grid .ds-cell .ds-value {
+  font-family: var(--ui-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: clamp(28px, 6.5vw, 34px) !important;
+  font-weight: 400 !important;
+  color: var(--ui-text) !important;
+  line-height: 1.1 !important;
+}
+
+/* Delta Pill + Mini Bar Sparkline at bottom of each KPI card */
+#page-search .day-summary-grid .ds-cell::before {
+  content: "Month KPI";
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ui-pill-delta-bg);
+  color: var(--ui-pill-delta-text);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+#page-search .day-summary-grid .ds-cell::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 52px;
+  height: 22px;
+  background-image:
+    linear-gradient(to top, var(--ui-spark-bar) 45%, transparent 45%),
+    linear-gradient(to top, var(--ui-spark-bar) 75%, transparent 75%),
+    linear-gradient(to top, var(--ui-spark-bar) 60%, transparent 60%),
+    linear-gradient(to top, var(--ui-spark-bar) 85%, transparent 85%),
+    linear-gradient(to top, var(--ui-spark-bar) 50%, transparent 50%),
+    linear-gradient(to top, var(--ui-spark-bar-active) 95%, transparent 95%);
+  background-size: 5px 100%;
+  background-position: 0 0, 9px 0, 18px 0, 27px 0, 36px 0, 45px 0;
+  background-repeat: no-repeat;
+  opacity: 0.92;
+}
+
+/* In-Charge Overview Hero & Glass Stat Tiles on #page-search */
+#page-search .inc-ov-hero {
+  background: var(--ui-hero-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: var(--ui-radius-card) !important;
+  padding: 20px 16px !important;
+  color: #FFFFFF !important;
+}
+
+#page-search .inc-count-card {
+  background: var(--ui-glass-bg) !important;
+  border: 1px solid var(--ui-glass-border) !important;
+  border-radius: var(--ui-radius-glass) !important;
+  padding: 14px !important;
+  color: #FFFFFF !important;
+}
+
+#page-search .inc-count-num {
+  font-family: var(--ui-mono) !important;
+  font-size: 28px !important;
+  font-weight: 400 !important;
+  color: #FFFFFF !important;
+}
+
+#page-search .inc-kpi-box {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+  box-shadow: var(--ui-shadow-card) !important;
+}
+
+#page-search .inc-kpi-val {
+  font-family: var(--ui-mono) !important;
+  font-size: 26px !important;
+  font-weight: 400 !important;
+  color: var(--ui-text) !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. REPORT PAGE — EMPRESS HERO, FILTER CHIPS & DAILY LOG TABLE WITH TIME BARS
+   -------------------------------------------------------------------------- */
+#page-report .report-emp-card {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: var(--ui-radius-card) !important;
+  padding: 18px 16px !important;
+  margin-bottom: 14px !important;
+  box-shadow: 0 10px 26px rgba(15, 44, 94, 0.16) !important;
+}
+
+#page-report .subpage-emp-id {
+  background: var(--ui-active-pill-bg) !important;
+  color: var(--ui-active-pill-text) !important;
+  border: 1px solid rgba(52, 211, 153, 0.35) !important;
+  border-radius: 999px !important;
+  padding: 5px 12px !important;
+  font-family: var(--ui-mono) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#page-report .subpage-emp-id::before {
+  content: "ACTIVE •";
+  color: var(--ui-active-pill-text);
+  font-family: var(--ui-sans);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+#page-report .subpage-emp-name {
+  color: #FFFFFF !important;
+  font-size: 21px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+
+#page-report .subpage-emp-sub {
+  color: var(--ui-hero-muted) !important;
+  font-family: var(--ui-mono) !important;
+  font-size: 12.5px !important;
+}
+
+#page-report .report-emp-card .calc-mini-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  min-height: 40px !important;
+  border-radius: 12px !important;
+}
+
+#page-report .report-strip-nav {
+  margin-top: 14px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+#page-report .report-strip-month-lbl {
+  color: #FFFFFF !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  font-family: var(--ui-mono);
+}
+
+#page-report .report-strip-nav .month-nav-btn {
+  min-height: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  padding: 0 12px !important;
+  font-weight: 700 !important;
+}
+
+/* Empress Daily Log Card & Filter Chips Row (Screenshot 5) */
+.empress-log-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.empress-log-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ui-text);
+  letter-spacing: -0.01em;
+}
+
+.empress-log-sub {
+  font-size: 12.5px;
+  color: var(--ui-muted);
+  margin-top: 2px;
+  font-family: var(--ui-mono);
+}
+
+.empress-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 10px 0 14px 0;
+}
+
+.emp-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--ui-card-2);
+  border: 1px solid var(--ui-border);
+  color: var(--ui-navy-700);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  width: auto;
+  margin: 0;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+.emp-filter-chip:active {
+  transform: scale(0.97);
+}
+
+.emp-filter-chip .chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.emp-filter-chip .chip-cnt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--ui-card);
+  color: var(--ui-text);
+  font-family: var(--ui-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.emp-filter-chip.active {
+  background: #0B1220 !important;
+  color: #FFFFFF !important;
+  border-color: #0B1220 !important;
+}
+
+:root[data-theme="dark"] .emp-filter-chip.active {
+  background: #3B82F6 !important;
+  color: #FFFFFF !important;
+  border-color: #60A5FA !important;
+}
+
+.emp-filter-chip.active .chip-cnt {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
+}
+
+.emp-filter-chip.emp-chip-zero:not(.active) {
+  opacity: 0.48;
+}
+
+/* Empress Daily Log Table */
+.empress-daily-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-card);
+}
+
+.empress-daily-table {
+  width: 100%;
+  min-width: 580px;
+  border-collapse: collapse;
+  background: var(--ui-card);
+  color: var(--ui-text);
+}
+
+.empress-daily-table thead tr {
+  background: var(--ui-card-2);
+  border-bottom: 1px solid var(--ui-border);
+  height: 40px;
+}
+
+.empress-daily-table th {
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ui-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.empress-daily-table tbody tr {
+  height: 58px;
+  border-bottom: 1px solid var(--ui-hairline);
+  transition: background 0.12s ease;
+}
+
+.empress-daily-table tbody tr.emp-row-wk {
+  background: var(--ui-card-wk);
+}
+
+.empress-daily-table tbody tr.emp-row-highlight {
+  background: rgba(47, 107, 221, 0.08) !important;
+}
+
+.empress-daily-table td {
+  padding: 8px 10px;
+  font-size: 13px;
+  vertical-align: middle;
+  color: var(--ui-text);
+}
+
+/* Status Badges inside Empress Daily Log */
+.emp-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.emp-status-pill.avail {
+  background: var(--ui-status-avail-bg);
+  color: var(--ui-status-avail-fg);
+}
+.emp-status-pill.dayoff,
+.emp-status-pill.weekend {
+  background: var(--ui-status-off-bg);
+  color: var(--ui-status-off-fg);
+}
+.emp-status-pill.absent {
+  background: var(--ui-status-abs-bg);
+  color: var(--ui-status-abs-fg);
+}
+.emp-status-pill.late {
+  background: var(--ui-status-late-bg);
+  color: var(--ui-status-late-fg);
+}
+.emp-status-pill.leave {
+  background: var(--ui-status-leave-bg);
+  color: var(--ui-status-leave-fg);
+}
+.emp-status-pill.holiday {
+  background: var(--ui-status-hol-bg);
+  color: var(--ui-status-hol-fg);
+}
+.emp-status-pill.offduty {
+  background: var(--ui-status-out-bg);
+  color: var(--ui-status-out-fg);
+}
+
+/* Horizontal Time Bar (08:00 - 24:00 Axis) */
+.emp-timeline-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 190px;
+}
+
+.emp-time-lbl {
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-text-2);
+  min-width: 38px;
+}
+
+.emp-time-lbl.miss {
+  color: var(--ui-status-abs-fg);
+  font-weight: 800;
+}
+
+.emp-time-track {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--ui-blue-track);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emp-time-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--ui-blue-600);
+}
+
+.emp-time-fill.offduty {
+  background: var(--ui-blue-400);
+}
+
+.emp-time-fill.holiday {
+  background: #8B5CF6;
+}
+
+.emp-time-fill.bad {
+  background: repeating-linear-gradient(
+    -45deg,
+    #F97316,
+    #F97316 6px,
+    #FDBA74 6px,
+    #FDBA74 12px
+  );
+}
+
+.emp-track-off-lbl {
+  font-family: var(--ui-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ui-muted);
+}
+
+.emp-worked-col {
+  text-align: right !important;
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.emp-worked-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ui-text);
+}
+
+.emp-worked-sub {
+  font-size: 11px;
+  color: var(--ui-muted);
+  margin-top: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   6. VS / COMPARE PAGE — TWO WHITE KPI COLUMNS & WINNER PILLS
+   -------------------------------------------------------------------------- */
+#page-vs .vs-mode-switch {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 14px !important;
+  padding: 4px !important;
+}
+
+#page-vs .vs-mode-btn {
+  min-height: 40px !important;
+  border-radius: 11px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: var(--ui-muted) !important;
+}
+
+#page-vs .vs-mode-btn.active {
+  background: #0F2C5E !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 6px rgba(15, 44, 94, 0.20) !important;
+}
+
+:root[data-theme="dark"] #page-vs .vs-mode-btn.active {
+  background: #2563EB !important;
+}
+
+#page-vs .vs-slot-card {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+}
+
+#page-vs .vs-sub-chip,
+#page-vs .vs-pair-btn {
+  min-height: 38px !important;
+  border-radius: 999px !important;
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border-btn) !important;
+  color: var(--ui-navy-700) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  padding: 0 13px !important;
+}
+
+#page-vs .vs-sub-chip.active {
+  background: #0B1220 !important;
+  color: #FFFFFF !important;
+  border-color: #0B1220 !important;
+}
+
+#page-vs .compare-table-wrap {
+  border-radius: 20px !important;
+  border: 1px solid var(--ui-border) !important;
+  overflow-x: auto;
+  background: var(--ui-card) !important;
+  box-shadow: var(--ui-shadow-card) !important;
+}
+
+#page-vs .compare-table th {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 10px !important;
+}
+
+#page-vs .compare-table td {
+  padding: 12px 10px !important;
+  border-bottom: 1px solid var(--ui-hairline) !important;
+  font-family: var(--ui-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13.5px !important;
+}
+
+#page-vs .compare-table td:first-child {
+  font-family: var(--ui-sans);
+  font-weight: 700;
+  color: var(--ui-navy-700);
+}
+
+#page-vs .compare-table td.win-cell {
+  background: var(--ui-status-avail-bg) !important;
+  color: var(--ui-status-avail-fg) !important;
+  font-weight: 800 !important;
+}
+
+#page-vs .compare-diff {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+  margin-top: 12px !important;
+  font-family: var(--ui-mono);
+  font-size: 13.5px !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. NOTICES, MORE, TEAM, HISTORY, SETTINGS & ASSESSMENT PAGES
+   -------------------------------------------------------------------------- */
+#page-more .more-item {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  padding: 14px 16px !important;
+  min-height: 64px !important;
+  box-shadow: var(--ui-shadow-card) !important;
+  margin-bottom: 10px !important;
+}
+
+#page-more .more-item .mi-icon {
+  background: #E8F0FE !important;
+  color: #0F2C5E !important;
+  border-radius: 12px !important;
+  width: 42px !important;
+  height: 42px !important;
+}
+
+:root[data-theme="dark"] #page-more .more-item .mi-icon {
+  background: rgba(59, 130, 246, 0.18) !important;
+  color: #93C5FD !important;
+}
+
+#page-notices .notice-item {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-left: 4px solid #0F2C5E !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+  margin-bottom: 10px !important;
+}
+
+#page-team .team-member {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+}
+
+#page-team .team-wa {
+  min-height: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  padding: 0 14px !important;
+  font-weight: 700 !important;
+}
+
+#page-history .history-item {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+  min-height: 58px !important;
+  margin-bottom: 8px !important;
+}
+
+:is(#page-more, #page-settings) .theme-seg {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 14px !important;
+  padding: 4px !important;
+}
+
+:is(#page-more, #page-settings) .theme-seg button {
+  min-height: 42px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+}
+
+:is(#page-more, #page-settings) .theme-seg button.active {
+  background: #0F2C5E !important;
+  color: #FFFFFF !important;
+}
+
+:root[data-theme="dark"] :is(#page-more, #page-settings) .theme-seg button.active {
+  background: #2563EB !important;
+}
+
+#page-settings .telemetry-box {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. BOTTOM NAVIGATION BAR & FLOATING "TOP" BUTTON
+   -------------------------------------------------------------------------- */
+.bottom-nav {
+  background: var(--ui-card) !important;
+  border-top: 1px solid var(--ui-border) !important;
+  box-shadow: var(--ui-shadow-nav) !important;
+}
+
+.bottom-nav .bn-item {
+  color: var(--ui-muted) !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  min-height: 48px !important;
+  position: relative;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.bottom-nav .bn-item.active {
+  color: #0F2C5E !important;
+  font-weight: 800 !important;
+  background: rgba(15, 44, 94, 0.06) !important;
+}
+
+:root[data-theme="dark"] .bottom-nav .bn-item.active {
+  color: #60A5FA !important;
+  background: rgba(96, 165, 250, 0.12) !important;
+}
+
+.bottom-nav .bn-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 28%;
+  right: 28%;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: #0F2C5E;
+}
+
+:root[data-theme="dark"] .bottom-nav .bn-item.active::before {
+  background: #60A5FA;
+}
+
+/* Floating "TOP" Button (matches bottom-right button in Empress screenshots) */
+.empress-top-btn {
+  position: fixed;
+  right: 14px;
+  bottom: calc(134px + env(safe-area-inset-bottom, 0px));
+  z-index: 840;
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+  min-width: 46px;
+  padding: 0;
+  border-radius: 14px;
+  background: rgba(120, 134, 156, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(59, 130, 246, 0.75);
+  box-shadow: 0 0 14px rgba(47, 107, 221, 0.45), 0 4px 12px rgba(15, 44, 94, 0.22);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.empress-top-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.empress-top-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+.empress-top-btn span {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   9. NON-RANKING MODALS, TOASTS & PWA INSTALL BANNER
+   -------------------------------------------------------------------------- */
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) {
+  background: var(--ui-overlay) !important;
+  backdrop-filter: blur(4px);
+}
+
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .lb-modal-content {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 20px 48px rgba(8, 20, 45, 0.32) !important;
+  overflow: hidden;
+}
+
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) :is(.lb-modal-header, .mode-modal-hero) {
+  background: var(--ui-hero-grad) !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .lb-modal-title {
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+}
+
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .lb-modal-subtitle {
+  color: var(--ui-hero-muted) !important;
+}
+
+.lb-modal:not(#lbFullListModal):not(#iccContextModal):not(#adminCatAuthModal):not(#empAdminCatModal) .lb-modal-close {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid var(--ui-glass-btn-border) !important;
+  color: #FFFFFF !important;
+  border-radius: 12px !important;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.pwa-install-banner .pwa-install-card,
+.pwa-ios-modal .pwa-ios-sheet {
+  background: var(--ui-card) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 14px 36px rgba(8, 20, 45, 0.24) !important;
+}
+
+.toast-container > div {
+  border-radius: 14px !important;
+  box-shadow: 0 10px 28px rgba(8, 20, 45, 0.25) !important;
+  font-weight: 700 !important;
+}
+
+/* Desktop Grid Polish for Search Page (prevents horizontal overflow at 900px+) */
+@media (min-width: 900px) {
+  #page-search.active > * {
+    min-width: 0;
+  }
+  #page-search > .app-header,
+  #page-search > #welcomeBanner {
+    grid-column: 1 / -1 !important;
+  }
+  body:not(.incharge-mode) #inchargeHomeOverview {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. REFINEMENTS FOR 360PX HERO TYPOGRAPHY, PROFILE STACK & SEGMENTED BAR
+   -------------------------------------------------------------------------- */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .header {
+  flex: 1;
+  min-width: 0;
+}
+
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .header h2 {
+  font-size: clamp(19px, 4.8vw, 26px) !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+/* Stack ACTIVE pill above Employee Name on Report Hero (matches Screenshot 1) */
+#page-report .report-strip-top {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+#page-report .subpage-emp-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+#page-report .subpage-emp-name {
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+#page-report .subpage-emp-sub {
+  white-space: normal !important;
+  line-height: 1.4 !important;
+}
+
+/* Prevent Month Label clipping in #monthNavBar and .report-strip-nav */
+#page-search .month-nav-bar .month-nav-center,
+#page-report .report-strip-month-lbl {
+  flex: 1 !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  font-size: 14.5px !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
+
+#page-search .month-nav-bar .month-nav-btn,
+#page-report .report-strip-nav .month-nav-btn {
+  padding: 0 10px !important;
+  font-size: 12px !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
+}
+
+/* Segmented Control Bar on Report Page (.rpt-zoom-bar matches Screenshot 3/4) */
+#page-report .rpt-zoom-bar {
+  background: var(--ui-card-2) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 16px !important;
+  padding: 6px !important;
+  margin-bottom: 12px !important;
+}
+
+#page-report .rpt-zoom-btns {
+  background: rgba(15, 44, 94, 0.05) !important;
+  border-radius: 12px !important;
+  padding: 3px !important;
+  display: inline-flex !important;
+  gap: 3px !important;
+}
+
+#page-report .rpt-zoom-btn {
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--ui-muted) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+#page-report .rpt-zoom-btn.active {
+  background: var(--ui-card) !important;
+  color: var(--ui-text) !important;
+  box-shadow: 0 1px 3px rgba(15, 44, 94, 0.10) !important;
+}
+
+/* Responsive Empress Daily Log Table (Fits 360px without clipping + expands on desktop) */
+:is(
+  #page-search,
+  #page-report,
+  #page-vs,
+  #page-notices,
+  #page-more,
+  #page-team,
+  #page-history,
+  #page-settings,
+  #page-assessment
+) > .app-header .mode-pill-btn {
+  width: auto !important;
+  flex: 0 0 auto !important;
+}
+
+#page-report > .app-header .header h2 {
+  font-size: clamp(17px, 4.4vw, 22px) !important;
+  line-height: 1.2 !important;
+}
+
+.emp-axis-head {
+  display: flex;
+  justify-content: space-between;
+  min-width: 115px;
+  font-family: var(--ui-mono);
+}
+
+.emp-show-sm {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .empress-daily-log-wrap {
+    padding: 10px 4px !important;
+  }
+  .empress-daily-table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .empress-daily-table th,
+  .empress-daily-table td {
+    padding: 6px 4px !important;
+  }
+  .emp-hide-sm {
+    display: none !important;
+  }
+  .emp-show-sm {
+    display: block !important;
+  }
+  .emp-axis-head {
+    min-width: 82px !important;
+    gap: 4px !important;
+    font-size: 9.5px !important;
+  }
+  .emp-timeline-cell {
+    min-width: 86px !important;
+    gap: 3px !important;
+  }
+  .emp-time-lbl {
+    font-size: 10px !important;
+    min-width: 26px !important;
+  }
+  .emp-status-pill {
+    padding: 3px 6px !important;
+    font-size: 10.5px !important;
+  }
+  .emp-worked-val {
+    font-size: 12px !important;
+  }
+  .emp-worked-sub {
+    font-size: 9.5px !important;
+  }
+}

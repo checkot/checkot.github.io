@@ -97,11 +97,8 @@
       if (!pg || pg.querySelector(':scope > .drawer-topbar')) return;
       const tb = document.createElement('div');
       tb.className = 'drawer-topbar';
-      const themeBtn = dp.id !== 'page-more' && dp.id !== 'page-leaderboard'
-        ? '<button type="button" class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme"><svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>'
-        : '';
       tb.innerHTML = '<button type="button" class="drawer-back-btn" onclick="closeSideDrawer()">‹ Back</button>' +
-        `<span class="drawer-topbar-title">${esc(dp.title)}</span>` + themeBtn;
+        `<span class="drawer-topbar-title">${esc(dp.title)}</span>`;
       if (dp.help) tb.appendChild(makeQ(dp.help, 'mgr-q-lg'));
       pg.insertBefore(tb, pg.firstChild);
     });
@@ -222,12 +219,7 @@
     });
     // Report label
     const s7 = $('step7LabelText');
-    if (s7 && !s7.querySelector('.mgr-q')) {
-      if (s7.firstChild && s7.firstChild.nodeType === 3) {
-        s7.firstChild.nodeValue = s7.firstChild.nodeValue.replace(/\?+\s*$/, '');
-      }
-      s7.appendChild(makeQ('ot_missing'));
-    }
+    if (s7 && !s7.querySelector('.mgr-q')) s7.appendChild(makeQ('ot_missing'));
     // Rank drill top bar: one "?" that follows the active criterion
     const bar = document.querySelector('#iccRankDrillView .icc-topbar');
     if (bar) {

@@ -227,20 +227,14 @@ const isMulti = currentLbTimeMode !== 'monthly' && (e.monthsCount || 1) >= 1 && 
 const commonMeta = isMulti
 ? `Duty ${e.totalDuty}h • OT ${e.otHours}h • Avg OT ${e.avgOt}h/m`
 : `Duty: ${e.totalDuty}h | OT: ${e.otHours}h | Hol: ${e.holidayCount} | Night: ${e.nightCount}${punchTag}`;
-const dutyMeta = isMulti
-? `OT ${e.otHours}h • Avg OT ${e.avgOt}h/m`
-: `OT: ${e.otHours}h | Hol: ${e.holidayCount} | Night: ${e.nightCount}${punchTag}`;
-const otMeta = isMulti
-? `Duty ${e.totalDuty}h • Avg OT ${e.avgOt}h/m`
-: `Duty: ${e.totalDuty}h | Hol: ${e.holidayCount} | Night: ${e.nightCount}${punchTag}`;
 const nRest = Number(e.nightRestDays || 0);
 const nCred = Number(e.nightRestCredit != null ? e.nightRestCredit : nRest * NIGHT_REST_CREDIT_HOURS);
 let creditLineHtml = '';
 if (type === 'duty') {
-valueStr = `${e.totalDuty} hrs`; metaStr = dutyMeta; rawMetric = Number(e.adjustedDuty ?? e.totalDuty) || 0;
-if (nRest > 0) creditLineHtml = `<div class="rank-meta" style="font-size:12px;opacity:0.85;">+${nCred}h night-rest credit (${nRest}d)</div>`;
+valueStr = `${e.totalDuty} hrs`; metaStr = commonMeta; rawMetric = Number(e.adjustedDuty ?? e.totalDuty) || 0;
+if (nRest > 0) creditLineHtml = `<div class="rank-meta" style="font-size:10px;opacity:0.85;">+${nCred}h night-rest credit (${nRest}d)</div>`;
 }
-else if (type === 'ot') { valueStr = `${e.otHours} hrs`; metaStr = otMeta; rawMetric = Number(e.otHours) || 0; }
+else if (type === 'ot') { valueStr = `${e.otHours} hrs`; metaStr = commonMeta; rawMetric = Number(e.otHours) || 0; }
 else if (type === 'earned') { valueStr = `৳ ${Number(e.totalEarned || 0).toFixed(0)}`; metaStr = commonMeta; rawMetric = Number(e.totalEarned) || 0; }
 else if (type === 'punch') { valueStr = `${bn(pCount)} days missing`; metaStr = `Duty: ${e.totalDuty}h | OT: ${e.otHours}h` + (isNoRateCat(e.category) ? '' : ` | ৳${Math.round(e.totalEarned || 0)}`); rawMetric = pCount; }
 const desig = getDesignation(e);
@@ -318,10 +312,10 @@ setTxt('hubSubLessOt', 'Lowest Overtime Hours');
 setTxt('hubSubPunch', 'Missing In/Out Punch List');
 const rCount = (filteredList || []).filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).length;
 setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
-setTxt('hubSubReq', rCount > 0 ? 'Missing OT Requisitions' : 'All OT requisitions OK');
+setTxt('hubSubReq', rCount > 0 ? `${rCount} employees with missing OT req` : 'All OT requisitions OK');
 const absCount = (filteredList || []).filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).length;
 setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
-setTxt('hubSubAbsent', absCount > 0 ? 'Employees with ≥1 absent day' : 'No general day absents');
+setTxt('hubSubAbsent', absCount > 0 ? `${absCount} employees with ≥1 absent day` : 'No general day absents');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
 if (iccDrillOpen) renderIccDrillList();
