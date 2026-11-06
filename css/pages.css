@@ -6384,3 +6384,263 @@ body.norate-view #compareMyAmount {
     max-width: 1240px !important;
   }
 }
+
+/* ==========================================================================
+   PWA INSTALL BANNER & MODAL (mukhon-frontend-design)
+   ========================================================================== */
+.pwa-install-banner {
+  position: fixed;
+  z-index: 9999;
+  bottom: calc(68px + env(safe-area-inset-bottom, 12px));
+  left: 14px;
+  right: 14px;
+  max-width: 440px;
+  margin: 0 auto;
+  pointer-events: auto;
+  animation: pwaSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 768px) {
+  .pwa-install-banner {
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    margin: 0;
+    max-width: 380px;
+  }
+}
+
+@keyframes pwaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pwa-install-card {
+  position: relative;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pwa-install-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface-2, rgba(0, 0, 0, 0.05));
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.pwa-install-close-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.pwa-install-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 24px;
+}
+
+.pwa-install-app-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border);
+}
+
+.pwa-install-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-install-headline {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.pwa-install-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.pwa-install-actions {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 8px;
+}
+
+.pwa-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--primary-blue, #0052cc);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.pwa-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.pwa-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pwa-btn-ghost:hover {
+  background: var(--surface-2, rgba(0, 0, 0, 0.04));
+  color: var(--text);
+}
+
+/* iOS Guidance Modal */
+.pwa-ios-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: pwaFadeIn 0.2s ease forwards;
+}
+
+@media (min-width: 600px) {
+  .pwa-ios-modal {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+@keyframes pwaFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pwa-ios-sheet {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 12px));
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid var(--border);
+  animation: pwaSlideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 600px) {
+  .pwa-ios-sheet {
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+}
+
+@keyframes pwaSlideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.pwa-ios-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  padding-right: 28px;
+  margin-bottom: 16px;
+}
+
+.pwa-ios-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.pwa-ios-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface-2, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.pwa-ios-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.pwa-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-blue, #0052cc);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
