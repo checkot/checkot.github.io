@@ -6056,6 +6056,16 @@ isAdmin: false,
 allowNormalBypass: true,
 pins: ['21062', '2026', '1234']
 },
+'RF20948': {
+id: 'RF20948',
+name: 'Hadia Farzana',
+mode: 'incharge',
+roleTitle: 'Assistant Manager',
+defaultArea: 'Overall',
+isAdmin: false,
+allowNormalBypass: true,
+pins: ['20948', '2026', '1234']
+},
 'RF21283': {
 id: 'RF21283',
 name: 'Tanzina Aktar',

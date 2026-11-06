@@ -308,6 +308,7 @@ const CANONICAL_RPPF_EXECS = [
   { id: 'RF21291', name: 'Sabuj Karmoker', desig: 'Assistant Manager', sub: 'Plant Operations' },
   { id: 'RF20716', name: 'Milon Ahamed', desig: 'Senior Assistant Manager', sub: 'Production Management' },
   { id: 'RF21062', name: 'Namita Rani Nath', desig: 'Assistant Manager', sub: 'Plant Operations' },
+  { id: 'RF20948', name: 'Hadia Farzana', desig: 'Assistant Manager', sub: 'Plant Operations' },
   { id: 'RF21283', name: 'Tanzina Aktar', desig: 'Assistant Manager', sub: 'Plant Operations' },
   { id: 'RF8941',  name: 'Debashish Mitra', desig: 'Deputy Manager', sub: 'Production Management' }
 ];
@@ -338,7 +339,7 @@ async function quickCompareExecutives(filterType = 'all') {
     targetIds = ['RF23849', 'RF23848', 'RF23810', 'RF22690', 'RF0364', 'RF23234'];
     headerLabel = 'Plant Officers';
   } else if (filterType === 'managers') {
-    targetIds = ['RF21291', 'RF21062', 'RF21283'];
+    targetIds = ['RF21291', 'RF21062', 'RF21283', 'RF20948'];
     headerLabel = 'Assistant Managers';
   } else {
     targetIds = CANONICAL_RPPF_EXECS.map(x => x.id);

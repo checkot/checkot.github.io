@@ -15,5 +15,20 @@
         "addedAt": "2026-10-29T01:08:00.798Z"
       }
     ]
-  }
+  },
+  "longTermLeaves": [
+    {
+      "id": "RF20948",
+      "name": "Hadia Farzana",
+      "area": "Overall",
+      "sub": "Plant Operations",
+      "designation": "Assistant Manager",
+      "type": "Maternity Leave",
+      "status": "Active",
+      "startDate": "2026-07-01",
+      "endDate": "2026-12-31",
+      "remarks": "Pregnancy / Maternity Leave",
+      "addedAt": "2026-11-06T12:00:00.000Z"
+    }
+  ]
 }
