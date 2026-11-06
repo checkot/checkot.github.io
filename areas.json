@@ -347,8 +347,7 @@
     "RF23810": "Overall",
     "RF8941": "Overall",
     "RF23849": "Overall",
-    "RF23848": "Overall",
-    "RF20948": "Overall"
+    "RF23848": "Overall"
   },
   "details": {
     "RF21062": {
@@ -1512,9 +1511,6 @@
     },
     "CF2751": {
       "g": "M"
-    },
-    "RF20948": {
-      "g": "F"
     }
   },
   "subsections": {
