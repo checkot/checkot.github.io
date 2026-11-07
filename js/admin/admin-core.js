@@ -7461,7 +7461,32 @@ function renderInchargeHomeLeavesList() {
   if (!container) return;
 
   const leaves = typeof getActiveLongTermLeaves === 'function' ? getActiveLongTermLeaves() : [];
-  if (countBadge) countBadge.textContent = `${leaves.length} Active`;
+  const todayStr = typeof getTodayDateStr === 'function' ? getTodayDateStr() : new Date().toISOString().slice(0, 10);
+  const today = new Date(todayStr);
+
+  const activeLeaves = leaves.filter(l => {
+    if (!l.endDate) return true;
+    const ed = new Date(l.endDate);
+    return isNaN(ed.getTime()) || ed >= today;
+  });
+  if (countBadge) countBadge.textContent = `${activeLeaves.length} Active`;
+
+  // Dynamically update area filter pill bar counts
+  const areaCounts = {
+    all: leaves.length,
+    'Packing Hall': leaves.filter(l => l.area === 'Packing Hall').length,
+    'Solid Production': leaves.filter(l => l.area === 'Solid Production').length,
+    'Softgel Production': leaves.filter(l => l.area === 'Softgel Production').length,
+    'Overall': leaves.filter(l => l.area === 'Overall').length
+  };
+  document.querySelectorAll('#incLeavesAreaBar .inc-leaves-filter-btn').forEach(btn => {
+    const a = btn.getAttribute('data-leave-area');
+    if (a === 'all') btn.textContent = `All Sections (${areaCounts.all})`;
+    else if (a === 'Packing Hall') btn.textContent = `Packing Hall (${areaCounts['Packing Hall']})`;
+    else if (a === 'Solid Production') btn.textContent = `Solid (${areaCounts['Solid Production']})`;
+    else if (a === 'Softgel Production') btn.textContent = `Softgel (${areaCounts['Softgel Production']})`;
+    else if (a === 'Overall') btn.textContent = `Executives (${areaCounts['Overall']})`;
+  });
 
   const filtered = _incLeavesAreaFilter === 'all'
     ? leaves

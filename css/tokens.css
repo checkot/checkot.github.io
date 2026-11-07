@@ -49,7 +49,7 @@
   --shadow: 0 2px 6px rgba(11, 27, 51, 0.06), 0 1px 2px rgba(11, 27, 51, 0.04);
   --shadow-lg: 0 14px 34px rgba(11, 27, 51, 0.14);
   --overlay: rgba(11, 27, 51, 0.58);
-  /* Spacing Scale */
+  /* Spacing Scale (4px base) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -57,33 +57,22 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  /* Radii & Layout Sizing */
+  /* Radii & Sizing */
   --radius-sm: 8px;
   --radius: 12px;
-  --radius-lg: 14px;
-  --r-card: 12px;
-  --r-btn: 8px;
-  --nav-h: 60px;
-  /* Unified Type Scale (12 / 13 / 14 / 16 px) */
+  --radius-lg: 16px;
+  --r-btn: 10px;
+  --nav-h: 64px;
+  --tap: 48px;
+  --tap-lg: 52px;
+  --tap-sm: 48px;
+  /* Responsive Typography Scale */
+  --fs-h1: clamp(20px, 2.2vw, 24px);
+  --fs-h2: clamp(16px, 1.8vw, 18.5px);
+  --fs-h3: clamp(15px, 1.5vw, 16.5px);
+  --fs-body: 15px;
+  --fs-sm: 13.5px;
   --fs-xs: 12px;
-  --fs-sm: 13px;
-  --fs-md: 14px;
-  --fs-lg: 16px;
-  --fs-body: var(--fs-md);
-  --fs-h3: var(--fs-lg);
-  --fs-h2: clamp(16px, 1.8vw, 18px);
-  --fs-h1: clamp(18px, 2.2vw, 22px);
-  /* Unified Button & Control Size System (Small / Default) */
-  --btn-h: 42px;
-  --btn-px: 14px;
-  --btn-fs: var(--fs-md);
-  --btn-sm-h: 32px;
-  --btn-sm-px: 10px;
-  --btn-sm-fs: var(--fs-xs);
-  --icon-btn-size: 38px;
-  --tap: 42px;
-  --tap-lg: 44px;
-  --tap-sm: 32px;
   /* Legacy Aliases (Preserved for JS inline references) */
   --primary: var(--text);
   --primary-blue: var(--brand);
@@ -134,6 +123,7 @@
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
   --overlay: rgba(2, 6, 14, 0.78);
 }
+
 
 :root[data-theme="dark"] .ws-cta {
   background: var(--surface-2);
