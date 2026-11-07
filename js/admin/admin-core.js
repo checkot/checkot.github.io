@@ -7497,9 +7497,6 @@ function renderInchargeHomeLeavesList() {
     return;
   }
 
-  const todayStr = typeof getTodayDateStr === 'function' ? getTodayDateStr() : new Date().toISOString().slice(0, 10);
-  const today = new Date(todayStr);
-
   container.innerHTML = filtered.map(item => {
     const endDt = item.endDate ? new Date(item.endDate) : null;
     let daysLeftTxt = '';
