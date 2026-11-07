@@ -82,7 +82,7 @@ function assessEnsureControls() {
   root.innerHTML = `
   <div class="card assess-card">
     <div class="card-title">Assessment period (মূল্যায়নের সময়কাল)</div>
-    <div class="card-sub" style="white-space:normal;margin-bottom:10px;">Only Junior Officers &amp; Executives (RF ID). Attendance (30) is calculated automatically from duty hours, absent days and holiday duty of the chosen months. Job Knowledge (70) is entered manually.</div>
+    <div class="card-sub" style="white-space:normal;margin-bottom:8px;">RF-ID Officers &amp; Executives • Attendance (30) + Job Knowledge (70)</div>
     <div class="assess-grid3">
       <div><label for="assessYear">Year</label><select id="assessYear">${years.map(y => `<option value="${y}" ${y === yNow ? 'selected' : ''}>${y}</option>`).join('')}</select></div>
       <div><label for="assessFrom">From</label><select id="assessFrom">${mOpt('01')}</select></div>
@@ -95,17 +95,17 @@ function assessEnsureControls() {
     <button type="button" class="btn-primary assess-run" id="assessRunBtn" onclick="runAssessment()">Calculate / Refresh</button>
     <details class="assess-details">
       <summary>Formula &amp; grade settings (হিসাবের নিয়ম)</summary>
-      <div class="card-sub" style="white-space:normal;margin:8px 0;">Attendance weights (total is auto-normalised):</div>
+      <div class="card-sub" style="white-space:normal;margin:6px 0;">Attendance (30) is auto-calculated from duty hours, absent days and holiday duty. Weights (auto-normalised):</div>
       <div class="assess-grid3">
-        <div><label for="assessWDuty">Avg duty hrs / month</label><input type="number" id="assessWDuty" min="0" max="100" value="${st.wDuty}"></div>
+        <div><label for="assessWDuty">Avg duty/mo</label><input type="number" id="assessWDuty" min="0" max="100" value="${st.wDuty}"></div>
         <div><label for="assessWAbsent">Absent days</label><input type="number" id="assessWAbsent" min="0" max="100" value="${st.wAbsent}"></div>
         <div><label for="assessWHoliday">Holiday duty</label><input type="number" id="assessWHoliday" min="0" max="100" value="${st.wHoliday}"></div>
       </div>
-      <div class="card-sub" style="white-space:normal;margin:10px 0 6px;">Grade cut-off (total out of 100): A ≥, B ≥, C ≥, else D</div>
+      <div class="card-sub" style="white-space:normal;margin:8px 0 4px;">Grade cut-off (total out of 100):</div>
       <div class="assess-grid3">
-        <div><label for="assessGA">A from</label><input type="number" id="assessGA" min="0" max="100" value="${st.gA}"></div>
-        <div><label for="assessGB">B from</label><input type="number" id="assessGB" min="0" max="100" value="${st.gB}"></div>
-        <div><label for="assessGC">C from</label><input type="number" id="assessGC" min="0" max="100" value="${st.gC}"></div>
+        <div><label for="assessGA">A ≥</label><input type="number" id="assessGA" min="0" max="100" value="${st.gA}"></div>
+        <div><label for="assessGB">B ≥</label><input type="number" id="assessGB" min="0" max="100" value="${st.gB}"></div>
+        <div><label for="assessGC">C ≥</label><input type="number" id="assessGC" min="0" max="100" value="${st.gC}"></div>
       </div>
       <button type="button" class="reset-btn" onclick="assessSaveSettings()">Save settings</button>
     </details>
@@ -118,8 +118,8 @@ function assessEnsureControls() {
       <button type="button" class="btn-primary" onclick="assessExportCsv()">Download CSV (Excel)</button>
       <button type="button" class="reset-btn" style="margin-top:0;" onclick="assessBackupJson()">Backup marks (JSON)</button>
     </div>
-    <label class="reset-btn assess-restore" style="margin-top:8px;display:block;text-align:center;cursor:pointer;">Restore marks from backup<input type="file" accept="application/json" style="display:none;" onchange="assessRestoreJson(this)"></label>
-    <div class="card-sub" style="white-space:normal;margin-top:8px;">Marks are saved on this device only. Please download a backup regularly.</div>
+    <label class="reset-btn assess-restore">Restore marks from backup<input type="file" accept="application/json" style="display:none;" onchange="assessRestoreJson(this)"></label>
+    <div class="card-sub" style="white-space:normal;margin-top:6px;">Marks are saved on this device only. Download a backup regularly.</div>
   </div>`;
   ['assessSearch', 'assessArea'].forEach(id => {
     const el = document.getElementById(id);
@@ -228,9 +228,9 @@ function assessRenderList() {
   const gradeCount = { A: 0, B: 0, C: 0, D: 0 };
   all.forEach(r => { if (gradeCount[r.grade] != null) gradeCount[r.grade]++; });
   sumEl.style.display = 'flex';
-  sumEl.innerHTML = `<span>👥 ${all.length} employees</span><span>✍️ Job Knowledge given: ${done}/${all.length}</span>
+  sumEl.innerHTML = `<span>👥 ${all.length}</span><span>✍️ Scored: ${done}/${all.length}</span>
     <span>A:${gradeCount.A} B:${gradeCount.B} C:${gradeCount.C} D:${gradeCount.D}</span>
-    <span>Data months: ${_assessCtx.loadedMonths}/${_assessCtx.requested}</span>`;
+    <span>Months: ${_assessCtx.loadedMonths}/${_assessCtx.requested}</span>`;
   if (!rows.length) { listEl.innerHTML = '<div class="empty-msg">No employee found.</div>'; return; }
   listEl.innerHTML = rows.map(r => {
     const rank = all.indexOf(r) + 1;
@@ -242,10 +242,10 @@ function assessRenderList() {
         <span class="assess-grade g-${r.grade === '—' ? 'none' : r.grade}" data-role="grade">${r.grade}</span>
       </div>
       <div class="assess-chips">
-        <span>Avg duty ${r.duty.toFixed(1)} h/mo</span>
+        <span>Duty ${r.duty.toFixed(1)}h/m</span>
         <span>Absent ${r.e.generalAbsentCount || 0}d</span>
-        <span>Holiday duty ${r.e.holidayCount || 0}d</span>
-        <span>${mc} mo</span>
+        <span>Holiday ${r.e.holidayCount || 0}d</span>
+        <span>${mc}m</span>
       </div>
       <div class="assess-scores">
         <div class="assess-cell"><small>Attendance /30</small><b data-role="att" data-att="${r.att}">${r.att.toFixed(2)}</b></div>
@@ -284,7 +284,7 @@ function assessOnJkCommit(inp) {
     st.marks[y][id] = v;
   }
   assessSaveStore(st);
-  assessRenderList(); // re-rank
+  assessRenderList();
 }
 
 function assessDownload(name, text, mime) {

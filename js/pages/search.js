@@ -20,7 +20,7 @@ function renderRecentSearchChips() {
   const uniqueIds = [...new Set(list.map(x => x.id))].slice(0, 4);
   if (uniqueIds.length === 0) { wrap.classList.remove('show'); wrap.innerHTML = ''; return; }
   wrap.classList.add('show');
-  wrap.innerHTML = `<span class="recent-chips-label">Previous IDs:</span>` + uniqueIds.map(id => `<button type="button" class="id-chip" onclick="quickSelectId('${esc(id)}')">${esc(id)}</button>`).join('');
+  wrap.innerHTML = `<span class="recent-chips-label">Recent:</span>` + uniqueIds.map(id => `<button type="button" class="id-chip" onclick="quickSelectId('${esc(id)}')">${esc(id)}</button>`).join('');
 }
 
 function quickSelectId(id) {
@@ -67,7 +67,7 @@ function showSearchError(msg) {
   if (!s) return;
   const help = `Hello, the overtime report for ID ${currentSearchId || ''} (${currentMonth || ''}) cannot be found in the app. Please check.`;
   s.innerHTML = `<div class="err-box"><div>${esc(msg)}</div>
-<button type="button" class="btn-primary" onclick="openErpSupportModal(${ esc(JSON.stringify(help)) })">Message the ERP team on WhatsApp</button></div>`;
+<button type="button" class="btn-primary" onclick="openErpSupportModal(${ esc(JSON.stringify(help)) })">Message ERP Team on WhatsApp</button></div>`;
 }
 
 function initYearDropdown() {
@@ -167,7 +167,7 @@ async function findReport() {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;
       if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
-      showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
+      showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিপিএফ সেকশনে তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে।`);
       return;
     }
     const prevMonth = getPrevMonthStr(month);
@@ -180,27 +180,27 @@ async function findReport() {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;
       if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
-      showSearchError(`${month} overtime data has not been uploaded to the server yet.`);
+      showSearchError(`${month} overtime data has not been uploaded yet.`);
       return;
     }
     const matchedEmp = fastList.find(e => String(e.id || '').toUpperCase() === searchId);
     if (matchedEmp && isExecHiddenFor(matchedEmp)) {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;
-      showSearchError('This ID calculation is visible only in in-charge mode.');
+      showSearchError('This ID calculation is visible only in In-Charge mode.');
       return;
     }
     if (matchedEmp) {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;
-      if (statusDiv) { statusDiv.style.color = "var(--success)"; statusDiv.innerText = "Calculation ready"; }
+      if (statusDiv) { statusDiv.style.color = "var(--success)"; statusDiv.innerText = ""; }
       renderInstantEmployeeRecord(matchedEmp, month, searchId);
       return;
     }
     if (spinner) spinner.style.display = "none";
     if (searchBtn) searchBtn.disabled = false;
     if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
-    showSearchError(`"${rawId}" ID not found in the ${month} report. Check that the ID and month are correct.`);
+    showSearchError(`"${rawId}" ID not found in the ${month} report.`);
   } catch (err) {
     console.error(err);
     if (spinner) spinner.style.display = "none";
@@ -218,13 +218,13 @@ function applyExtraction(parsed, detection) {
   const greetBox = document.getElementById('userGreeting');
   const greetNameEl = document.getElementById('greetName');
   if (greetBox && greetNameEl) {
-    if (currentResult && currentResult.name) { greetNameEl.textContent = currentResult.name; greetBox.style.display = "block"; }
-    else { greetNameEl.textContent = "User"; greetBox.style.display = "block"; }
+    greetNameEl.textContent = (currentResult && currentResult.name) ? currentResult.name : "User";
+    greetBox.style.display = "block";
   }
   if (detection.gradeText || detection.reason) {
     if (gradeInfo) {
       gradeInfo.style.display = "block";
-      gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason} | Area: ${areaName}`;
+      gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} • ${areaName}`;
     }
   }
   const _nr = Boolean(detection.valid && detection.category && isNoRateCat(detection.category));
@@ -239,7 +239,7 @@ function applyExtraction(parsed, detection) {
     const gl = document.getElementById('gtLabelText'); if (gl) gl.textContent = 'Hours calculation';
     const setT = (id, t) => { const el = document.getElementById(id); if (el) el.innerText = t; };
     setT('lblOtFormula', `${parsed.otHours} hours`); setT('lblHolidayFormula', `${parsed.holidayCount} days`); setT('lblNightFormula', `${parsed.nightCount} nights`);
-    const gi = document.getElementById('gradeInfo'); if (gi) { gi.style.display = 'block'; gi.innerText = `Grade: ${detection.gradeText || '—'} | No fixed rate - only hours and days calculation | Area: ${areaName}`; }
+    const gi = document.getElementById('gradeInfo'); if (gi) { gi.style.display = 'block'; gi.innerText = `Grade: ${detection.gradeText || '—'} • Hours & days only`; }
   } else if (detection.valid && detection.category) {
     document.getElementById('inpCategory').value = detection.category;
     document.getElementById('inpOtHours').value = parsed.otHours;
@@ -266,7 +266,8 @@ function applyExtraction(parsed, detection) {
     if (currentResult.holidayAmount != null) { const el = document.getElementById('lblHolidayAmount'); if (el) el.innerText = `৳ ${Number(currentResult.holidayAmount).toFixed(2)}`; }
     if (currentResult.nightAmount != null) { const el = document.getElementById('lblNightAmount'); if (el) el.innerText = `৳ ${Number(currentResult.nightAmount).toFixed(2)}`; }
     if (currentResult.totalEarned != null) { const el = document.getElementById('lblGrandTotal'); if (el) el.innerText = `৳ ${Number(currentResult.totalEarned).toFixed(2)}`; }
-  }  if (typeof showDaySummary === 'function') showDaySummary(parsed);
+  }
+  if (typeof showDaySummary === 'function') showDaySummary(parsed);
   if (typeof showHolidayList === 'function') showHolidayList(parsed.holidayDays);
   if (typeof showNightList === 'function') showNightList(parsed.nightDays);
   if (typeof showRemarks === 'function') showRemarks(parsed.punchProblems, detection);
@@ -288,48 +289,49 @@ function applyReportViewContext(parsed, detection) {
   if (banner && badge && title && sub && actions) {
     banner.className = 'vc-banner show ' + (ctx === 'own' ? 'vc-own' : ctx === 'other' ? 'vc-other' : 'vc-incharge');
     if (ctx === 'own') {
-      badge.textContent = 'Your own report';
-      if (rightMeta) rightMeta.textContent = myId ? `Permanent ID: ${myId}` : '';
-      title.textContent = empName ? `${empName} (${currentSearchId})` : `Your ID: ${currentSearchId}`;
-      sub.textContent = `Area: ${areaName} • This is the current report of your own saved ID.`;
+      badge.textContent = 'Your report';
+      if (rightMeta) rightMeta.textContent = myId ? `ID: ${myId}` : '';
+      title.textContent = empName ? `${empName} (${currentSearchId})` : `ID: ${currentSearchId}`;
+      sub.textContent = `Area: ${areaName}`;
       actions.className = 'vc-actions single-col';
-      actions.innerHTML = `<button type="button" class="vc-btn secondary" onclick="promptSearchColleague()">View another colleague report</button>`;
+      actions.innerHTML = `<button type="button" class="vc-btn secondary" onclick="promptSearchColleague()">Search colleague ID</button>`;
     } else if (ctx === 'other') {
-      badge.textContent = 'Viewing another colleague report';
-      if (rightMeta) rightMeta.textContent = myId ? `Your ID: ${myId}` : '';
-      title.textContent = empName ? `${empName} (${currentSearchId}) report` : `Colleague ID: ${currentSearchId} report`;
-      sub.textContent = `This is another colleague overtime statement. Your own permanent ID (${myId}) is safely kept in the app.`;
+      badge.textContent = 'Colleague report';
+      if (rightMeta) rightMeta.textContent = myId ? `Saved ID: ${myId}` : '';
+      title.textContent = empName ? `${empName} (${currentSearchId})` : `Colleague: ${currentSearchId}`;
+      sub.textContent = `Area: ${areaName}`;
       actions.className = 'vc-actions';
-      actions.innerHTML = `<button type="button" class="vc-btn primary" onclick="loadMyOwnReport()">Back to my report (${esc(myId)})</button>
-<button type="button" class="vc-btn secondary" onclick="compareCurrentWithMe()">Compare with me</button>`;
+      actions.innerHTML = `<button type="button" class="vc-btn secondary" onclick="compareCurrentWithMe()">Compare 1v1</button>
+<button type="button" class="vc-btn primary" onclick="loadMyOwnReport()">My report (${esc(myId)})</button>`;
     } else {
-      badge.textContent = `${roleLabel} view`;
-      if (rightMeta) rightMeta.textContent = `Area: ${areaName}`;
-      title.textContent = empName ? `Employee report: ${empName} (${currentSearchId})` : `Employee ID: ${currentSearchId}`;
-      sub.textContent = `${roleLabel} mode: viewing employee overtime and punch details.`;
+      badge.textContent = `${roleLabel}`;
+      if (rightMeta) rightMeta.textContent = areaName;
+      title.textContent = empName ? `${empName} (${currentSearchId})` : `ID: ${currentSearchId}`;
+      sub.textContent = `Employee overtime & punch summary`;
       actions.className = 'vc-actions';
-      actions.innerHTML = `<button type="button" class="vc-btn primary" onclick="backToLeaderboard()">Back to ranking and punch list</button>
-<button type="button" class="vc-btn secondary" onclick="promptSearchColleague()">Search another employee ID</button>`;
+      actions.innerHTML = `<button type="button" class="vc-btn secondary" onclick="promptSearchColleague()">Search ID</button>
+<button type="button" class="vc-btn primary" onclick="backToLeaderboard()">‹ Ranking list</button>`;
     }
   }
   const step3H = document.getElementById('step3HeadingText');
   const greetBox = document.getElementById('userGreeting');
   const gtLbl = document.getElementById('gtLabelText');
   const step7Lbl = document.getElementById('step7LabelText');
+  const gradeTxt = detection?.gradeText ? ` • ${detection.gradeText}` : '';
   if (ctx === 'own') {
     if (step3H) step3H.textContent = 'Your overtime';
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || 'User')}</span>, your calculation is ready</div><div class="greet-sub" id="greetSubText">Check it once against your report.</div>`; }
-    if (gtLbl) gtLbl.textContent = 'Total overtime you will receive';
-    if (step7Lbl) step7Lbl.textContent = 'Is your report correct?';
+    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || 'User')}</span></div><div class="greet-sub" id="greetSubText">${esc(areaName)}${esc(gradeTxt)}</div>`; }
+    if (gtLbl) gtLbl.textContent = 'Total overtime allowance';
+    if (step7Lbl) step7Lbl.textContent = 'Report & punch status';
   } else if (ctx === 'other') {
-    if (step3H) step3H.textContent = `${empName || currentSearchId} overtime`;
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Colleague: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">Showing another colleague overtime calculation (your permanent ID: ${esc(myId)})।</div>`; }
-    if (gtLbl) gtLbl.textContent = `${currentSearchId} total overtime allowance`;
-    if (step7Lbl) step7Lbl.textContent = `${currentSearchId} report and punch status`;
+    if (step3H) step3H.textContent = `Overtime (${currentSearchId})`;
+    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || currentSearchId)}</span></div><div class="greet-sub" id="greetSubText">${esc(areaName)}${esc(gradeTxt)}</div>`; }
+    if (gtLbl) gtLbl.textContent = `Total overtime allowance`;
+    if (step7Lbl) step7Lbl.textContent = `Report & punch status`;
   } else {
-    if (step3H) step3H.textContent = `Employee overtime (${currentSearchId})`;
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Employee: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">${esc(roleLabel)} review • Area: ${esc(areaName)}</div>`; }
-    if (gtLbl) gtLbl.textContent = 'Employee total overtime allowance';
-    if (step7Lbl) step7Lbl.textContent = 'Employee report and punch verification';
+    if (step3H) step3H.textContent = `Overtime (${currentSearchId})`;
+    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || currentSearchId)}</span></div><div class="greet-sub" id="greetSubText">${esc(areaName)}${esc(gradeTxt)}</div>`; }
+    if (gtLbl) gtLbl.textContent = 'Total overtime allowance';
+    if (step7Lbl) step7Lbl.textContent = 'Report & punch verification';
   }
 }

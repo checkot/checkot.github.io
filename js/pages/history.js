@@ -6,8 +6,10 @@ function renderHistory() {
   const list = typeof getHistory === 'function' ? getHistory() : [];
   const box = document.getElementById('historyList');
   if (!box) return;
+  const clrBtn = box.parentElement ? box.parentElement.querySelector('.danger-btn') : null;
+  if (clrBtn) clrBtn.style.display = list.length === 0 ? 'none' : '';
   if (list.length === 0) {
-    box.innerHTML = '<div class="empty-msg">Nothing viewed yet. First enter your ID on the "Report" page.</div>';
+    box.innerHTML = '<div class="empty-msg">Nothing viewed yet. Enter an ID on the Home page first.</div>';
     return;
   }
   box.innerHTML = list.map(h => {
