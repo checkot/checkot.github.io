@@ -1638,9 +1638,9 @@
       "type": "Maternity Leave",
       "duration": "6 months",
       "status": "Active",
-      "startDate": "2026-07-01",
-      "endDate": "2026-12-31",
-      "remarks": "Pregnancy / Maternity Leave",
+      "startDate": "2026-07-23",
+      "endDate": "2027-01-22",
+      "remarks": "Maternity Leave (Last office: 22.07.2026)",
       "addedAt": "2026-11-06T12:00:00.000Z"
     },
     {
