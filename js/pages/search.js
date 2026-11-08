@@ -221,6 +221,25 @@ function applyExtraction(parsed, detection) {
     if (currentResult && currentResult.name) { greetNameEl.textContent = currentResult.name; greetBox.style.display = "block"; }
     else { greetNameEl.textContent = "User"; greetBox.style.display = "block"; }
   }
+    // Update modern Worker Identity Card (+10% Height & Typography)
+  try {
+    const widEl = document.getElementById('workerIdCode');
+    if (widEl) widEl.textContent = currentSearchId || '—';
+    const wNameEl = document.getElementById('workerNameLine');
+    if (wNameEl) wNameEl.textContent = (currentResult && currentResult.name) ? currentResult.name : (currentSearchId || 'User');
+    const wAreaEl = document.getElementById('workerDeptArea');
+    if (wAreaEl) wAreaEl.textContent = areaName;
+    const wGradeEl = document.getElementById('workerDeptGrade');
+    if (wGradeEl) wGradeEl.textContent = detection.gradeText || (currentResult && currentResult.grade) || 'Helper';
+    const wMetaEl = document.getElementById('workerMetaTag');
+    if (wMetaEl) {
+      const catName = (detection.category && RATE_TABLE[detection.category]) ? RATE_TABLE[detection.category].name : (detection.reason || 'Contractual / CF');
+      wMetaEl.textContent = catName;
+    }
+  } catch (e) {}
+
+  if (typeof closeShiftDates === 'function') closeShiftDates();
+
   if (detection.gradeText || detection.reason) {
     if (gradeInfo) {
       gradeInfo.style.display = "block";
@@ -319,17 +338,167 @@ function applyReportViewContext(parsed, detection) {
   if (ctx === 'own') {
     if (step3H) step3H.textContent = 'Your overtime';
     if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || 'User')}</span>, your calculation is ready</div><div class="greet-sub" id="greetSubText">Check it once against your report.</div>`; }
-    if (gtLbl) gtLbl.textContent = 'Total overtime you will receive';
+    if (gtLbl) gtLbl.textContent = 'Total Overtime Payable';
     if (step7Lbl) step7Lbl.textContent = 'Is your report correct?';
   } else if (ctx === 'other') {
     if (step3H) step3H.textContent = `${empName || currentSearchId} overtime`;
     if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Colleague: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">Showing another colleague overtime calculation (your permanent ID: ${esc(myId)})।</div>`; }
-    if (gtLbl) gtLbl.textContent = `${currentSearchId} total overtime allowance`;
+    if (gtLbl) gtLbl.textContent = `${currentSearchId} Total Overtime`;
     if (step7Lbl) step7Lbl.textContent = `${currentSearchId} report and punch status`;
   } else {
     if (step3H) step3H.textContent = `Employee overtime (${currentSearchId})`;
     if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Employee: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">${esc(roleLabel)} review • Area: ${esc(areaName)}</div>`; }
-    if (gtLbl) gtLbl.textContent = 'Employee total overtime allowance';
+    if (gtLbl) gtLbl.textContent = 'Employee Total Overtime';
     if (step7Lbl) step7Lbl.textContent = 'Employee report and punch verification';
   }
+}
+
+
+// ==========================================================================
+// DYNAMIC SHIFT DATES DRILLDOWN (OT, Holiday, Night, 4:30 PM Normal Out)
+// ==========================================================================
+let _currentActiveShiftDrill = null;
+
+function toggleShiftDates(type) {
+  const drawer = document.getElementById('shiftDatesDrawer');
+  const titleEl = document.getElementById('drawerTitleText');
+  const iconEl = document.getElementById('drawerIcon');
+  const contentEl = document.getElementById('drawerContent');
+  if (!drawer || !contentEl) return;
+
+  // Toggle closed if already open for this type
+  if (_currentActiveShiftDrill === type && drawer.style.display !== 'none') {
+    closeShiftDates();
+    return;
+  }
+
+  _currentActiveShiftDrill = type;
+
+  // Remove active class from all drillable rows and cells
+  document.querySelectorAll('.clickable-drill').forEach(el => el.classList.remove('drill-active'));
+
+  // Highlight corresponding blocks
+  if (type === 'night') {
+    document.getElementById('billRowNight')?.classList.add('drill-active');
+    document.getElementById('dsCellNight')?.classList.add('drill-active');
+  } else if (type === 'holiday') {
+    document.getElementById('billRowHol')?.classList.add('drill-active');
+    document.getElementById('dsCellHoliday')?.classList.add('drill-active');
+  } else if (type === 'ot') {
+    document.getElementById('billRowOt')?.classList.add('drill-active');
+    document.getElementById('dsCellTotal')?.classList.add('drill-active');
+  } else if (type === 'plain') {
+    document.getElementById('dsCellPlain')?.classList.add('drill-active');
+  }
+
+  // Retrieve current employee record
+  const emp = (typeof window !== 'undefined' && (window.currentEmployee || window.currentResult || (window._rptCtx && window._rptCtx.emp))) || null;
+  const daily = (emp && Array.isArray(emp.daily)) ? emp.daily : [];
+
+  let html = '';
+  if (type === 'night') {
+    const rawNights = (emp && Array.isArray(emp.nightDays) && emp.nightDays.length > 0) 
+      ? emp.nightDays 
+      : daily.filter(r => Array.isArray(r) && Number(r[10]) === 1).map(r => r[0]);
+    
+    titleEl.textContent = `Night Duty Dates (${rawNights.length} nights)`;
+    iconEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#4F46E5"><path d="M12.3 2a10 10 0 00-1.9 19.8 10 10 0 0011.6-11.6A10 10 0 0112.3 2z"/></svg>`;
+    
+    if (rawNights.length === 0) {
+      html = '<div class="drawer-empty-msg">No night duty shifts recorded this month.</div>';
+    } else {
+      html = rawNights.map((d, i) => {
+        const str = typeof d === 'string' ? d : (d?.date || '');
+        return `<div class="date-chip night"><span class="chip-num">${i + 1}</span><span class="chip-date">${esc(str)}</span></div>`;
+      }).join('');
+    }
+  } else if (type === 'holiday') {
+    const rawHols = (emp && Array.isArray(emp.holidayDays) && emp.holidayDays.length > 0)
+      ? emp.holidayDays
+      : [];
+    
+    titleEl.textContent = `Holiday Duty Dates (${rawHols.length} days)`;
+    iconEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#D97706"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg>`;
+    
+    if (rawHols.length === 0) {
+      html = '<div class="drawer-empty-msg">No holiday or day-off duties recorded this month.</div>';
+    } else {
+      html = rawHols.map((d, i) => {
+        if (typeof d === 'string') {
+          return `<div class="date-chip hol"><span class="chip-num">${i + 1}</span><span class="chip-date">${esc(d)}</span></div>`;
+        }
+        const parts = [];
+        if (d.doDuty > 0) parts.push(`DO ${d.doDuty}h`);
+        if (d.doExtra > 0) parts.push(`DO-OT ${d.doExtra}h`);
+        if (d.holDuty > 0) parts.push(`Hol ${d.holDuty}h`);
+        if (d.holExtra > 0) parts.push(`Hol-OT ${d.holExtra}h`);
+        const detailStr = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+        return `<div class="date-chip hol"><span class="chip-num">${i + 1}</span><span class="chip-date">${esc(d.date || '')}</span><span class="chip-sub">${esc(detailStr)}</span></div>`;
+      }).join('');
+    }
+  } else if (type === 'ot') {
+    // Clean chronological OT days list (with N badge if night duty)
+    const otRows = daily.filter(r => {
+      if (!Array.isArray(r)) return false;
+      const ot = (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0);
+      return ot > 0;
+    });
+
+    const totalOtHours = otRows.reduce((sum, r) => sum + (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0), 0);
+
+    titleEl.textContent = `Overtime Dates (${otRows.length} days • ${totalOtHours.toFixed(1)} hrs)`;
+    iconEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#2563EB"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
+
+    if (otRows.length === 0) {
+      html = '<div class="drawer-empty-msg">No overtime shifts recorded this month.</div>';
+    } else {
+      html = otRows.map((r, i) => {
+        const dateStr = r[0] || '';
+        const dayStr = r[1] ? ` (${r[1]})` : '';
+        const otHrs = ((Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0)).toFixed(1);
+        const isNight = Number(r[10]) === 1;
+        const nightBadge = isNight ? ' <span class="chip-n-badge" title="Night Shift">N</span>' : '';
+        return `<div class="date-chip ot"><span class="chip-num">${i + 1}</span><span class="chip-date">${esc(dateStr)}${esc(dayStr)}</span><span class="chip-hrs">+${otHrs}h${nightBadge}</span></div>`;
+      }).join('');
+    }
+  } else if (type === 'plain') {
+    const plainRows = daily.filter(r => {
+      if (!Array.isArray(r)) return false;
+      const isNight = Number(r[10]) === 1;
+      const totalOt = (Number(r[5]) || 0) + (Number(r[7]) || 0) + (Number(r[9]) || 0);
+      const totalDuty = (Number(r[4]) || 0) + (Number(r[6]) || 0) + (Number(r[8]) || 0);
+      const missPunch = !r[2] || !r[3] || String(r[2]).trim() === '' || String(r[3]).trim() === '';
+      return !missPunch && totalDuty > 0 && !isNight && totalOt === 0;
+    });
+
+    titleEl.textContent = `4:30 PM Normal Out Dates (${plainRows.length} days)`;
+    iconEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#0284C7"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
+
+    if (plainRows.length === 0) {
+      html = '<div class="drawer-empty-msg">No 4:30 PM regular out shifts recorded this month.</div>';
+    } else {
+      html = plainRows.map((r, i) => {
+        const dateStr = r[0] || '';
+        const dayStr = r[1] ? ` (${r[1]})` : '';
+        const timeStr = (r[2] && r[3]) ? ` ${r[2]} - ${r[3]}` : '';
+        return `<div class="date-chip plain"><span class="chip-num">${i + 1}</span><span class="chip-date">${esc(dateStr)}${esc(dayStr)}</span><span class="chip-sub">${esc(timeStr)}</span></div>`;
+      }).join('');
+    }
+  }
+
+  contentEl.innerHTML = html;
+  drawer.style.display = 'block';
+  try { drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+}
+
+function closeShiftDates() {
+  _currentActiveShiftDrill = null;
+  const drawer = document.getElementById('shiftDatesDrawer');
+  if (drawer) drawer.style.display = 'none';
+  document.querySelectorAll('.clickable-drill').forEach(el => el.classList.remove('drill-active'));
+}
+
+if (typeof window !== 'undefined') {
+  window.toggleShiftDates = toggleShiftDates;
+  window.closeShiftDates = closeShiftDates;
 }

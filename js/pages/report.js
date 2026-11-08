@@ -450,6 +450,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const totalEarned = emp.totalEarned != null ? Number(emp.totalEarned) : (otAmount + holidayAmount + nightAmount);
   const isRppf = emp.isRppf !== false;
   const valid = emp.valid !== false;
+  window.currentEmployee = emp;
   currentResult = {
     category: cat,
     otHours,
@@ -463,8 +464,13 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
     grade: emp.grade || '',
     valid,
     name: emp.name || '',
-    isRppf
+    isRppf,
+    daily: Array.isArray(emp.daily) ? emp.daily : [],
+    holidayDays: Array.isArray(emp.holidayDays) ? emp.holidayDays : [],
+    nightDays: Array.isArray(emp.nightDays) ? emp.nightDays : [],
+    plainDaysCount: Number(emp.plainDaysCount || emp.plainDays || 0)
   };
+  window.currentResult = currentResult;
   const parsedObj = {
     otHours,
     nightCount,

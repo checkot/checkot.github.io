@@ -706,37 +706,131 @@ document.documentElement.setAttribute('data-theme', t);
 <h3><span id="step3HeadingText">Your overtime</span> <span id="categoryBadge" class="badge">—</span></h3>
 <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">Rate chart</button>
 </div>
-<div id="userGreeting" class="greeting-banner">
-<div class="greet-text"><span id="greetName">User</span>, your calculation is ready</div>
-<div class="greet-sub" id="greetSubText">Check it once against your report.</div>
+
+<!-- Modern Full-Height Employee Identity Bar (+10% Height, Prominent Name, Solid Production • Helper) -->
+<div class="worker-identity-card" id="workerIdentityCard">
+  <div class="worker-id-badge-col">
+    <span class="worker-id-label">Employee ID</span>
+    <span class="worker-id-code" id="workerIdCode">—</span>
+  </div>
+  <div class="worker-details-col">
+    <div class="worker-name-line" id="workerNameLine">User</div>
+    <div class="worker-dept-line" id="workerDeptLine">
+      <span id="workerDeptArea">—</span>
+      <span class="worker-dept-dot"></span>
+      <span id="workerDeptGrade">—</span>
+    </div>
+    <div class="worker-meta-line">
+      <span class="worker-meta-tag" id="workerMetaTag">Contractual / CF</span>
+      <span class="worker-status-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        Verified
+      </span>
+    </div>
+  </div>
+  <!-- Hidden legacy compatibility hooks -->
+  <div id="userGreeting" class="greeting-banner" style="display:none !important;" aria-hidden="true">
+    <div class="greet-text"><span id="greetName">User</span>, your calculation is ready</div>
+    <div class="greet-sub" id="greetSubText">Check it once against your report.</div>
+  </div>
+  <div id="gradeInfo" class="grade-info" style="display:none !important;" aria-hidden="true"></div>
 </div>
-<div id="gradeInfo" class="grade-info" style="display:none;"></div>
+
 <div id="calcInputs">
 <div class="grand-total-block">
-<span class="gt-label" id="gtLabelText">Total overtime you will receive</span>
-<span class="gt-value" id="lblGrandTotal">৳ 0</span>
+  <div class="hero-mesh-bg"></div>
+  <div class="hero-header-row">
+    <span class="gt-label" id="gtLabelText">Total Overtime Payable</span>
+    <span class="hero-rate-chip" id="lblRateChip">Rate: <b id="lblRate">৳ 0/hr</b></span>
+  </div>
+  <div class="hero-amount-display">
+    <span class="currency-symbol">৳</span>
+    <span class="gt-value" id="lblGrandTotal">0.00</span>
+  </div>
 </div>
-<div class="rate-line"><span>Per hour: <b id="lblRate">৳ 0/hr</b></span><span id="lblRateSub">—</span></div>
+<div class="rate-line" style="display:none !important;"><span>Per hour: <b id="lblRateLegacy">৳ 0/hr</b></span><span id="lblRateSub">—</span></div>
+
 <div class="bill-list">
-<div class="bill-row ot">
-<div><div class="bill-name" data-i18n="otAllowance">OT Allowance</div><div class="bill-calc" id="lblOtFormula">0 hr × ৳0</div></div>
-<div class="bill-amt" id="lblOtAmount">৳ 0</div>
+<div class="bill-row ot clickable-drill" id="billRowOt" onclick="toggleShiftDates('ot')" title="Click to view Overtime dates">
+  <div class="breakdown-left">
+    <div class="breakdown-icon ot">
+      <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+    </div>
+    <div>
+      <div class="bill-name" data-i18n="otAllowance">OT Allowance</div>
+      <div class="bill-calc" id="lblOtFormula">0 hr × ৳0</div>
+    </div>
+  </div>
+  <div class="breakdown-right">
+    <div class="bill-amt" id="lblOtAmount">৳ 0</div>
+    <span class="drill-indicator-icon">▼</span>
+  </div>
 </div>
-<div class="bill-row hol">
-<div><div class="bill-name" data-i18n="holidayAllowance">Holiday Allowance</div><div class="bill-calc" id="lblHolidayFormula">0 days</div></div>
-<div class="bill-amt" id="lblHolidayAmount">৳ 0</div>
+
+<div class="bill-row hol clickable-drill" id="billRowHol" onclick="toggleShiftDates('holiday')" title="Click to view Holiday dates">
+  <div class="breakdown-left">
+    <div class="breakdown-icon hol">
+      <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg>
+    </div>
+    <div>
+      <div class="bill-name" data-i18n="holidayAllowance">Holiday Allowance</div>
+      <div class="bill-calc" id="lblHolidayFormula">0 days</div>
+    </div>
+  </div>
+  <div class="breakdown-right">
+    <div class="bill-amt" id="lblHolidayAmount">৳ 0</div>
+    <span class="drill-indicator-icon">▼</span>
+  </div>
 </div>
-<div class="bill-row night">
-<div><div class="bill-name" data-i18n="nightAllowance">Night Allowance</div><div class="bill-calc" id="lblNightFormula">0 nights</div></div>
-<div class="bill-amt" id="lblNightAmount">৳ 0</div>
+
+<div class="bill-row night clickable-drill" id="billRowNight" onclick="toggleShiftDates('night')" title="Click to view Night dates">
+  <div class="breakdown-left">
+    <div class="breakdown-icon night">
+      <svg viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 00-1.9 19.8 10 10 0 0011.6-11.6A10 10 0 0112.3 2z"/></svg>
+    </div>
+    <div>
+      <div class="bill-name" data-i18n="nightAllowance">Night Allowance</div>
+      <div class="bill-calc" id="lblNightFormula">0 nights</div>
+    </div>
+  </div>
+  <div class="breakdown-right">
+    <div class="bill-amt" id="lblNightAmount">৳ 0</div>
+    <span class="drill-indicator-icon">▼</span>
+  </div>
 </div>
 </div>
+
 <div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
-<div class="ds-cell"><span class="ds-value" id="dsRegularDays">—</span><span class="ds-label" data-i18n="totalDays">Total duty days</span></div>
-<div class="ds-cell"><span class="ds-value" id="dsHolidayDays">—</span><span class="ds-label">Holiday Allowance</span></div>
-<div class="ds-cell"><span class="ds-value" id="dsNightDays">—</span><span class="ds-label">Night Allowance</span></div>
-<div class="ds-cell plain"><span class="ds-value" id="dsPlainDays">—</span><span class="ds-label">4:30 pm</span></div>
+<div class="ds-cell clickable-drill" id="dsCellTotal" onclick="toggleShiftDates('ot')" title="Click to view Overtime dates">
+  <span class="ds-value" id="dsRegularDays">—</span>
+  <span class="ds-label" data-i18n="totalDays">Total duty days</span>
 </div>
+<div class="ds-cell clickable-drill" id="dsCellHoliday" onclick="toggleShiftDates('holiday')" title="Click to view Holiday dates">
+  <span class="ds-value amber" id="dsHolidayDays">—</span>
+  <span class="ds-label">Holiday Allowance</span>
+</div>
+<div class="ds-cell clickable-drill" id="dsCellNight" onclick="toggleShiftDates('night')" title="Click to view Night dates">
+  <span class="ds-value indigo" id="dsNightDays">—</span>
+  <span class="ds-label">Night Allowance</span>
+</div>
+<div class="ds-cell plain clickable-drill" id="dsCellPlain" onclick="toggleShiftDates('plain')" title="Click to view 4:30 PM departure dates">
+  <span class="ds-value blue" id="dsPlainDays">—</span>
+  <span class="ds-label">4:30 pm</span>
+</div>
+</div>
+
+<!-- Merged Interactive Shift Dates Drawer -->
+<div class="shift-dates-drawer" id="shiftDatesDrawer" style="display:none;">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawerTitle">
+      <span id="drawerIcon" class="drawer-icon-wrap"></span>
+      <span id="drawerTitleText">Shift Dates</span>
+    </div>
+    <button type="button" class="drawer-close-btn" onclick="closeShiftDates()" aria-label="Close">✕</button>
+  </div>
+  <div class="drawer-chips-wrap" id="drawerContent"></div>
+</div>
+
 <details class="adjust">
 <summary>See how much it will be if hours change</summary>
 <div class="adjust-body">
@@ -782,7 +876,9 @@ document.documentElement.setAttribute('data-theme', t);
 </details>
 </div>
 </div>
-<div class="collapse-card calc-card" id="step5">
+
+<!-- Step 5 is hidden per user request; legacy element hooks retained for JS safety -->
+<div class="collapse-card calc-card" id="step5" style="display:none !important;" aria-hidden="true">
 <div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
 <span class="title">Holiday and night duty dates</span>
 <span class="count">Holiday <b id="holidayCount">0</b></span>
@@ -796,9 +892,16 @@ document.documentElement.setAttribute('data-theme', t);
 <div id="nightList" class="info-list">—</div>
 </div>
 </div>
+
 <div class="home-jump-grid" id="homeJumpGrid">
-<button type="button" class="btn-primary" onclick="switchPage('report')">Report &amp; Punch Check</button>
-<button type="button" class="btn-secondary" onclick="switchPage('vs')">VS Compare (1:1 / 1:1:1)</button>
+<button type="button" class="btn-primary" onclick="switchPage('report')">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+  Report &amp; Punch Check
+</button>
+<button type="button" class="btn-secondary" onclick="switchPage('vs')">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v2h2V1h-2v2zm0 15H5l5-6v6zm9-15h-5v2h5v13l-5-6v7h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+  Compare with others
+</button>
 </div>
 <div class="card" id="noticesCard">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); gap: 8px;">
