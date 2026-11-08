@@ -134,7 +134,7 @@ async function findReport() {
   currentMonth = month;
   _lbView = false;
 
-  ['viewingContextBanner','monthNavBar','step3','step5','step7','payslipCard'].forEach(id => {
+  ['viewingContextBanner','monthNavBar','step3','step7','payslipCard'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
@@ -218,8 +218,8 @@ function applyExtraction(parsed, detection) {
   const greetBox = document.getElementById('userGreeting');
   const greetNameEl = document.getElementById('greetName');
   if (greetBox && greetNameEl) {
-    if (currentResult && currentResult.name) { greetNameEl.textContent = currentResult.name; greetBox.style.display = "block"; }
-    else { greetNameEl.textContent = "User"; greetBox.style.display = "block"; }
+    if (currentResult && currentResult.name) { greetNameEl.textContent = currentResult.name; greetBox.style.display = "none"; }
+    else { greetNameEl.textContent = "User"; greetBox.style.display = "none"; }
   }
     // Update modern Worker Identity Card (+10% Height & Typography)
   try {
@@ -242,7 +242,7 @@ function applyExtraction(parsed, detection) {
 
   if (detection.gradeText || detection.reason) {
     if (gradeInfo) {
-      gradeInfo.style.display = "block";
+      gradeInfo.style.display = "none";
       gradeInfo.innerText = `Grade: ${detection.gradeText || "—"} | ${detection.reason} | Area: ${areaName}`;
     }
   }
@@ -337,17 +337,17 @@ function applyReportViewContext(parsed, detection) {
   const step7Lbl = document.getElementById('step7LabelText');
   if (ctx === 'own') {
     if (step3H) step3H.textContent = 'Your overtime';
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || 'User')}</span>, your calculation is ready</div><div class="greet-sub" id="greetSubText">Check it once against your report.</div>`; }
+    if (greetBox) { greetBox.style.display = 'none'; greetBox.innerHTML = `<div class="greet-text"><span id="greetName">${esc(empName || 'User')}</span>, your calculation is ready</div><div class="greet-sub" id="greetSubText">Check it once against your report.</div>`; }
     if (gtLbl) gtLbl.textContent = 'Total Overtime Payable';
     if (step7Lbl) step7Lbl.textContent = 'Is your report correct?';
   } else if (ctx === 'other') {
     if (step3H) step3H.textContent = `${empName || currentSearchId} overtime`;
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Colleague: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">Showing another colleague overtime calculation (your permanent ID: ${esc(myId)})।</div>`; }
+    if (greetBox) { greetBox.style.display = 'none'; greetBox.innerHTML = `<div class="greet-text">Colleague: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">Showing another colleague overtime calculation (your permanent ID: ${esc(myId)})।</div>`; }
     if (gtLbl) gtLbl.textContent = `${currentSearchId} Total Overtime`;
     if (step7Lbl) step7Lbl.textContent = `${currentSearchId} report and punch status`;
   } else {
     if (step3H) step3H.textContent = `Employee overtime (${currentSearchId})`;
-    if (greetBox) { greetBox.style.display = 'block'; greetBox.innerHTML = `<div class="greet-text">Employee: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">${esc(roleLabel)} review • Area: ${esc(areaName)}</div>`; }
+    if (greetBox) { greetBox.style.display = 'none'; greetBox.innerHTML = `<div class="greet-text">Employee: <span id="greetName">${esc(empName || currentSearchId)}</span> (${esc(currentSearchId)})</div><div class="greet-sub" id="greetSubText">${esc(roleLabel)} review • Area: ${esc(areaName)}</div>`; }
     if (gtLbl) gtLbl.textContent = 'Employee Total Overtime';
     if (step7Lbl) step7Lbl.textContent = 'Employee report and punch verification';
   }

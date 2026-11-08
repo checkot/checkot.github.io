@@ -728,13 +728,13 @@ document.documentElement.setAttribute('data-theme', t);
       </span>
     </div>
   </div>
-  <!-- Hidden legacy compatibility hooks -->
-  <div id="userGreeting" class="greeting-banner" style="display:none !important;" aria-hidden="true">
-    <div class="greet-text"><span id="greetName">User</span>, your calculation is ready</div>
-    <div class="greet-sub" id="greetSubText">Check it once against your report.</div>
-  </div>
-  <div id="gradeInfo" class="grade-info" style="display:none !important;" aria-hidden="true"></div>
 </div>
+<!-- Legacy compatibility hooks placed strictly outside the card -->
+<div id="userGreeting" class="greeting-banner" style="display:none !important;" aria-hidden="true">
+  <div class="greet-text"><span id="greetName">User</span></div>
+  <div class="greet-sub" id="greetSubText"></div>
+</div>
+<div id="gradeInfo" class="grade-info" style="display:none !important;" aria-hidden="true"></div>
 
 <div id="calcInputs">
 <div class="grand-total-block">
@@ -744,8 +744,7 @@ document.documentElement.setAttribute('data-theme', t);
     <span class="hero-rate-chip" id="lblRateChip">Rate: <b id="lblRate">৳ 0/hr</b></span>
   </div>
   <div class="hero-amount-display">
-    <span class="currency-symbol">৳</span>
-    <span class="gt-value" id="lblGrandTotal">0.00</span>
+    <span class="gt-value" id="lblGrandTotal">৳ 0</span>
   </div>
 </div>
 <div class="rate-line" style="display:none !important;"><span>Per hour: <b id="lblRateLegacy">৳ 0/hr</b></span><span id="lblRateSub">—</span></div>

@@ -497,7 +497,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
       ? `Your earnings: ৳ ${currentResult.totalEarned.toFixed(2)}`
       : `${currentSearchId} earnings: ৳ ${currentResult.totalEarned.toFixed(2)}`;
   }
-  ['step3','step4','step5','step7'].forEach(id => {
+  ['step3','step4','step7'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.classList.add('show'); el.style.display = 'block'; }
   });

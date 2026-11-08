@@ -7301,3 +7301,31 @@ body.has-result #homeJumpGrid {
 :root[data-theme="dark"] .chip-n-badge {
   background: #6366F1;
 }
+
+/* ==========================================================================
+   STRICT PERMANENT HIDES FOR LEGACY BOXES & STEP 5
+   ========================================================================== */
+#userGreeting,
+#gradeInfo,
+.greeting-banner,
+.grade-info {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+#step5,
+#page-search > #step5,
+#page-search.active > #step5,
+body #step5,
+.collapse-card#step5 {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
