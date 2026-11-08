@@ -351,6 +351,10 @@ function navigateReportMonth(delta) {
     const empInp = document.getElementById('employeeId');
     if (empInp) empInp.value = currentSearchId;
     if (typeof toggleClearIdBtn === 'function') toggleClearIdBtn();
+    const targetMonth = `${yStr}-${mStr}`;
+    if (window.CheckotLoader && typeof window.CheckotLoader.show === 'function') {
+      window.CheckotLoader.show(targetMonth);
+    }
     if (typeof findReport === 'function') findReport();
   }
 }
@@ -509,6 +513,9 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   if (nc) nc.style.display = 'block';
   if (typeof addToHistory === 'function') addToHistory(searchId, month, emp.name || '');
   if (typeof enterCompactMode === 'function') enterCompactMode(searchId, month);
+  if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') {
+    setTimeout(() => window.CheckotLoader.hide(), 350);
+  }
   if (!getPreferredId() && getAppMode() !== 'incharge') {
     const isDl = Boolean(window.Router && (typeof window.Router.isDeepLink === 'function' ? window.Router.isDeepLink() : window.Router.isDeepLink));
     if (!isDl) {

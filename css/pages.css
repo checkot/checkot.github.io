@@ -7329,3 +7329,135 @@ body #step5,
   padding: 0 !important;
   border: none !important;
 }
+
+/* ==========================================================================
+   CHECKOT LOADER (EXACT USER SPECIFICATION)
+   ========================================================================== */
+#ckLoader{
+  --ck-bg:#f1f5f9; --ck-card:#ffffff; --ck-text:#0f172a;
+  --ck-muted:#64748b; --ck-cell:#e8edf3; --ck-shadow:0 10px 30px rgba(15,23,42,.12);
+  --w:min(94vw,560px);   /* ক্যালেন্ডারের প্রস্থ — ক্যালকুলেটরের মাপ এর থেকে গোল্ডেন রেশিওতে আসে */
+  --orbit:18s;           /* ক্যালকুলেটর একবার ঘুরতে কত সময় নেবে (বেশি = ধীর) */
+  position:fixed; inset:0; z-index:99999; box-sizing:border-box; padding:12px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:var(--ck-bg); color:var(--ck-text);
+  font-family:system-ui,-apple-system,"Noto Sans Bengali","Hind Siliguri",sans-serif;
+  transition:opacity .45s ease, visibility .45s;
+}
+@media (prefers-color-scheme:dark){
+  #ckLoader{ --ck-bg:#0b1220; --ck-card:#131c2e; --ck-text:#e5edf9;
+    --ck-muted:#8da0bd; --ck-cell:#1d2940; --ck-shadow:0 10px 30px rgba(0,0,0,.5); }
+}
+/* অ্যাপে ম্যানুয়াল থিম থাকলে (data-theme বা class) সেটা অগ্রাধিকার পাবে */
+html[data-theme="light"] #ckLoader{ --ck-bg:#f1f5f9; --ck-card:#ffffff; --ck-text:#0f172a;
+  --ck-muted:#64748b; --ck-cell:#e8edf3; --ck-shadow:0 10px 30px rgba(15,23,42,.12); }
+html[data-theme="dark"] #ckLoader, html.dark #ckLoader{ --ck-bg:#0b1220; --ck-card:#131c2e; --ck-text:#e5edf9;
+  --ck-muted:#8da0bd; --ck-cell:#1d2940; --ck-shadow:0 10px 30px rgba(0,0,0,.5); }
+
+#ckLoader.ck-hide{ opacity:0; visibility:hidden; pointer-events:none; }
+
+/* ক্যালেন্ডার কার্ড — পুরো স্ক্রিন জুড়ে */
+.ck-card{
+  width:var(--w); flex:1 1 auto; min-height:0; max-height:780px; box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding:16px 14px 14px; border-radius:22px;
+  background:var(--ck-card); box-shadow:var(--ck-shadow);
+}
+.ck-title{ flex:none; text-align:center; font-size:clamp(18px,5vw,26px); font-weight:800; margin-bottom:12px; }
+.ck-grid{ flex:1; min-height:0; display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+.ck-wd{ text-align:center; font-size:clamp(11px,3vw,15px); font-weight:700; color:var(--ck-muted); align-self:end; padding-bottom:2px; }
+.ck-day{
+  position:relative; isolation:isolate; overflow:hidden; min-height:0;
+  border-radius:12px; background:var(--ck-cell);
+  display:grid; place-items:center;
+  font-size:clamp(14px,4.4vw,24px); font-weight:700; color:var(--ck-muted);
+  transition:opacity .3s ease;
+}
+.ck-day::before{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:var(--c,#3b82f6); opacity:0; border-radius:inherit;
+}
+.ck-day.dim{ opacity:.35; }
+.ck-day.blink{ color:#fff; animation:ckPop 1.4s ease-in-out; }
+.ck-day.blink::before{ animation:ckGlow 1.4s ease-in-out; }
+@keyframes ckGlow{ 0%{opacity:0} 25%{opacity:1} 50%{opacity:.2} 75%{opacity:1} 100%{opacity:0} }
+@keyframes ckPop{ 0%,100%{transform:scale(1)} 25%{transform:scale(1.12)} 50%{transform:scale(.97)} 75%{transform:scale(1.09)} }
+
+.ck-status{ flex:none; font-size:14px; font-weight:600; color:var(--ck-muted); text-align:center; padding:0 16px; }
+.ck-dots i{ font-style:normal; animation:ckDot 1.2s infinite; }
+.ck-dots i:nth-child(2){ animation-delay:.2s; }
+.ck-dots i:nth-child(3){ animation-delay:.4s; }
+@keyframes ckDot{ 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+/* ---- ভাসমান ক্যালকুলেটর: স্ক্রিনের মাঝখান ঘিরে ধীরে চক্কর, কিন্তু নিজে সবসময় খাড়া ---- */
+.ck-orbit{
+  position:absolute; left:50%; top:50%; width:0; height:0; z-index:2; pointer-events:none;
+  animation:ckSpin var(--orbit) linear infinite;
+}
+.ck-arm{ position:absolute; left:calc(var(--w) * 0.22); top:0; width:0; height:0; }   /* চক্করের ব্যাসার্ধ */
+@keyframes ckSpin{ to{ transform:rotate(360deg); } }
+@keyframes ckSpinRev{
+  from{ transform:translate(-50%,-50%) rotate(0deg); }
+  to  { transform:translate(-50%,-50%) rotate(-360deg); }   /* উল্টো পাক = ক্যালকুলেটর সবসময় সোজা */
+}
+
+.ck-calc{
+  width:calc(var(--w) / 1.618); padding:9px 10px 10px; border-radius:14px;   /* প্রস্থ = ক্যালেন্ডার ÷ φ */
+  background:linear-gradient(160deg,#e3d8bf,#c9b99a);
+  box-shadow:0 8px 20px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.18);
+}
+.ck-arm .ck-calc{
+  position:absolute; left:0; top:0; transform:translate(-50%,-50%);
+  animation:ckSpinRev var(--orbit) linear infinite;
+  box-shadow:0 16px 34px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.18);
+}
+.ck-brand{
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;
+  font:700 8px/1 system-ui,sans-serif; letter-spacing:2px; color:#6b5a3e;
+}
+.ck-solar{
+  width:34px; height:8px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.4);
+  background:repeating-linear-gradient(90deg,#3b2f2f 0 6px,#5a4a4a 6px 7px);
+}
+.ck-lcd{
+  position:relative; height:38px; margin-bottom:8px; padding:0 8px; overflow:hidden;
+  border-radius:5px; background:linear-gradient(#a9bd95,#98ad84);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5);
+  font-family:"Courier New",ui-monospace,monospace; font-weight:700; font-size:22px;
+  line-height:38px; letter-spacing:2px; text-align:right; color:#18240f;
+  text-shadow:1px 1px 0 rgba(0,0,0,.18);
+}
+.ck-lcd::before{
+  content:"88888888"; position:absolute; right:8px; top:0;
+  color:rgba(0,0,0,.07); text-shadow:none;
+}
+.ck-lcd span{ position:relative; }
+.ck-keys{ display:grid; grid-template-columns:repeat(6,1fr); gap:5px; }
+.ck-key{
+  aspect-ratio:1.618 / 1; align-self:start;   /* প্রতিটি বোতাম গোল্ডেন আয়তক্ষেত্র */
+  border-radius:6px; display:grid; place-items:center;
+  font:700 11px/1 system-ui,sans-serif; color:#3a2f1c;
+  background:linear-gradient(#f7f1df,#e6dcc0);
+  box-shadow:0 2px 0 #a8976f, 0 3px 3px rgba(0,0,0,.25);
+  transition:transform .08s, box-shadow .08s, filter .08s;
+}
+.ck-key.op{ background:linear-gradient(#e9953a,#cf7a1f); color:#fff; box-shadow:0 2px 0 #8f4f0e, 0 3px 3px rgba(0,0,0,.25); }
+.ck-key.clr{ background:linear-gradient(#d9503f,#b53425); color:#fff; box-shadow:0 2px 0 #7a1f14, 0 3px 3px rgba(0,0,0,.25); }
+.ck-key.eq{ background:linear-gradient(#5a5a5a,#3a3a3a); color:#fff; box-shadow:0 2px 0 #1a1a1a, 0 3px 3px rgba(0,0,0,.25); }
+.ck-key.pressed{ transform:translateY(2px) scale(.94); box-shadow:0 0 0 #000, 0 1px 2px rgba(0,0,0,.3); filter:brightness(1.15); }
+
+/* ছোট স্ক্রিনে একটু কম ফাঁক */
+@media (max-height:620px){
+  .ck-card{ padding:10px; }
+  .ck-title{ margin-bottom:6px; }
+  .ck-grid{ gap:4px; }
+}
+
+/* যাদের ফোনে "অ্যানিমেশন কমান" চালু, তাদের জন্য ঝলকানি ও ঘোরা বন্ধ */
+@media (prefers-reduced-motion:reduce){
+  .ck-day.blink, .ck-day.blink::before, .ck-dots i,
+  .ck-orbit, .ck-arm .ck-calc{ animation:none; }
+  .ck-day.blink::before{ opacity:1; }
+  .ck-arm{ left:0; }
+  .ck-key{ transition:none; }
+}

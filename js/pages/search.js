@@ -63,6 +63,9 @@ function toggleCollapse(bodyId, headerEl) {
 }
 
 function showSearchError(msg) {
+  if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') {
+    window.CheckotLoader.hide();
+  }
   const s = document.getElementById('status');
   if (!s) return;
   const help = `Hello, the overtime report for ID ${currentSearchId || ''} (${currentMonth || ''}) cannot be found in the app. Please check.`;
@@ -133,6 +136,9 @@ async function findReport() {
   currentSearchId = searchId;
   currentMonth = month;
   _lbView = false;
+  if (window.CheckotLoader && typeof window.CheckotLoader.show === 'function') {
+    window.CheckotLoader.show(month);
+  }
 
   ['viewingContextBanner','monthNavBar','step3','step7','payslipCard'].forEach(id => {
     const el = document.getElementById(id);
@@ -205,6 +211,9 @@ async function findReport() {
     console.error(err);
     if (spinner) spinner.style.display = "none";
     if (searchBtn) searchBtn.disabled = false;
+    if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') {
+      window.CheckotLoader.hide();
+    }
     showSearchError('Check your internet connection.');
   }
 }
