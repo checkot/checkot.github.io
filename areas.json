@@ -1576,7 +1576,7 @@
       "holidayType": "hourly",
       "holidayHours": 8,
       "holidayFlat": 304,
-      "name": "\u09f3\u09e9\u09ee/\u0998\u09a3\u09cd\u099f\u09be \u09aa\u09cd\u09af\u09be\u0995\u09c7\u099c (Contractual / CF)"
+      "name": "৳৩৮/ঘণ্টা প্যাকেজ (Contractual / CF)"
     },
     "JO": {
       "otRate": 40,
@@ -1584,7 +1584,7 @@
       "holidayType": "flat",
       "holidayHours": 8,
       "holidayFlat": 300,
-      "name": "\u09f3\u09ea\u09e6/\u0998\u09a3\u09cd\u099f\u09be \u09aa\u09cd\u09af\u09be\u0995\u09c7\u099c (JO C\u2013F)"
+      "name": "৳৪০/ঘণ্টা প্যাকেজ (JO C–F)"
     },
     "JO_B": {
       "otRate": 45,
@@ -1592,7 +1592,7 @@
       "holidayType": "flat",
       "holidayHours": 8,
       "holidayFlat": 350,
-      "name": "\u09f3\u09ea\u09eb/\u0998\u09a3\u09cd\u099f\u09be \u09aa\u09cd\u09af\u09be\u0995\u09c7\u099c (JO A/B)"
+      "name": "৳৪৫/ঘণ্টা প্যাকেজ (JO A/B)"
     },
     "UNSPEC": {
       "otRate": 0,
@@ -1601,7 +1601,7 @@
       "holidayHours": 0,
       "holidayFlat": 0,
       "noRate": true,
-      "name": "Unspecified (\u09b0\u09c7\u099f\u09ac\u09bf\u09b9\u09c0\u09a8 / \u0998\u09a3\u09cd\u099f\u09be \u09b9\u09bf\u09b8\u09be\u09ac)"
+      "name": "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)"
     },
     "R_55": {
       "otRate": 55,
@@ -1626,157 +1626,5 @@
       "04-OCT-2026"
     ],
     "byMonth": {}
-  },
-  "longTermLeaves": [
-    {
-      "id": "RF20948",
-      "name": "Hadia Farzana",
-      "area": "Overall",
-      "sub": "Plant Operations",
-      "designation": "Assistant Manager",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-07-23",
-      "endDate": "2027-01-22",
-      "remarks": "Maternity Leave (Last office: 22.07.2026)",
-      "addedAt": "2026-11-06T12:00:00.000Z"
-    },
-    {
-      "id": "CF3028",
-      "name": "Sumaiya Akter Sukhy",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-06-01",
-      "endDate": "2026-12-01",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF4728",
-      "name": "Mst. Shorna Akter",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Completed",
-      "startDate": "2026-05-02",
-      "endDate": "2026-11-02",
-      "remarks": "6-Month Maternity Leave (Leave Period Completed)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF5142",
-      "name": "Sokhina Khatun",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-09-12",
-      "endDate": "2027-03-12",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF5148",
-      "name": "Rekha Akter",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-08-12",
-      "endDate": "2027-02-12",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF8002",
-      "name": "Fatema Tus Johura",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-05-23",
-      "endDate": "2026-11-23",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF8313",
-      "name": "Sumaya",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-07-01",
-      "endDate": "2027-01-01",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF8373",
-      "name": "Marjia Akther",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-06-15",
-      "endDate": "2026-12-15",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF8554",
-      "name": "Sadia Sultana",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-08-12",
-      "endDate": "2027-02-12",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    },
-    {
-      "id": "CF8598",
-      "name": "Morzina Akter",
-      "area": "Packing Hall",
-      "sub": "Packaging Line",
-      "designation": "Helper",
-      "category": "Maternity Leave (ML)",
-      "type": "Maternity Leave",
-      "duration": "6 months",
-      "status": "Active",
-      "startDate": "2026-09-05",
-      "endDate": "2027-03-05",
-      "remarks": "6-Month Maternity Leave (HR Approved)",
-      "addedAt": "2026-11-07T08:00:00.000Z"
-    }
-  ]
+  }
 }
