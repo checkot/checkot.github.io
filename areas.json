@@ -1614,7 +1614,9 @@
   },
   "holidays": {
     "cancelled": [],
-    "custom": [],
+    "custom": [
+      "04-OCT-2026"
+    ],
     "byMonth": {}
   }
 }
