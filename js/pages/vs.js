@@ -6,10 +6,33 @@ let _vsCachedEmps = {};
 
 async function getVsLoadedEmployees(monthStr) {
   const m = monthStr || document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
-  if (_vsCachedEmps[m] && Array.isArray(_vsCachedEmps[m]) && _vsCachedEmps[m].length > 0) return _vsCachedEmps[m];
+  if (typeof loadAreaMap === 'function') await loadAreaMap();
+  
+  const enrich = (arr) => {
+    if (!Array.isArray(arr)) return arr;
+    arr.forEach(e => {
+      if (!e) return;
+      const u = String(e.id || '').toUpperCase().trim();
+      const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+      if (!e.sub) {
+        e.sub = d.s || '';
+        e.subsection = e.sub;
+      }
+      if (!e.area) {
+        if (typeof getAreaForId === 'function') e.area = getAreaForId(u, true);
+        else if (typeof AREA_MAP !== 'undefined' && AREA_MAP) e.area = AREA_MAP[u] || '';
+      }
+    });
+    return arr;
+  };
+
+  if (_vsCachedEmps[m] && Array.isArray(_vsCachedEmps[m]) && _vsCachedEmps[m].length > 0) {
+    return enrich(_vsCachedEmps[m]);
+  }
   try {
     const list = await fetchMonthPreIndexedData(m, false, false);
     if (Array.isArray(list) && list.length > 0) {
+      enrich(list);
       _vsCachedEmps[m] = list;
       return list;
     }
@@ -152,8 +175,10 @@ async function updateVsSlotPreview(slotNum, rawId) {
   
   if (found) {
     const name = found.name || id;
-    const sub = found.sub || found.subsection || '';
-    const area = found.area || '';
+    const u = String(found.id || id).toUpperCase().trim();
+    const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+    const sub = found.sub || found.subsection || d.s || '';
+    const area = found.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '');
     const ot = Number(found.otHours || 0);
     const badgeTxt = sub ? sub : (area ? area : (found.grade || ''));
     el.innerHTML = `
@@ -203,8 +228,10 @@ async function quickCompareSolidSub(subName) {
   const subLower = String(subName || '').trim().toLowerCase();
   const matched = list.filter(e => {
     if (!e || !e.id) return false;
-    const a = String(e.area || '').toLowerCase();
-    const s = String(e.sub || e.subsection || '').toLowerCase();
+    const u = String(e.id || '').toUpperCase().trim();
+    const a = String(e.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '') || ((typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[u] : '') || '').toLowerCase();
+    const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+    const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
     const isSolid = a.includes('solid') || a === 'solid production';
     return isSolid && (s === subLower || s.includes(subLower));
   });
@@ -265,8 +292,10 @@ async function quickCompareSolidCross(sub1, sub2) {
     const sl = String(sName).trim().toLowerCase();
     const emps = list.filter(e => {
       if (!e || !e.id) return false;
-      const a = String(e.area || '').toLowerCase();
-      const s = String(e.sub || e.subsection || '').toLowerCase();
+      const u = String(e.id || '').toUpperCase().trim();
+      const a = String(e.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '') || ((typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[u] : '') || '').toLowerCase();
+      const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+      const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
       return (a.includes('solid') || a === 'solid production') && (s === sl || s.includes(sl));
     });
     emps.sort((a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)));

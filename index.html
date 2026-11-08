@@ -2891,11 +2891,16 @@ const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data
 if (list && list.length > 0) {
 await loadAreaMap();
 const normalized = list.map(e => {
+const u = String(e.id || '').toUpperCase().trim();
+const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+const subVal = e.sub || e.subsection || d.s || '';
 const obj = {
 ...e,
-id: String(e.id || '').toUpperCase().trim(),
+id: u,
 isRppf: e.isRppf !== false,
-area: (e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facility')
+area: (e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'),
+sub: subVal,
+subsection: subVal
 };
 if (Array.isArray(obj.daily) && obj.daily.length > 0) _buildEmpDayMap(obj);
 getEmpOtDays(obj);
@@ -2915,7 +2920,12 @@ if (raw) {
 const parsed = JSON.parse(raw);
 if (parsed && Array.isArray(parsed.employees) && (Date.now() - (parsed.ts || 0) < CACHE_TTL_MS)) {
 await loadAreaMap();
-parsed.employees.forEach(applyTypeOverride);
+parsed.employees.forEach(e => {
+  const u = String(e.id || '').toUpperCase().trim();
+  const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+  if (!e.sub) { e.sub = d.s || ''; e.subsection = e.sub; }
+  applyTypeOverride(e);
+});
 monthIndexMemoryCache[month] = parsed.employees;
 return parsed.employees;
 }
@@ -2951,7 +2961,14 @@ function desigKey(d) { return String(d == null ? '' : d).replace(/\s+/g, ' ').tr
 /* function deriveEmpKind moved to js/ */
 /* function applyTypeOverride moved to js/ */
 function reapplyTypeOverrides() {
-Object.keys(monthIndexMemoryCache).forEach(m => (monthIndexMemoryCache[m] || []).forEach(e => { e.area = getAreaForId(e.id, true); applyTypeOverride(e); }));
+Object.keys(monthIndexMemoryCache).forEach(m => (monthIndexMemoryCache[m] || []).forEach(e => {
+  const u = String(e.id || '').toUpperCase().trim();
+  const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+  e.area = getAreaForId(e.id, true);
+  e.sub = d.s || e.sub || e.subsection || '';
+  e.subsection = e.sub;
+  applyTypeOverride(e);
+}));
 }
 function isExecHiddenFor(e) {
 return Boolean(e) && getAppMode() !== 'incharge' && e.kind === 'EXEC' && e.valid === true;
