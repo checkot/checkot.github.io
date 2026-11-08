@@ -1576,7 +1576,7 @@
       "holidayType": "hourly",
       "holidayHours": 8,
       "holidayFlat": 304,
-      "name": "৳৩৮/ঘণ্টা প্যাকেজ (Contractual / CF)"
+      "name": "Contractual (CF)"
     },
     "JO": {
       "otRate": 40,
@@ -1584,7 +1584,7 @@
       "holidayType": "flat",
       "holidayHours": 8,
       "holidayFlat": 300,
-      "name": "৳৪০/ঘণ্টা প্যাকেজ (JO C–F)"
+      "name": "Junior Officer (JO C–F)"
     },
     "JO_B": {
       "otRate": 45,
@@ -1592,7 +1592,7 @@
       "holidayType": "flat",
       "holidayHours": 8,
       "holidayFlat": 350,
-      "name": "৳৪৫/ঘণ্টা প্যাকেজ (JO A/B)"
+      "name": "Junior Officer (JO A/B)"
     },
     "UNSPEC": {
       "otRate": 0,
@@ -1601,7 +1601,7 @@
       "holidayHours": 0,
       "holidayFlat": 0,
       "noRate": true,
-      "name": "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)"
+      "name": "Unspecified (Hours Only / No Rate)"
     },
     "R_55": {
       "otRate": 55,

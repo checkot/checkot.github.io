@@ -69,10 +69,10 @@ function erpWaLink(text, phone) {
 const OVERALL_AREA = 'Overall';
 
 const DEFAULT_RATE_TABLE = {
-  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "৳৩৮/ঘণ্টা প্যাকেজ (Contractual / CF)" },
-  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayHours: 8, holidayFlat: 300, name: "৳৪০/ঘণ্টা প্যাকেজ (JO C–F)" },
-  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayHours: 8, holidayFlat: 350, name: "৳৪৫/ঘণ্টা প্যাকেজ (JO A/B)" },
-  UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayHours: 0, holidayFlat: 0, noRate: true, name: "Unspecified (রেটবিহীন / ঘণ্টা হিসাব)" }
+  CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "Contractual (CF)" },
+  JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayHours: 8, holidayFlat: 300, name: "Junior Officer (JO C–F)" },
+  JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayHours: 8, holidayFlat: 350, name: "Junior Officer (JO A/B)" },
+  UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayHours: 0, holidayFlat: 0, noRate: true, name: "Unspecified (Hours Only / No Rate)" }
 };
 
 function isNoRateCat(c) {

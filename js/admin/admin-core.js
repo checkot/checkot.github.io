@@ -75,9 +75,9 @@ return `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
 }
 const OVERALL_AREA = 'Overall';
 const DEFAULT_RATE_TABLE = {
-CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "৳38/hour package (Contractual / CF)" },
-JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayHours: 8, holidayFlat: 300, name: "৳40/hour package (JO C–F)" },
-JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayHours: 8, holidayFlat: 350, name: "৳45/hour package (JO A/B)" },
+CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "Contractual (CF)" },
+JO:   { otRate: 40, nightRate: 400, holidayType: "flat",   holidayHours: 8, holidayFlat: 300, name: "Junior Officer (JO C–F)" },
+JO_B: { otRate: 45, nightRate: 500, holidayType: "flat",   holidayHours: 8, holidayFlat: 350, name: "Junior Officer (JO A/B)" },
 UNSPEC: { otRate: 0, nightRate: 0, holidayType: "flat", holidayHours: 0, holidayFlat: 0, noRate: true, name: "Unspecified (no rate / hours only)" }
 };
 let RATE_TABLE = JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE));
