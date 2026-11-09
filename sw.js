@@ -23,6 +23,7 @@ const PRECACHE_ASSETS = [
   'js/core/utils.js',
   'js/calculations/rates.js',
   'js/calculations/ranking.js',
+  'js/app-main.js',
   'js/components/router.js',
   'js/pages/search.js',
   'js/pages/history.js',
