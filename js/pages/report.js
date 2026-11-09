@@ -381,7 +381,11 @@ function syncReportPageBanner() {
     const mIdx = (parseInt(mm, 10) || 1) - 1;
     const niceMonth = `${BN_MONTHS[mIdx] || mm} ${bn(yy) || yy}`;
     setTimeout(fitAll, 10);
-    if (subLbl) subLbl.textContent = `${areaName}${currentResult.grade ? ' • ' + currentResult.grade : ''} • Total: ৳${currentResult.totalEarned.toFixed(2)}`;
+    if (subLbl) subLbl.textContent = `${areaName} · ${currentResult.grade || 'Helper'}`;
+    if (typeof fitAll === 'function') {
+      setTimeout(fitAll, 20);
+      setTimeout(fitAll, 100);
+    }
     if (monthLbl) monthLbl.textContent = niceMonth;
     if (currentPermanentPage === 'report' && window._rptCtx && window._rptCtx.emp) {
       const h = document.getElementById('rptPreviewHost');

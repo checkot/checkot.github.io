@@ -169,12 +169,15 @@ function fitText(el) {
   const max = parts[0];
   const min = parts[1];
   if (!max || !min) return;
+  if (!el.clientWidth || el.clientWidth <= 0) return;
+  el.style.textOverflow = 'clip';
   let s = max;
   el.style.fontSize = s + 'px';
   while (el.scrollWidth > el.clientWidth && s > min) {
     s -= 0.5;
     el.style.fontSize = s + 'px';
   }
+  el.style.textOverflow = '';
 }
 
 function fitIdBlock() {
@@ -183,7 +186,7 @@ function fitIdBlock() {
     const idEl = block.querySelector('.idblock-id');
     if (!top || !idEl) return;
     const topW = top.offsetWidth;
-    if (!topW) return;
+    if (!topW || topW <= 0) return;
     idEl.style.letterSpacing = 'normal';
     const text = (idEl.textContent || '').trim();
     const len = text.length;
@@ -192,7 +195,8 @@ function fitIdBlock() {
     const diff = topW - idW;
     if (diff > 0) {
       const extra = diff / (len - 1);
-      idEl.style.letterSpacing = extra.toFixed(1) + 'px';
+      const capped = Math.min(extra, 3.2);
+      idEl.style.letterSpacing = capped.toFixed(1) + 'px';
     } else {
       idEl.style.letterSpacing = '0.04em';
     }

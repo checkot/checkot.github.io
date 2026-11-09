@@ -48,6 +48,10 @@ function enterCompactMode(empId, month) {
   const sMon = document.getElementById('summaryMonth');
   if (sMon) sMon.textContent = (monthNames[parseInt(m, 10)-1] || m) + ' ' + y + ' • ' + areaStr;
   document.getElementById('mainHeader').classList.add('compact');
+  if (typeof fitAll === 'function') {
+    setTimeout(fitAll, 20);
+    setTimeout(fitAll, 100);
+  }
 }
 
 function expandSearchForm() {
@@ -242,7 +246,7 @@ function applyExtraction(parsed, detection) {
   try {
     const wCard = document.getElementById('workerIdentityCard');
     if (wCard) wCard.style.display = 'flex';
-    setTimeout(fitAll, 10);
+    setTimeout(fitAll, 20); setTimeout(fitAll, 100);
     const widEl = document.getElementById('workerIdCode');
     if (widEl) widEl.textContent = currentSearchId || '—';
     const wNameEl = document.getElementById('workerNameLine');
