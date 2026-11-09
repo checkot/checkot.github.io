@@ -1,3 +1,11 @@
+
+/* STRICT ROLE PRIVACY: Ordinary employees must NEVER see In-Charge Overview on mobile or desktop */
+body:not(.incharge-mode-active) #inchargeHomeOverview,
+body:not(.incharge-mode-active) .inc-home-overview,
+body:not(.incharge-mode-active) #inchargeEmpProfileCard {
+  display: none !important;
+}
+
 /* ==========================================================================
    PAGES.CSS - Page views: Search, Report, VS, Leaderboard, Notices, Settings
    ========================================================================== */
@@ -5839,7 +5847,7 @@ body.norate-view #compareMyAmount {
 
   /* In-Charge Desktop Split: Hero, Leaves, History & Watchlist Full Width, Absent & Toppers Side-by-Side */
   @media (min-width: 900px) {
-    #inchargeHomeOverview {
+    body.incharge-mode-active #inchargeHomeOverview {
       display: grid !important;
       grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.25fr) !important;
       gap: 12px !important;

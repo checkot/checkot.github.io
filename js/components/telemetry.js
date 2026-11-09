@@ -69,38 +69,8 @@
 
   // Autonomous Shift-Aware Realtime Telemetry Engine for RPPF Plant
   function computeShiftActiveStaff() {
-    const now = new Date();
-    // Bangladesh Standard Time is UTC+6
-    const utcHours = now.getUTCHours();
-    const utcMinutes = now.getUTCMinutes();
-    const bdTime = ((utcHours + 6) % 24) + utcMinutes / 60;
-
-    let base = 15;
-    if (bdTime >= 7.5 && bdTime <= 9.5) {
-      // Morning punch & general shift start
-      base = 22;
-    } else if (bdTime > 9.5 && bdTime <= 13.0) {
-      // General shift duty
-      base = 16;
-    } else if (bdTime > 13.0 && bdTime <= 14.5) {
-      // Lunch break & Shift 1/2 handover
-      base = 24;
-    } else if (bdTime > 14.5 && bdTime <= 17.5) {
-      // 4:30 PM / 5:00 PM shift end & OT check
-      base = 27;
-    } else if (bdTime > 17.5 && bdTime <= 21.0) {
-      // Evening OT / 2nd shift
-      base = 14;
-    } else if (bdTime > 21.0 && bdTime <= 23.0) {
-      // Night shift in (10 PM)
-      base = 10;
-    } else {
-      // Late night shift (11 PM - 7 AM)
-      base = 6;
-    }
-
-    const variance = (now.getMinutes() % 5) - 2; // -2 to +2
-    return Math.max(3, base + variance);
+    // Real baseline: the current active user device (1)
+    return 1;
   }
 
   function getAuthoritativeMauCount() {
@@ -126,14 +96,8 @@
     if (pill) pill.innerHTML = '<span class="live-dot"></span> Live';
 
     if (_liveTimer) clearInterval(_liveTimer);
-    _liveTimer = setInterval(() => {
-      // Natural organic shift fluctuation (-1, 0, or +1)
-      const delta = Math.floor(Math.random() * 3) - 1;
-      const target = computeShiftActiveStaff();
-      _currentLiveCount = Math.max(3, Math.min(target + 3, Math.max(target - 3, _currentLiveCount + delta)));
-      updateOnlineDisplay(_currentLiveCount);
-      updateMauDisplay(getAuthoritativeMauCount(), getTargetMonth());
-    }, 28000);
+    // If Firebase presence connects, it updates automatically with real connected sockets.
+    // Otherwise keep the actual device count (1).
   }
 
   function initFirebaseTelemetry() {
