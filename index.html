@@ -47,7 +47,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/nav.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/pages.css?v=20261109sm">
   <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
@@ -1913,9 +1913,9 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/core/config.js"></script>
   <script src="js/core/state.js"></script>
   <script src="js/core/storage.js"></script>
-  <script src="js/core/utils.js?v=20261105nt"></script>
+  <script src="js/core/utils.js?v=20261109sm"></script>
   <script src="js/calculations/rates.js?v=20261106b"></script>
-  <script src="js/calculations/ranking.js?v=20261105nt"></script>
+  <script src="js/calculations/ranking.js?v=20261109sm"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
   <script src="js/pages/search.js"></script>
@@ -2948,7 +2948,7 @@ if (!emp) return 0;
 if (Array.isArray(emp.punchProblems)) return emp.punchProblems.length;
 return Number(emp.punchProblems) || 0;
 }
-const LEGACY_DESIG_TAIL = /\s+((?:Junior\s+Officer\s+[A-F])|Helper|Casual|(?:Senior\s+)?(?:Deputy\s+|Assistant\s+|Additional\s+|Senior\s+Deputy\s+)?Manager\b.*|(?:Senior\s+)?Officer(?:\s+[A-F])?|Un-?Skilled\s+Worker(?:\s+[IVX]+)?|Skilled\s+Worker(?:\s+[IVX]+)?|Head\s+of\b.*|In-?Charge\b.*|Executive\b.*)$/i;
+var LEGACY_DESIG_TAIL = /\s+((?:Junior\s+Officer\s+[A-F])|Helper|Casual|(?:Senior\s+)?(?:Deputy\s+|Assistant\s+|Additional\s+|Senior\s+Deputy\s+)?Manager\b.*|(?:Senior\s+)?Officer(?:\s+[A-F])?|Un-?Skilled\s+Worker(?:\s+[IVX]+)?|Skilled\s+Worker(?:\s+[IVX]+)?|Head\s+of\b.*|In-?Charge\b.*|Executive\b.*)$/i;
 function repairLegacyEmployee(e) {
 if (!/^(production|production department)$/i.test(String(e.grade || '').trim())) return;
 const nm = String(e.name || '');

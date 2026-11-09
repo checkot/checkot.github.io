@@ -105,3 +105,229 @@ if (typeof getGeneralAbsentCount !== 'function') {
     return res.count || 0;
   };
 }
+
+
+/* ==========================================================================
+   REQUISITION & ABSENT METRICS COMPUTATION
+   ========================================================================== */
+function computeEmpRequisitionProblems(e) {
+  if (!e) return [];
+  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) return e.requisitionProblems;
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  const reqProbs = [];
+
+  // Known / Detected Govt Holidays & Admin Tick/Untick Overrides
+  let cancelledHols = [];
+  let customHols = [];
+  try {
+    const raw = localStorage.getItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1');
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase());
+      customHols = (cfg.custom || []).map(x => String(x).toUpperCase());
+    }
+  } catch (e) {}
+
+  const baseGovtHols = ['20-OCT-2026', '21-OCT-2026', '21-FEB-2026', '26-MAR-2026', '14-APR-2026', '01-MAY-2026', '16-DEC-2026', '25-DEC-2026'];
+  const activeGovtHols = [...new Set([...baseGovtHols, ...customHols])].filter(d => !cancelledHols.includes(d));
+
+  daily.forEach(r => {
+    if (!r || !Array.isArray(r)) return;
+    const dateStr = String(r[0] || '').trim().toUpperCase();
+    const dayStr = String(r[1] || '').trim();
+    const inStr = String(r[2] || '').trim();
+    const outStr = String(r[3] || '').trim();
+
+    // If date is explicitly unticked/cancelled by admin, treat as normal working day!
+    const isExplicitlyCancelled = cancelledHols.includes(dateStr);
+
+    const regD = Number(r[4]) || 0;
+    const regO = Number(r[5]) || 0;
+    const doD = Number(r[6]) || 0;
+    const doO = Number(r[7]) || 0;
+    const holD = Number(r[8]) || 0;
+    const holO = Number(r[9]) || 0;
+    const isNight = Number(r[10]) === 1 || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+
+    const totOt = regO + doO + holO;
+    const totDuty = regD + doD + holD;
+
+    // 1. Govt Holiday Requisition Missing (Active holidays only, unless cancelled)
+    if (!isExplicitlyCancelled && activeGovtHols.includes(dateStr) && (regD > 0 || regO > 0) && (holD === 0 && holO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: 'Govt Holiday Req Missing (Should be in Holiday Allowance)',
+        reason: 'Govt Holiday Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    // 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only, unless cancelled as compensatory working day)
+    if (!isExplicitlyCancelled && (dayStr === 'Thu' || dayStr === 'Fri') && (regD > 0 || regO > 0) && (doD === 0 && doO === 0)) {
+      reqProbs.push({
+        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
+        expectedOt: `Weekend (${dayStr}) DO Req Missing`,
+        reason: 'Weekend Duty recorded as Regular Duty'
+      });
+      return;
+    }
+
+    if (typeof isPunchMissing === 'function' && (isPunchMissing(inStr) || isPunchMissing(outStr))) return;
+
+    const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
+    const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
+    if (!mIn || !mOut) return;
+    const ti = (+mIn[1]) * 60 + (+mIn[2]);
+    const to = (+mOut[1]) * 60 + (+mOut[2]);
+    const diff = to < ti ? (1440 - ti) + to : to - ti;
+    const elHrs = Number((diff / 60).toFixed(2));
+
+    if (totOt === 0) {
+      if (isNight && (elHrs >= 11.0 || totDuty >= 11.0)) {
+        const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: true,
+          expectedOt: `${exp}.0h (Night Shift OT Error / Missing)`,
+          reason: 'Night Shift OT Missing'
+        });
+      } else if (!isNight && to >= 1150 && to <= 1215) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '3.0h (04:30 - 07:30 PM)',
+          reason: '3h Evening OT Missing'
+        });
+      } else if (!isNight && to >= 1216 && to <= 1350) {
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: '5.0h (04:30 - 09:30 PM)',
+          reason: '5h Evening OT Missing'
+        });
+      } else if (!isNight && ti <= 435 && elHrs >= 9.5) {
+        const exp = ti <= 390 ? '2.5h Morning OT' : '1.0h Morning OT';
+        reqProbs.push({
+          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
+          expectedOt: exp,
+          reason: 'Morning OT Missing'
+        });
+      }
+    }
+  });
+  return reqProbs;
+}
+
+function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
+  if (!e) return { dates: [], shortDates: [], count: 0 };
+  const isMulti = Boolean(e.isMultiMonth || (e.monthsCount && e.monthsCount > 1));
+  if (isMulti && Array.isArray(e.generalAbsentDays)) {
+    return {
+      dates: e.generalAbsentDays,
+      shortDates: Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : e.generalAbsentDays,
+      count: e.generalAbsentCount != null ? Number(e.generalAbsentCount) : e.generalAbsentDays.length
+    };
+  }
+  const mStr = targetMonthStr 
+    || e._computedMonth
+    || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
+    || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
+
+  // Dynamic live calculation using _rptRows
+  if (typeof _rptRows === 'function') {
+    const { rows, y, m } = _rptRows({ emp: e, month: mStr, prevNight: prevNightSetOrBool });
+    const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const monName = (m >= 1 && m <= 12) ? mons[m - 1] : 'JAN';
+    const mmPad = String(m >= 1 && m <= 12 ? m : 1).padStart(2, '0');
+    const absentDates = [];
+    const shortDates = [];
+    (rows || []).forEach(r => {
+      if (r && r.isGeneralAbsent) {
+        const dStr = String(r.dayNum || (r.date ? r.date.split('/')[0] : '')).padStart(2, '0');
+        absentDates.push(`${dStr}-${monName} (${r.day})`);
+        shortDates.push(`${dStr}-${mmPad}`);
+      }
+    });
+    e.generalAbsentDays = absentDates;
+    e.generalAbsentShortDates = shortDates;
+    e.generalAbsentCount = absentDates.length;
+    e._computedMonth = mStr;
+    e._computedPrevNight = prevNightSetOrBool;
+    return { dates: absentDates, shortDates, count: absentDates.length };
+  }
+
+  // Self-contained in-memory fallback from e.daily and areas.json holiday rules if _rptRows is not available
+  const daily = Array.isArray(e.daily) ? e.daily : [];
+  let y = 0, m = 0;
+  const mm = String(mStr || '').match(/(\d{4})-(\d{2})/);
+  if (mm) { y = +mm[1]; m = +mm[2]; }
+  else if (daily.length > 0 && daily[0] && daily[0][0]) {
+    const s0 = String(daily[0][0]).trim();
+    const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
+    const _RMON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    if (qAlpha) {
+      y = +qAlpha[3];
+      m = _RMON.findIndex(x => x === qAlpha[2].toUpperCase()) + 1;
+    }
+  }
+  if (!y || m < 1 || m > 12) {
+    const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
+  }
+  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const monName = mons[m - 1];
+  const mmPad = String(m).padStart(2, '0');
+  const lastDay = new Date(y, m, 0).getDate();
+  const workedDays = new Set();
+  const nightDays = new Set();
+  let day1MorningOut = false;
+
+  daily.forEach(r => {
+    if (!r || !r[0]) return;
+    const parts = String(r[0]).split('-');
+    const dNum = parseInt(parts[0], 10);
+    if (!dNum || dNum < 1 || dNum > 31) return;
+    const inStr = String(r[2] || '').trim();
+    const outStr = String(r[3] || '').trim();
+    const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
+    const isNight = !!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
+    if (dHrs > 0 || (inStr && inStr !== '-') || (outStr && outStr !== '-')) {
+      workedDays.add(dNum);
+    }
+    if (isNight) nightDays.add(dNum);
+    if (dNum === 1 && outStr && (!inStr || inStr === '-')) {
+      const q = outStr.match(/^(\d{1,2}):(\d{2})/);
+      if (q && (+q[1] * 60 + +q[2]) <= 435) day1MorningOut = true;
+    }
+  });
+
+  const prevNight = (typeof prevNightSetOrBool === 'boolean')
+    ? prevNightSetOrBool
+    : (prevNightSetOrBool instanceof Set ? (prevNightSetOrBool.has(String(e.id || '').toUpperCase()) || prevNightSetOrBool.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(e.id) : String(e.id || '').toUpperCase())) : false);
+
+  const absentDates = [];
+  const shortDates = [];
+  const _RDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  for (let d = 1; d <= lastDay; d++) {
+    const dn = _RDAY[new Date(y, m - 1, d).getDay()];
+    const dStr = String(d).padStart(2, '0');
+    if (dn === 'Thu' || dn === 'Fri') continue;
+    const holCheck = typeof isPlantOrGovtHolidayDate === 'function' ? isPlantOrGovtHolidayDate(y, m, d, dn) : { isOffOrHol: false };
+    if (holCheck.isOffOrHol) continue;
+    if (d === 1 && (prevNight || day1MorningOut)) continue;
+    if (d > 1 && nightDays.has(d - 1)) continue;
+    if (!workedDays.has(d)) {
+      absentDates.push(`${dStr}-${monName} (${dn})`);
+      shortDates.push(`${dStr}-${mmPad}`);
+    }
+  }
+
+  e.generalAbsentDays = absentDates;
+  e.generalAbsentShortDates = shortDates;
+  e.generalAbsentCount = absentDates.length;
+  e._computedMonth = mStr;
+  e._computedPrevNight = prevNight;
+  return { dates: absentDates, shortDates, count: absentDates.length };
+}
+
+if (typeof window !== "undefined") {
+  window.computeEmpRequisitionProblems = computeEmpRequisitionProblems;
+  window.computeEmpGeneralAbsents = computeEmpGeneralAbsents;
+}
