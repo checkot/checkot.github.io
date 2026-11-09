@@ -1145,47 +1145,61 @@ details.adjust[open] > summary::after {
   color: var(--text);
 }
 
-/* Report Preview Zoom Bar */
+/* Report Preview Zoom Bar (Slim, Compact, Single-Row Segmented Control) */
 .rpt-zoom-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  margin-bottom: var(--space-2);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  color: var(--text-2);
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 4px 6px !important;
+  margin-bottom: 8px !important;
+  flex-wrap: nowrap !important;
 }
 
 .rpt-zoom-btns {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 2px !important;
+  background: rgba(15, 44, 94, 0.06) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  padding: 2px !important;
 }
 
 .rpt-zoom-btn {
-  width: auto;
-  min-width: 28px;
-  min-height: 25px;
-  height: 25px;
-  padding: 0 8px;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 5px;
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  box-shadow: none;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 26px !important;
+  height: 26px !important;
+  max-height: 26px !important;
+  padding: 0 9px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 26px !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
 }
 
 .rpt-zoom-btn.active {
-  background: var(--brand);
-  color: #FFFFFF;
-  border-color: var(--brand);
+  background: #1D4ED8 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
 }
 
 #calcInputs.norate .grand-total-block,

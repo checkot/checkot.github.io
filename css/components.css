@@ -1425,7 +1425,7 @@ button, select, input[type="button"], input[type="submit"], input[type="reset"] 
 }
 
 .calc-mini-btn, .pill, .filter-chip, .tab-btn, .sub-pill, .area-tab-btn,
-.inc-absent-filter-btn, .inc-topper-area-btn, .icc-filter-chip, .rpt-zoom-btn,
+.inc-absent-filter-btn, .inc-topper-area-btn, .icc-filter-chip,
 .btn-primary, .btn-secondary, .ghost-btn, .more-menu-btn, .more-nav-item {
   min-height: 48px !important;
   min-width: 48px !important;
@@ -1469,7 +1469,7 @@ button, select, input[type="button"], input[type="submit"], input[type="reset"] 
 
 /* Responsive wrap to avoid horizontal overflow on 360px screens */
 .filter-row, .pills-wrap, .tabs-wrap, .btn-group, .sub-pills-row, .area-tabs,
-.inc-absent-pill-bar, .inc-toppers-area-pills, .rpt-zoom-btns {
+.inc-absent-pill-bar, .inc-toppers-area-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
