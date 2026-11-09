@@ -1937,9 +1937,10 @@ body.norate-view #compareMyAmount {
 /* Search Page Ordering */
 #page-search > .app-header { order: 0; }
 #searchFormCard { order: 1; }
-#searchSummary { order: 2; }
-#viewingContextBanner { order: 3; }
-#monthNavBar { order: 4; }
+#workerIdentityCard { order: 2; }
+#searchSummary { order: 3; display: none !important; }
+#viewingContextBanner { order: 4; }
+#monthNavBar { order: 5; }
 #step3 { order: 10; }
 #step7 { order: 11; }
 #payslipCard { order: 12; }

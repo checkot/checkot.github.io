@@ -1726,20 +1726,28 @@ function enterCompactMode(empId, month) {
 document.getElementById('searchFormCard').style.display = "none";
 document.getElementById('welcomeBanner')?.classList.add('hidden-compact');
 document.getElementById('quickActionsGrid')?.classList.add('hidden-compact');
-document.getElementById('searchSummary').classList.add('show');
-document.getElementById('summaryId').textContent = empId;
-const [y, m] = month.split('-');
+const wCard = document.getElementById('workerIdentityCard');
+if (wCard) wCard.style.display = "flex";
+const ss = document.getElementById('searchSummary');
+if (ss) { ss.style.display = "none"; ss.classList.remove('show'); }
+const sId = document.getElementById('summaryId');
+if (sId) sId.textContent = empId;
+const [y, m] = String(month || '').split('-');
 const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const isRppf = currentResult?.isRppf !== false;
+const isRppf = (typeof currentResult !== 'undefined' && currentResult?.isRppf !== false);
 const areaStr = isRppf ? getAreaForId(empId, true) : 'Other facility';
-document.getElementById('summaryMonth').textContent = monthNames[parseInt(m)-1] + ' ' + y + ' • ' + areaStr;
+const sMon = document.getElementById('summaryMonth');
+if (sMon) sMon.textContent = (monthNames[parseInt(m, 10)-1] || m) + ' ' + y + ' • ' + areaStr;
 document.getElementById('mainHeader').classList.add('compact');
 }
 function expandSearchForm() {
 document.getElementById('searchFormCard').style.display = "block";
 document.getElementById('welcomeBanner')?.classList.remove('hidden-compact');
 document.getElementById('quickActionsGrid')?.classList.remove('hidden-compact');
-document.getElementById('searchSummary').classList.remove('show');
+const wCard = document.getElementById('workerIdentityCard');
+if (wCard) wCard.style.display = "none";
+const ss = document.getElementById('searchSummary');
+if (ss) { ss.style.display = "none"; ss.classList.remove('show'); }
 document.getElementById('mainHeader').classList.remove('compact');
 document.getElementById('employeeId').focus();
 }
@@ -1755,7 +1763,7 @@ const lbl = document.getElementById('monthNavCurrentLabel');
 if (!bar || !lbl || !monthStr) return;
 const [yy, mm] = String(monthStr).split('-');
 const mIdx = (parseInt(mm, 10) || 1) - 1;
-lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)} (${monthStr})`;
+lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)}`;
 bar.style.display = 'grid';
 }
 function navigateReportMonth(delta) {
@@ -1999,7 +2007,7 @@ if (!rawId) { showToast("First enter your ID number", "warn"); document.getEleme
 const searchId = rawId.toUpperCase().replace(/\s+/g, '');
 currentSearchId = searchId; currentMonth = month;
 _lbView = false;
-['viewingContextBanner','monthNavBar','step3','step5','step7','payslipCard'].forEach(id => {
+['viewingContextBanner','monthNavBar','workerIdentityCard','step3','step5','step7','payslipCard'].forEach(id => {
 const el = document.getElementById(id);
 if (el) { el.style.display = "none"; el.classList.remove('show'); }
 });
@@ -4202,7 +4210,7 @@ async function viewEmployeeFromLeaderboard(empId, forceReport = false) {
 }
 function resetAll() {
 document.body.classList.remove('has-result');
-['viewingContextBanner','monthNavBar','step3','step5','step7','payslipCard'].forEach(id => {
+['viewingContextBanner','monthNavBar','workerIdentityCard','step3','step5','step7','payslipCard'].forEach(id => {
 const el = document.getElementById(id);
 if (el) { el.style.display = "none"; el.classList.remove('show'); }
 });

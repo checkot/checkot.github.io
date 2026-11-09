@@ -884,12 +884,65 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 
 #page-search .grand-total-block .gt-value,
 #rateChartModal .grand-total-block .gt-value {
-  font-family: var(--ui-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  font-size: clamp(36px, 8.5vw, 45px) !important;
-  font-weight: 850 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-size: clamp(42px, 10vw, 52px) !important;
+  font-weight: 900 !important;
   color: #FFFFFF !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.05 !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Subtle Change ID Pill Button */
+.btn-change-id-subtle {
+  background: var(--primary-blue, #2563EB) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28) !important;
+  transition: all 0.15s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.btn-change-id-subtle:hover {
+  background: #1D4ED8 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.38) !important;
+}
+
+.btn-change-id-subtle:active {
+  transform: scale(0.96) !important;
+  opacity: 0.9 !important;
+}
+
+/* Compact Rate Chip */
+.hero-rate-chip,
+#lblRateChip {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(8px) !important;
+  padding: 2px 6px !important;
+  border-radius: 5px !important;
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.01em !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+  white-space: nowrap !important;
+}
+
+.hero-rate-chip b,
+#lblRateChip b {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
 }
 
 /* Bill Rows & Day Summary Grid as Empress White KPI Cards with Delta Pill & Sparkline */
@@ -931,12 +984,13 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 }
 
 #page-search .bill-row .bill-amt {
-  font-family: var(--ui-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  font-size: 28px !important;
-  font-weight: 400 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-size: 17.5px !important;
+  font-weight: 800 !important;
   color: var(--ui-text) !important;
   letter-spacing: -0.02em !important;
+  white-space: nowrap !important;
 }
 
 /* 2x2 KPI Summary Grid with Mini Sparkline Accent (matches Screenshot 3) */

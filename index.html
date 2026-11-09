@@ -47,7 +47,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css?v=20261109compact">
   <link rel="stylesheet" href="css/nav.css">
-  <link rel="stylesheet" href="css/pages.css?v=20261109compact">
+  <link rel="stylesheet" href="css/pages.css?v=20261109merge">
   <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
@@ -619,10 +619,36 @@ document.documentElement.setAttribute('data-theme', t);
 <div id="status" role="status" aria-live="polite"></div>
 <div id="progress"></div>
 </div>
-<div class="search-summary" id="searchSummary" onclick="expandSearchForm()">
-<div class="id-badge" id="summaryId">—</div>
-<div class="month-info" id="summaryMonth">—</div>
-<div class="edit-icon">Change</div>
+<div class="search-summary" id="searchSummary" style="display:none !important;" aria-hidden="true" onclick="expandSearchForm()">
+<div class="id-badge" id="summaryId" style="display:none;">—</div>
+<div class="month-info" id="summaryMonth" style="display:none;">—</div>
+<div class="edit-icon" style="display:none;">Change</div>
+</div>
+
+<!-- Modern Full-Height Employee Identity Bar with Integrated Change Button (Merges Summary & ID Bar) -->
+<div class="worker-identity-card" id="workerIdentityCard" style="display:none;margin-bottom:12px;">
+  <div class="worker-id-badge-col">
+    <span class="worker-id-label">Employee ID</span>
+    <span class="worker-id-code" id="workerIdCode">—</span>
+  </div>
+  <div class="worker-details-col">
+    <div class="worker-name-line-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div class="worker-name-line" id="workerNameLine">User</div>
+      <button type="button" class="btn-change-id-subtle" onclick="expandSearchForm()" aria-label="Change Employee ID">Change ✎</button>
+    </div>
+    <div class="worker-dept-line" id="workerDeptLine">
+      <span id="workerDeptArea">—</span>
+      <span class="worker-dept-dot"></span>
+      <span id="workerDeptGrade">—</span>
+    </div>
+    <div class="worker-meta-line">
+      <span class="worker-meta-tag" id="workerMetaTag" style="display:none;">Contractual / CF</span>
+      <span class="worker-status-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        Verified
+      </span>
+    </div>
+  </div>
 </div>
 <div class="vc-banner" id="viewingContextBanner" role="region" aria-label="Report mode information">
 <div class="vc-head">
@@ -725,28 +751,7 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="calc-mini-btn" onclick="openRateChartModal()">Rate chart</button>
 </div>
 
-<!-- Modern Full-Height Employee Identity Bar (+10% Height, Prominent Name, Solid Production • Helper) -->
-<div class="worker-identity-card" id="workerIdentityCard">
-  <div class="worker-id-badge-col">
-    <span class="worker-id-label">Employee ID</span>
-    <span class="worker-id-code" id="workerIdCode">—</span>
-  </div>
-  <div class="worker-details-col">
-    <div class="worker-name-line" id="workerNameLine">User</div>
-    <div class="worker-dept-line" id="workerDeptLine">
-      <span id="workerDeptArea">—</span>
-      <span class="worker-dept-dot"></span>
-      <span id="workerDeptGrade">—</span>
-    </div>
-    <div class="worker-meta-line">
-      <span class="worker-meta-tag" id="workerMetaTag" style="display:none;">Contractual / CF</span>
-      <span class="worker-status-tag">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        Verified
-      </span>
-    </div>
-  </div>
-</div>
+
 <!-- Legacy compatibility hooks placed strictly outside the card -->
 <div id="userGreeting" class="greeting-banner" style="display:none !important;" aria-hidden="true">
   <div class="greet-text"><span id="greetName">User</span></div>
@@ -1924,7 +1929,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/calculations/ranking.js?v=20261109full"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
-  <script src="js/pages/search.js?v=20261109nav"></script>
+  <script src="js/pages/search.js?v=20261109merge"></script>
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js"></script>
   <script src="js/pages/report.js?v=20261109slim"></script>

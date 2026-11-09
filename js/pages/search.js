@@ -35,13 +35,18 @@ function enterCompactMode(empId, month) {
   document.getElementById('searchFormCard').style.display = "none";
   document.getElementById('welcomeBanner')?.classList.add('hidden-compact');
   document.getElementById('quickActionsGrid')?.classList.add('hidden-compact');
-  document.getElementById('searchSummary').classList.add('show');
-  document.getElementById('summaryId').textContent = empId;
+  const wCard = document.getElementById('workerIdentityCard');
+  if (wCard) wCard.style.display = "flex";
+  const ss = document.getElementById('searchSummary');
+  if (ss) { ss.style.display = "none"; ss.classList.remove('show'); }
+  const sId = document.getElementById('summaryId');
+  if (sId) sId.textContent = empId;
   const [y, m] = String(month || '').split('-');
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const isRppf = (typeof currentResult !== 'undefined' && currentResult?.isRppf !== false);
   const areaStr = isRppf ? getAreaForId(empId, true) : 'Other facility';
-  document.getElementById('summaryMonth').textContent = (monthNames[parseInt(m, 10)-1] || m) + ' ' + y + ' • ' + areaStr;
+  const sMon = document.getElementById('summaryMonth');
+  if (sMon) sMon.textContent = (monthNames[parseInt(m, 10)-1] || m) + ' ' + y + ' • ' + areaStr;
   document.getElementById('mainHeader').classList.add('compact');
 }
 
@@ -49,7 +54,10 @@ function expandSearchForm() {
   document.getElementById('searchFormCard').style.display = "block";
   document.getElementById('welcomeBanner')?.classList.remove('hidden-compact');
   document.getElementById('quickActionsGrid')?.classList.remove('hidden-compact');
-  document.getElementById('searchSummary').classList.remove('show');
+  const wCard = document.getElementById('workerIdentityCard');
+  if (wCard) wCard.style.display = "none";
+  const ss = document.getElementById('searchSummary');
+  if (ss) { ss.style.display = "none"; ss.classList.remove('show'); }
   document.getElementById('mainHeader').classList.remove('compact');
   document.getElementById('employeeId').focus();
 }
@@ -140,7 +148,7 @@ async function findReport() {
     window.CheckotLoader.show(month);
   }
 
-  ['viewingContextBanner','monthNavBar','step3','step7','payslipCard'].forEach(id => {
+  ['viewingContextBanner','monthNavBar','workerIdentityCard','step3','step7','payslipCard'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
@@ -232,6 +240,8 @@ function applyExtraction(parsed, detection) {
   }
     // Update modern Worker Identity Card (+10% Height & Typography)
   try {
+    const wCard = document.getElementById('workerIdentityCard');
+    if (wCard) wCard.style.display = 'flex';
     const widEl = document.getElementById('workerIdCode');
     if (widEl) widEl.textContent = currentSearchId || '—';
     const wNameEl = document.getElementById('workerNameLine');
