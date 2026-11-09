@@ -27,13 +27,7 @@
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const MON_UP = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const isInc = () => { try { return getAppMode() === 'incharge'; } catch (e) { return false; } };
-  const curMonth = () => {
-    try {
-      const m = (typeof getCurrentMonth === "function" ? getCurrentMonth() : "") || (typeof currentMonth !== "undefined" ? currentMonth : "");
-      if (/^\d{4}-\d{2}$/.test(m)) return m;
-    } catch (e) { /* ignore */ }
-    return "2026-11";
-  };
+  const curMonth = () => { try { return getCurrentMonth(); } catch (e) { return ''; } };
   const toast = (m, t) => { try { showToast(m, t || 'info'); } catch (e) { /* ignore */ } };
   const monLabel = (ym) => { const p = String(ym).split('-'); return p.length === 2 ? `${MON[(parseInt(p[1], 10) || 1) - 1] || p[1]} ${p[0]}` : String(ym); };
   const pad2 = (n) => String(n).padStart(2, '0');
@@ -738,8 +732,7 @@
 
   function getVsPeriod() {
     const type = ($('vsPeriodSelect') && $('vsPeriodSelect').value) || 'current';
-    let base = ($('vsMonthOverrideSelect') && $('vsMonthOverrideSelect').value) || curMonth() || ymNow() || "2026-11";
-    if (!/^\d{4}-\d{2}$/.test(base)) base = curMonth() || "2026-11";
+    let base = ($('vsMonthOverrideSelect') && $('vsMonthOverrideSelect').value) || curMonth() || ymNow();
     if (type === 'ytd' || type === 'alltime') {
       const latest = (Array.isArray(window.availableServerMonths) && window.availableServerMonths.length)
         ? window.availableServerMonths.slice().sort().reverse()[0]
@@ -852,21 +845,12 @@
   }
 
   function collectVsIds() {
+    const inputs = [...document.querySelectorAll('#vsInputsGrid input.vs-emp-id-input')].filter((el) => el.offsetParent !== null);
+    let ids = inputs.map((el) => el.value.trim().toUpperCase().replace(/\s+/g, ''));
     let mode = 2;
     try { mode = currentVsMode; } catch (e) { /* ignore */ }
-    const id1 = ($("compareId1")?.value || "").trim().toUpperCase().replace(/\s+/g, "");
-    const id2 = ($("compareId")?.value || "").trim().toUpperCase().replace(/\s+/g, "");
-    let ids = [id1, id2];
-    if (mode === 3 || mode === "custom") {
-      const id3 = ($("compareId3")?.value || "").trim().toUpperCase().replace(/\s+/g, "");
-      if (id3) ids.push(id3);
-    }
-    if (mode === "custom") {
-      const extra = [...document.querySelectorAll("#vsExtraSlotsContainer input.vs-emp-id-input")]
-        .map((el) => el.value.trim().toUpperCase().replace(/\s+/g, ""))
-        .filter(Boolean);
-      ids.push(...extra);
-    }
+    if (mode === 2) ids = ids.slice(0, 2);
+    else if (mode === 3) ids = ids.slice(0, 3);
     return ids;
   }
 
@@ -874,11 +858,6 @@
     const statusDiv = $('compareStatus'), btn = $('compareBtn');
     const setStatus = (msg, bad) => { if (statusDiv) { statusDiv.style.color = bad ? 'var(--danger)' : 'var(--primary-blue)'; statusDiv.innerText = msg || ''; } };
     
-    // Ensure area map is loaded upfront so section checks have actual data
-    if (typeof loadAreaMap === "function") {
-      try { await loadAreaMap(); } catch (e) { /* ignore */ }
-    }
-
     let ids = [];
     if (Array.isArray(customIdsList) && customIdsList.length >= 2) {
       ids = customIdsList.map(x => String(x || '').trim().toUpperCase().replace(/\s+/g, '')).filter(Boolean);
@@ -896,12 +875,7 @@
       ids = filled;
     }
     if (new Set(ids).size !== ids.length) { toast('Some ID numbers are repeated. Use different IDs.', 'warn'); return; }
-    const unlisted = ids.filter((id) => {
-      try {
-        if (typeof isListedEmployeeId === "function") return !isListedEmployeeId(id);
-        return false;
-      } catch (e) { return false; }
-    });
+    const unlisted = ids.filter((id) => { try { return !isListedEmployeeId(id); } catch (e) { return false; } });
     if (unlisted.length) { toast(`ID ${unlisted.join(', ')} is not listed in RPPF sections`, 'error'); return; }
     const period = getVsPeriod();
     if (period.error) { toast(period.error, 'warn'); setStatus(period.error, true); return; }

@@ -275,16 +275,17 @@ function toggleReportPreview() {
   if (!ctx || !ctx.emp) { showToast('Search a report first', 'warn'); return; }
   if (h.style.display === 'block') { _rptReset(); return; }
   _rptZoomLevel = 1;
-  const zoomBar = `<div class="rpt-zoom-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px;flex-wrap:wrap;padding:3px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;">
-<div class="rpt-zoom-btns" style="display:inline-flex;gap:2px;">
-<button type="button" class="rpt-zoom-btn rpt-filter-btn ${!_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="0" onclick="toggleReportDutyFilter(false)" style="padding:3px 8px;font-size:10.5px;font-weight:700;border:none;border-radius:4px;cursor:pointer;">Full Month</button>
-<button type="button" class="rpt-zoom-btn rpt-filter-btn ${_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="1" onclick="toggleReportDutyFilter(true)" style="padding:3px 8px;font-size:10.5px;font-weight:600;border:none;border-radius:4px;cursor:pointer;">Duty Only</button>
+  const zoomBar = `<div class="rpt-zoom-bar" style="flex-wrap:wrap;gap:6px;">
+<div class="rpt-zoom-btns">
+<button type="button" class="rpt-zoom-btn rpt-filter-btn ${!_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="0" onclick="toggleReportDutyFilter(false)">Full Month</button>
+<button type="button" class="rpt-zoom-btn rpt-filter-btn ${_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="1" onclick="toggleReportDutyFilter(true)">Duty Days Only</button>
 </div>
-<div class="rpt-zoom-btns" style="display:inline-flex;gap:2px;align-items:center;">
-<button type="button" class="rpt-zoom-btn" data-zoom="0.85" onclick="setReportZoom(0.85)" style="padding:2px 6px;font-size:10px;font-weight:700;border:none;border-radius:4px;cursor:pointer;">Fit</button>
-<button type="button" class="rpt-zoom-btn active" data-zoom="1" onclick="setReportZoom(1)" style="padding:2px 6px;font-size:10px;font-weight:800;border:none;border-radius:4px;cursor:pointer;">100%</button>
-<button type="button" class="rpt-zoom-btn" data-zoom="1.15" onclick="setReportZoom(1.15)" style="padding:2px 6px;font-size:10px;font-weight:700;border:none;border-radius:4px;cursor:pointer;">115%</button>
-</div></div>`;
+<div class="rpt-zoom-btns">
+<button type="button" class="rpt-zoom-btn" data-zoom="0.85" onclick="setReportZoom(0.85)">Fit</button>
+<button type="button" class="rpt-zoom-btn active" data-zoom="1" onclick="setReportZoom(1)">100%</button>
+<button type="button" class="rpt-zoom-btn" data-zoom="1.15" onclick="setReportZoom(1.15)">115%</button>
+</div>
+</div>`;
   h.innerHTML = zoomBar + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff;"><div id="rptInnerScaleWrap">' + _rptHtml(ctx, false) + '</div></div>';
   h.style.display = 'block';
   if (b) b.textContent = 'Hide daily report ▲';
