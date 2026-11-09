@@ -886,10 +886,10 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 #rateChartModal .grand-total-block .gt-value {
   font-family: var(--ui-mono) !important;
   font-variant-numeric: tabular-nums !important;
-  font-size: clamp(32px, 7vw, 38px) !important;
-  font-weight: 400 !important;
+  font-size: clamp(36px, 8.5vw, 45px) !important;
+  font-weight: 850 !important;
   color: #FFFFFF !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: -0.03em !important;
 }
 
 /* Bill Rows & Day Summary Grid as Empress White KPI Cards with Delta Pill & Sparkline */
