@@ -6544,21 +6544,26 @@ body.incharge-mode-active #vsExecShortcutSection {
   justify-content: space-between !important;
   gap: 8px !important;
   width: 100% !important;
+  height: 22px !important;
+  line-height: 22px !important;
 }
 
 .idblock-label {
-  font-size: 9.5px !important;
+  font-size: 10px !important;
   font-weight: 800 !important;
-  letter-spacing: .14em !important;
-  opacity: .85 !important;
+  letter-spacing: .12em !important;
+  opacity: .9 !important;
   white-space: nowrap !important;
   color: #ffffff !important;
   text-transform: uppercase !important;
-  line-height: 1 !important;
+  height: 22px !important;
+  line-height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 .idblock-icon {
-  flex: 0 0 auto !important;
+  flex: 0 0 22px !important;
   width: 22px !important;
   height: 22px !important;
   border-radius: 7px !important;
@@ -6572,14 +6577,16 @@ body.incharge-mode-active #vsExecShortcutSection {
 }
 
 .idblock-id {
-  font-size: 20px !important;
-  font-weight: 800 !important;
-  letter-spacing: .02em !important;
+  font-size: 21px !important;
+  font-weight: 850 !important;
+  letter-spacing: .12em !important;
   font-variant-numeric: tabular-nums !important;
   white-space: nowrap !important;
   color: #ffffff !important;
-  font-family: monospace, system-ui !important;
-  line-height: 1.1 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, monospace !important;
+  line-height: 1.15 !important;
+  display: block !important;
+  width: 100% !important;
 }
 
 /* right: plain text, one line each */
@@ -6641,14 +6648,32 @@ body.incharge-mode-active #vsExecShortcutSection {
 
 .idcard.compact .idblock,
 .worker-identity-card.compact .idblock {
-  min-width: 96px !important;
+  min-width: 100px !important;
   padding: 10px 12px !important;
   gap: 3px !important;
 }
 
+.idcard.compact .idblock-top {
+  height: 20px !important;
+  line-height: 20px !important;
+}
+
+.idcard.compact .idblock-label {
+  height: 20px !important;
+  line-height: 20px !important;
+  font-size: 9px !important;
+}
+
+.idcard.compact .idblock-icon {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 12px !important;
+}
+
 .idcard.compact .idblock-id,
 .worker-identity-card.compact .idblock-id {
-  font-size: 17px !important;
+  font-size: 18px !important;
+  letter-spacing: .11em !important;
 }
 
 .idcard.compact .idinfo,

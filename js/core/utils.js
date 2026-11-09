@@ -177,12 +177,36 @@ function fitText(el) {
   }
 }
 
+function fitIdBlock() {
+  document.querySelectorAll('.idblock').forEach(block => {
+    const top = block.querySelector('.idblock-top');
+    const idEl = block.querySelector('.idblock-id');
+    if (!top || !idEl) return;
+    const topW = top.offsetWidth;
+    if (!topW) return;
+    idEl.style.letterSpacing = 'normal';
+    const text = (idEl.textContent || '').trim();
+    const len = text.length;
+    if (len <= 1) return;
+    const idW = idEl.offsetWidth;
+    const diff = topW - idW;
+    if (diff > 0) {
+      const extra = diff / (len - 1);
+      idEl.style.letterSpacing = extra.toFixed(1) + 'px';
+    } else {
+      idEl.style.letterSpacing = '0.04em';
+    }
+  });
+}
+
 function fitAll() {
   document.querySelectorAll('[data-fit]').forEach(fitText);
+  fitIdBlock();
 }
 
 if (typeof window !== 'undefined') {
   window.fitText = fitText;
+  window.fitIdBlock = fitIdBlock;
   window.fitAll = fitAll;
   window.addEventListener('resize', fitAll);
   if (document.fonts && document.fonts.ready) {
