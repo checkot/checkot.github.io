@@ -1394,7 +1394,7 @@ const lbl = document.getElementById('monthNavCurrentLabel');
 if (!bar || !lbl || !monthStr) return;
 const [yy, mm] = String(monthStr).split('-');
 const mIdx = (parseInt(mm, 10) || 1) - 1;
-lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)} (${monthStr})`;
+lbl.textContent = `${BN_MONTHS[mIdx] || mm} ${bn(yy)}`;
 bar.style.display = 'grid';
 }
 /* function navigateReportMonth moved to js/pages/ */
@@ -2629,8 +2629,10 @@ const sBtn = document.getElementById('searchBtn');
 if (sBtn && getAppMode() !== 'incharge') sBtn.textContent = d.btnSeeOt;
 const prevB = document.getElementById('prevMonthBtn');
 const nextB = document.getElementById('nextMonthBtn');
-if (prevB) prevB.textContent = d.prevMonth;
-if (nextB) nextB.textContent = d.nextMonth;
+const chevronL = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+const chevronR = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+if (prevB) prevB.innerHTML = chevronL;
+if (nextB) nextB.innerHTML = chevronR;
 const payH = document.querySelector('#payslipCard .card-h');
 if (payH) payH.textContent = d.payslipTitle;
 const salL = document.getElementById('lblSalaryInput');

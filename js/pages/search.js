@@ -242,8 +242,10 @@ function applyExtraction(parsed, detection) {
     if (wGradeEl) wGradeEl.textContent = detection.gradeText || (currentResult && currentResult.grade) || 'Helper';
     const wMetaEl = document.getElementById('workerMetaTag');
     if (wMetaEl) {
-      const catName = (detection.category && RATE_TABLE[detection.category]) ? RATE_TABLE[detection.category].name : (detection.reason || 'Contractual / CF');
-      wMetaEl.textContent = catName;
+      wMetaEl.style.display = 'none';
+    }
+    if (categoryBadge) {
+      categoryBadge.style.display = 'none';
     }
   } catch (e) {}
 
