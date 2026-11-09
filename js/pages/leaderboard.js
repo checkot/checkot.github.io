@@ -258,7 +258,7 @@ ${progHtml}
 function renderLeaderboardResult(result) {
 try {
 currentLeaderboardResult = result;
-const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id));
+const allEmpsGlobal = (result.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id, e));
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
@@ -347,7 +347,7 @@ if (!currentLeaderboardResult) return;
 const st = getLbFilterState();
 const area = st.area;
 if (getAppMode() === 'incharge') { try { localStorage.setItem(INCHARGE_AREA_KEY, area); } catch (e) {} }
-const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id)));
+const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).filter(e => e.isRppf !== false && isMappedAreaId(e.id, e)));
 const filtered = allEmps.filter(e =>
 !isExecHiddenFor(e) &&
 (area === 'all' || e.area === area) &&

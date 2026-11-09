@@ -5,7 +5,7 @@
 let _vsCachedEmps = {};
 
 async function getVsLoadedEmployees(monthStr) {
-  const m = monthStr || document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const m = monthStr || document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
   if (typeof loadAreaMap === 'function') await loadAreaMap();
   
   const enrich = (arr) => {
@@ -165,7 +165,7 @@ async function updateVsSlotPreview(slotNum, rawId) {
     return;
   }
   
-  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
   const list = await getVsLoadedEmployees(m);
   const targetId = (typeof resolveEmpAliasId === 'function') ? resolveEmpAliasId(id) : id;
   const found = list.find(e => {
@@ -217,7 +217,7 @@ async function quickCompareSolidSub(subName) {
     statusDiv.innerText = `Loading top operators from Solid → ${subName}...`;
   }
   
-  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
   const list = await getVsLoadedEmployees(m);
   if (!list.length) {
     if (typeof showToast === 'function') showToast('Could not load data for ' + m, 'error');
@@ -280,7 +280,7 @@ async function quickCompareSolidCross(sub1, sub2) {
     statusDiv.innerText = `Loading top operators: ${sub1} vs ${sub2}...`;
   }
   
-  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
   const list = await getVsLoadedEmployees(m);
   if (!list.length) {
     if (typeof showToast === 'function') showToast('Could not load data for ' + m, 'error');
@@ -355,7 +355,7 @@ async function quickCompareExecutives(filterType = 'all') {
     statusDiv.innerText = 'Loading Executives comparison...';
   }
 
-  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-10';
+  const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
   const list = await getVsLoadedEmployees(m);
 
   let targetIds = [];
@@ -565,7 +565,15 @@ async function runComparison(customIdsList, customHeaderNote) {
     }
   }
 
-  const _unlisted = _cmpIds.filter(id => !isListedEmployeeId(id));
+  if (typeof loadAreaMap === "function") {
+    try { await loadAreaMap(); } catch (e) {}
+  }
+  const _unlisted = _cmpIds.filter(id => {
+    try {
+      if (typeof isListedEmployeeId === "function") return !isListedEmployeeId(id);
+      return false;
+    } catch (e) { return false; }
+  });
   if (_unlisted.length > 0) {
     showToast(`ID ${_unlisted.join(', ')} is not listed in RPPF sections`, 'error');
     return;
