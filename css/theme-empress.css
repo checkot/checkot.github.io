@@ -1877,40 +1877,52 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   transform: scale(0.95);
 }
 
-/* Segmented Control Bar on Report Page (.rpt-zoom-bar matches Screenshot 3/4) */
-#page-report .rpt-zoom-bar {
+/* Segmented Control Bar on Report Page (.rpt-zoom-bar slim, compact, font 10% smaller) */
+#page-report .rpt-zoom-bar,
+.rpt-zoom-bar {
   background: var(--ui-card-2) !important;
   border: 1px solid var(--ui-border) !important;
-  border-radius: 16px !important;
-  padding: 6px !important;
-  margin-bottom: 12px !important;
+  border-radius: 8px !important;
+  padding: 3px 4px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
 }
 
-#page-report .rpt-zoom-btns {
-  background: rgba(15, 44, 94, 0.05) !important;
-  border-radius: 12px !important;
-  padding: 3px !important;
+#page-report .rpt-zoom-btns,
+.rpt-zoom-btns {
+  background: rgba(15, 44, 94, 0.06) !important;
+  border-radius: 6px !important;
+  padding: 2px !important;
   display: inline-flex !important;
-  gap: 3px !important;
+  gap: 2px !important;
+  align-items: center !important;
 }
 
-#page-report .rpt-zoom-btn {
-  min-height: 36px !important;
-  height: 36px !important;
-  padding: 0 12px !important;
-  border-radius: 10px !important;
+#page-report .rpt-zoom-btn,
+.rpt-zoom-btn {
+  min-height: 25px !important;
+  height: 25px !important;
+  max-height: 25px !important;
+  padding: 0 8px !important;
+  border-radius: 5px !important;
   border: none !important;
   background: transparent !important;
   color: var(--ui-muted) !important;
-  font-size: 12.5px !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
+  line-height: 25px !important;
   box-shadow: none !important;
+  cursor: pointer !important;
+  transition: all 0.12s ease !important;
 }
 
-#page-report .rpt-zoom-btn.active {
-  background: var(--ui-card) !important;
-  color: var(--ui-text) !important;
-  box-shadow: 0 1px 3px rgba(15, 44, 94, 0.10) !important;
+#page-report .rpt-zoom-btn.active,
+.rpt-zoom-btn.active {
+  background: #1D4ED8 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* Responsive Empress Daily Log Table (Fits 360px without clipping + expands on desktop) */
