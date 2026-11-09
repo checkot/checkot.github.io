@@ -397,15 +397,8 @@ try { return localStorage.getItem(INCHARGE_ROLE_KEY) || 'Floor In-Charge'; } cat
 function getInchargeDefaultArea() {
 try { return localStorage.getItem(INCHARGE_AREA_KEY) || 'all'; } catch (e) { return 'all'; }
 }
-function getPreferredId() {
-try { return (localStorage.getItem(PREFERRED_ID_KEY) || '').trim().toUpperCase() || null; } catch(e) { return null; }
-}
-function setPreferredId(id) {
-try {
-if (id) localStorage.setItem(PREFERRED_ID_KEY, String(id).trim().toUpperCase());
-else localStorage.removeItem(PREFERRED_ID_KEY);
-} catch(e) {}
-}
+/* getPreferredId cleanly provided by modular js/ */
+/* setPreferredId cleanly provided by modular js/ */
 function getMyId() {
 if (getAppMode() === 'incharge') return '';
 return getPreferredId() || '';
@@ -1018,13 +1011,8 @@ if (Array.isArray(emp.punchProblems)) return emp.punchProblems.length;
 return Number(emp.punchProblems) || 0;
 }
 var LEGACY_DESIG_TAIL = /\s+((?:Junior\s+Officer\s+[A-F])|Helper|Casual|(?:Senior\s+)?(?:Deputy\s+|Assistant\s+|Additional\s+|Senior\s+Deputy\s+)?Manager\b.*|(?:Senior\s+)?Officer(?:\s+[A-F])?|Un-?Skilled\s+Worker(?:\s+[IVX]+)?|Skilled\s+Worker(?:\s+[IVX]+)?|Head\s+of\b.*|In-?Charge\b.*|Executive\b.*)$/i;
-function repairLegacyEmployee(e) {
-if (!/^(production|production department)$/i.test(String(e.grade || '').trim())) return;
-const nm = String(e.name || '');
-const m = nm.match(LEGACY_DESIG_TAIL);
-if (m) { e.grade = m[1].trim(); e.name = nm.slice(0, m.index).trim(); }
-}
-function desigKey(d) { return String(d == null ? '' : d).replace(/\s+/g, ' ').trim().toLowerCase(); }
+/* repairLegacyEmployee cleanly provided by modular js/ */
+/* desigKey cleanly provided by modular js/ */
 /* getDefaultRateCat is provided by js/calculations/rates.js?v=20261106b */
 /* function getRateCategory moved to js/ */
 /* function deriveEmpKind moved to js/ */
@@ -1156,11 +1144,7 @@ updateSettingsAreaCount();
 return AREA_MAP;
 }
 }
-function isMappedAreaId(id) {
-if (!id) return false;
-const upperId = String(id).toUpperCase().trim();
-return Boolean(AREA_MAP && AREA_MAP[upperId]);
-}
+/* isMappedAreaId cleanly provided by modular js/ */
 function saveAreaCache() {
 try {
 localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({
@@ -1176,13 +1160,7 @@ holidays: (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLI
 }
 const EMP_TYPE_LABELS = { CON: 'Contractual', JO: 'Junior Officer', CAS: 'Casual', EXEC: 'Executive/Above' };
 const GENDER_LABELS = { M: 'Male', F: 'Female' };
-function getAutoEmpType(id) {
-const u = String(id || '').toUpperCase();
-if (u.startsWith('CF')) return 'CON';
-if (u.startsWith('RF')) return 'JO';
-if (/^\d{5,8}$/.test(u)) return 'CAS';
-return '';
-}
+/* getAutoEmpType cleanly provided by modular js/ */
 const DEFAULT_CUSTOM_CATS = ['Shift A', 'Shift B', 'Shift C', 'Line Leader', 'Senior Operator', 'Special OT'];
 function getMasterCustomCategories() {
 if (!AREA_SUBS || typeof AREA_SUBS !== 'object') AREA_SUBS = {};
@@ -1205,12 +1183,7 @@ const prev = sel.value || 'all';
 sel.innerHTML = '<option value="all">All categories</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
 sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
 }
-function getEmpMeta(id) {
-const u = String(id || '').toUpperCase().trim();
-const d = (AREA_DETAILS && AREA_DETAILS[u]) || {};
-const cats = Array.isArray(d.c) ? d.c.filter(Boolean) : (typeof d.c === 'string' && d.c ? d.c.split(',').map(x => x.trim()).filter(Boolean) : []);
-return { gender: d.g || '', type: d.t || getAutoEmpType(u), sub: d.s || '', cats };
-}
+/* getEmpMeta cleanly provided by modular js/ */
 /* function enrichLbEmployees moved to js/pages/leaderboard.js */
 
 function pruneAreaMeta() {
@@ -1267,8 +1240,8 @@ updateAreaHint(target);
 
 function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PREFIX + month + "_" + id); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > CACHE_TTL_MS) { localStorage.removeItem(CACHE_PREFIX + month + "_" + id); return null; } return d; } catch (e) { return null; } }
 function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
-function getCompareCache(month, id1, id2) { try { const key = COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2; const raw = localStorage.getItem(key); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > COMPARE_TTL_MS) { localStorage.removeItem(key); return null; } return d; } catch (e) { return null; } }
-function setCompareCache(month, id1, id2, payload) { try { localStorage.setItem(COMPARE_CACHE_PREFIX + month + "_" + id1 + "_" + id2, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
+/* getCompareCache cleanly provided by modular js/ */
+/* setCompareCache cleanly provided by modular js/ */
 function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS || (Array.isArray(d.allEmployees) && d.allEmployees.length && d.allEmployees[0] && d.allEmployees[0].otDaysCount === undefined)) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
 function setLeaderboardCache(month, payload) {
 setTimeout(() => {
@@ -1282,7 +1255,7 @@ localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now()
 } catch (e) {}
 }, 120);
 }
-function getHistory() { try { const raw = localStorage.getItem(HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } }
+/* getHistory cleanly provided by modular js/ */
 function addToHistory(id, month, name) {
 try {
 let list = getHistory();
@@ -1847,222 +1820,9 @@ document.getElementById('compareStatus').innerText = "";
 /* function computeEmpAvgDutyAndInOut moved to js/pages/leaderboard.js */
 
 window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
-function computeEmpRequisitionProblems(e) {
-  if (!e) return [];
-  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) return e.requisitionProblems;
-  const daily = Array.isArray(e.daily) ? e.daily : [];
-  const reqProbs = [];
+/* computeEmpRequisitionProblems cleanly provided by modular js/ */
 
-  // Known / Detected Govt Holidays & Admin Tick/Untick Overrides
-  let cancelledHols = [];
-  let customHols = [];
-  try {
-    const raw = localStorage.getItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1');
-    if (raw) {
-      const cfg = JSON.parse(raw);
-      cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase());
-      customHols = (cfg.custom || []).map(x => String(x).toUpperCase());
-    }
-  } catch (e) {}
-
-  const baseGovtHols = ['20-OCT-2026', '21-OCT-2026', '21-FEB-2026', '26-MAR-2026', '14-APR-2026', '01-MAY-2026', '16-DEC-2026', '25-DEC-2026'];
-  const activeGovtHols = [...new Set([...baseGovtHols, ...customHols])].filter(d => !cancelledHols.includes(d));
-
-  daily.forEach(r => {
-    if (!r || !Array.isArray(r)) return;
-    const dateStr = String(r[0] || '').trim().toUpperCase();
-    const dayStr = String(r[1] || '').trim();
-    const inStr = String(r[2] || '').trim();
-    const outStr = String(r[3] || '').trim();
-
-    // If date is explicitly unticked/cancelled by admin, treat as normal working day!
-    const isExplicitlyCancelled = cancelledHols.includes(dateStr);
-
-    const regD = Number(r[4]) || 0;
-    const regO = Number(r[5]) || 0;
-    const doD = Number(r[6]) || 0;
-    const doO = Number(r[7]) || 0;
-    const holD = Number(r[8]) || 0;
-    const holO = Number(r[9]) || 0;
-    const isNight = Number(r[10]) === 1 || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
-
-    const totOt = regO + doO + holO;
-    const totDuty = regD + doD + holD;
-
-    // 1. Govt Holiday Requisition Missing (Active holidays only, unless cancelled)
-    if (!isExplicitlyCancelled && activeGovtHols.includes(dateStr) && (regD > 0 || regO > 0) && (holD === 0 && holO === 0)) {
-      reqProbs.push({
-        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
-        expectedOt: 'Govt Holiday Req Missing (Should be in Holiday Allowance)',
-        reason: 'Govt Holiday Duty recorded as Regular Duty'
-      });
-      return;
-    }
-
-    // 2. Weekend Day Off (DO) Requisition Missing (Thu & Fri Only, unless cancelled as compensatory working day)
-    if (!isExplicitlyCancelled && (dayStr === 'Thu' || dayStr === 'Fri') && (regD > 0 || regO > 0) && (doD === 0 && doO === 0)) {
-      reqProbs.push({
-        date: dateStr, in: inStr, out: outStr, duty: totDuty, elapsed: totDuty, isNight,
-        expectedOt: `Weekend (${dayStr}) DO Req Missing`,
-        reason: 'Weekend Duty recorded as Regular Duty'
-      });
-      return;
-    }
-
-    if (typeof isPunchMissing === 'function' && (isPunchMissing(inStr) || isPunchMissing(outStr))) return;
-
-    const mIn = inStr.match(/^(\d{1,2}):(\d{2})/);
-    const mOut = outStr.match(/^(\d{1,2}):(\d{2})/);
-    if (!mIn || !mOut) return;
-    const ti = (+mIn[1]) * 60 + (+mIn[2]);
-    const to = (+mOut[1]) * 60 + (+mOut[2]);
-    const diff = to < ti ? (1440 - ti) + to : to - ti;
-    const elHrs = Number((diff / 60).toFixed(2));
-
-    if (totOt === 0) {
-      if (isNight && (elHrs >= 11.0 || totDuty >= 11.0)) {
-        const exp = Math.min(7, Math.max(4, Math.round(Math.max(elHrs, totDuty) - 8.5)));
-        reqProbs.push({
-          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: true,
-          expectedOt: `${exp}.0h (Night Shift OT Error / Missing)`,
-          reason: 'Night Shift OT Missing'
-        });
-      } else if (!isNight && to >= 1150 && to <= 1215) {
-        reqProbs.push({
-          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
-          expectedOt: '3.0h (04:30 - 07:30 PM)',
-          reason: '3h Evening OT Missing'
-        });
-      } else if (!isNight && to >= 1216 && to <= 1350) {
-        reqProbs.push({
-          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
-          expectedOt: '5.0h (04:30 - 09:30 PM)',
-          reason: '5h Evening OT Missing'
-        });
-      } else if (!isNight && ti <= 435 && elHrs >= 9.5) {
-        const exp = ti <= 390 ? '2.5h Morning OT' : '1.0h Morning OT';
-        reqProbs.push({
-          date: dateStr, in: inStr, out: outStr, duty: totDuty || elHrs, elapsed: elHrs, isNight: false,
-          expectedOt: exp,
-          reason: 'Morning OT Missing'
-        });
-      }
-    }
-  });
-  return reqProbs;
-}
-
-function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
-  if (!e) return { dates: [], shortDates: [], count: 0 };
-  const isMulti = Boolean(e.isMultiMonth || (e.monthsCount && e.monthsCount > 1));
-  if (isMulti && Array.isArray(e.generalAbsentDays)) {
-    return {
-      dates: e.generalAbsentDays,
-      shortDates: Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : e.generalAbsentDays,
-      count: e.generalAbsentCount != null ? Number(e.generalAbsentCount) : e.generalAbsentDays.length
-    };
-  }
-  const mStr = targetMonthStr 
-    || e._computedMonth
-    || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
-    || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-
-  // Dynamic live calculation using _rptRows
-  if (typeof _rptRows === 'function') {
-    const { rows, y, m } = _rptRows({ emp: e, month: mStr, prevNight: prevNightSetOrBool });
-    const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    const monName = (m >= 1 && m <= 12) ? mons[m - 1] : 'JAN';
-    const mmPad = String(m >= 1 && m <= 12 ? m : 1).padStart(2, '0');
-    const absentDates = [];
-    const shortDates = [];
-    (rows || []).forEach(r => {
-      if (r && r.isGeneralAbsent) {
-        const dStr = String(r.dayNum || (r.date ? r.date.split('/')[0] : '')).padStart(2, '0');
-        absentDates.push(`${dStr}-${monName} (${r.day})`);
-        shortDates.push(`${dStr}-${mmPad}`);
-      }
-    });
-    e.generalAbsentDays = absentDates;
-    e.generalAbsentShortDates = shortDates;
-    e.generalAbsentCount = absentDates.length;
-    e._computedMonth = mStr;
-    e._computedPrevNight = prevNightSetOrBool;
-    return { dates: absentDates, shortDates, count: absentDates.length };
-  }
-
-  // Self-contained in-memory fallback from e.daily and areas.json holiday rules if _rptRows is not available
-  const daily = Array.isArray(e.daily) ? e.daily : [];
-  let y = 0, m = 0;
-  const mm = String(mStr || '').match(/(\d{4})-(\d{2})/);
-  if (mm) { y = +mm[1]; m = +mm[2]; }
-  else if (daily.length > 0 && daily[0] && daily[0][0]) {
-    const s0 = String(daily[0][0]).trim();
-    const qAlpha = s0.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/i);
-    const _RMON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    if (qAlpha) {
-      y = +qAlpha[3];
-      m = _RMON.findIndex(x => x === qAlpha[2].toUpperCase()) + 1;
-    }
-  }
-  if (!y || m < 1 || m > 12) {
-    const n = new Date(); y = n.getFullYear(); m = n.getMonth() + 1;
-  }
-  const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  const monName = mons[m - 1];
-  const mmPad = String(m).padStart(2, '0');
-  const lastDay = new Date(y, m, 0).getDate();
-  const workedDays = new Set();
-  const nightDays = new Set();
-  let day1MorningOut = false;
-
-  daily.forEach(r => {
-    if (!r || !r[0]) return;
-    const parts = String(r[0]).split('-');
-    const dNum = parseInt(parts[0], 10);
-    if (!dNum || dNum < 1 || dNum > 31) return;
-    const inStr = String(r[2] || '').trim();
-    const outStr = String(r[3] || '').trim();
-    const dHrs = (Number(r[4])||0) + (Number(r[5])||0) + (Number(r[6])||0) + (Number(r[7])||0) + (Number(r[8])||0) + (Number(r[9])||0);
-    const isNight = !!r[10] || String(r[11] || '').toUpperCase().includes('NIGHT') || String(r[11] || '').toUpperCase() === 'DN';
-    if (dHrs > 0 || (inStr && inStr !== '-') || (outStr && outStr !== '-')) {
-      workedDays.add(dNum);
-    }
-    if (isNight) nightDays.add(dNum);
-    if (dNum === 1 && outStr && (!inStr || inStr === '-')) {
-      const q = outStr.match(/^(\d{1,2}):(\d{2})/);
-      if (q && (+q[1] * 60 + +q[2]) <= 435) day1MorningOut = true;
-    }
-  });
-
-  const prevNight = (typeof prevNightSetOrBool === 'boolean')
-    ? prevNightSetOrBool
-    : (prevNightSetOrBool instanceof Set ? (prevNightSetOrBool.has(String(e.id || '').toUpperCase()) || prevNightSetOrBool.has(typeof resolveEmpAliasId === 'function' ? resolveEmpAliasId(e.id) : String(e.id || '').toUpperCase())) : false);
-
-  const absentDates = [];
-  const shortDates = [];
-  const _RDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-  for (let d = 1; d <= lastDay; d++) {
-    const dn = _RDAY[new Date(y, m - 1, d).getDay()];
-    const dStr = String(d).padStart(2, '0');
-    if (dn === 'Thu' || dn === 'Fri') continue;
-    const holCheck = typeof isPlantOrGovtHolidayDate === 'function' ? isPlantOrGovtHolidayDate(y, m, d, dn) : { isOffOrHol: false };
-    if (holCheck.isOffOrHol) continue;
-    if (d === 1 && (prevNight || day1MorningOut)) continue;
-    if (d > 1 && nightDays.has(d - 1)) continue;
-    if (!workedDays.has(d)) {
-      absentDates.push(`${dStr}-${monName} (${dn})`);
-      shortDates.push(`${dStr}-${mmPad}`);
-    }
-  }
-
-  e.generalAbsentDays = absentDates;
-  e.generalAbsentShortDates = shortDates;
-  e.generalAbsentCount = absentDates.length;
-  e._computedMonth = mStr;
-  e._computedPrevNight = prevNight;
-  return { dates: absentDates, shortDates, count: absentDates.length };
-}
+/* computeEmpGeneralAbsents cleanly provided by modular js/ */
 window.computeEmpGeneralAbsents = computeEmpGeneralAbsents;
 
 /* Mode-independent absent count for ONE employee-month (used by VS compare / profile totals). */
@@ -2639,12 +2399,7 @@ showToast('Saved to RPPF Cloud Server', 'success');
 showToast(err.message, 'error');
 }
 }
-function cleanPunchValue(val) {
-if (val === undefined || val === null) return "";
-return String(val)
-.replace(/[\s\u00A0\u1680\u2000-\u200F\u2028-\u202F\u205F\u3000\uFEFF]+/g, "")
-.trim();
-}
+/* cleanPunchValue cleanly provided by modular js/ */
 /* isPunchMissing is provided by js/core/utils.js */
 function openConfirmModal(message, onConfirm) {
 pendingConfirmFn = onConfirm;
@@ -4090,7 +3845,7 @@ function pushAppNavState(label) {}
 
 
 /* ===== Daily report preview + PNG ===== */
-function _loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(s); }); }
+/* _loadScript cleanly provided by modular js/ */
 /* const _RMON, _RDAY, _rE, _rN, _rMin moved to js/pages/report.js */
 /* function _rptRows moved to js/pages/ */
 
@@ -5272,101 +5027,15 @@ function renderQuickAbsentModalList() {
 /* ==========================================================================
    ADMIN PANEL ABSENT TAB HANDLERS (for admin.html)
    ========================================================================== */
-function onAdmAbsentDateChange(val) {
-  if (!val) return;
-  ABSENT_STORE.activeDate = val;
-  renderAdminAbsentPane();
-}
+/* onAdmAbsentDateChange cleanly provided by modular js/ */
 
-function admAddSingleAbsentEmployee() {
-  const inp = _el('admAbsentSingleInp');
-  const dt = _el('admAbsentDateInput')?.value || getTodayDateStr();
-  const reason = _el('admAbsentReasonInput')?.value || 'Absent';
-  const note = (_el('admAbsentShiftInput')?.value || '').trim();
-  const raw = (inp?.value || '').trim();
-  if (!raw) { showToast('Enter an employee ID or select from suggestions', 'warn'); inp?.focus(); return; }
-  const ok = upsertAbsentEmployee(dt, raw, reason, note);
-  if (!ok) {
-    showToast('Employee ID not recognized. Enter a valid ID (e.g. CF8355)', 'warn');
-    return;
-  }
-  if (inp) inp.value = '';
-  renderAdminAbsentPane();
-  renderInchargeHomeAbsentList();
-  showToast(`Added to ${dt} absent list`, 'success');
-}
+/* admAddSingleAbsentEmployee cleanly provided by modular js/ */
 
-function admAddBulkAbsentEmployees() {
-  const ta = _el('admAbsentBulkTextarea');
-  const dt = _el('admAbsentDateInput')?.value || getTodayDateStr();
-  const reason = _el('admAbsentReasonInput')?.value || 'Absent';
-  const note = (_el('admAbsentShiftInput')?.value || '').trim();
-  const ids = extractEmployeeIdsFromText(ta?.value || '');
-  if (!ids.length) { showToast('No valid employee IDs found in text box', 'warn'); ta?.focus(); return; }
-  ids.forEach(id => upsertAbsentEmployee(dt, id, reason, note));
-  if (ta) ta.value = '';
-  renderAdminAbsentPane();
-  renderInchargeHomeAbsentList();
-  showToast(`${ids.length} employee(s) added to ${dt} absent list`, 'success');
-}
+/* admAddBulkAbsentEmployees cleanly provided by modular js/ */
 
-function copyAbsentSummaryText() {
-  const dt = _el('admAbsentDateInput')?.value || getSelectedAbsentDate();
-  const list = getAbsentListForDate(dt);
-  if (!list.length) { showToast('Absent list is empty for this date', 'warn'); return; }
-  const lines = list.map((x, i) => `${i + 1}. ${x.name || x.id} (${x.id}) — ${x.area}${x.sub ? ' [' + x.sub + ']' : ''} — ${x.reason || 'Absent'}${x.note ? ' (' + x.note + ')' : ''}`);
-  const txt = `RPPF Daily Absent Report (${dt})\nTotal Absent: ${list.length}\n\n${lines.join('\n')}`;
-  fallbackCopyText(txt);
-}
+/* copyAbsentSummaryText cleanly provided by modular js/ */
 
-function renderAdminAbsentPane() {
-  const container = _el('admAbsentItemsContainer');
-  const dtInp = _el('admAbsentDateInput');
-  if (!container) return;
-  const dt = (dtInp && dtInp.value) ? dtInp.value : (ABSENT_STORE.activeDate || getTodayDateStr());
-  if (dtInp && !dtInp.value) dtInp.value = dt;
-
-  const allList = getAbsentListForDate(dt);
-  const solidCnt = allList.filter(x => x.area === 'Solid Production').length;
-  const sgCnt = allList.filter(x => x.area === 'Softgel Production').length;
-  const packCnt = allList.filter(x => x.area === 'Packing Hall').length;
-  const setN = (id, v) => { const el = _el(id); if (el) el.textContent = String(v); };
-  setN('admAbsCountTotal', allList.length);
-  setN('admAbsCountSolid', solidCnt);
-  setN('admAbsCountSg', sgCnt);
-  setN('admAbsCountPack', packCnt);
-
-  const hdr = _el('admAbsentListHeaderTitle');
-  if (hdr) hdr.textContent = `Absent Employees on ${dt} (${allList.length}):`;
-
-  const areaFilter = _el('admAbsentFilterArea')?.value || 'all';
-  const q = (_el('admAbsentSearchFilter')?.value || '').trim().toUpperCase();
-  const filtered = allList.filter(x => {
-    if (areaFilter !== 'all' && x.area !== areaFilter) return false;
-    if (q) {
-      const hay = `${x.id} ${x.name || ''} ${x.area || ''} ${x.sub || ''} ${x.reason || ''} ${x.note || ''}`.toUpperCase();
-      if (!hay.includes(q)) return false;
-    }
-    return true;
-  });
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-msg" style="padding:18px;">No absent employees listed for ${esc(dt)}${areaFilter !== 'all' || q ? ' matching filter' : ''}.</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(item => {
-    const dirRec = resolveEmployeeDirectoryRecord(item.id);
-    const dispName = (item.name && item.name !== item.id) ? item.name : (dirRec?.name || item.id);
-    return `<div class="admin-absent-list-item">
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:800;font-size:14px;color:var(--text);">${esc(dispName)} <span class="admin-tag">${esc(item.id)}</span> <span class="admin-tag" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">${esc(item.reason || 'Absent')}</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Area: <b>${esc(item.area || 'RPPF')}</b>${item.sub ? ' • Sub: <b>' + esc(item.sub) + '</b>' : ''} • ${esc(item.designation || 'Employee')}${item.note ? ' • Note: ' + esc(item.note) : ''}</div>
-      </div>
-      <button type="button" class="calc-mini-btn danger-btn" onclick="removeAbsentEmployee('${esc(dt)}', '${esc(item.id)}')">✕ Remove</button>
-    </div>`;
-  }).join('');
-}
+/* renderAdminAbsentPane cleanly provided by modular js/ */
 
 
 /* ==========================================================================
@@ -6226,4 +5895,3 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
   }
   return null;
 }
-
