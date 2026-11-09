@@ -6499,8 +6499,8 @@ body.incharge-mode-active #vsExecShortcutSection {
 .worker-identity-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  min-height: 80px;
+  border-radius: 20px;
+  min-height: 74px;
   display: flex;
   align-items: stretch;
   overflow: hidden;
@@ -6508,65 +6508,95 @@ body.incharge-mode-active #vsExecShortcutSection {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.btn-change-id-subtle {
-  background: var(--primary-blue, #2563EB) !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 12px !important;
-  padding: 6px 14px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 5px !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28) !important;
-  transition: all 0.15s ease !important;
-  flex-shrink: 0 !important;
-}
-
-.btn-change-id-subtle:hover {
-  background: #1D4ED8 !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.38) !important;
-}
-
-.btn-change-id-subtle:active {
-  transform: scale(0.96) !important;
-  opacity: 0.9 !important;
+:root[data-theme="dark"] .worker-identity-card {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 .worker-id-badge-col {
-  width: 92px;
+  width: 122px;
   background: linear-gradient(145deg, #1D4ED8 0%, #2563EB 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  padding: 14px 10px;
+  padding: 10px 12px;
   flex-shrink: 0;
   color: #FFFFFF;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+.worker-id-badge-col:hover {
+  opacity: 0.96;
+}
+
+.worker-id-badge-col:active {
+  opacity: 0.9;
+}
+
+.worker-id-badge-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
 }
 
 .worker-id-label {
   font-size: 9.5px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   font-weight: 700;
-  opacity: 0.85;
+  opacity: 0.9;
+  line-height: 1;
+}
+
+/* Semi-transparent swap button (matches screenshot 1000198366.png) */
+.btn-swap-id {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-swap-id:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.06);
+}
+
+.btn-swap-id:active {
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0.92);
+}
+
+.btn-swap-id svg {
+  display: block;
 }
 
 .worker-id-code {
   font-family: monospace;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  margin-top: 3px;
+  margin-top: 4px;
+  line-height: 1.1;
+  color: #FFFFFF;
 }
 
 .worker-details-col {
   flex: 1;
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -6575,10 +6605,10 @@ body.incharge-mode-active #vsExecShortcutSection {
 }
 
 .worker-name-line {
-  font-size: 18.5px;
+  font-size: 19px;
   font-weight: 850;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

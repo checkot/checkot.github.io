@@ -47,7 +47,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css?v=20261109compact">
   <link rel="stylesheet" href="css/nav.css">
-  <link rel="stylesheet" href="css/pages.css?v=20261109merge">
+  <link rel="stylesheet" href="css/pages.css?v=20261109swap">
   <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
@@ -627,21 +627,25 @@ document.documentElement.setAttribute('data-theme', t);
 
 <!-- Modern Full-Height Employee Identity Bar with Integrated Change Button (Merges Summary & ID Bar) -->
 <div class="worker-identity-card" id="workerIdentityCard" style="display:none;margin-bottom:12px;">
-  <div class="worker-id-badge-col">
-    <span class="worker-id-label">Employee ID</span>
+  <div class="worker-id-badge-col" onclick="expandSearchForm()" role="button" tabindex="0" title="Click to change Employee ID" aria-label="Change Employee ID">
+    <div class="worker-id-badge-top">
+      <span class="worker-id-label">EMPLOYEE ID</span>
+      <button type="button" class="btn-swap-id" onclick="event.stopPropagation(); expandSearchForm();" aria-label="Change Employee ID" title="Change Employee ID">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 7H4M16 3l4 4-4 4M4 17h16M8 21l-4-4 4-4"/>
+        </svg>
+      </button>
+    </div>
     <span class="worker-id-code" id="workerIdCode">—</span>
   </div>
   <div class="worker-details-col">
-    <div class="worker-name-line-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-      <div class="worker-name-line" id="workerNameLine">User</div>
-      <button type="button" class="btn-change-id-subtle" onclick="expandSearchForm()" aria-label="Change Employee ID">Change ✎</button>
-    </div>
+    <div class="worker-name-line" id="workerNameLine">User</div>
     <div class="worker-dept-line" id="workerDeptLine">
       <span id="workerDeptArea">—</span>
-      <span class="worker-dept-dot"></span>
+      <span class="worker-dept-dot">·</span>
       <span id="workerDeptGrade">—</span>
     </div>
-    <div class="worker-meta-line">
+    <div class="worker-meta-line" style="display:none;">
       <span class="worker-meta-tag" id="workerMetaTag" style="display:none;">Contractual / CF</span>
       <span class="worker-status-tag">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -950,16 +954,20 @@ document.documentElement.setAttribute('data-theme', t);
 </button>
 </div>
 <div class="report-emp-card" id="reportEmpStrip" style="display:none;padding:10px 12px;">
-<div class="worker-identity-card" id="reportWorkerIdentityCard" style="margin:0 0 6px 0;min-height:76px;border-radius:12px;">
-<div class="worker-id-badge-col" style="width:96px;padding:10px 6px;">
-<span class="worker-id-label">Employee ID</span>
+<div class="worker-identity-card" id="reportWorkerIdentityCard" style="margin:0 0 6px 0;min-height:72px;border-radius:16px;">
+<div class="worker-id-badge-col" onclick="switchPage('search');expandSearchForm();" role="button" tabindex="0" title="Click to change Employee ID" aria-label="Change Employee ID">
+<div class="worker-id-badge-top">
+<span class="worker-id-label">EMPLOYEE ID</span>
+<button type="button" class="btn-swap-id" onclick="event.stopPropagation(); switchPage('search');expandSearchForm();" aria-label="Change Employee ID" title="Change Employee ID">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M20 7H4M16 3l4 4-4 4M4 17h16M8 21l-4-4 4-4"/>
+</svg>
+</button>
+</div>
 <span class="worker-id-code" id="reportEmpIdBadge">—</span>
 </div>
 <div class="worker-details-col" style="padding:10px 14px;">
-<div class="worker-name-line-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
 <div class="worker-name-line" id="reportEmpNameLbl">—</div>
-<button type="button" class="btn-change-id-subtle" onclick="switchPage('search');expandSearchForm();">Change ✎</button>
-</div>
 <div class="worker-dept-line" id="reportEmpSubLbl">—</div>
 </div>
 </div>
@@ -1929,7 +1937,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/calculations/ranking.js?v=20261109full"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
-  <script src="js/pages/search.js?v=20261109merge"></script>
+  <script src="js/pages/search.js?v=20261109swap"></script>
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js"></script>
   <script src="js/pages/report.js?v=20261109slim"></script>
