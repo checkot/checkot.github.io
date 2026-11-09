@@ -127,35 +127,3 @@ function getEmpOtDays(e) {
   return 0;
 }
 if (typeof window !== 'undefined') { window.computeOtDaysFromDaily = computeOtDaysFromDaily; window.getEmpOtDays = getEmpOtDays; window.isNightDailyRow = isNightDailyRow; }
-
-/* ==========================================================================
-   LEGACY EMPLOYEE REPAIR & METADATA HELPERS
-   ========================================================================== */
-const LEGACY_DESIG_TAIL = /\s+((?:Junior\s+Officer\s+[A-F])|Helper|Casual|(?:Senior\s+)?(?:Deputy\s+|Assistant\s+|Additional\s+|Senior\s+Deputy\s+)?Manager\b.*|(?:Senior\s+)?Officer(?:\s+[A-F])?|Un-?Skilled\s+Worker(?:\s+[IVX]+)?|Skilled\s+Worker(?:\s+[IVX]+)?|Head\s+of\b.*|In-?Charge\b.*|Executive\b.*)$/i;
-
-function repairLegacyEmployee(e) {
-  if (!e || !/^(production|production department)$/i.test(String(e.grade || '').trim())) return;
-  const nm = String(e.name || '');
-  const m = nm.match(LEGACY_DESIG_TAIL);
-  if (m) { e.grade = m[1].trim(); e.name = nm.slice(0, m.index).trim(); }
-}
-
-function getAutoEmpType(id) {
-  const u = String(id || '').toUpperCase().trim();
-  if (/^CF\d+/i.test(u) || /^\d{5,8}$/.test(u)) return 'CON';
-  if (/^RF\d+/i.test(u)) return 'JO';
-  return '';
-}
-
-function getEmpMeta(id) {
-  const u = String(id || '').toUpperCase().trim();
-  const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || {};
-  const cats = Array.isArray(d.c) ? d.c.filter(Boolean) : (typeof d.c === 'string' && d.c ? d.c.split(',').map(x => x.trim()).filter(Boolean) : []);
-  return { gender: d.g || '', type: d.t || getAutoEmpType(u), sub: d.s || '', cats };
-}
-
-if (typeof window !== 'undefined') {
-  window.repairLegacyEmployee = repairLegacyEmployee;
-  window.getAutoEmpType = getAutoEmpType;
-  window.getEmpMeta = getEmpMeta;
-}

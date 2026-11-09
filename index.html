@@ -47,7 +47,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/nav.css">
-  <link rel="stylesheet" href="css/pages.css?v=20261109sm">
+  <link rel="stylesheet" href="css/pages.css">
   <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
@@ -1913,9 +1913,9 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/core/config.js"></script>
   <script src="js/core/state.js"></script>
   <script src="js/core/storage.js"></script>
-  <script src="js/core/utils.js?v=20261109sm"></script>
+  <script src="js/core/utils.js?v=20261105nt"></script>
   <script src="js/calculations/rates.js?v=20261106b"></script>
-  <script src="js/calculations/ranking.js?v=20261109sm"></script>
+  <script src="js/calculations/ranking.js?v=20261105nt"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
   <script src="js/pages/search.js"></script>
@@ -4483,7 +4483,93 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 /* const ADMIN_PASS_KEY defined in js/core/config.js */
 /* const ADMIN_SESSION_KEY defined in js/core/config.js */
 /* const ADMIN_GH_TOKEN_KEY defined in js/core/config.js */
-/* Admin GitHub sync moved to js/admin/admin-github.js */
+const DEFAULT_ADMIN_PASS = 'admin1234';
+function getAdminPassword() { try { return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_ADMIN_PASS; } catch (e) { return DEFAULT_ADMIN_PASS; } }
+function isAdminLoggedIn() { try { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' || localStorage.getItem(ADMIN_SESSION_KEY) === '1'; } catch (e) { return false; } }
+function setAdminLoggedIn(val) {
+try {
+if (val) { sessionStorage.setItem(ADMIN_SESSION_KEY, '1'); localStorage.setItem(ADMIN_SESSION_KEY, '1'); }
+else { sessionStorage.removeItem(ADMIN_SESSION_KEY); localStorage.removeItem(ADMIN_SESSION_KEY); }
+} catch (e) {}
+}
+function getGhToken() { try { return (localStorage.getItem(ADMIN_GH_TOKEN_KEY) || '').trim(); } catch (e) { return ''; } }
+function setGhToken(t) {
+try { if (t) localStorage.setItem(ADMIN_GH_TOKEN_KEY, t.trim()); else localStorage.removeItem(ADMIN_GH_TOKEN_KEY); } catch (e) {}
+}
+function utf8ToBase64(str) {
+const bytes = new TextEncoder().encode(str);
+let binary = '';
+for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+return btoa(binary);
+}
+function arrayBufferToBase64(buffer) {
+const bytes = new Uint8Array(buffer);
+let binary = '';
+const chunk = 0x8000;
+for (let i = 0; i < bytes.length; i += chunk) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+return btoa(binary);
+}
+async function githubGetSha(repoPath, headers) {
+const base = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+try { const r = await fetch(base + repoPath, { headers, cache: 'no-store' }); if (r.ok) { const j = await r.json(); if (j && j.sha) return j.sha; } } catch (e) {}
+// Files over 1 MB cannot be read directly through this API, but the folder listing still gives their sha
+try {
+const i = repoPath.lastIndexOf('/'), dir = i >= 0 ? repoPath.slice(0, i) : '', name = repoPath.slice(i + 1);
+const r = await fetch(base + dir, { headers, cache: 'no-store' });
+if (r.ok) { const list = await r.json(); const f = Array.isArray(list) && list.find(x => x.name === name); if (f && f.sha) return f.sha; }
+} catch (e) {}
+return null;
+}
+async function githubPutFile(repoPath, base64Content, commitMessage) {
+const token = getGhToken();
+if (!token) { throw new Error('Save your Server Access Key in admin.html first.'); }
+const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${repoPath}`;
+const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+const sha = await githubGetSha(repoPath, headers);
+const bodyObj = { message: commitMessage || `Update ${repoPath} via RPPF Admin Panel`, content: base64Content };
+if (sha) bodyObj.sha = sha;
+const putResp = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(bodyObj) });
+if (!putResp.ok) {
+let errTxt = `HTTP ${putResp.status}`;
+try { const errJson = await putResp.json(); if (errJson && errJson.message) errTxt = errJson.message; } catch (e) {}
+throw new Error(errTxt);
+}
+return await putResp.json();
+}
+async function githubDeleteFile(repoPath, sha, commitMessage) {
+const token = getGhToken();
+if (!token) { throw new Error('Save your Server Access Key in admin.html first.'); }
+const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${repoPath}`;
+const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+let fileSha = sha;
+if (!fileSha) fileSha = await githubGetSha(repoPath, headers);
+if (!fileSha) throw new Error('File reference was not found on the server.');
+const delResp = await fetch(apiUrl, {
+method: 'DELETE',
+headers,
+body: JSON.stringify({
+message: commitMessage || `Delete ${repoPath} via RPPF Admin Panel`,
+sha: fileSha
+})
+});
+if (!delResp.ok) {
+let errTxt = `HTTP ${delResp.status}`;
+try { const errJson = await delResp.json(); if (errJson && errJson.message) errTxt = errJson.message; } catch (e) {}
+throw new Error(errTxt);
+}
+return await delResp.json();
+}
+async function adminPushAreasToGithub() {
+try {
+const hols = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {});
+const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: hols }, null, 2);
+await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Ranking Category Editor`);
+try { Object.keys(localStorage).forEach(k => { const _ns = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : ''); if (k.startsWith(_ns + 'renata_lb_') || k.startsWith(_ns + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
+showToast('Saved to RPPF Cloud Server', 'success');
+} catch (err) {
+showToast(err.message, 'error');
+}
+}
 function cleanPunchValue(val) {
 if (val === undefined || val === null) return "";
 return String(val)
@@ -7114,7 +7200,14 @@ function renderQuickAbsentModalList() {
   </div>`).join('');
 }
 
-/* Admin Absent tab handlers moved to js/admin/admin-tools.js */
+/* ==========================================================================
+   ADMIN PANEL ABSENT TAB HANDLERS (for admin.html)
+   ========================================================================== */
+function onAdmAbsentDateChange(val) {
+  if (!val) return;
+  ABSENT_STORE.activeDate = val;
+  renderAdminAbsentPane();
+}
 
 function admAddSingleAbsentEmployee() {
   const inp = _el('admAbsentSingleInp');
