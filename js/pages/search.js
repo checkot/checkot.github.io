@@ -242,6 +242,7 @@ function applyExtraction(parsed, detection) {
   try {
     const wCard = document.getElementById('workerIdentityCard');
     if (wCard) wCard.style.display = 'flex';
+    setTimeout(fitAll, 10);
     const widEl = document.getElementById('workerIdCode');
     if (widEl) widEl.textContent = currentSearchId || '—';
     const wNameEl = document.getElementById('workerNameLine');

@@ -159,3 +159,33 @@ if (typeof window !== 'undefined') {
   window.getAutoEmpType = getAutoEmpType;
   window.getEmpMeta = getEmpMeta;
 }
+
+/* ==========================================================================
+   ONE-LINE AUTO-SHRINK TYPOGRAPHY (SPEC V2)
+   ========================================================================== */
+function fitText(el) {
+  if (!el || !el.dataset || !el.dataset.fit) return;
+  const parts = el.dataset.fit.split(',').map(Number);
+  const max = parts[0];
+  const min = parts[1];
+  if (!max || !min) return;
+  let s = max;
+  el.style.fontSize = s + 'px';
+  while (el.scrollWidth > el.clientWidth && s > min) {
+    s -= 0.5;
+    el.style.fontSize = s + 'px';
+  }
+}
+
+function fitAll() {
+  document.querySelectorAll('[data-fit]').forEach(fitText);
+}
+
+if (typeof window !== 'undefined') {
+  window.fitText = fitText;
+  window.fitAll = fitAll;
+  window.addEventListener('resize', fitAll);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitAll);
+  }
+}
