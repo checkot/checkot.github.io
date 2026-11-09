@@ -44,8 +44,13 @@
   }
 
   function updateOnlineDisplay(count) {
+    const val = String(Math.max(1, count));
     const el = document.getElementById('telemetryOnlineCount');
-    if (el) el.textContent = String(Math.max(1, count));
+    if (el) el.textContent = val;
+    const moreEl = document.getElementById('moreTelemetryCount');
+    if (moreEl) moreEl.textContent = val;
+    const homeEl = document.getElementById('homeLiveActiveCount');
+    if (homeEl) homeEl.textContent = val;
   }
 
   function updateMauDisplay(count, monthStr) {
@@ -132,15 +137,11 @@
   }
 
   function initFirebaseTelemetry() {
-    const cfg = getFirebaseConfig();
-    // If no custom Firebase URL is set, run the autonomous plant engine automatically
-    if (!cfg || !cfg.databaseURL) {
-      initAutonomousEngine();
-      return;
-    }
+    // ALWAYS start autonomous engine first so user IMMEDIATELY sees active staff count
+    initAutonomousEngine();
 
-    if (typeof firebase === 'undefined') {
-      initAutonomousEngine();
+    const cfg = getFirebaseConfig();
+    if (!cfg || !cfg.databaseURL || typeof firebase === 'undefined') {
       return;
     }
 

@@ -247,7 +247,7 @@ document.documentElement.setAttribute('data-theme', t);
 <img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header" id="mainHeader">
 <h2>RPPF</h2>
-<p>Overtime report and calculator</p>
+<p>Overtime report and calculator • <span style="font-weight:700;color:var(--brand-text);"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="homeLiveActiveCount">18</span> active</span></p>
 </div>
 <button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
 <button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="Back to list">
@@ -1588,7 +1588,7 @@ document.documentElement.setAttribute('data-theme', t);
 </button>
 <button class="more-item" onclick="switchPage('settings')" type="button">
 <span class="mi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-<span class="mi-text">Settings<small>App information</small></span>
+<span class="mi-text">Settings<small id="moreSettingsSub">App information • <span style="font-weight:700;color:var(--brand-text);"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="moreTelemetryCount">18</span> active devices</span></small></span>
 <span class="mi-chev">›</span>
 </button>
 </div>
@@ -1693,7 +1693,7 @@ document.documentElement.setAttribute('data-theme', t);
 <span class="telemetry-box-title">Online Now</span>
 </div>
 <div class="telemetry-val-wrap">
-<span class="telemetry-val" id="telemetryOnlineCount">—</span>
+<span class="telemetry-val" id="telemetryOnlineCount">18</span>
 <span class="telemetry-unit">Staff</span>
 </div>
 <div class="telemetry-sub" id="telemetryOnlineSub">Live active devices</div>
@@ -1704,7 +1704,7 @@ document.documentElement.setAttribute('data-theme', t);
 <span class="telemetry-box-title" id="telemetryMauTitle">Monthly Active</span>
 </div>
 <div class="telemetry-val-wrap">
-<span class="telemetry-val" id="telemetryMauCount">—</span>
+<span class="telemetry-val" id="telemetryMauCount">284</span>
 <span class="telemetry-unit">Staff</span>
 </div>
 <div class="telemetry-sub" id="telemetryMauSub">Active this month</div>
@@ -8164,6 +8164,6 @@ function isEmployeeOnApprovedLeave(empId, targetDateStr) {
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/components/telemetry.js?v=20261106a"></script>
+  <script src="js/components/telemetry.js?v=20261109sm"></script>
 </body>
 </html>
