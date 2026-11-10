@@ -459,7 +459,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         clean_cid = alias_map.get(cid, cid)
         emp_area = (area_map or {}).get(cid) or (area_map or {}).get(clean_cid)
         if not emp_area or emp_area not in qa_areas:
-            return None
+            emp_area = "Unassigned"
 
     detection = detect_category(c["designation"], c["id"], desig_rates=desig_rates)
     valid = bool(detection["valid"] and detection["category"])

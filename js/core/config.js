@@ -119,8 +119,9 @@ function getDepartmentForArea(area) {
       return code;
     }
   }
-  // Backward compatibility fallback for legacy data
-  if (a === 'Quality Assurance') return DEPT_QA;
+  // Robust fallback for QA areas & subsections
+  if (a === 'Quality Assurance' || a.startsWith('IPQC') || a === 'Documentation' || a === 'Unassigned') return DEPT_QA;
+  if (a.includes('Solid') || a.includes('Softgel') || a.includes('Packing') || a === 'Overall') return DEPT_PR;
   return DEPT_PR;
 }
 
@@ -131,8 +132,10 @@ function getDeptForArea(area) {
 function getDeptForEmployeeId(id, areaMap) {
   if (!id) return null;
   const u = String(id).toUpperCase().trim();
+  const ID_ALIASES = { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = ID_ALIASES[u] || u;
   const map = areaMap || (typeof AREA_MAP !== 'undefined' ? AREA_MAP : {});
-  const area = map[u];
+  const area = map[u] || map[cleanId];
   if (!area) return null;
   return getDepartmentForArea(area);
 }
@@ -260,6 +263,8 @@ const ADMIN_ACCOUNTS = {
     title: "QA Admin"
   },
   "dev": {
+    altHash: "a78f8128f2109434daf14d867c665d97a242909409b29bc0a965111d8a4a9f80", // dev1234
+    adminHash: "ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270", // admin1234
     hash: "b1898424d4aa6d7b94d04d87531fd05b62b828dee1bb31558219afb08ce79df5",
     saltedHash: "c0dd500f68d861e0f91b880d09163470b69607b1c4fc3a8310766cfc4cb5e9bc",
     role: "super_admin",

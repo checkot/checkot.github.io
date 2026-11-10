@@ -2040,10 +2040,27 @@
       "ERP & Planning"
     ],
     "__deleted_subs__": [],
-    "IPQC PR": [],
-    "IPQC Pack": [],
-    "Documentation": [],
-    "Executives": [],
+    "IPQC PR": [
+      "Solid IPQC",
+      "Softgel IPQC",
+      "Line Clearance"
+    ],
+    "IPQC Pack": [
+      "Blister IPQC",
+      "Strip IPQC",
+      "Packing Verification"
+    ],
+    "Documentation": [
+      "BMR Review",
+      "Batch Release",
+      "SOP & Compliance"
+    ],
+    "Executives": [
+      "Section In-Charge",
+      "QA Officer",
+      "QA Executive",
+      "Compliance"
+    ],
     "Unassigned": []
   },
   "designationRates": {

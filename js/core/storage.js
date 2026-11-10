@@ -9,7 +9,19 @@ function getPreferredId() {
 function setPreferredId(id) {
   try {
     if (id) {
-      localStorage.setItem(PREFERRED_ID_KEY, String(id).toUpperCase().trim());
+      const u = String(id).toUpperCase().trim();
+      localStorage.setItem(PREFERRED_ID_KEY, u);
+      const d = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(u) : null;
+      if (d) {
+        if (typeof setClientDepartment === 'function') {
+          setClientDepartment(d);
+        } else {
+          try {
+            localStorage.setItem(CLIENT_DEPT_KEY, d);
+            sessionStorage.setItem(CLIENT_DEPT_KEY, d);
+          } catch (e2) {}
+        }
+      }
     } else {
       localStorage.removeItem(PREFERRED_ID_KEY);
       if (typeof CLIENT_DEPT_KEY !== 'undefined') {
@@ -20,6 +32,16 @@ function setPreferredId(id) {
       if (typeof updateClientBranding === 'function') updateClientBranding('NEUTRAL');
     }
   } catch (e) {}
+}
+
+function getDepartmentScopedHistory() {
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  return getHistory().filter(item => {
+    const id = typeof item === 'object' && item ? item.id : item;
+    if (!id) return false;
+    const d = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(id) : null;
+    return !d || d === currentDept;
+  });
 }
 
 // Business Rule: Salary entered in Payslip Estimator stays ONLY in localStorage (renata_salary_v1)

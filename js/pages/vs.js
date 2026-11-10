@@ -76,12 +76,10 @@ function renderVsQuickPicks() {
   const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const filterByDept = (id) => {
     if (!id) return false;
-    const upper = String(id).toUpperCase().trim();
-    const area = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[upper] : null;
-    const dept = (typeof getDeptForArea === 'function') ? getDeptForArea(area) : (area === 'Quality Assurance' ? 'QA' : 'PR');
-    return dept === currentDept;
+    const dept = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(id) : null;
+    return !dept || dept === currentDept;
   };
-  const hist = (typeof getHistory === 'function' ? getHistory() : []).map(h => h.id).filter(filterByDept);
+  const hist = (typeof getDepartmentScopedHistory === 'function' ? getDepartmentScopedHistory() : (typeof getHistory === 'function' ? getHistory() : [])).map(h => typeof h === 'object' && h ? h.id : h).filter(filterByDept);
   const topLb = (currentLeaderboardResult?.sortedByDuty || []).slice(0, 6).map(e => e.id).filter(filterByDept);
   const candidates = [...new Set([...hist, ...topLb])].filter(id => id && id !== (document.getElementById('compareId1')?.value || '')).slice(0, 5);
   if (!candidates.length) { box.innerHTML = ''; return; }
@@ -238,6 +236,8 @@ function renderVsSubsectionShortcuts() {
         <button type="button" class="vs-sub-chip" data-sub="IPQC Pack" onclick="quickCompareSolidSub('IPQC Pack')"><span class="sub-icon">📦</span> IPQC Pack</button>
         <button type="button" class="vs-sub-chip" data-sub="Documentation" onclick="quickCompareSolidSub('Documentation')"><span class="sub-icon">📄</span> Documentation</button>
         <button type="button" class="vs-sub-chip" data-sub="Executives" onclick="quickCompareSolidSub('Executives')"><span class="sub-icon">👔</span> Executives</button>
+        <button type="button" class="vs-sub-chip" data-sub="Unassigned" onclick="quickCompareSolidSub('Unassigned')"><span class="sub-icon">⏳</span> Unassigned</button>
+        <button type="button" class="vs-sub-chip" data-sub="All QA" onclick="quickCompareSolidSub('All QA')"><span class="sub-icon">⭐</span> All QA</button>
       `;
     }
     if (pairChips) {
@@ -303,8 +303,10 @@ async function quickCompareSolidSub(subName) {
     const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
     const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
     if (currentDept === 'QA') {
-      const isQA = a.includes('quality assurance') || a.includes('qa');
-      return isQA && (s === subLower || s.includes(subLower));
+      const isQA = (e.dept === 'QA') || (typeof getDeptForEmployeeId === 'function' && getDeptForEmployeeId(u) === 'QA') || (typeof getDeptForArea === 'function' && getDeptForArea(a) === 'QA') || a.includes('qa') || a.includes('quality assurance');
+      if (!isQA) return false;
+      if (subLower === 'all qa') return true;
+      return a === subLower || a.includes(subLower) || s === subLower || s.includes(subLower);
     }
     const isSolid = a.includes('solid') || a === 'solid production';
     return isSolid && (s === subLower || s.includes(subLower));
@@ -372,8 +374,9 @@ async function quickCompareSolidCross(sub1, sub2) {
       const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
       const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
       if (currentDept === 'QA') {
-        const isQA = a.includes('quality assurance') || a.includes('qa');
-        return isQA && (s === sl || s.includes(sl));
+        const isQA = (e.dept === 'QA') || (typeof getDeptForEmployeeId === 'function' && getDeptForEmployeeId(u) === 'QA') || (typeof getDeptForArea === 'function' && getDeptForArea(a) === 'QA') || a.includes('qa') || a.includes('quality assurance');
+        if (!isQA) return false;
+        return a === sl || a.includes(sl) || s === sl || s.includes(sl);
       }
       return (a.includes('solid') || a === 'solid production') && (s === sl || s.includes(sl));
     });

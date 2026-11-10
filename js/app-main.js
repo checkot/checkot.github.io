@@ -918,36 +918,35 @@ throw lastErr || new Error('Failed to load ' + filename);
 /* const _monthInflight = {}; declared in js/core/state.js */
 /* const _monthPersisted = {}; declared in js/core/state.js */
 function fetchMonthPreIndexedData(month, forceFresh = false, persist = true) {
-const key = month + (forceFresh ? '|fresh' : '');
+const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const key = currentDept + '_' + month + (forceFresh ? '|fresh' : '');
 if (_monthInflight[key]) return _monthInflight[key];
 const p = _fetchMonthImpl(month, forceFresh, persist).finally(() => { delete _monthInflight[key]; });
 _monthInflight[key] = p;
 return p;
 }
 function persistMonthCache(month, employees) {
+const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
 const run = () => {
 try {
-const mKeys = Object.keys(localStorage).filter(k => k.startsWith(MONTH_DATA_CACHE_PREFIX) && k !== MONTH_DATA_CACHE_PREFIX + month);
-if (mKeys.length >= 2) mKeys.sort().slice(0, mKeys.length - 1).forEach(k => localStorage.removeItem(k));
-// Pre-index activeDayNums, lastDayNight, and absent/requisition metrics before stripping daily for localStorage
-const slim = employees.map(e => {
+const cacheKey = MONTH_DATA_CACHE_PREFIX + currentDept + '_' + month;
+const slim = (employees || []).map(e => {
   if (!Array.isArray(e.activeDayNums) && Array.isArray(e.daily) && e.daily.length > 0) _buildEmpDayMap(e);
   didEmpWorkNightOnLastDay(e, month);
   const c = { ...e };
   delete c.daily;
   return c;
 });
-localStorage.setItem(MONTH_DATA_CACHE_PREFIX + month, JSON.stringify({ ts: Date.now(), employees: slim }));
+localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), dept: currentDept, employees: slim }));
 } catch (e) {}
 };
 if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 3000 }); else setTimeout(run, 400);
 }
 async function _fetchMonthImpl(month, forceFresh = false, persist = true) {
 const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-const memKey = (currentDept === 'QA' ? 'qa_' : '') + month;
-if (!forceFresh && monthIndexMemoryCache[memKey]) {
-if (persist && !_monthPersisted[memKey]) { _monthPersisted[memKey] = true; persistMonthCache(memKey, monthIndexMemoryCache[memKey]); }
-return monthIndexMemoryCache[memKey];
+if (!forceFresh && monthIndexMemoryCache[month]) {
+if (persist && !_monthPersisted[month]) { _monthPersisted[month] = true; persistMonthCache(month, monthIndexMemoryCache[month]); }
+return monthIndexMemoryCache[month];
 }
 try {
 let data = null;
@@ -955,7 +954,7 @@ if (currentDept === 'QA') {
   try {
     data = await fetchJsonResource(`data/qa/${month}.json`);
   } catch (errQA) {
-    data = await fetchJsonResource(`data/${month}.json`);
+    data = null;
   }
 } else {
   data = await fetchJsonResource(`data/${month}.json`);
@@ -963,15 +962,21 @@ if (currentDept === 'QA') {
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : null);
 if (list && list.length > 0) {
 await loadAreaMap();
+const ID_ALIASES = {
+  'CL6515': '556515', '556515': 'CL6515',
+  'CL6531': '556531', '556531': 'CL6531'
+};
 let normalized = list.map(e => {
 const u = String(e.id || '').toUpperCase().trim();
-const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
+const cleanId = ID_ALIASES[u] || u;
+const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && (AREA_DETAILS[u] || AREA_DETAILS[cleanId])) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
 const subVal = e.sub || e.subsection || d.s || '';
-const mappedArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[u]) ? AREA_MAP[u] : null;
+const mappedArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? (AREA_MAP[u] || AREA_MAP[cleanId]) : null;
 const fallbackArea = currentDept === 'QA' ? 'Unassigned' : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'));
 const obj = {
 ...e,
 id: u,
+dept: e.dept || currentDept,
 isRppf: e.isRppf !== false,
 area: mappedArea || e.area || fallbackArea,
 sub: subVal,
@@ -983,14 +988,14 @@ didEmpWorkNightOnLastDay(obj, month);
 return obj;
 });
 
-// Scope employees by department
+// Scope employees strictly by active department
 if (currentDept === 'QA') {
   normalized = normalized.filter(e => {
     if (e.dept) return e.dept === 'QA';
     const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(e.area) : ((typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : null);
     return d === 'QA';
   });
-} else if (currentDept === 'PR') {
+} else {
   normalized = normalized.filter(e => {
     if (e.dept) return e.dept === 'PR';
     const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(e.area) : ((typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : null);
@@ -999,14 +1004,15 @@ if (currentDept === 'QA') {
 }
 
 normalized.forEach(applyTypeOverride);
-monthIndexMemoryCache[memKey] = normalized;
+monthIndexMemoryCache[month] = normalized;
 getMonthDatasetMeta(month);
-if (persist) { _monthPersisted[memKey] = true; persistMonthCache(memKey, normalized); }
+if (persist) { _monthPersisted[month] = true; persistMonthCache(month, normalized); }
 return normalized;
 }
 } catch (e) {
 try {
-const raw = localStorage.getItem(MONTH_DATA_CACHE_PREFIX + month);
+const cacheKey = MONTH_DATA_CACHE_PREFIX + currentDept + '_' + month;
+const raw = localStorage.getItem(cacheKey) || (currentDept === 'PR' ? localStorage.getItem(MONTH_DATA_CACHE_PREFIX + month) : null);
 if (raw) {
 const parsed = JSON.parse(raw);
 if (parsed && Array.isArray(parsed.employees) && (Date.now() - (parsed.ts || 0) < CACHE_TTL_MS)) {
@@ -1134,6 +1140,9 @@ hadCache = true;
 AREA_DETAILS = (parsed.details && typeof parsed.details === 'object') ? parsed.details : {};
 AREA_SUBS = (parsed.subs && typeof parsed.subs === 'object') ? parsed.subs : {};
 DESIG_RATES = (parsed.rates && typeof parsed.rates === 'object') ? parsed.rates : {};
+if (parsed.departments && typeof parsed.departments === 'object' && typeof setDepartmentsConfig === 'function') {
+setDepartmentsConfig(parsed.departments);
+}
 if (parsed.rateTable && typeof parsed.rateTable === 'object') {
 RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), parsed.rateTable);
 }
@@ -1149,6 +1158,9 @@ AREA_MAP = (data && data.areas && typeof data.areas === 'object') ? data.areas :
 AREA_DETAILS = (data && data.details && typeof data.details === 'object') ? data.details : {};
 AREA_SUBS = (data && data.subsections && typeof data.subsections === 'object') ? data.subsections : {};
 DESIG_RATES = (data && data.designationRates && typeof data.designationRates === 'object') ? data.designationRates : {};
+if (data && data.departments && typeof data.departments === 'object' && typeof setDepartmentsConfig === 'function') {
+setDepartmentsConfig(data.departments);
+}
 if (data && data.rateTable && typeof data.rateTable === 'object') {
 RATE_TABLE = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), data.rateTable);
 }
@@ -1178,6 +1190,7 @@ function saveAreaCache() {
 try {
 localStorage.setItem(AREA_MAP_CACHE_KEY, JSON.stringify({
 ts: Date.now(),
+departments: (typeof getDepartmentsConfig === 'function' ? getDepartmentsConfig() : null),
 data: AREA_MAP,
 details: AREA_DETAILS,
 subs: AREA_SUBS,
@@ -1228,12 +1241,9 @@ if (!d.g && !d.t && !d.s && !hasCats) delete AREA_DETAILS[id];
 
 function getClientDepartment() {
   const savedId = (typeof getMyId === 'function') ? getMyId() : null;
-  if (savedId && typeof AREA_MAP !== 'undefined' && AREA_MAP[savedId]) {
-    const area = AREA_MAP[savedId];
-    if (typeof getDeptForArea === 'function') {
-      const d = getDeptForArea(area);
-      if (d) return d;
-    }
+  if (savedId) {
+    const d = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(savedId) : null;
+    if (d) return d;
   }
   try {
     return sessionStorage.getItem(CLIENT_DEPT_KEY) || localStorage.getItem(CLIENT_DEPT_KEY) || DEPT_PR;
@@ -1297,18 +1307,54 @@ function updateClientBranding(dept) {
   }
 
   const lbSub = document.getElementById('lbSubtitle');
+    const deptBadge = document.getElementById('headerDeptBadge');
+  if (deptBadge) deptBadge.textContent = isQA ? 'QA' : 'PR';
   if (lbSub) {
     lbSub.textContent = isQA ? 'Quality Assurance (QA) Section' : 'Production Sections';
   }
 
+  const modeHeroTitle = document.getElementById('modeModalTitle');
+  if (modeHeroTitle) {
+    modeHeroTitle.textContent = isQA ? 'RPPF QA — User Login' : 'RPPF Production — User Login';
+  }
+
+  const empInp = document.getElementById('employeeId');
+  if (empInp && !empInp.value) {
+    empInp.placeholder = isQA ? 'e.g. 556515, CF10284, RF20259...' : 'e.g. CF8355, RF8327, RF8941...';
+  }
+
+  const regInp = document.getElementById('regEmpIdInput');
+  if (regInp && !regInp.value) {
+    regInp.placeholder = isQA ? 'e.g. 556515, CF10284...' : 'e.g. CF8355 or RF20850';
+  }
+
+  const pillPR = document.getElementById('modalDeptPillPR');
+  const pillQA = document.getElementById('modalDeptPillQA');
+  if (pillPR) pillPR.classList.toggle('active', !isQA);
+  if (pillQA) pillQA.classList.toggle('active', isQA);
+
   if (typeof populateAreaDropdown === 'function') populateAreaDropdown();
   if (typeof refreshSubFilter === 'function') refreshSubFilter();
   if (typeof renderVsSubsectionShortcuts === 'function') renderVsSubsectionShortcuts();
+  if (typeof renderRecentSearchChips === 'function') renderRecentSearchChips();
 }
 
 window.getClientDepartment = getClientDepartment;
 window.clearDepartmentCaches = clearDepartmentCaches;
 window.setClientDepartment = setClientDepartment;
+
+function switchClientDepartment(dept) {
+  if (typeof setClientDepartment === 'function') setClientDepartment(dept);
+  const pillPR = document.getElementById('modalDeptPillPR');
+  const pillQA = document.getElementById('modalDeptPillQA');
+  if (pillPR) pillPR.classList.toggle('active', dept === 'PR');
+  if (pillQA) pillQA.classList.toggle('active', dept === 'QA');
+  if (typeof showToast === 'function') {
+    showToast(dept === 'QA' ? 'Switched to Quality Assurance (QA)' : 'Switched to Production (PR)', 'info');
+  }
+}
+window.switchClientDepartment = switchClientDepartment;
+
 window.updateClientBranding = updateClientBranding;
 
 function getAreaForId(id, isRppf = true) {
@@ -1361,18 +1407,33 @@ function getCached(month, id) { try { const raw = localStorage.getItem(CACHE_PRE
 function setCache(month, id, payload) { try { localStorage.setItem(CACHE_PREFIX + month + "_" + id, JSON.stringify({ ts: Date.now(), ...payload })); } catch (e) {} }
 /* getCompareCache cleanly provided by modular js/ */
 /* setCompareCache cleanly provided by modular js/ */
-function getLeaderboardCache(month) { try { const raw = localStorage.getItem(LEADERBOARD_PREFIX + month); if (!raw) return null; const d = JSON.parse(raw); if (Date.now() - d.ts > LEADERBOARD_TTL_MS || (Array.isArray(d.allEmployees) && d.allEmployees.length && d.allEmployees[0] && d.allEmployees[0].otDaysCount === undefined)) { localStorage.removeItem(LEADERBOARD_PREFIX + month); return null; } return d; } catch (e) { return null; } }
+function getLeaderboardCache(month) {
+  try {
+    const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+    const key = LEADERBOARD_PREFIX + dept + '_' + month;
+    const raw = localStorage.getItem(key) || (dept === 'PR' ? localStorage.getItem(LEADERBOARD_PREFIX + month) : null);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (Date.now() - d.ts > LEADERBOARD_TTL_MS || (Array.isArray(d.allEmployees) && d.allEmployees.length && d.allEmployees[0] && d.allEmployees[0].otDaysCount === undefined)) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return d;
+  } catch (e) { return null; }
+}
 function setLeaderboardCache(month, payload) {
-setTimeout(() => {
-try {
-const slimEmps = (payload.allEmployees || []).map(e => {
-const copy = { ...e };
-delete copy.daily;
-return copy;
-});
-localStorage.setItem(LEADERBOARD_PREFIX + month, JSON.stringify({ ts: Date.now(), month: payload.month, allEmployees: slimEmps }));
-} catch (e) {}
-}, 120);
+  setTimeout(() => {
+    try {
+      const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+      const key = LEADERBOARD_PREFIX + dept + '_' + month;
+      const slimEmps = (payload.allEmployees || []).map(e => {
+        const copy = { ...e };
+        delete copy.daily;
+        return copy;
+      });
+      localStorage.setItem(key, JSON.stringify({ ts: Date.now(), dept, month: payload.month, allEmployees: slimEmps }));
+    } catch (e) {}
+  }, 120);
 }
 /* getHistory cleanly provided by modular js/ */
 function addToHistory(id, month, name) {
@@ -1945,7 +2006,7 @@ document.getElementById('compareStatus').innerText = "";
 
 /* function computeEmpAvgDutyAndInOut moved to js/pages/leaderboard.js */
 
-window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
+if (typeof computeEmpAvgDutyAndInOut !== "undefined") window.computeEmpAvgDutyAndInOut = computeEmpAvgDutyAndInOut;
 /* computeEmpRequisitionProblems cleanly provided by modular js/ */
 
 /* computeEmpGeneralAbsents cleanly provided by modular js/ */
@@ -3549,6 +3610,8 @@ showToast('Please enter your ID number', 'warn');
 inp?.focus();
 return;
 }
+const detectedDept = (typeof getDeptForEmployeeId === 'function') ? (getDeptForEmployeeId(raw) || getClientDepartment()) : 'PR';
+if (typeof setClientDepartment === 'function') setClientDepartment(detectedDept);
 const spec = getSpecialRoleSpec(raw);
 if (!spec) {
 // Normal Employee: No password required!
@@ -3557,7 +3620,7 @@ setPreferredId(raw);
 setAppMode('employee');
 updateModeUI();
 closeModeSetupModal();
-showToast(`Saved ID (${raw})`, 'success');
+showToast(`Saved ID (${raw}) [${detectedDept}]`, 'success');
 const empInput = document.getElementById('employeeId');
 if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
 switchPage('search');
@@ -4198,6 +4261,11 @@ const DEFAULT_AREA_SUBSECTIONS = {
   'Softgel Production': ['Encapsulation', 'Gelatin Prep', 'Medicament Prep', 'Tumble Drying', 'Sorting & Inspection'],
   'Packing Hall': ['Blister Packing', 'Strip & Alu-Alu', 'Bottle Line', 'Cartoning', 'Secondary Packing', 'Labeling'],
   'Overall': ['Production Management', 'Section In-Charge', 'QA / Compliance', 'ERP & Planning'],
+  'IPQC PR': ['Solid IPQC', 'Softgel IPQC', 'Line Clearance'],
+  'IPQC Pack': ['Blister IPQC', 'Strip IPQC', 'Packing Verification'],
+  'Documentation': ['BMR Review', 'Batch Release', 'SOP & Compliance'],
+  'Executives': ['Section In-Charge', 'QA Officer', 'QA Executive', 'Compliance'],
+  'Unassigned': [],
   'Quality Assurance': ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives']
 };
 
@@ -5846,6 +5914,8 @@ syncPrivilegedUI = function() {
 
 initAppModeOnStartup = function() {
   ensureDefaultSubsections();
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  if (typeof updateClientBranding === 'function') updateClientBranding(currentDept);
   updateModeUI();
   wireAllAutocompleteSearchInputs();
   loadAbsentStore().then(() => {
@@ -5923,7 +5993,9 @@ initAppModeOnStartup();
 /* ===== Daily Automated Empress JSON Auto-Load Module ===== */
 async function autoLoad() {
   try {
-    const r = await fetch('data/latest.json?t=' + Date.now(), { cache: 'no-store' });
+    const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+    const latestPath = (currentDept === 'QA') ? 'data/qa/latest.json' : 'data/latest.json';
+    const r = await fetch(latestPath + '?t=' + Date.now(), { cache: 'no-store' });
     if (!r.ok) return;
     const j = await r.json();
     if (!j || !j.month) return;

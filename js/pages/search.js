@@ -16,8 +16,8 @@ function clearEmployeeInput() {
 function renderRecentSearchChips() {
   const wrap = document.getElementById('recentSearchChips');
   if (!wrap) return;
-  const list = typeof getHistory === 'function' ? getHistory() : [];
-  const uniqueIds = [...new Set(list.map(x => x.id))].slice(0, 4);
+  const list = typeof getDepartmentScopedHistory === 'function' ? getDepartmentScopedHistory() : (typeof getHistory === 'function' ? getHistory() : []);
+  const uniqueIds = [...new Set(list.map(x => (typeof x === 'object' && x ? x.id : x)))].slice(0, 4);
   if (uniqueIds.length === 0) { wrap.classList.remove('show'); wrap.innerHTML = ''; return; }
   wrap.classList.add('show');
   wrap.innerHTML = `<span class="recent-chips-label">Previous IDs:</span>` + uniqueIds.map(id => `<button type="button" class="id-chip" onclick="quickSelectId('${esc(id)}')">${esc(id)}</button>`).join('');
@@ -189,9 +189,34 @@ async function findReport() {
       return;
     }
 
-    const empArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[searchId] : null;
+    const ID_ALIASES = {
+      'CL6515': '556515', '556515': 'CL6515',
+      'CL6531': '556531', '556531': 'CL6531'
+    };
+    const aliasId = ID_ALIASES[searchId] || null;
+    const empArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? (AREA_MAP[searchId] || (aliasId && AREA_MAP[aliasId])) : null;
     const empDept = (typeof getDeptForArea === 'function') ? getDeptForArea(empArea) : (empArea === 'Quality Assurance' ? 'QA' : 'PR');
-    if (typeof setClientDepartment === 'function') setClientDepartment(empDept);
+
+    // Strict Department Isolation Guard:
+    const activeDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+    const myId = (typeof getMyId === 'function') ? getMyId() : null;
+    const isSavedUser = Boolean(myId && isListedEmployeeId(myId));
+
+    if (isSavedUser && empDept !== activeDept) {
+      if (spinner) spinner.style.display = "none";
+      if (searchBtn) searchBtn.disabled = false;
+      if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
+      const msg = (activeDept === 'QA')
+        ? `"${rawId}" আইডিটি কোয়ালিটি অ্যাসুরেন্স (QA) ডিপার্টমেন্টের অন্তর্ভুক্ত নয়। আপনি শুধুমাত্র কিউএ ডিপার্টমেন্টের কর্মীদের হিসাব দেখতে পারবেন।`
+        : `"${rawId}" আইডিটি প্রোডাকশন ডিপার্টমেন্টের অন্তর্ভুক্ত নয়। আপনি শুধুমাত্র প্রোডাকশন ডিপার্টমেন্টের কর্মীদের হিসাব দেখতে পারবেন।`;
+      showSearchError(msg);
+      if (typeof showToast === 'function') showToast(msg, 'warn');
+      return;
+    }
+
+    if (!isSavedUser && empDept !== activeDept) {
+      if (typeof setClientDepartment === 'function') setClientDepartment(empDept);
+    }
     const prevMonth = getPrevMonthStr(month);
     const [fastList] = await Promise.all([
       fetchMonthPreIndexedData(month),
@@ -205,11 +230,6 @@ async function findReport() {
       showSearchError(`${month} overtime data has not been uploaded to the server yet.`);
       return;
     }
-    const ID_ALIASES = {
-      'CL6515': '556515', '556515': 'CL6515',
-      'CL6531': '556531', '556531': 'CL6531'
-    };
-    const aliasId = ID_ALIASES[searchId] || null;
     const matchedEmp = fastList.find(e => {
       const eid = String(e.id || '').toUpperCase();
       return eid === searchId || (aliasId && eid === aliasId);

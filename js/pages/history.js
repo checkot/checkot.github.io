@@ -3,7 +3,14 @@
    ========================================================================== */
 
 function renderHistory() {
-  const list = typeof getHistory === 'function' ? getHistory() : [];
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const filterByDept = (id) => {
+    if (!id) return false;
+    const d = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(id) : null;
+    return !d || d === currentDept;
+  };
+  const rawList = typeof getHistory === 'function' ? getHistory() : [];
+  const list = rawList.filter(h => filterByDept(typeof h === 'object' && h ? h.id : h));
   const box = document.getElementById('historyList');
   if (!box) return;
   if (list.length === 0) {

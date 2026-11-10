@@ -249,7 +249,7 @@ document.documentElement.setAttribute('data-theme', t);
 <h2 id="mainHeaderH2">RENATA PLC</h2>
 <p id="mainHeaderP">Overtime report and calculator • <span style="font-weight:700;color:var(--brand-text);"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="homeLiveActiveCount">18</span> active</span></p>
 </div>
-<button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
+<button type="button" id="headerDeptBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Current Department" style="margin-right:4px;background:var(--surface-2);color:var(--brand);font-weight:800;border:1px solid var(--border);">PR</button><button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
 <button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="Back to list">
 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
 </button>
@@ -1837,6 +1837,10 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="mode-modal-close-x" id="modeModalCloseBtn" onclick="closeModeSetupModal()" aria-label="Close">✕</button>
 <h3 id="modeModalTitle">RPPF — User Login</h3>
 <p id="modeModalSubtitle">Enter your Employee ID number to continue</p>
+</div>
+<div class="dept-pills-wrap" style="display:flex;gap:8px;padding:12px 16px 0;justify-content:center;">
+<button type="button" id="modalDeptPillPR" class="dept-pill-btn active" onclick="switchClientDepartment('PR')">Production</button>
+<button type="button" id="modalDeptPillQA" class="dept-pill-btn" onclick="switchClientDepartment('QA')">Quality Assurance (QA)</button>
 </div>
 <div class="mode-switch-tabs" role="tablist">
 <button type="button" class="mode-tab-btn active-emp" id="tabBtnEmployee" onclick="selectSetupTab('employee')"><span>Employee</span></button>
