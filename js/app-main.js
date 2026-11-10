@@ -5175,7 +5175,7 @@ function renderQuickAbsentModalList() {
 /* ==========================================================================
    STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
-const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'Quality Assurance'];
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'IPQC PR', 'IPQC Pack', 'Documentation', 'Executives', 'Unassigned', 'Quality Assurance'];
 
 function isListedEmployeeId(id) {
   if (!id) return false;
@@ -5194,13 +5194,25 @@ function getListedEmployeesCountBySection() {
     'Softgel Production': 0,
     'Packing Hall': 0,
     'Overall': 0,
-    'Total': 0
+    'IPQC PR': 0,
+    'IPQC Pack': 0,
+    'Documentation': 0,
+    'Executives': 0,
+    'Unassigned': 0,
+    'Quality Assurance': 0,
+    'Total': 0,
+    'TotalPR': 0,
+    'TotalQA': 0
   };
+  const allAllowed = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ALLOWED_SECTIONS;
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const area = AREA_MAP[rawId];
-    if (area && ALLOWED_SECTIONS.includes(area)) {
+    if (area && allAllowed.includes(area)) {
       counts[area] = (counts[area] || 0) + 1;
       counts['Total']++;
+      const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(area) : 'PR';
+      if (d === 'QA') counts['TotalQA']++;
+      else counts['TotalPR']++;
     }
   });
   return counts;
@@ -5216,11 +5228,11 @@ function buildMasterEmployeeDirectory() {
   }
   const map = new Map();
 
-  // ONLY seed from AREA_MAP where area is in ALLOWED_SECTIONS
+  const allAllowed = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ALLOWED_SECTIONS;
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const id = String(rawId).toUpperCase().trim();
     const area = AREA_MAP[rawId];
-    if (area && ALLOWED_SECTIONS.includes(area)) {
+    if (area && allAllowed.includes(area)) {
       const meta = getEmpMeta(id);
       map.set(id, {
         id,

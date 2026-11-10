@@ -4646,62 +4646,40 @@ function applyAdminScopeUI() {
     const kpiExec = document.getElementById('admModExecCount')?.parentElement;
 
     if (scope === 'QA') {
-      if (cardSolid) cardSolid.style.display = 'none';
-      if (cardSoftgel) cardSoftgel.style.display = 'none';
-      if (cardPacking) cardPacking.style.display = 'none';
-      if (cardOverall) cardOverall.style.display = 'none';
-      if (cardQA) cardQA.style.display = 'flex';
-
+      _admCurrentActiveSection = 'Unassigned';
       if (kpiSolid) kpiSolid.style.display = 'none';
       if (kpiSoftgel) kpiSoftgel.style.display = 'none';
       if (kpiPacking) kpiPacking.style.display = 'none';
       if (kpiExec) kpiExec.style.display = 'none';
       if (kpiQA) kpiQA.style.display = 'block';
 
-      const sel = document.getElementById('adminTargetAreaSelect');
-      if (sel) {
-        sel.innerHTML = '<option value="Quality Assurance">Quality Assurance (QA)</option>';
-        sel.value = 'Quality Assurance';
-      }
-      renderAdminSectionCards(); populateAdminAreaSelects(); adminSelectSectionCard(_admCurrentActiveSection || 'Unassigned');
+      renderAdminSectionCards();
+      populateAdminAreaSelects();
+      adminSelectSectionCard('Unassigned');
+      adminUpdateAllKpiCounters();
     } else if (scope === 'PR') {
-      if (cardSolid) cardSolid.style.display = 'flex';
-      if (cardSoftgel) cardSoftgel.style.display = 'flex';
-      if (cardPacking) cardPacking.style.display = 'flex';
-      if (cardOverall) cardOverall.style.display = 'flex';
-      if (cardQA) cardQA.style.display = 'none';
-
+      _admCurrentActiveSection = 'Solid Production';
       if (kpiSolid) kpiSolid.style.display = 'block';
       if (kpiSoftgel) kpiSoftgel.style.display = 'block';
       if (kpiPacking) kpiPacking.style.display = 'block';
       if (kpiExec) kpiExec.style.display = 'block';
       if (kpiQA) kpiQA.style.display = 'none';
 
-      const sel = document.getElementById('adminTargetAreaSelect');
-      if (sel) {
-        sel.innerHTML = '<option value="Solid Production">Solid Production</option><option value="Softgel Production">Softgel Production</option><option value="Packing Hall">Packing Hall</option><option value="Overall">Executives (Executive / Above)</option>';
-        if (!PR_AREAS.includes(sel.value)) sel.value = 'Solid Production';
-      }
-      if (_admCurrentActiveSection === 'Quality Assurance') {
-        adminSelectSectionCard('Solid Production');
-      }
+      renderAdminSectionCards();
+      populateAdminAreaSelects();
+      adminSelectSectionCard('Solid Production');
+      adminUpdateAllKpiCounters();
     } else {
-      if (cardSolid) cardSolid.style.display = 'flex';
-      if (cardSoftgel) cardSoftgel.style.display = 'flex';
-      if (cardPacking) cardPacking.style.display = 'flex';
-      if (cardOverall) cardOverall.style.display = 'flex';
-      if (cardQA) cardQA.style.display = 'flex';
-
       if (kpiSolid) kpiSolid.style.display = 'block';
       if (kpiSoftgel) kpiSoftgel.style.display = 'block';
       if (kpiPacking) kpiPacking.style.display = 'block';
       if (kpiExec) kpiExec.style.display = 'block';
       if (kpiQA) kpiQA.style.display = 'block';
 
-      const sel = document.getElementById('adminTargetAreaSelect');
-      if (sel) {
-        sel.innerHTML = '<option value="Solid Production">Solid Production</option><option value="Softgel Production">Softgel Production</option><option value="Packing Hall">Packing Hall</option><option value="Overall">Executives (Executive / Above)</option><option value="Quality Assurance">Quality Assurance (QA)</option>';
-      }
+      renderAdminSectionCards();
+      populateAdminAreaSelects();
+      adminSelectSectionCard(_admCurrentActiveSection || 'Solid Production');
+      adminUpdateAllKpiCounters();
     }
   } else {
     if (badgeWrap) badgeWrap.style.display = 'none';
@@ -4791,7 +4769,16 @@ const tokInp = document.getElementById('adminGhTokenInput');
 const statusTxt = document.getElementById('adminTokenStatusText');
 if (tokInp) tokInp.value = tok;
 if (statusTxt) statusTxt.innerHTML = tok ? 'RPPF Cloud Server is connected - files can be uploaded and optimized directly.' : 'Server Access Key has not been set yet.';
-loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); adminLoadExtraCandidates(false); });
+loadAreaMap().then(() => {
+  renderAdminSectionCards();
+  populateAdminAreaSelects();
+  adminSelectSectionCard(_admCurrentActiveSection || ((typeof getActiveAdminScope === 'function' && getActiveAdminScope() === 'QA') ? 'Unassigned' : 'Solid Production'));
+  adminUpdateAllKpiCounters();
+  adminFilterEmployeeTable();
+  updateAdminAreaStats();
+  renderAdminAreaPreview();
+  adminLoadExtraCandidates(false);
+});
 renderAdminNoticesList();
 }
 function switchAdminTab(tab) {
@@ -8686,13 +8673,17 @@ function renderAdminAbsentPane() {
 /* ==========================================================================
    STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
-const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'Quality Assurance'];
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'IPQC PR', 'IPQC Pack', 'Documentation', 'Executives', 'Unassigned', 'Quality Assurance'];
 
 function isListedEmployeeId(id) {
   if (!id) return false;
   const upper = String(id).toUpperCase().trim();
-  const area = AREA_MAP[upper];
-  return Boolean(area && ALLOWED_SECTIONS.includes(area));
+  const ID_ALIASES = { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = ID_ALIASES[upper] || upper;
+  const area = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? (AREA_MAP[upper] || AREA_MAP[cleanId]) : null;
+  if (!area) return false;
+  const allAllowed = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ALLOWED_SECTIONS;
+  return allAllowed.includes(area);
 }
 
 function getListedEmployeesCountBySection() {
@@ -8701,14 +8692,25 @@ function getListedEmployeesCountBySection() {
     'Softgel Production': 0,
     'Packing Hall': 0,
     'Overall': 0,
+    'IPQC PR': 0,
+    'IPQC Pack': 0,
+    'Documentation': 0,
+    'Executives': 0,
+    'Unassigned': 0,
     'Quality Assurance': 0,
-    'Total': 0
+    'Total': 0,
+    'TotalPR': 0,
+    'TotalQA': 0
   };
+  const allAllowed = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ALLOWED_SECTIONS;
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const area = AREA_MAP[rawId];
-    if (area && ALLOWED_SECTIONS.includes(area)) {
+    if (area && allAllowed.includes(area)) {
       counts[area] = (counts[area] || 0) + 1;
       counts['Total']++;
+      const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(area) : 'PR';
+      if (d === 'QA') counts['TotalQA']++;
+      else counts['TotalPR']++;
     }
   });
   return counts;
@@ -8725,11 +8727,11 @@ function buildMasterEmployeeDirectory() {
   const map = new Map();
 
   const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
-  // ONLY seed from AREA_MAP where area is in ALLOWED_SECTIONS
+  const allAllowed = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ALLOWED_SECTIONS;
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const id = String(rawId).toUpperCase().trim();
     const area = AREA_MAP[rawId];
-    if (area && ALLOWED_SECTIONS.includes(area)) {
+    if (area && allAllowed.includes(area)) {
       const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(area) : 'PR';
       if (scope === 'QA' && d !== 'QA') return;
       if (scope === 'PR' && d !== 'PR') return;
@@ -9429,10 +9431,11 @@ let _admUnassignedSelectedIds = new Set();
 function renderAdminSectionCards() {
   const grid = document.getElementById('admSecCardsGrid');
   if (!grid) return;
-  const scope = getActiveAdminScope();
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
   const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
+  
   if (!areas.includes(_admCurrentActiveSection)) {
-    _admCurrentActiveSection = areas[0] || 'Solid Production';
+    _admCurrentActiveSection = (scope === 'QA') ? 'Unassigned' : (areas[0] || 'Solid Production');
   }
 
   const iconMap = {
@@ -9877,29 +9880,41 @@ function adminBatchRemoveSelected() {
 
 function adminUpdateAllKpiCounters() {
   const counts = getListedEmployeesCountBySection();
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
   const setEl = (id, val) => {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
   };
 
-  setEl('admModTotalCount', counts['Total']);
-  setEl('admModSolidCount', counts['Solid Production']);
-  setEl('admModSoftgelCount', counts['Softgel Production']);
-  setEl('admModPackingCount', counts['Packing Hall']);
-  setEl('admModExecCount', counts['Overall']);
-  setEl('admModQACount', counts['Quality Assurance'] || 0);
+  if (scope === 'QA') {
+    setEl('admModTotalCount', counts['TotalQA']);
+    setEl('admModQACount', counts['TotalQA']);
+    setEl('admModUnassignedCount', counts['Unassigned']);
+    const navUnassigned = document.getElementById('admNavUnassignedCount');
+    if (navUnassigned) navUnassigned.textContent = counts['Unassigned'];
+  } else if (scope === 'PR') {
+    setEl('admModTotalCount', counts['TotalPR']);
+    setEl('admModSolidCount', counts['Solid Production']);
+    setEl('admModSoftgelCount', counts['Softgel Production']);
+    setEl('admModPackingCount', counts['Packing Hall']);
+    setEl('admModExecCount', counts['Overall']);
+    setEl('admModUnassignedCount', counts['Unassigned']);
+  } else {
+    setEl('admModTotalCount', counts['Total']);
+    setEl('admModSolidCount', counts['Solid Production']);
+    setEl('admModSoftgelCount', counts['Softgel Production']);
+    setEl('admModPackingCount', counts['Packing Hall']);
+    setEl('admModExecCount', counts['Overall']);
+    setEl('admModQACount', counts['TotalQA']);
+    setEl('admModUnassignedCount', counts['Unassigned']);
+  }
 
-  setEl('secCardSolidCount', counts['Solid Production']);
-  setEl('secCardSoftgelCount', counts['Softgel Production']);
-  setEl('secCardPackingCount', counts['Packing Hall']);
-  setEl('secCardOverallCount', counts['Overall']);
-  setEl('secCardQACount', counts['Quality Assurance'] || 0);
-
-  // Sync legacy stat numbers
-  setEl('admCountSolid', counts['Solid Production']);
-  setEl('admCountSoftgel', counts['Softgel Production']);
-  setEl('admCountPacking', counts['Packing Hall']);
-  setEl('admCountTotal', counts['Total']);
+  // Update Section card counts
+  document.querySelectorAll('.adm-sec-card-btn').forEach(btn => {
+    const a = btn.getAttribute('data-area');
+    const span = btn.querySelector('.adm-sec-card-sub span');
+    if (a && span) span.textContent = counts[a] || 0;
+  });
 }
 
 /* --- Employee Edit Modal --- */
@@ -10023,6 +10038,25 @@ async function adminScanUnassignedMonthlyEmployees(forceRescan = false) {
       }
     });
   });
+
+  // For QA Admin, also include all employees currently in QA "Unassigned" area waiting for placement
+  const curScope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+  if (curScope === 'QA' || curScope === 'ALL') {
+    Object.keys(AREA_MAP || {}).forEach(id => {
+      if (AREA_MAP[id] === 'Unassigned') {
+        const meta = getEmpMeta(id);
+        if (!unassignedMap.has(id)) {
+          unassignedMap.set(id, {
+            id,
+            name: (typeof buildMasterEmployeeDirectory === 'function') ? (buildMasterEmployeeDirectory().find(x => x.id === id)?.name || id) : id,
+            designation: EMP_TYPE_LABELS[meta.type] || getDesignation({ id }) || 'Employee',
+            totalDuty: 0,
+            otHours: 0
+          });
+        }
+      }
+    });
+  }
 
   _admUnassignedList = Array.from(unassignedMap.values()).sort((a,b) => a.id.localeCompare(b.id));
   const count = _admUnassignedList.length;
