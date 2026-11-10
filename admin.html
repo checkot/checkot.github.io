@@ -1,28 +1,15 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPPF — Dedicated Admin Control Panel</title>
+<meta name="robots" content="noindex, nofollow">
+<title>RPPF Admin Panel</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0F172A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="https://checkot.github.io/icon.png">
-<meta property="og:title" content="RPPF - Overtime Report">
-<meta property="og:description" content="Overtime Report Search & Calculator">
-<meta property="og:image" content="https://checkot.github.io/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:url" content="https://checkot.github.io/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="RPPF Overtime Report">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RPPF - Overtime Report">
-<meta name="twitter:description" content="Overtime Report Search & Calculator">
-<meta name="twitter:image" content="https://checkot.github.io/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
@@ -37,785 +24,814 @@ document.documentElement.setAttribute('data-theme', t);
 })();
 </script>
 <script>window.FALLBACK_LOGO_URI="data:image/svg+xml;utf8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" rx="20" fill="#0052CC"/><text x="50%" y="56%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="Arial,sans-serif" font-weight="900" font-size="44">R</text></svg>');</script>
-
-
-
-
-
-
-
-
-
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/admin-v2.css">
 </head>
 <body data-page="admin">
 <div class="page" id="page-admin">
-<div class="app-header">
-<button type="button" class="icon-btn" onclick="window.location.href=REMOTE_BASE_URL" aria-label="Back to More" title="Back">←</button>
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>Admin Control Panel</h2><p>Full-screen data, rates, categories & area management</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card" id="adminLoginCard">
-<div id="adminNonProdRepoBannerLogin" style="display:none;background:#fef3c7;border:1.5px solid #d97706;color:#92400e;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;font-weight:600;align-items:center;gap:8px;">
-  <span style="font-size:16px;">⚠️</span>
-  <div><strong>TEST REPOSITORY ACTIVE:</strong> Connected to <span id="adminNonProdRepoNameLogin">checkot/checkot-test</span>.</div>
-</div>
-<div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:12px;">
-<h3>Admin login</h3>
-<p>Manage monthly Excel data, rate packages, area IDs and ERP team on the RPPF Cloud Server.</p>
-</div>
-<label for="adminPassInput" style="margin-top:0;">Admin password</label>
-<div class="pin-input-wrap">
-<input type="password" id="adminPassInput" placeholder="Enter password" autocomplete="off" style="font-size:16px;font-weight:800;padding-right:52px;" oninput="clearAdminLoginError()">
-<button type="button" class="pin-eye-btn" onclick="toggleAdminPassVis()" aria-label="Show password">Show</button>
-</div>
-<div class="pin-error-msg" id="adminLoginError">Wrong admin password!</div>
-<button type="button" class="btn-primary" style="margin-top:12px;" onclick="handleAdminLogin()">Enter</button>
-</div>
+
+<!-- =====================================================================
+     TOP BAR
+     ===================================================================== -->
+<header class="app-header">
+  <button type="button" class="icon-btn" onclick="window.location.href=REMOTE_BASE_URL" aria-label="Back to app" title="Back to app">←</button>
+  <img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
+  <div class="header"><h2>Admin Panel</h2><p>RPPF Overtime &amp; Allowance</p></div>
+  <button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
+    <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</header>
+
+<!-- =====================================================================
+     LOGIN
+     ===================================================================== -->
+<section class="ax-login" id="adminLoginCard">
+  <div class="ax-env" id="adminNonProdRepoBannerLogin" style="display:none;">
+    <strong>TEST REPOSITORY:</strong> connected to <span id="adminNonProdRepoNameLogin">checkot/checkot-test</span>
+  </div>
+  <h3>Admin login</h3>
+  <p class="ax-muted">Manage monthly data, rates, areas and the ERP team.</p>
+  <label for="adminPassInput">Admin password</label>
+  <div class="pin-input-wrap">
+    <input type="password" id="adminPassInput" placeholder="Enter password" autocomplete="off" oninput="clearAdminLoginError()">
+    <button type="button" class="pin-eye-btn" onclick="toggleAdminPassVis()" aria-label="Show password">Show</button>
+  </div>
+  <div class="pin-error-msg" id="adminLoginError">Wrong admin password!</div>
+  <button type="button" class="btn-primary ax-login-btn" onclick="handleAdminLogin()">Enter</button>
+</section>
+
+<!-- =====================================================================
+     DASHBOARD
+     ===================================================================== -->
 <div id="adminDashboardWrap" style="display:none;">
-<div id="adminNonProdRepoBanner" style="display:none;background:#fef3c7;border:1.5px solid #d97706;color:#92400e;padding:12px 14px;border-radius:10px;margin-bottom:12px;font-size:13.5px;font-weight:600;align-items:center;gap:10px;">
-  <span style="font-size:18px;">⚠️</span>
-  <div><strong>TEST REPOSITORY ACTIVE:</strong> Connected to <span id="adminNonProdRepoName">checkot/checkot-test</span>. Changes will NOT affect production repository (<code>checkot/checkot.github.io</code>).</div>
-</div>
-<div class="admin-hero-banner" style="padding:12px 14px;margin-bottom:10px;">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-<div>
-<h3 style="font-size:15.5px;">RPPF - Admin control room</h3>
-<p id="adminTokenStatusText" style="font-size:12px;">RPPF Cloud Server status</p>
-</div>
-<div style="display:flex;gap:6px;flex-wrap:wrap;">
-<button type="button" class="mode-pill-btn btn-hero-glass" onclick="openStandaloneAdminFile()" title="Open standalone admin.html">Standalone Admin ↗</button>
-<button type="button" class="mode-pill-btn btn-hero-glass" onclick="handleAdminLogout()">Logout</button>
-</div>
-</div>
-</div>
-<div class="admin-nav-tabs" role="tablist">
-<button type="button" class="admin-tab-btn active" id="admTabBtnAbsent" onclick="switchAdminTab('absent')">Daily Absent (ERP)</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnAreas" onclick="switchAdminTab('areas')">1. Areas and IDs</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnUnassigned" onclick="switchAdminTab('unassigned')">Unassigned Queue (<span id="admNavUnassignedCount">0</span>)</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnRates" onclick="switchAdminTab('rates')">2. Rates and packages</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnData" onclick="switchAdminTab('data')">3. Data manager</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnTeam" onclick="switchAdminTab('team')">4. ERP team</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnNotices" onclick="switchAdminTab('notices')">5. Notices</button>
-<button type="button" class="admin-tab-btn" id="admTabBtnSetup" onclick="switchAdminTab('setup')">6. Server setup</button>
-</div>
 
-<div class="admin-section-pane active" id="admPaneAbsent">
-<div class="card" style="padding:14px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-    <div>
-      <div class="card-title">Daily Absent Employee List Manager (absent.json)</div>
-      <div class="card-sub" style="white-space:normal;">ERP Team can easily update today's absent employees by searching names/IDs or pasting bulk IDs. Automatically syncs with In-Charge Home Overview.</div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button type="button" class="calc-mini-btn btn-success-solid" id="admPushAbsentBtn" onclick="saveAbsentAndPushServer()">Save &amp; Sync to Server</button>
-      <button type="button" class="calc-mini-btn" onclick="copyAbsentSummaryText()">Copy WhatsApp Summary</button>
-    </div>
+  <div class="ax-env" id="adminNonProdRepoBanner" style="display:none;">
+    <strong>TEST REPOSITORY:</strong> connected to <span id="adminNonProdRepoName">checkot/checkot-test</span>.
+    Changes will <u>not</u> affect production (<code>checkot/checkot.github.io</code>).
   </div>
 
-  <div class="admin-stat-grid" style="margin:8px 0;">
-    <div class="admin-stat-box"><span class="as-num" id="admAbsCountTotal">0</span><span class="as-lbl">Total Absent Today</span></div>
-    <div class="admin-stat-box"><span class="as-num" id="admAbsCountSolid">0</span><span class="as-lbl">Solid Absent</span></div>
-    <div class="admin-stat-box"><span class="as-num" id="admAbsCountSg">0</span><span class="as-lbl">SG Absent</span></div>
-    <div class="admin-stat-box"><span class="as-num" id="admAbsCountPack">0</span><span class="as-lbl">Packing Absent</span></div>
-  </div>
+  <div class="ax-shell">
 
-  <div class="admin-meta-grid" style="margin-top:10px;">
-    <div>
-      <label for="admAbsentDateInput" style="margin-top:0;font-size:12px;">Select Date</label>
-      <input type="date" id="admAbsentDateInput" onchange="onAdmAbsentDateChange(this.value)" style="margin-top:4px;min-height:38px;font-weight:700;">
-    </div>
-    <div>
-      <label for="admAbsentReasonInput" style="margin-top:0;font-size:12px;">Absent Status / Leave Type</label>
-      <select id="admAbsentReasonInput" style="margin-top:4px;min-height:38px;">
-        <option value="Absent">Absent (Uninformed)</option>
-        <option value="Casual Leave (CL)">Casual Leave (CL)</option>
-        <option value="Sick Leave (SL)">Sick Leave (SL)</option>
-        <option value="Earned Leave (EL)">Earned Leave (EL)</option>
-        <option value="Shift Off / DO">Shift Off / DO</option>
-        <option value="Medical / Hospital">Medical / Hospital</option>
-      </select>
-    </div>
-    <div>
-      <label for="admAbsentShiftInput" style="margin-top:0;font-size:12px;">Shift / Note (Optional)</label>
-      <input type="text" id="admAbsentShiftInput" placeholder="e.g. Shift A, Blister, Informed..." style="margin-top:4px;min-height:38px;">
-    </div>
-  </div>
-
-  <label for="admAbsentSingleInp" style="margin-top:10px;font-size:12.5px;">Quick Add Employee (Live Search by ID, Name, Sub-section or Area):</label>
-  <div class="incharge-search-row" style="margin-top:4px;">
-    <input type="text" id="admAbsentSingleInp" placeholder="Type ID or employee name (e.g. CF8355 or Johirul)..." autocomplete="off">
-    <button type="button" class="btn-primary" style="width:auto;min-width:130px;" onclick="admAddSingleAbsentEmployee()">+ Add Absent</button>
-  </div>
-
-  <label for="admAbsentBulkTextarea" style="margin-top:10px;font-size:12.5px;">Or Bulk Paste Absent Employee IDs (comma, space or newline separated):</label>
-  <textarea id="admAbsentBulkTextarea" class="admin-textarea" style="min-height:64px;" placeholder="Paste IDs from ERP sheet: CF8355, RF20850, CF5242..."></textarea>
-  <div class="btn-grid-2" style="margin-top:8px;">
-    <button type="button" class="btn-primary" onclick="admAddBulkAbsentEmployees()">+ Bulk Add to Absent List</button>
-    <button type="button" class="btn-secondary danger-btn" onclick="clearDateAbsentList()">Clear Selected Date List</button>
-  </div>
-
-  <div style="margin-top:14px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-      <span style="font-size:13px;font-weight:800;color:var(--text);" id="admAbsentListHeaderTitle">Absent Employees on Selected Date:</span>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <select id="admAbsentFilterArea" onchange="renderAdminAbsentPane()" style="width:auto;min-height:32px;padding:3px 26px 3px 8px;font-size:12px;margin:0;">
-          <option value="all">All Areas</option>
-          <option value="Solid Production">Solid Production</option>
-          <option value="Softgel Production">Softgel Production</option>
-          <option value="Packing Hall">Packing Hall</option>
-          <option value="Overall">Executives</option>
-        </select>
-        <input type="text" id="admAbsentSearchFilter" placeholder="Filter absent list..." oninput="renderAdminAbsentPane()" style="width:150px;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
+    <!-- ---------- Navigation (sidebar on desktop, scrolling pills on mobile) ---------- -->
+    <nav class="ax-nav" aria-label="Admin sections">
+      <div class="ax-nav-group">
+        <span class="ax-nav-label">Daily</span>
+        <button type="button" class="admin-tab-btn ax-item active" id="admTabBtnAbsent" onclick="switchAdminTab('absent')">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M17 8l5 5M22 8l-5 5"/></svg>
+          <span>Absent &amp; Leave</span>
+        </button>
       </div>
-    </div>
-    <div id="admAbsentItemsContainer"></div>
-  </div>
-  <div id="admAbsentSyncStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
-
-<!-- ================================================================= -->
-<!-- APPROVED LONG-TERM LEAVE & MATERNITY LEAVE MANAGER                -->
-<!-- ================================================================= -->
-<div class="card" style="padding:14px;margin-top:14px;border:1.5px solid rgba(16,185,129,0.3);background:linear-gradient(180deg, rgba(16,185,129,0.03) 0%, rgba(255,255,255,0) 100%);">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-    <div>
-      <div class="card-title" style="display:flex;align-items:center;gap:6px;color:#059669;">
-        <span>🏥</span> Approved Long-Term Leave & Maternity Leave Manager
+      <div class="ax-nav-group">
+        <span class="ax-nav-label">People</span>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnAreas" onclick="switchAdminTab('areas')">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Areas &amp; IDs</span>
+        </button>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnUnassigned" onclick="switchAdminTab('unassigned')">
+          <svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1z"/></svg>
+          <span>Unassigned</span><span class="ax-count" id="admNavUnassignedCount">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnTeam" onclick="switchAdminTab('team')">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+          <span>ERP Team</span>
+        </button>
       </div>
-      <div class="card-sub" style="white-space:normal;">
-        Record long-term approved leaves (e.g. 6-Month Maternity Leave, Medical Leave, Extended Leaves). Employees with active approved leaves are <strong>100% excluded</strong> from daily Absent reports and WhatsApp alerts!
+      <div class="ax-nav-group">
+        <span class="ax-nav-label">Pay &amp; Data</span>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnRates" onclick="switchAdminTab('rates')">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>
+          <span>Rates</span>
+        </button>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnData" onclick="switchAdminTab('data')">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          <span>Monthly Data</span>
+        </button>
       </div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button type="button" class="calc-mini-btn btn-success-solid" onclick="saveAbsentAndPushServer()">Save &amp; Sync Server</button>
-    </div>
-  </div>
-
-  <div style="background:var(--card-bg, #ffffff);border:1px solid var(--border-color, #e2e8f0);border-radius:8px;padding:12px;margin-bottom:12px;">
-    <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text-main, #0f172a);">+ Grant / Add Approved Long-Term Leave</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:8px;align-items:flex-end;">
-      <div>
-        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Employee (ID / Name)</label>
-        <input type="text" id="admLtEmpSearch" list="admLtEmpDataList" placeholder="Search ID or Name..." style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
-        <datalist id="admLtEmpDataList"></datalist>
+      <div class="ax-nav-group">
+        <span class="ax-nav-label">Publish</span>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnNotices" onclick="switchAdminTab('notices')">
+          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span>Notices</span>
+        </button>
       </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Leave Category</label>
-        <select id="admLtCategory" onchange="onLtCategoryPresetChange(this.value)" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
-          <option value="Maternity Leave (ML)">Maternity Leave (ML - 6 Months)</option>
-          <option value="Medical / Sick Leave (SL)">Extended Medical / Sick (SL)</option>
-          <option value="Earned Leave (EL)">Extended Earned Leave (EL)</option>
-          <option value="Special Leave">Special Approved Leave</option>
-          <option value="Other Approved Leave">Other Approved Leave</option>
-        </select>
+      <div class="ax-nav-group">
+        <span class="ax-nav-label">System</span>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnSetup" onclick="switchAdminTab('setup')">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01M6 17h.01"/></svg>
+          <span>Server &amp; Deploy</span>
+        </button>
       </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Start Date</label>
-        <input type="date" id="admLtStartDt" onchange="onLtStartDateChange()" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
+    </nav>
+
+    <!-- ---------- Main content ---------- -->
+    <main class="ax-main">
+
+      <div class="ax-statusbar">
+        <span class="ax-dot" aria-hidden="true"></span>
+        <span class="ax-statusbar-text" id="adminTokenStatusText">RPPF Cloud Server status</span>
+        <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="handleAdminLogout()">Logout</button>
       </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">End Date (Inclusive)</label>
-        <input type="date" id="admLtEndDt" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
-      </div>
-      <div>
-        <label style="font-size:11.5px;font-weight:600;margin-bottom:3px;display:block;">Remarks / Reference No.</label>
-        <input type="text" id="admLtRemarks" placeholder="e.g. HR Approved ML-2026/04" style="width:100%;min-height:34px;font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid #cbd5e1;">
-      </div>
-      <div>
-        <button type="button" class="calc-mini-btn btn-brand" onclick="admLtAddLeaveRecord()" style="width:100%;min-height:34px;font-weight:700;background:#059669;border-color:#059669;color:#fff;">+ Add Approved Leave</button>
-      </div>
-    </div>
-  </div>
 
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-    <div style="font-size:12.5px;font-weight:700;color:var(--text-main, #1e293b);">
-      Active &amp; Recorded Long-Term Leaves (<span id="admLtLeaveCount">0</span>)
-    </div>
-    <input type="text" id="admLtTableFilter" placeholder="Filter recorded leaves..." oninput="renderAdminLongTermLeaves()" style="max-width:220px;min-height:30px;font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid #cbd5e1;">
-  </div>
-
-  <div id="admLtLeavesTableContainer" style="overflow-x:auto;"></div>
-</div>
-
-</div>
-</div>
-
-<div class="admin-section-pane" id="admPaneAreas">
-
-<div class="card" style="padding:14px;margin-bottom:12px;">
-  <!-- Top Header with Actions -->
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-    <div>
-      <div class="card-title" style="display:flex;align-items:center;gap:6px;">
-        <span>Production Sections & Employee Organizer</span>
-        <span class="badge badge-success" style="font-size:10.5px;">Smart Manager</span>
-      </div>
-      <div class="card-sub" style="white-space:normal;">
-        Easily organize and move employees across Solid, Softgel, Packing and Executives, manage sub-sections, and batch-assign roles.
-      </div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button>
-      <button type="button" class="calc-mini-btn" onclick="adminDownloadAreasJson()">Backup</button>
-    </div>
-  </div>
-
-  <!-- KPI Cards Strip -->
-  <div class="adm-kpi-strip">
-    <div class="adm-kpi-card">
-      <span class="adm-kpi-val" id="admModTotalCount">0</span>
-      <span class="adm-kpi-lbl">Total Listed</span>
-    </div>
-    <div class="adm-kpi-card">
-      <span class="adm-kpi-val" id="admModSolidCount">0</span>
-      <span class="adm-kpi-lbl">Solid Production</span>
-    </div>
-    <div class="adm-kpi-card">
-      <span class="adm-kpi-val" id="admModSoftgelCount">0</span>
-      <span class="adm-kpi-lbl">Softgel Production</span>
-    </div>
-    <div class="adm-kpi-card">
-      <span class="adm-kpi-val" id="admModPackingCount">0</span>
-      <span class="adm-kpi-lbl">Packing Hall</span>
-    </div>
-    <div class="adm-kpi-card">
-      <span class="adm-kpi-val" id="admModExecCount">0</span>
-      <span class="adm-kpi-lbl">Executives</span>
-    </div>
-    <div class="adm-kpi-card" style="cursor:pointer;" onclick="switchAdminTab('unassigned')">
-      <span class="adm-kpi-val" id="admModUnassignedCount" style="color:var(--warn);">0</span>
-      <span class="adm-kpi-lbl">Unassigned (Month)</span>
-    </div>
-  </div>
-
-  <!-- Interactive Section Selector Cards -->
-  <label style="font-size:12px;font-weight:800;color:var(--text);margin-bottom:4px;">Select Production Section:</label>
-  <div class="adm-sec-cards-grid">
-    <button type="button" class="adm-sec-card-btn active" id="secCardSolid" onclick="adminSelectSectionCard('Solid Production')">
-      <span class="adm-sec-card-icon">💊</span>
-      <div class="adm-sec-card-info">
-        <span class="adm-sec-card-title">Solid Production</span>
-        <span class="adm-sec-card-sub"><span id="secCardSolidCount">0</span> employees</span>
-      </div>
-    </button>
-    <button type="button" class="adm-sec-card-btn" id="secCardSoftgel" onclick="adminSelectSectionCard('Softgel Production')">
-      <span class="adm-sec-card-icon">💧</span>
-      <div class="adm-sec-card-info">
-        <span class="adm-sec-card-title">Softgel Production</span>
-        <span class="adm-sec-card-sub"><span id="secCardSoftgelCount">0</span> employees</span>
-      </div>
-    </button>
-    <button type="button" class="adm-sec-card-btn" id="secCardPacking" onclick="adminSelectSectionCard('Packing Hall')">
-      <span class="adm-sec-card-icon">📦</span>
-      <div class="adm-sec-card-info">
-        <span class="adm-sec-card-title">Packing Hall</span>
-        <span class="adm-sec-card-sub"><span id="secCardPackingCount">0</span> employees</span>
-      </div>
-    </button>
-    <button type="button" class="adm-sec-card-btn" id="secCardOverall" onclick="adminSelectSectionCard('Overall')">
-      <span class="adm-sec-card-icon">👔</span>
-      <div class="adm-sec-card-info">
-        <span class="adm-sec-card-title">Executives</span>
-        <span class="adm-sec-card-sub"><span id="secCardOverallCount">0</span> employees</span>
-      </div>
-    </button>
-  </div>
-
-  <!-- Sub-section Pills with Live Counts and Inline Adder -->
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;">
-    <span style="font-size:12px;font-weight:800;color:var(--text);">Sub-sections in <span id="admCurrentSecName">Solid Production</span>:</span>
-    <div style="display:flex;gap:6px;align-items:center;">
-      <input type="text" id="adminQuickNewSubInput" placeholder="New sub-section name..." style="width:170px;min-height:30px;padding:3px 8px;font-size:12px;margin:0;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminQuickAddSubsection();}">
-      <button type="button" class="calc-mini-btn btn-secondary" onclick="adminQuickAddSubsection()" style="font-size:11.5px;">+ Add Sub-section</button>
-    </div>
-  </div>
-  <div class="adm-sub-pills-bar" id="admSubPillsContainer">
-    <!-- Populated dynamically -->
-  </div>
-
-  <!-- Search and Live Filter Controls -->
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
-    <div style="flex:2;min-width:180px;">
-      <input type="text" id="admTableSearchInput" placeholder="Search by ID, name, or sub-section..." style="margin:0;min-height:34px;font-size:12.5px;" oninput="adminFilterEmployeeTable()">
-    </div>
-    <div style="flex:1;min-width:120px;">
-      <select id="admTableGenderFilter" style="margin:0;min-height:34px;font-size:12px;" onchange="adminFilterEmployeeTable()">
-        <option value="">All Genders</option>
-        <option value="M">Male</option>
-        <option value="F">Female</option>
-      </select>
-    </div>
-    <div style="flex:1;min-width:130px;">
-      <select id="admTableTypeFilter" style="margin:0;min-height:34px;font-size:12px;" onchange="adminFilterEmployeeTable()">
-        <option value="">All Categories</option>
-        <option value="CON">Contractual (CF)</option>
-        <option value="JO">Junior Operator (JO)</option>
-        <option value="REG">Regular / Staff (RF)</option>
-        <option value="CAS">Casual</option>
-        <option value="EXEC">Executive / Above</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Batch Action Toolbar (Appears when employees are selected) -->
-  <div class="adm-batch-bar" id="admBatchToolbar">
-    <div class="adm-batch-left">
-      <input type="checkbox" id="admMasterTableCheckbox" onchange="adminToggleSelectAllTable(this)" style="margin:0;cursor:pointer;">
-      <span><span id="admBatchSelectedCount">0</span> employees selected</span>
-    </div>
-    <div class="adm-batch-right">
-      <select id="admBatchTargetSubSelect" class="adm-table-select" style="min-width:120px;">
-        <option value="">Move to Sub-section...</option>
-        <option value="__none__">Clear Sub-section</option>
-      </select>
-      <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplySubMove()">Apply Sub-section</button>
-      <select id="admBatchTargetAreaSelect" class="adm-table-select" style="min-width:110px;">
-        <option value="">Move to Section...</option>
-        <option value="Solid Production">Solid</option>
-        <option value="Softgel Production">Softgel</option>
-        <option value="Packing Hall">Packing</option>
-        <option value="Overall">Executives</option>
-      </select>
-      <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAreaMove()">Move Section</button>
-      <button type="button" class="btn-secondary danger-btn adm-action-btn" onclick="adminBatchRemoveSelected()">Remove</button>
-    </div>
-  </div>
-
-  <!-- Interactive Employee Directory Table -->
-  <div class="adm-table-wrap">
-    <table class="adm-emp-table" id="admModernEmpTable">
-      <thead>
-        <tr>
-          <th style="width:36px;text-align:center;">
-            <input type="checkbox" id="admHeaderCheckbox" onchange="adminToggleSelectAllTable(this)" style="margin:0;cursor:pointer;">
-          </th>
-          <th>Employee (ID & Name)</th>
-          <th>Section</th>
-          <th>Sub-Section</th>
-          <th>Category / Gender</th>
-          <th style="text-align:right;">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="admModernEmpTableBody">
-        <!-- Rendered dynamically -->
-      </tbody>
-    </table>
-  </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:11.5px;color:var(--muted);">
-    <span id="admTableShowingCount">Showing 0 employees</span>
-    <span>Click any Sub-section or Section dropdown in a row for 1-click update</span>
-  </div>
-</div>
-
-<div class="card" style="padding:14px;">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-<div class="card-title">Area and ID management (areas.json)</div>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn btn-success-solid" id="adminPushAreasBtn" onclick="adminPushAreasToGithub()">Save to server</button>
-<button type="button" class="calc-mini-btn" onclick="adminDownloadAreasJson()">Backup</button>
-</div>
-</div>
-<div class="admin-stat-grid" style="margin:8px 0;">
-<div class="admin-stat-box"><span class="as-num" id="admCountSolid">0</span><span class="as-lbl">Solid</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountSoftgel">0</span><span class="as-lbl">Softgel</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountPacking">0</span><span class="as-lbl">Packing</span></div>
-<div class="admin-stat-box"><span class="as-num" id="admCountTotal">0</span><span class="as-lbl">Total IDs</span></div>
-</div>
-<span id="admCountMale" style="display:none;">0</span>
-<span id="admCountFemale" style="display:none;">0</span>
-<span id="admCountCon" style="display:none;">0</span>
-<span id="admCountJo" style="display:none;">0</span>
-<div class="admin-meta-grid" style="margin-top:8px;">
-<div>
-<label for="adminTargetAreaSelect" style="margin-top:0;font-size:12px;">Target area</label>
-<select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
-<option value="Packing Hall">Packing Hall</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Softgel Production">Softgel Production</option>
-<option value="Overall">Executives (Executive/Above)</option>
-</select>
-</div>
-<div>
-<label for="adminTargetSubSelect" style="margin-top:0;font-size:12px;">Sub-section</label>
-<select id="adminTargetSubSelect"></select>
-</div>
-<div>
-<label for="adminTargetGenderSelect" style="margin-top:0;font-size:12px;">Male / Female</label>
-<select id="adminTargetGenderSelect">
-<option value="">Unchanged</option><option value="M">Male</option><option value="F">Female</option><option value="__none__">Clear</option>
-</select>
-</div>
-</div>
-<select id="adminTargetTypeSelect" style="display:none;"><option value="">Unchanged</option></select>
-<div style="display:flex;gap:6px;margin-top:8px;">
-<input type="text" id="adminNewSubInput" maxlength="40" placeholder="Add new sub-section (e.g. Blister, Coating)" style="margin:0;flex:1;min-height:36px;font-size:13px;" onkeydown="if(event.key==='Enter'){event.preventDefault();adminAddSubsection();}">
-<button type="button" class="btn-secondary" onclick="adminAddSubsection()" style="width:auto;min-width:86px;min-height:36px;margin:0;font-size:12.5px;">+ Sub-section</button>
-</div>
-<div class="admin-chip-preview" id="adminSubsList" style="max-height:76px;margin-top:6px;padding:6px;"></div>
-<label for="adminBulkIdsInput" style="margin-top:10px;font-size:12.5px;">Paste bulk IDs or provide a file (.txt/.csv/.json)</label>
-<textarea id="adminBulkIdsInput" class="admin-textarea" style="min-height:68px;" placeholder="CF8355, RF20850..."></textarea>
-<input type="file" id="adminAreaTxtFile" accept=".txt,.csv,.json" onchange="handleAdminAreaFileSelect(event)" style="padding:5px;font-size:12px;margin-top:4px;">
-<div class="btn-grid-2" style="margin-top:8px;">
-<button type="button" class="btn-primary" onclick="adminAddBulkAreaIds()">Add IDs to area</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminRemoveBulkAreaIds()">Remove IDs</button>
-</div>
-<details class="adjust" style="margin-top:10px;">
-<summary>Pick from the Casual and Executive employee list</summary>
-<div class="adjust-body" id="admExtraCatBox">
-<div style="display:flex;gap:6px;flex-wrap:wrap;">
-<select id="admExtraCatSelect" onchange="adminRenderExtraList()" style="flex:1;min-width:160px;margin:0;min-height:36px;font-size:13px;">
-<option value="CAS">Casual (numeric ID)</option>
-<option value="EXEC">Executive / Above (In-charge mode only)</option>
-</select>
-<input type="text" id="admExtraSearch" placeholder="Search by ID or name..." oninput="adminRenderExtraList()" style="flex:1;min-width:140px;margin:0;min-height:36px;font-size:13px;">
-<button type="button" class="calc-mini-btn" onclick="adminLoadExtraCandidates(true)">Reload</button>
-</div>
-<div id="admExtraMonthLbl" style="font-size:11.5px;color:var(--muted);margin-top:6px;"></div>
-<div id="admExtraNote" style="display:none;"></div>
-<div id="admExtraList" style="max-height:220px;overflow:auto;margin-top:6px;border:1px solid var(--border);border-radius:8px;background:var(--surface);"></div>
-<div id="admExtraCount" style="font-size:11.5px;color:var(--muted);margin-top:4px;"></div>
-<div class="btn-grid-2" style="margin-top:6px;">
-<button type="button" class="btn-primary" onclick="adminAddExtraSelected()">Add selected</button>
-<button type="button" class="btn-secondary" onclick="adminToggleExtraAll()">Select all / Deselect</button>
-</div>
-</div>
-</details>
-<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);" id="admPreviewHeaderTitle">IDs of selected area:</span>
-<input type="text" id="admFilterIdsInput" placeholder="Search ID..." oninput="renderAdminAreaPreview()" style="width:140px;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
-</div>
-<div class="admin-chip-preview" id="adminAreaIdsPreview" style="max-height:130px;margin-top:6px;"></div>
-</div>
-<div id="adminAreaPushStatus" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
-</div>
-</div>
-
-<div class="admin-section-pane" id="admPaneUnassigned">
-  <div class="card" style="padding:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-      <div>
-        <div class="card-title" style="display:flex;align-items:center;gap:6px;">
-          <span>Unassigned Monthly Employees Queue</span>
-          <span class="badge badge-warn" id="admUnassignedBadgeCount">0 Pending</span>
+      <!-- ======================= ABSENT & LEAVE ======================= -->
+      <section class="admin-section-pane active" id="admPaneAbsent">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Absent &amp; Leave</h2>
+            <p>Today's absent list syncs with the In-Charge home overview.</p>
+          </div>
+          <div class="ax-actions">
+            <button type="button" class="ax-btn ax-btn--ghost" onclick="copyAbsentSummaryText()">Copy WhatsApp summary</button>
+            <button type="button" class="ax-btn ax-btn--primary" id="admPushAbsentBtn" onclick="saveAbsentAndPushServer()">Save &amp; sync</button>
+          </div>
         </div>
-        <div class="card-sub" style="white-space:normal;">
-          These employees exist in the latest uploaded monthly overtime dataset but are NOT yet listed in any RPPF Production Section. Easily assign them with 1 click.
+        <div class="ax-savestatus" id="admAbsentSyncStatus"></div>
+
+        <div class="admin-stat-grid ax-stats">
+          <div class="admin-stat-box"><span class="as-num" id="admAbsCountTotal">0</span><span class="as-lbl">Absent today</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admAbsCountSolid">0</span><span class="as-lbl">Solid</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admAbsCountSg">0</span><span class="as-lbl">Softgel</span></div>
+          <div class="admin-stat-box"><span class="as-num" id="admAbsCountPack">0</span><span class="as-lbl">Packing</span></div>
         </div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button type="button" class="calc-mini-btn" onclick="adminScanUnassignedMonthlyEmployees(true)">Rescan Month Data</button>
-        <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminPushAreasToGithub()">Save to server</button>
-      </div>
-    </div>
 
-    <!-- Batch assign for unassigned -->
-    <div class="adm-batch-bar" id="admUnassignedBatchBar" style="background:var(--surface-2);border-color:var(--border);">
-      <div class="adm-batch-left">
-        <input type="checkbox" id="admUnassignedMasterCb" onchange="adminToggleSelectAllUnassigned(this)" style="margin:0;cursor:pointer;">
-        <span><span id="admUnassignedSelectedCount">0</span> unassigned selected</span>
-      </div>
-      <div class="adm-batch-right">
-        <select id="admBatchAssignAreaSelect" class="adm-table-select" style="min-width:140px;" onchange="adminPopulateBatchAssignSubs()">
-          <option value="">Select Section...</option>
-          <option value="Solid Production">Solid Production</option>
-          <option value="Softgel Production">Softgel Production</option>
-          <option value="Packing Hall">Packing Hall</option>
-          <option value="Overall">Executives</option>
-        </select>
-        <select id="admBatchAssignSubSelect" class="adm-table-select" style="min-width:130px;">
-          <option value="">Sub-section (Optional)...</option>
-        </select>
-        <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAssignUnassigned()">Assign Selected</button>
-      </div>
-    </div>
+        <div class="ax-subtabs" role="tablist">
+          <button type="button" class="ax-subtab active" data-adm-sub="admSubAbsentDaily">Daily absent</button>
+          <button type="button" class="ax-subtab" data-adm-sub="admSubAbsentLeave">Long-term leave</button>
+        </div>
 
-    <!-- Table of Unassigned Employees -->
-    <div class="adm-table-wrap">
-      <table class="adm-emp-table" id="admUnassignedTable">
-        <thead>
-          <tr>
-            <th style="width:36px;text-align:center;">
-              <input type="checkbox" id="admUnassignedHeaderCb" onchange="adminToggleSelectAllUnassigned(this)" style="margin:0;cursor:pointer;">
-            </th>
-            <th>ID & Name</th>
-            <th>Designation / Grade</th>
-            <th>Total Duty</th>
-            <th>OT Hours</th>
-            <th style="text-align:right;">Quick 1-Click Assignment</th>
-          </tr>
-        </thead>
-        <tbody id="admUnassignedTableBody">
-          <!-- Populated dynamically -->
-        </tbody>
-      </table>
-    </div>
-    <div style="margin-top:8px;font-size:11.5px;color:var(--muted);" id="admUnassignedStatusLbl">
-      Ready.
-    </div>
+        <!-- Daily absent -->
+        <div class="ax-sub active" id="admSubAbsentDaily">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Add absent employees</h3>
+            <div class="ax-grid ax-grid--3">
+              <div class="ax-field">
+                <label for="admAbsentDateInput">Date</label>
+                <input type="date" id="admAbsentDateInput" onchange="onAdmAbsentDateChange(this.value)">
+              </div>
+              <div class="ax-field">
+                <label for="admAbsentReasonInput">Status / leave type</label>
+                <select id="admAbsentReasonInput">
+                  <option value="Absent">Absent (uninformed)</option>
+                  <option value="Casual Leave (CL)">Casual Leave (CL)</option>
+                  <option value="Sick Leave (SL)">Sick Leave (SL)</option>
+                  <option value="Earned Leave (EL)">Earned Leave (EL)</option>
+                  <option value="Shift Off / DO">Shift Off / DO</option>
+                  <option value="Medical / Hospital">Medical / Hospital</option>
+                </select>
+              </div>
+              <div class="ax-field">
+                <label for="admAbsentShiftInput">Shift / note (optional)</label>
+                <input type="text" id="admAbsentShiftInput" placeholder="e.g. Shift A, Informed">
+              </div>
+            </div>
+
+            <div class="ax-field ax-gap">
+              <label for="admAbsentSingleInp">Quick add — search by ID, name or section</label>
+              <div class="ax-inline">
+                <input type="text" id="admAbsentSingleInp" placeholder="e.g. CF8355 or Johirul" autocomplete="off">
+                <button type="button" class="ax-btn ax-btn--primary" onclick="admAddSingleAbsentEmployee()">+ Add</button>
+              </div>
+            </div>
+
+            <details class="ax-more">
+              <summary>Bulk paste IDs</summary>
+              <div class="ax-more-body">
+                <label for="admAbsentBulkTextarea">IDs separated by comma, space or new line</label>
+                <textarea id="admAbsentBulkTextarea" class="admin-textarea" placeholder="CF8355, RF20850, CF5242..."></textarea>
+                <div class="ax-actions ax-actions--start">
+                  <button type="button" class="ax-btn ax-btn--primary" onclick="admAddBulkAbsentEmployees()">Add to list</button>
+                  <button type="button" class="ax-btn ax-btn--danger" onclick="clearDateAbsentList()">Clear this date's list</button>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="ax-card">
+            <div class="ax-card-head">
+              <h3 class="ax-card-title" id="admAbsentListHeaderTitle">Absent employees on selected date</h3>
+              <div class="ax-inline ax-inline--auto">
+                <select id="admAbsentFilterArea" onchange="renderAdminAbsentPane()" aria-label="Filter by area">
+                  <option value="all">All areas</option>
+                  <option value="Solid Production">Solid Production</option>
+                  <option value="Softgel Production">Softgel Production</option>
+                  <option value="Packing Hall">Packing Hall</option>
+                  <option value="Overall">Executives</option>
+                </select>
+                <input type="text" id="admAbsentSearchFilter" placeholder="Filter list..." oninput="renderAdminAbsentPane()" aria-label="Filter absent list">
+              </div>
+            </div>
+            <div id="admAbsentItemsContainer"></div>
+          </div>
+        </div>
+
+        <!-- Long-term leave -->
+        <div class="ax-sub" id="admSubAbsentLeave">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Approved long-term leave</h3>
+            <p class="ax-muted">Employees on approved leave (maternity, medical, extended) are <strong>excluded</strong> from daily absent reports and WhatsApp alerts.</p>
+            <div class="ax-grid ax-grid--3">
+              <div class="ax-field">
+                <label for="admLtEmpSearch">Employee (ID / name)</label>
+                <input type="text" id="admLtEmpSearch" list="admLtEmpDataList" placeholder="Search ID or name...">
+                <datalist id="admLtEmpDataList"></datalist>
+              </div>
+              <div class="ax-field">
+                <label for="admLtCategory">Leave category</label>
+                <select id="admLtCategory" onchange="onLtCategoryPresetChange(this.value)">
+                  <option value="Maternity Leave (ML)">Maternity Leave (ML — 6 months)</option>
+                  <option value="Medical / Sick Leave (SL)">Extended Medical / Sick (SL)</option>
+                  <option value="Earned Leave (EL)">Extended Earned Leave (EL)</option>
+                  <option value="Special Leave">Special approved leave</option>
+                  <option value="Other Approved Leave">Other approved leave</option>
+                </select>
+              </div>
+              <div class="ax-field">
+                <label for="admLtRemarks">Reference no. / remarks</label>
+                <input type="text" id="admLtRemarks" placeholder="e.g. HR Approved ML-2026/04">
+              </div>
+              <div class="ax-field">
+                <label for="admLtStartDt">Start date</label>
+                <input type="date" id="admLtStartDt" onchange="onLtStartDateChange()">
+              </div>
+              <div class="ax-field">
+                <label for="admLtEndDt">End date (inclusive)</label>
+                <input type="date" id="admLtEndDt">
+              </div>
+              <div class="ax-field ax-field--end">
+                <button type="button" class="ax-btn ax-btn--primary ax-btn--block" onclick="admLtAddLeaveRecord()">+ Add approved leave</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ax-card">
+            <div class="ax-card-head">
+              <h3 class="ax-card-title">Recorded leaves (<span id="admLtLeaveCount">0</span>)</h3>
+              <input type="text" id="admLtTableFilter" class="ax-search" placeholder="Filter leaves..." oninput="renderAdminLongTermLeaves()" aria-label="Filter recorded leaves">
+            </div>
+            <div id="admLtLeavesTableContainer" class="ax-scroll-x"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= AREAS & IDS ======================= -->
+      <section class="admin-section-pane" id="admPaneAreas">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Areas &amp; IDs</h2>
+            <p>Organise employees by section, sub-section, gender and category.</p>
+          </div>
+          <div class="ax-actions">
+            <button type="button" class="ax-btn ax-btn--ghost" onclick="adminDownloadAreasJson()">Backup</button>
+            <button type="button" class="ax-btn ax-btn--primary" id="adminPushAreasBtn" onclick="adminPushAreasToGithub()">Save to server</button>
+          </div>
+        </div>
+        <div class="ax-savestatus" id="adminAreaPushStatus"></div>
+
+        <div class="adm-kpi-strip">
+          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModTotalCount">0</span><span class="adm-kpi-lbl">Total listed</span></div>
+          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModSolidCount">0</span><span class="adm-kpi-lbl">Solid</span></div>
+          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModSoftgelCount">0</span><span class="adm-kpi-lbl">Softgel</span></div>
+          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModPackingCount">0</span><span class="adm-kpi-lbl">Packing</span></div>
+          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModExecCount">0</span><span class="adm-kpi-lbl">Executives</span></div>
+          <div class="adm-kpi-card" style="cursor:pointer;" onclick="switchAdminTab('unassigned')"><span class="adm-kpi-val" id="admModUnassignedCount" style="color:var(--warning);">0</span><span class="adm-kpi-lbl">Unassigned</span></div>
+        </div>
+
+        <div class="ax-subtabs" role="tablist">
+          <button type="button" class="ax-subtab active" data-adm-sub="admSubAreasDirectory">Employee directory</button>
+          <button type="button" class="ax-subtab" data-adm-sub="admSubAreasBulk">Bulk add / remove IDs</button>
+        </div>
+
+        <!-- Directory -->
+        <div class="ax-sub active" id="admSubAreasDirectory">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Section</h3>
+            <div class="adm-sec-cards-grid">
+              <button type="button" class="adm-sec-card-btn active" id="secCardSolid" onclick="adminSelectSectionCard('Solid Production')">
+                <span class="adm-sec-card-icon">💊</span>
+                <div class="adm-sec-card-info"><span class="adm-sec-card-title">Solid Production</span><span class="adm-sec-card-sub"><span id="secCardSolidCount">0</span> employees</span></div>
+              </button>
+              <button type="button" class="adm-sec-card-btn" id="secCardSoftgel" onclick="adminSelectSectionCard('Softgel Production')">
+                <span class="adm-sec-card-icon">💧</span>
+                <div class="adm-sec-card-info"><span class="adm-sec-card-title">Softgel Production</span><span class="adm-sec-card-sub"><span id="secCardSoftgelCount">0</span> employees</span></div>
+              </button>
+              <button type="button" class="adm-sec-card-btn" id="secCardPacking" onclick="adminSelectSectionCard('Packing Hall')">
+                <span class="adm-sec-card-icon">📦</span>
+                <div class="adm-sec-card-info"><span class="adm-sec-card-title">Packing Hall</span><span class="adm-sec-card-sub"><span id="secCardPackingCount">0</span> employees</span></div>
+              </button>
+              <button type="button" class="adm-sec-card-btn" id="secCardOverall" onclick="adminSelectSectionCard('Overall')">
+                <span class="adm-sec-card-icon">👔</span>
+                <div class="adm-sec-card-info"><span class="adm-sec-card-title">Executives</span><span class="adm-sec-card-sub"><span id="secCardOverallCount">0</span> employees</span></div>
+              </button>
+            </div>
+
+            <div class="ax-card-head ax-gap">
+              <span class="ax-label">Sub-sections in <strong id="admCurrentSecName">Solid Production</strong></span>
+              <div class="ax-inline ax-inline--auto">
+                <input type="text" id="adminQuickNewSubInput" placeholder="New sub-section..." onkeydown="if(event.key==='Enter'){event.preventDefault();adminQuickAddSubsection();}">
+                <button type="button" class="ax-btn ax-btn--ghost" onclick="adminQuickAddSubsection()">+ Add</button>
+              </div>
+            </div>
+            <div class="adm-sub-pills-bar" id="admSubPillsContainer"></div>
+          </div>
+
+          <div class="ax-card">
+            <div class="ax-toolbar">
+              <input type="text" id="admTableSearchInput" placeholder="Search by ID, name or sub-section..." oninput="adminFilterEmployeeTable()" aria-label="Search employees">
+              <select id="admTableGenderFilter" onchange="adminFilterEmployeeTable()" aria-label="Gender filter">
+                <option value="">All genders</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+              <select id="admTableTypeFilter" onchange="adminFilterEmployeeTable()" aria-label="Category filter">
+                <option value="">All categories</option>
+                <option value="CON">Contractual (CF)</option>
+                <option value="JO">Junior Operator (JO)</option>
+                <option value="REG">Regular / Staff (RF)</option>
+                <option value="CAS">Casual</option>
+                <option value="EXEC">Executive / Above</option>
+              </select>
+            </div>
+
+            <div class="adm-batch-bar" id="admBatchToolbar">
+              <div class="adm-batch-left">
+                <input type="checkbox" id="admMasterTableCheckbox" onchange="adminToggleSelectAllTable(this)" aria-label="Select all">
+                <span><span id="admBatchSelectedCount">0</span> selected</span>
+              </div>
+              <div class="adm-batch-right">
+                <select id="admBatchTargetSubSelect" class="adm-table-select">
+                  <option value="">Move to sub-section...</option>
+                  <option value="__none__">Clear sub-section</option>
+                </select>
+                <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplySubMove()">Apply</button>
+                <select id="admBatchTargetAreaSelect" class="adm-table-select">
+                  <option value="">Move to section...</option>
+                  <option value="Solid Production">Solid</option>
+                  <option value="Softgel Production">Softgel</option>
+                  <option value="Packing Hall">Packing</option>
+                  <option value="Overall">Executives</option>
+                </select>
+                <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAreaMove()">Move</button>
+                <button type="button" class="btn-secondary danger-btn adm-action-btn" onclick="adminBatchRemoveSelected()">Remove</button>
+              </div>
+            </div>
+
+            <div class="adm-table-wrap">
+              <table class="adm-emp-table" id="admModernEmpTable">
+                <thead>
+                  <tr>
+                    <th style="width:36px;text-align:center;"><input type="checkbox" id="admHeaderCheckbox" onchange="adminToggleSelectAllTable(this)" aria-label="Select all"></th>
+                    <th>Employee</th>
+                    <th>Section</th>
+                    <th>Sub-section</th>
+                    <th>Category / gender</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admModernEmpTableBody"></tbody>
+              </table>
+            </div>
+            <div class="ax-muted ax-small" id="admTableShowingCount">Showing 0 employees</div>
+          </div>
+        </div>
+
+        <!-- Bulk -->
+        <div class="ax-sub" id="admSubAreasBulk">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Bulk add / remove IDs</h3>
+            <div class="ax-grid ax-grid--3">
+              <div class="ax-field">
+                <label for="adminTargetAreaSelect">Target area</label>
+                <select id="adminTargetAreaSelect" onchange="onAdminAreaChange()">
+                  <option value="Packing Hall">Packing Hall</option>
+                  <option value="Solid Production">Solid Production</option>
+                  <option value="Softgel Production">Softgel Production</option>
+                  <option value="Overall">Executives (Executive / Above)</option>
+                </select>
+              </div>
+              <div class="ax-field">
+                <label for="adminTargetSubSelect">Sub-section</label>
+                <select id="adminTargetSubSelect"></select>
+              </div>
+              <div class="ax-field">
+                <label for="adminTargetGenderSelect">Male / Female</label>
+                <select id="adminTargetGenderSelect">
+                  <option value="">Unchanged</option><option value="M">Male</option><option value="F">Female</option><option value="__none__">Clear</option>
+                </select>
+              </div>
+            </div>
+            <select id="adminTargetTypeSelect" style="display:none;"><option value="">Unchanged</option></select>
+
+            <div class="ax-field ax-gap">
+              <label for="adminNewSubInput">Add a new sub-section to this area</label>
+              <div class="ax-inline">
+                <input type="text" id="adminNewSubInput" maxlength="40" placeholder="e.g. Blister, Coating" onkeydown="if(event.key==='Enter'){event.preventDefault();adminAddSubsection();}">
+                <button type="button" class="ax-btn ax-btn--ghost" onclick="adminAddSubsection()">+ Sub-section</button>
+              </div>
+              <div class="admin-chip-preview" id="adminSubsList"></div>
+            </div>
+
+            <div class="ax-field ax-gap">
+              <label for="adminBulkIdsInput">Paste IDs, or choose a file (.txt / .csv / .json)</label>
+              <textarea id="adminBulkIdsInput" class="admin-textarea" placeholder="CF8355, RF20850..."></textarea>
+              <input type="file" id="adminAreaTxtFile" accept=".txt,.csv,.json" onchange="handleAdminAreaFileSelect(event)">
+            </div>
+            <div class="ax-actions ax-actions--start">
+              <button type="button" class="ax-btn ax-btn--primary" onclick="adminAddBulkAreaIds()">Add IDs to area</button>
+              <button type="button" class="ax-btn ax-btn--danger" onclick="adminRemoveBulkAreaIds()">Remove IDs</button>
+            </div>
+
+            <details class="ax-more">
+              <summary>Pick from Casual / Executive employees</summary>
+              <div class="ax-more-body" id="admExtraCatBox">
+                <div class="ax-toolbar">
+                  <select id="admExtraCatSelect" onchange="adminRenderExtraList()">
+                    <option value="CAS">Casual (numeric ID)</option>
+                    <option value="EXEC">Executive / Above (In-charge mode only)</option>
+                  </select>
+                  <input type="text" id="admExtraSearch" placeholder="Search by ID or name..." oninput="adminRenderExtraList()">
+                  <button type="button" class="ax-btn ax-btn--ghost" onclick="adminLoadExtraCandidates(true)">Reload</button>
+                </div>
+                <div class="ax-muted ax-small" id="admExtraMonthLbl"></div>
+                <div id="admExtraNote" style="display:none;"></div>
+                <div id="admExtraList" class="ax-listbox"></div>
+                <div class="ax-muted ax-small" id="admExtraCount"></div>
+                <div class="ax-actions ax-actions--start">
+                  <button type="button" class="ax-btn ax-btn--primary" onclick="adminAddExtraSelected()">Add selected</button>
+                  <button type="button" class="ax-btn ax-btn--ghost" onclick="adminToggleExtraAll()">Select / deselect all</button>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="ax-card">
+            <div class="ax-card-head">
+              <h3 class="ax-card-title" id="admPreviewHeaderTitle">IDs of selected area</h3>
+              <input type="text" id="admFilterIdsInput" class="ax-search" placeholder="Search ID..." oninput="renderAdminAreaPreview()" aria-label="Search IDs">
+            </div>
+            <div class="admin-chip-preview" id="adminAreaIdsPreview"></div>
+          </div>
+        </div>
+
+        <!-- Counters used by the admin scripts (kept hidden) -->
+        <div hidden aria-hidden="true">
+          <span id="admCountSolid">0</span><span id="admCountSoftgel">0</span><span id="admCountPacking">0</span><span id="admCountTotal">0</span>
+          <span id="admCountMale">0</span><span id="admCountFemale">0</span><span id="admCountCon">0</span><span id="admCountJo">0</span>
+        </div>
+      </section>
+
+      <!-- ======================= UNASSIGNED ======================= -->
+      <section class="admin-section-pane" id="admPaneUnassigned">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Unassigned employees <span class="badge badge-warn" id="admUnassignedBadgeCount">0 Pending</span></h2>
+            <p>People in the latest monthly data who are not in any section yet.</p>
+          </div>
+          <div class="ax-actions">
+            <button type="button" class="ax-btn ax-btn--ghost" onclick="adminScanUnassignedMonthlyEmployees(true)">Rescan month</button>
+            <button type="button" class="ax-btn ax-btn--primary" onclick="adminPushAreasToGithub()">Save to server</button>
+          </div>
+        </div>
+
+        <div class="ax-card">
+          <div class="adm-batch-bar" id="admUnassignedBatchBar" style="background:var(--surface-2);border-color:var(--border);">
+            <div class="adm-batch-left">
+              <input type="checkbox" id="admUnassignedMasterCb" onchange="adminToggleSelectAllUnassigned(this)" aria-label="Select all">
+              <span><span id="admUnassignedSelectedCount">0</span> selected</span>
+            </div>
+            <div class="adm-batch-right">
+              <select id="admBatchAssignAreaSelect" class="adm-table-select" onchange="adminPopulateBatchAssignSubs()">
+                <option value="">Select section...</option>
+                <option value="Solid Production">Solid Production</option>
+                <option value="Softgel Production">Softgel Production</option>
+                <option value="Packing Hall">Packing Hall</option>
+                <option value="Overall">Executives</option>
+              </select>
+              <select id="admBatchAssignSubSelect" class="adm-table-select">
+                <option value="">Sub-section (optional)...</option>
+              </select>
+              <button type="button" class="btn-primary adm-action-btn" onclick="adminBatchApplyAssignUnassigned()">Assign selected</button>
+            </div>
+          </div>
+
+          <div class="adm-table-wrap">
+            <table class="adm-emp-table" id="admUnassignedTable">
+              <thead>
+                <tr>
+                  <th style="width:36px;text-align:center;"><input type="checkbox" id="admUnassignedHeaderCb" onchange="adminToggleSelectAllUnassigned(this)" aria-label="Select all"></th>
+                  <th>ID &amp; name</th>
+                  <th>Designation / grade</th>
+                  <th>Total duty</th>
+                  <th>OT hours</th>
+                  <th style="text-align:right;">Quick assign</th>
+                </tr>
+              </thead>
+              <tbody id="admUnassignedTableBody"></tbody>
+            </table>
+          </div>
+          <div class="ax-muted ax-small" id="admUnassignedStatusLbl">Ready.</div>
+        </div>
+      </section>
+
+      <!-- ======================= RATES ======================= -->
+      <section class="admin-section-pane" id="admPaneRates">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Rates &amp; packages</h2>
+            <p>Pick a rate tab, edit its package, and choose which designations belong to it.</p>
+          </div>
+          <div class="ax-actions">
+            <button type="button" class="ax-btn ax-btn--primary" onclick="adminSaveRatesAndPush()">Save to server</button>
+          </div>
+        </div>
+
+        <div class="ax-card" id="admDesigRateBox">
+          <div class="rate-bucket-tabs" id="adminRateBucketTabs"></div>
+
+          <div id="adminRatePkgEditorWrap">
+            <div class="rate-pkg-grid" id="adminRatePkgGrid">
+              <div class="ax-field">
+                <label for="pkgOtRateInp">OT rate (৳/hour)</label>
+                <input type="number" id="pkgOtRateInp" step="1" oninput="onAdminPkgFieldChange()">
+              </div>
+              <div class="ax-field">
+                <label for="pkgNightRateInp">Night allowance (৳/night)</label>
+                <input type="number" id="pkgNightRateInp" step="10" oninput="onAdminPkgFieldChange()">
+              </div>
+              <div class="ax-field">
+                <label for="pkgHolTypeSel">Holiday type</label>
+                <select id="pkgHolTypeSel" onchange="onAdminPkgFieldChange()">
+                  <option value="hourly">Hourly multiplier</option>
+                  <option value="flat">Fixed amount</option>
+                </select>
+              </div>
+              <div class="ax-field">
+                <label for="pkgHolValInp" id="pkgHolValLbl">Holiday hours / amount</label>
+                <input type="number" id="pkgHolValInp" step="1" oninput="onAdminPkgFieldChange()">
+              </div>
+            </div>
+          </div>
+
+          <div class="ax-card-head ax-gap">
+            <span class="ax-label" id="adminRateBucketDesigTitle">Designations under this rate</span>
+            <div class="ax-inline ax-inline--auto">
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="adminBucketSelectAllDesigs(true)">Select all</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="adminBucketSelectAllDesigs(false)">Deselect all</button>
+            </div>
+          </div>
+          <div class="desig-chip-grid" id="admDesigRateList"></div>
+
+          <details class="ax-more">
+            <summary>+ Add a custom rate package</summary>
+            <div class="ax-more-body">
+              <div class="rate-pkg-grid">
+                <div class="ax-field"><label for="newRateNameInp">Package name</label><input type="text" id="newRateNameInp" placeholder="e.g. Special 50"></div>
+                <div class="ax-field"><label for="newRateOtInp">OT rate (৳/hour)</label><input type="number" id="newRateOtInp" placeholder="50" value="50"></div>
+                <div class="ax-field"><label for="newRateNightInp">Night allowance (৳)</label><input type="number" id="newRateNightInp" placeholder="500" value="500"></div>
+                <div class="ax-field"><label for="newRateHolInp">Holiday fixed (৳)</label><input type="number" id="newRateHolInp" placeholder="400" value="400"></div>
+              </div>
+              <div class="ax-actions ax-actions--start">
+                <button type="button" class="ax-btn ax-btn--primary" onclick="adminCreateNewRateBucket()">Create package</button>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ======================= MONTHLY DATA ======================= -->
+      <section class="admin-section-pane" id="admPaneData">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Monthly data</h2>
+            <p>Upload the Empress Excel file and manage plant holidays for the month.</p>
+          </div>
+        </div>
+
+        <div class="ax-subtabs" role="tablist">
+          <button type="button" class="ax-subtab active" data-adm-sub="admSubDataExcel">Excel upload</button>
+          <button type="button" class="ax-subtab" data-adm-sub="admSubDataHolidays">Holidays</button>
+        </div>
+
+        <!-- Excel -->
+        <div class="ax-sub active" id="admSubDataExcel">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Upload monthly Excel</h3>
+            <p class="ax-muted">Choose the .xlsx exported from Empress. The server converts it with <code>scripts/to_json.py</code>.</p>
+            <div class="ax-grid ax-grid--2">
+              <div class="ax-field"><label for="adminPdfYear">Year</label><select id="adminPdfYear" onchange="adminCheckMonthData()"></select></div>
+              <div class="ax-field">
+                <label for="adminPdfMonth">Month</label>
+                <select id="adminPdfMonth" onchange="adminCheckMonthData()">
+                  <option value="01">January (01)</option><option value="02">February (02)</option>
+                  <option value="03">March (03)</option><option value="04">April (04)</option>
+                  <option value="05">May (05)</option><option value="06">June (06)</option>
+                  <option value="07">July (07)</option><option value="08">August (08)</option>
+                  <option value="09">September (09)</option><option value="10">October (10)</option>
+                  <option value="11">November (11)</option><option value="12">December (12)</option>
+                </select>
+              </div>
+            </div>
+            <div class="ax-field ax-gap">
+              <label for="adminExcelFileInput">Excel file(s)</label>
+              <input type="file" id="adminExcelFileInput" accept=".xlsx,.xls" multiple>
+            </div>
+            <div id="adminPdfUploadProgress" style="display:none;margin-top:10px;">
+              <div class="scan-counter" id="adminPdfStatusText">Verifying data, please wait...</div>
+              <div class="scan-progress-bar"><div class="scan-progress-fill" id="adminPdfProgressFill"></div></div>
+            </div>
+            <div class="ax-actions ax-actions--start">
+              <button type="button" class="ax-btn ax-btn--primary" id="adminUploadExcelBtn" onclick="processExcelUpload()">Upload &amp; save</button>
+              <button type="button" class="ax-btn ax-btn--ghost" onclick="adminReoptimizeMonthData()">Re-optimize this month</button>
+            </div>
+          </div>
+
+          <div class="ax-card">
+            <div class="ax-card-head">
+              <h3 class="ax-card-title">Files on the server</h3>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="adminCheckMonthData()">Refresh</button>
+            </div>
+            <div class="admin-file-list" id="adminExistingDataStatus">Select a month to see status.</div>
+          </div>
+        </div>
+
+        <!-- Holidays -->
+        <div class="ax-sub" id="admSubDataHolidays">
+          <div class="ax-card" id="admHolidayManagerCard">
+            <div class="ax-card-head">
+              <div>
+                <h3 class="ax-card-title">Plant holidays &amp; duty days (সরকারি ছুটি ও সমন্বয়)</h3>
+                <p class="ax-muted">Default rules apply automatically (Excel consensus + national days). Untick a holiday to cancel it, or add a compensatory working day.</p>
+              </div>
+              <button type="button" class="ax-btn ax-btn--primary" onclick="adminSavePlantHolidays()">Save &amp; sync</button>
+            </div>
+
+            <div class="ax-field ax-gap">
+              <label for="admNewHolidayDateInp">Add a special holiday / compensatory day</label>
+              <div class="ax-inline ax-inline--wrap">
+                <input type="date" id="admNewHolidayDateInp" class="ax-date">
+                <input type="text" id="admNewHolidayTitleInp" placeholder="e.g. Special Plant Holiday / Eid Extra">
+                <button type="button" class="ax-btn ax-btn--ghost" onclick="adminAddCustomHoliday()">+ Add date</button>
+              </div>
+            </div>
+
+            <div class="ax-card-head ax-gap">
+              <span class="ax-label">Selected month: <strong id="admHolidaySelectedMonthLbl">Active month</strong></span>
+              <span class="ax-muted ax-small">☑ holiday / DO &nbsp;·&nbsp; ☐ working day</span>
+            </div>
+            <div id="admHolidayDatesContainer" class="ax-holiday-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= ERP TEAM ======================= -->
+      <section class="admin-section-pane" id="admPaneTeam">
+        <div class="ax-pane-head">
+          <div>
+            <h2>ERP team</h2>
+            <p>Representatives shown to employees in Packing, Solid and Softgel.</p>
+          </div>
+        </div>
+
+        <div class="ax-two">
+          <div class="ax-card">
+            <h3 class="ax-card-title">Add / edit member</h3>
+            <input type="hidden" id="admTeamEditIdx" value="-1">
+            <div class="ax-grid ax-grid--2">
+              <div class="ax-field"><label for="admTeamName">Name</label><input type="text" id="admTeamName" placeholder="e.g. Md. Ariful Islam"></div>
+              <div class="ax-field"><label for="admTeamDesig">Designation</label><input type="text" id="admTeamDesig" placeholder="e.g. RPPF Production"></div>
+              <div class="ax-field"><label for="admTeamId">ID number</label><input type="text" id="admTeamId" placeholder="e.g. CF8355" style="text-transform:uppercase;"></div>
+              <div class="ax-field">
+                <label for="admTeamArea">Assigned area</label>
+                <select id="admTeamArea">
+                  <option value="All">All areas</option>
+                  <option value="Solid Production">Solid Production</option>
+                  <option value="Packing Hall">Packing Hall</option>
+                  <option value="Softgel Production">Softgel Production</option>
+                </select>
+              </div>
+              <div class="ax-field ax-span-2"><label for="admTeamWa">WhatsApp number (with 880)</label><input type="text" id="admTeamWa" placeholder="8801845873227"></div>
+              <div class="ax-field ax-span-2"><label for="admTeamPhoto">Photo URL (blank keeps the existing photo)</label><input type="text" id="admTeamPhoto" placeholder="https://..."></div>
+              <div class="ax-field ax-span-2"><label for="admTeamPhotoFile">…or upload a photo</label><input type="file" id="admTeamPhotoFile" accept="image/*" onchange="handleAdmTeamPhotoUpload(event)"></div>
+            </div>
+            <div class="ax-actions ax-actions--start">
+              <button type="button" class="ax-btn ax-btn--primary" id="admTeamSaveBtn" onclick="adminSaveTeamMember()">Add &amp; save member</button>
+              <button type="button" class="ax-btn ax-btn--ghost" onclick="adminResetTeamForm()">Clear form</button>
+            </div>
+          </div>
+
+          <div class="ax-card">
+            <h3 class="ax-card-title">Current team</h3>
+            <div id="adminTeamManagerList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= NOTICES ======================= -->
+      <section class="admin-section-pane" id="admPaneNotices">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Notices</h2>
+            <p>Publish announcements to the notice board.</p>
+          </div>
+        </div>
+
+        <div class="ax-two">
+          <div class="ax-card">
+            <h3 class="ax-card-title">New notice</h3>
+            <div class="ax-field">
+              <label for="adminNoticeTitle">Title</label>
+              <input type="text" id="adminNoticeTitle" placeholder="e.g. The October overtime report is published">
+            </div>
+            <div class="ax-field ax-gap">
+              <label for="adminNoticeBody">Details</label>
+              <textarea id="adminNoticeBody" class="admin-textarea" placeholder="Write the notice details..."></textarea>
+            </div>
+            <div class="ax-field ax-gap">
+              <label for="adminNoticePriority">Priority</label>
+              <select id="adminNoticePriority">
+                <option value="normal">Normal</option>
+                <option value="high">Urgent (high)</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div class="ax-actions ax-actions--start">
+              <button type="button" class="ax-btn ax-btn--primary" onclick="adminAddAndPushNotice()">Publish notice</button>
+            </div>
+          </div>
+
+          <div class="ax-card">
+            <h3 class="ax-card-title">Published notices</h3>
+            <div id="adminCurrentNoticesList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= SERVER & DEPLOY ======================= -->
+      <section class="admin-section-pane" id="admPaneSetup">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Server &amp; deploy</h2>
+            <p>Connection key, admin password and one-click site update.</p>
+          </div>
+        </div>
+
+        <div class="ax-subtabs" role="tablist">
+          <button type="button" class="ax-subtab active" data-adm-sub="admSubSetupServer">Connection &amp; password</button>
+          <button type="button" class="ax-subtab" data-adm-sub="admSubSetupDeploy">Deploy site</button>
+        </div>
+
+        <div class="ax-sub active" id="admSubSetupServer">
+          <div class="ax-two">
+            <div class="ax-card">
+              <h3 class="ax-card-title">RPPF Cloud Server key</h3>
+              <label for="adminGhTokenInput">Server access key</label>
+              <div class="pin-input-wrap">
+                <input type="password" id="adminGhTokenInput" placeholder="Enter server access key" autocomplete="off">
+                <button type="button" class="pin-eye-btn" onclick="toggleGhTokenVis()" aria-label="Show key">Show</button>
+              </div>
+              <div class="ax-actions ax-actions--start">
+                <button type="button" class="ax-btn ax-btn--primary" onclick="adminSaveAndTestGhToken()">Save &amp; test</button>
+                <button type="button" class="ax-btn ax-btn--danger" onclick="adminClearGhToken()">Remove</button>
+              </div>
+              <div class="ax-savestatus" id="adminGhTokenTestResult"></div>
+            </div>
+
+            <div class="ax-card">
+              <h3 class="ax-card-title">Admin password</h3>
+              <label for="adminNewPassInput">New password</label>
+              <div class="ax-inline">
+                <input type="text" id="adminNewPassInput" placeholder="Enter new password" autocomplete="off" style="text-transform:none;">
+                <button type="button" class="ax-btn ax-btn--ghost" onclick="adminChangePassword()">Change</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ax-sub" id="admSubSetupDeploy">
+          <div class="ax-card">
+            <h3 class="ax-card-title">One-click site update</h3>
+            <p class="ax-muted">Upload <code>deploy.zip</code> from your phone to update the live site without opening GitHub.</p>
+            <input type="file" id="adminZipFileInput" accept=".zip" style="display:none;" onchange="adminHandleZipUpload(this.files)">
+            <div class="ax-actions ax-actions--start">
+              <button type="button" class="ax-btn ax-btn--primary" onclick="document.getElementById('adminZipFileInput').click()">Select deploy.zip &amp; update site</button>
+            </div>
+            <div id="adminZipUploadStatus" style="margin-top:10px;font-size:12.5px;font-weight:700;line-height:1.4;display:none;padding:8px 10px;border-radius:8px;"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
   </div>
 </div>
 
-<div class="admin-section-pane" id="admPaneRates">
-<div class="card" style="padding:14px;" id="admDesigRateBox">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-<div>
-<div class="card-title">Rate and overtime package control</div>
-<div class="card-sub" style="white-space:normal;">Categories are grouped by rate - click any rate tab to edit the package (hourly rate, night, holiday) and select which designations belong under that rate.</div>
-</div>
-<button type="button" class="calc-mini-btn btn-success-solid" onclick="adminSaveRatesAndPush()">Save to server in one click</button>
-</div>
-<div class="rate-bucket-tabs" id="adminRateBucketTabs"></div>
-<div id="adminRatePkgEditorWrap">
-<div class="rate-pkg-grid" id="adminRatePkgGrid">
-<div>
-<label for="pkgOtRateInp">OT rate (৳/hour)</label>
-<input type="number" id="pkgOtRateInp" step="1" oninput="onAdminPkgFieldChange()">
-</div>
-<div>
-<label for="pkgNightRateInp">Night Allowance (৳/night)</label>
-<input type="number" id="pkgNightRateInp" step="10" oninput="onAdminPkgFieldChange()">
-</div>
-<div>
-<label for="pkgHolTypeSel">Holiday type</label>
-<select id="pkgHolTypeSel" onchange="onAdminPkgFieldChange()">
-<option value="hourly">Hourly multiplier (Hourly)</option>
-<option value="flat">Fixed amount (Flat)</option>
-</select>
-</div>
-<div>
-<label for="pkgHolValInp" id="pkgHolValLbl">Holiday hours / amount</label>
-<input type="number" id="pkgHolValInp" step="1" oninput="onAdminPkgFieldChange()">
-</div>
-</div>
-</div>
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 6px 0;flex-wrap:wrap;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);" id="adminRateBucketDesigTitle">Designations and contracts under this rate:</span>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(true)">Select all</button>
-<button type="button" class="calc-mini-btn" onclick="adminBucketSelectAllDesigs(false)">Deselect all</button>
-</div>
-</div>
-<div class="desig-chip-grid" id="admDesigRateList"></div>
-<details class="adjust" style="margin-top:10px;">
-<summary>+ Add new custom rate package</summary>
-<div class="adjust-body">
-<div class="rate-pkg-grid">
-<div>
-<label for="newRateNameInp">Package name</label>
-<input type="text" id="newRateNameInp" placeholder="e.g. Special 50">
-</div>
-<div>
-<label for="newRateOtInp">OT rate (৳/hour)</label>
-<input type="number" id="newRateOtInp" placeholder="50" value="50">
-</div>
-<div>
-<label for="newRateNightInp">Night Allowance (৳)</label>
-<input type="number" id="newRateNightInp" placeholder="500" value="500">
-</div>
-<div>
-<label for="newRateHolInp">Holiday fixed (৳)</label>
-<input type="number" id="newRateHolInp" placeholder="400" value="400">
-</div>
-</div>
-<button type="button" class="btn-primary" onclick="adminCreateNewRateBucket()">Create new rate package</button>
-</div>
-</details>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneData">
-<div class="card" style="padding:14px;">
-<div class="card-title">Monthly Excel data manager (Auto-converted via to_json.py)</div>
-<div class="card-sub" style="white-space:normal;">Select an Excel (.xlsx) file exported from Empress. The file is uploaded directly to the server where <code>scripts/to_json.py</code> automatically converts it into official JSON.</div>
-<div class="row" style="margin-top:8px;">
-<select id="adminPdfYear" aria-label="Year" onchange="adminCheckMonthData()"></select>
-<select id="adminPdfMonth" aria-label="Month" onchange="adminCheckMonthData()">
-<option value="01">January (01)</option><option value="02">February (02)</option>
-<option value="03">March (03)</option><option value="04">April (04)</option>
-<option value="05">May (05)</option><option value="06">June (06)</option>
-<option value="07">July (07)</option><option value="08">August (08)</option>
-<option value="09">September (09)</option><option value="10">October (10)</option>
-<option value="11">November (11)</option><option value="12">December (12)</option>
-</select>
-</div>
-<input type="file" id="adminExcelFileInput" accept=".xlsx,.xls" multiple style="padding:7px;margin-top:8px;">
-<div id="adminPdfUploadProgress" style="display:none;margin-top:10px;">
-<div class="scan-counter" id="adminPdfStatusText">Verifying data, please wait...</div>
-<div class="scan-progress-bar"><div class="scan-progress-fill" id="adminPdfProgressFill"></div></div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" id="adminUploadExcelBtn" onclick="processExcelUpload()">Upload Excel and save</button>
-<button type="button" class="btn-secondary" onclick="adminReoptimizeMonthData()">Re-optimize this month data</button>
-</div>
-
-<!-- ================================================================= -->
-<!-- PLANT HOLIDAY & DUTY COORDINATION MANAGER (ADMIN TICK/UNTICK)     -->
-<!-- ================================================================= -->
-<div class="card" id="admHolidayManagerCard" style="padding:14px;margin-top:14px;border:1.5px solid rgba(13,148,136,0.3);background:linear-gradient(180deg, rgba(13,148,136,0.03) 0%, rgba(255,255,255,0) 100%);">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-    <div>
-      <div class="card-title" style="display:flex;align-items:center;gap:6px;color:#0f766e;">
-        <span>📅</span> Plant Holiday &amp; Duty Coordination Manager (সরকারি ছুটি ও সমন্বয়)
-      </div>
-      <div class="card-sub" style="white-space:normal;">
-        Automatic rules apply by default (Excel consensus + National days). Admins can tick/untick below to cancel a holiday or schedule a compensatory working day.
-      </div>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button type="button" class="calc-mini-btn btn-success-solid" onclick="adminSavePlantHolidays()">💾 Save Holidays &amp; Sync Server</button>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0;background:var(--card-bg, #fff);padding:10px;border-radius:8px;border:1px solid #e2e8f0;">
-    <div style="font-size:12px;font-weight:700;">+ Add Special Plant Holiday / Compensatory Day:</div>
-    <input type="date" id="admNewHolidayDateInp" style="padding:4px 8px;font-size:12px;min-height:32px;border:1px solid #cbd5e1;border-radius:6px;">
-    <input type="text" id="admNewHolidayTitleInp" placeholder="e.g. Special Plant Holiday / Eid Extra" style="padding:4px 8px;font-size:12px;min-height:32px;border:1px solid #cbd5e1;border-radius:6px;flex:1;min-width:180px;">
-    <button type="button" class="calc-mini-btn btn-brand" onclick="adminAddCustomHoliday()" style="min-height:32px;">+ Add Date</button>
-  </div>
-
-  <div style="font-size:12.5px;font-weight:700;margin:10px 0 6px 0;color:#0f172a;display:flex;justify-content:space-between;align-items:center;">
-    <span>Holidays &amp; Weekends for Selected Month (<span id="admHolidaySelectedMonthLbl">Active Month</span>):</span>
-    <span style="font-size:11px;font-weight:600;color:#64748b;">☑ Ticked = Active Holiday/DO | ☐ Unticked = Regular Working Day</span>
-  </div>
-
-  <div id="admHolidayDatesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:8px;margin-top:6px;">
-    <!-- Rendered dynamically -->
-  </div>
-</div>
-
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<span style="font-size:12.5px;font-weight:800;color:var(--text);">Month files on the server:</span>
-<button type="button" class="calc-mini-btn" onclick="adminCheckMonthData()">Refresh</button>
-</div>
-<div class="admin-file-list" id="adminExistingDataStatus">Select a month to see status.</div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneTeam">
-<div class="card" style="padding:14px;">
-<div class="card-title">ERP team manager (team.json)</div>
-<div class="card-sub" style="white-space:normal;">Add, edit or delete the ERP representatives assigned to the Packing, Solid and Softgel sections.</div>
-<input type="hidden" id="admTeamEditIdx" value="-1">
-<div class="admin-meta-grid" style="margin-top:8px;">
-<div>
-<label for="admTeamName" style="margin-top:0;font-size:12px;">Name</label>
-<input type="text" id="admTeamName" placeholder="e.g. Md. Ariful Islam" style="margin-top:3px;min-height:36px;">
-</div>
-<div>
-<label for="admTeamDesig" style="margin-top:0;font-size:12px;">Designation</label>
-<input type="text" id="admTeamDesig" placeholder="e.g. RPPF Production" style="margin-top:3px;min-height:36px;">
-</div>
-<div>
-<label for="admTeamId" style="margin-top:0;font-size:12px;">ID number</label>
-<input type="text" id="admTeamId" placeholder="e.g. CF8355" style="margin-top:3px;min-height:36px;text-transform:uppercase;">
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:8px;">
-<div>
-<label for="admTeamArea" style="margin-top:0;font-size:12px;">Assigned area</label>
-<select id="admTeamArea" style="margin-top:3px;min-height:36px;">
-<option value="All">All Areas</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Packing Hall">Packing Hall</option>
-<option value="Softgel Production">Softgel Production</option>
-</select>
-</div>
-<div>
-<label for="admTeamWa" style="margin-top:0;font-size:12px;">WhatsApp number (with 880)</label>
-<input type="text" id="admTeamWa" placeholder="8801845873227" style="margin-top:3px;min-height:36px;">
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:8px;align-items:end;">
-<div>
-<label for="admTeamPhoto" style="margin-top:0;font-size:12px;">Profile Photo URL (leave blank to keep existing photo)</label>
-<input type="text" id="admTeamPhoto" placeholder="https://... or upload photo ->" style="margin-top:3px;min-height:36px;font-size:12.5px;">
-</div>
-<div>
-<label for="admTeamPhotoFile" style="margin-top:0;font-size:12px;">Or Upload Photo File</label>
-<input type="file" id="admTeamPhotoFile" accept="image/*" onchange="handleAdmTeamPhotoUpload(event)" style="margin-top:3px;padding:5px;font-size:11.5px;">
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" id="admTeamSaveBtn" onclick="adminSaveTeamMember()">Add and save ERP member</button>
-<button type="button" class="btn-secondary" onclick="adminResetTeamForm()">Clear form</button>
-</div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">Current ERP team list:</div>
-<div id="adminTeamManagerList"></div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneNotices">
-<div class="card" style="padding:14px;">
-<div class="card-title">Publish and manage notices (notices.json)</div>
-<label for="adminNoticeTitle" style="margin-top:8px;font-size:12.5px;">Notice title</label>
-<input type="text" id="adminNoticeTitle" placeholder="e.g. The October overtime report has been published">
-<label for="adminNoticeBody" style="margin-top:8px;font-size:12.5px;">Details</label>
-<textarea id="adminNoticeBody" class="admin-textarea" style="min-height:72px;" placeholder="Write the notice details..."></textarea>
-<div class="btn-grid-2" style="margin-top:8px;align-items:end;">
-<div>
-<label for="adminNoticePriority" style="margin-top:0;font-size:12px;">Priority</label>
-<select id="adminNoticePriority" style="margin-top:3px;">
-<option value="normal">Normal</option>
-<option value="high">Urgent (High)</option>
-<option value="low">Low</option>
-</select>
-</div>
-<button type="button" class="btn-primary" onclick="adminAddAndPushNotice()">Publish notice</button>
-</div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:6px;">Current notice list:</div>
-<div id="adminCurrentNoticesList"></div>
-</div>
-</div>
-</div>
-<div class="admin-section-pane" id="admPaneSetup">
-<div class="card" style="padding:14px;">
-<div class="card-title">RPPF Cloud Server connection and password</div>
-<label for="adminGhTokenInput" style="margin-top:8px;font-size:12.5px;">Server Access Key</label>
-<div class="pin-input-wrap">
-<input type="password" id="adminGhTokenInput" placeholder="Enter server access key" autocomplete="off" style="font-size:14px;padding-right:52px;">
-<button type="button" class="pin-eye-btn" onclick="toggleGhTokenVis()" aria-label="Show key">Show</button>
-</div>
-<div class="btn-grid-2" style="margin-top:8px;">
-<button type="button" class="btn-primary" onclick="adminSaveAndTestGhToken()">Save and test connection</button>
-<button type="button" class="btn-secondary danger-btn" onclick="adminClearGhToken()">Remove</button>
-</div>
-<div id="adminGhTokenTestResult" style="margin-top:8px;font-size:12.5px;font-weight:700;text-align:center;"></div>
-<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-<label for="adminNewPassInput" style="margin-top:0;font-size:12.5px;">Change admin password</label>
-<div class="incharge-search-row">
-<input type="text" id="adminNewPassInput" placeholder="Enter new password" autocomplete="off" style="text-transform:none;">
-<button type="button" class="btn-secondary" onclick="adminChangePassword()">Change password</button>
-</div>
-</div>
-<div class="card" style="padding:14px;margin-top:14px;">
-<div class="card-title">📦 One-Click Site Code Update (Deploy ZIP)</div>
-<p style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;">
-Upload <code>deploy.zip</code> directly from your phone to update your live website without opening GitHub.
-</p>
-<input type="file" id="adminZipFileInput" accept=".zip" style="display:none;" onchange="adminHandleZipUpload(this.files)">
-<button type="button" class="btn-primary" style="width:100%;margin-top:10px;min-height:44px;font-size:14px;" onclick="document.getElementById('adminZipFileInput').click()">
-🚀 Select deploy.zip and Update Site
-</button>
-<div id="adminZipUploadStatus" style="margin-top:10px;font-size:12.5px;font-weight:700;line-height:1.4;display:none;padding:8px 10px;border-radius:8px;"></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
+<!-- =====================================================================
+     MODALS
+     ===================================================================== -->
 <div id="adminEmpEditModal" class="lb-modal" style="display:none;" onclick="if(event.target.id==='adminEmpEditModal')closeAdminEmpEditModal()">
   <div class="lb-modal-content" style="max-width:480px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="adminEmpEditModalTitle">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h3 id="adminEmpEditModalTitle" style="margin:0;font-size:16px;font-weight:800;color:var(--text);">Edit Employee Details</h3>
+      <h3 id="adminEmpEditModalTitle" style="margin:0;font-size:16px;font-weight:800;color:var(--text);">Edit employee</h3>
       <button type="button" class="calc-mini-btn" onclick="closeAdminEmpEditModal()" title="Close">✕</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;">
@@ -824,7 +840,7 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
         <input type="text" id="adminEditEmpId" readonly style="background:var(--surface-2);font-weight:800;cursor:not-allowed;">
       </div>
       <div>
-        <label for="adminEditEmpName" style="font-size:12px;font-weight:700;">Employee Name</label>
+        <label for="adminEditEmpName" style="font-size:12px;font-weight:700;">Employee name</label>
         <input type="text" id="adminEditEmpName" placeholder="Full name">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -854,7 +870,7 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
           </select>
         </div>
         <div>
-          <label for="adminEditEmpType" style="font-size:12px;font-weight:700;">Employee Category</label>
+          <label for="adminEditEmpType" style="font-size:12px;font-weight:700;">Category</label>
           <select id="adminEditEmpType">
             <option value="CON">Contractual (CF)</option>
             <option value="JO">Junior Operator (JO)</option>
@@ -867,1512 +883,71 @@ Upload <code>deploy.zip</code> directly from your phone to update your live webs
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
       <button type="button" class="btn-secondary" onclick="closeAdminEmpEditModal()" style="width:auto;min-width:80px;">Cancel</button>
-      <button type="button" class="btn-primary" onclick="saveAdminEmpEdit()" style="width:auto;min-width:110px;">Save Changes</button>
+      <button type="button" class="btn-primary" onclick="saveAdminEmpEdit()" style="width:auto;min-width:110px;">Save changes</button>
     </div>
   </div>
 </div>
 
-<div id="erpSupportModal" class="lb-modal" onclick="if(event.target.id==='erpSupportModal')closeErpSupportModal()">
-<div class="lb-modal-content" style="max-width:460px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="erpModalTitle">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="erpModalTitle">Select ERP Representative</div>
-<div class="lb-modal-subtitle" id="erpModalSub">Choose the ERP representative assigned to your section</div>
-</div>
-<button type="button" class="lb-modal-close" onclick="closeErpSupportModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body" id="erpModalListBody"></div>
-</div>
-</div>
 <div id="confirmActionModal" class="lb-modal" onclick="if(event.target.id==='confirmActionModal')closeConfirmModal()">
-<div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
-<div class="wb-title" id="confirmModalTitle" style="margin-top:18px;">Confirm</div>
-<div class="wb-sub" id="confirmModalMsg">Are you sure you want to delete this?</div>
-<div class="wb-actions">
-<button type="button" class="btn-secondary" onclick="closeConfirmModal()">No, cancel</button>
-<button type="button" class="btn-primary danger-btn" id="confirmModalYesBtn" onclick="runConfirmedAction()">Yes, delete</button>
-</div>
-</div>
-</div>
-<div id="complianceModal" class="lb-modal" onclick="if(event.target.id==='complianceModal')closeComplianceModal()">
-<div class="lb-modal-content" style="max-width:560px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="complianceModalTitle">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="complianceModalTitle">Security &amp; Data Privacy Compliance Notice</div>
-<div class="lb-modal-subtitle">RPPF Production — Internal Audit &amp; IT Compliance</div>
-</div>
-<button type="button" class="lb-modal-close" onclick="closeComplianceModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body" style="font-size:13px;line-height:1.65;color:var(--text-2);">
-<p style="margin-top:0;"><strong>1. 100% Client-Side Processing:</strong> This application is built as a fully static Progressive Web App (PWA). No employee data is sent to any third-party server, external database or tracking script.</p>
-<p><strong>2. Salary &amp; Personal Preferences Privacy:</strong> The monthly salary a user enters in the payslip calculator stays only in the local storage of the user device (<code>localStorage</code>) and is never sent to any server.</p>
-<p><strong>3. RPPF Cloud Server Access Control:</strong> Only an authorized admin can update the pre-indexed overtime summary (<code>data/YYYY-MM.json</code>) over an encrypted HTTPS connection.</p>
-<p style="margin-bottom:0;"><strong>4. Zero External Telemetry:</strong> The app contains no ads, analytics or external data-mining SDK.</p>
-</div>
-</div>
-</div>
-<div id="iccContextModal" class="lb-modal" onclick="iccContextModalBackdropClick(event)">
-<div class="lb-modal-content" style="max-width:580px;" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="iccCtxTitle">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="iccCtxTitle">Employee Details</div>
-<div class="lb-modal-subtitle" id="iccCtxSubtitle">—</div>
-</div>
-<button type="button" class="lb-modal-close" onclick="closeIccContextModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body" id="iccCtxBody"></div>
-<div class="lb-modal-footer" id="iccCtxFooter" style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--surface-2);border-radius:0 0 var(--radius-lg) var(--radius-lg);"></div>
-</div>
-</div>
-<div id="lbFullListModal" class="lb-modal" onclick="lbModalBackdropClick(event)">
-<div class="lb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="lbFullListTitle">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="lbFullListTitle">Full list</div>
-<div class="lb-modal-subtitle" id="lbFullListSubtitle">—</div>
-</div>
-<button class="lb-modal-close" onclick="closeLbFullList()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-nav-bar" id="lbModalMonthNavBar">
-<button type="button" class="lb-modal-nav-btn" id="lbModalPrevMonthBtn" onclick="navigateLbModalMonth(-1)">&lt; Prev Month</button>
-<div class="lb-modal-nav-center" id="lbModalMonthLabel">—</div>
-<button type="button" class="lb-modal-nav-btn" id="lbModalNextMonthBtn" onclick="navigateLbModalMonth(1)">Next Month &gt;</button>
-</div>
-<div class="lb-modal-criteria-pills" role="tablist" aria-label="Switch Ranking Criteria">
-<button type="button" class="lb-modal-crit-btn" data-modal-crit="duty" onclick="switchLbModalCriterion('duty')">Duty Hours</button>
-<button type="button" class="lb-modal-crit-btn" data-modal-crit="ot" onclick="switchLbModalCriterion('ot')">OT Hours</button>
-<button type="button" class="lb-modal-crit-btn" data-modal-crit="earned" onclick="switchLbModalCriterion('earned')">Earnings</button>
-<button type="button" class="lb-modal-crit-btn" data-modal-crit="punch" onclick="switchLbModalCriterion('punch')">Punch Fix</button>
-</div>
-<div class="lb-modal-search-bar"><input type="text" id="lbModalSearchInput" placeholder="Search by name or ID..." oninput="filterLbModalList()"></div>
-<div class="lb-modal-body" id="lbFullListBody"><div class="lb-modal-empty">Loading...</div></div>
-</div>
-</div>
-<div id="rateChartModal" class="lb-modal" onclick="rateModalBackdropClick(event)">
-<div class="lb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="rateChartModalTitle">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="rateChartModalTitle">Rate chart and quick calculation</div>
-<div class="lb-modal-subtitle">RPPF Production - OT Allowance, Holiday Allowance and Night Allowance</div>
-</div>
-<button class="lb-modal-close" onclick="closeRateChartModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body">
-<table class="rate-table">
-<thead><tr><th>Category / Rate</th><th>OT Allowance</th><th>Holiday Allowance</th><th>Night Allowance</th></tr></thead>
-<tbody id="rateChartTableBody">
-<tr><td><strong>CF</strong><br><small style="color:var(--muted)">Contractual</small></td><td><strong>৳ 38</strong> / hour</td><td>8 hours × ৳38<br><small style="color:var(--muted)">(৳ 304 / day)</small></td><td><strong>৳ 300</strong> / night</td></tr>
-<tr><td><strong>JO</strong><br><small style="color:var(--muted)">Grade C–F (M18–20)</small></td><td><strong>৳ 40</strong> / hour</td><td><strong>৳ 300</strong> / day<br><small style="color:var(--muted)">(Fixed)</small></td><td><strong>৳ 400</strong> / night</td></tr>
-<tr><td><strong>JO (A/B)</strong><br><small style="color:var(--muted)">Grade A–B (M16–17)</small></td><td><strong>৳ 45</strong> / hour</td><td><strong>৳ 350</strong> / day<br><small style="color:var(--muted)">(Fixed)</small></td><td><strong>৳ 500</strong> / night</td></tr>
-</tbody>
-</table>
-<div class="card" style="background:var(--surface-2); margin-bottom:0;">
-<div class="card-title" style="margin-bottom:8px;">Quick overtime calculator</div>
-<div class="calc-compact">
-<div class="field"><label for="qcCategory">Category</label><select id="qcCategory" onchange="runQuickModalCalc()"><option value="CF">CF - Contractual</option><option value="JO" selected>JO - Junior Officer</option><option value="JO_B">JO (A/B) - Junior Officer A/B</option></select></div>
-<div class="field"><label for="qcOt">OT hours</label><input type="number" id="qcOt" value="40" step="0.5" inputmode="decimal" oninput="runQuickModalCalc()"></div>
-<div class="field"><label for="qcHol">Holiday Allowance (days)</label><input type="number" id="qcHol" value="2" step="1" inputmode="numeric" oninput="runQuickModalCalc()"></div>
-<div class="field"><label for="qcNight">Night Allowance (nights)</label><input type="number" id="qcNight" value="4" step="1" inputmode="numeric" oninput="runQuickModalCalc()"></div>
-</div>
-<div class="grand-total-block" style="margin-top:12px; margin-bottom:0; padding:12px 15px;">
-<span class="gt-label" id="qcBreakdownText">OT Allowance + Holiday Allowance + Night Allowance</span>
-<span class="gt-value" id="qcTotalValue" style="font-size:20px;">৳ 3,800.00</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="modeSetupModal" class="lb-modal" onclick="modeModalBackdropClick(event)">
-<div class="lb-modal-content mode-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modeModalTitle">
-<div class="mode-modal-hero" id="modeModalHero">
-<button type="button" class="mode-modal-close-x" id="modeModalCloseBtn" onclick="closeModeSetupModal()" aria-label="Close">✕</button>
-<h3 id="modeModalTitle">RPPF — User Login</h3>
-<p id="modeModalSubtitle">Enter your Employee ID number to continue</p>
-</div>
-<div class="mode-switch-tabs" role="tablist">
-<button type="button" class="mode-tab-btn active-emp" id="tabBtnEmployee" onclick="selectSetupTab('employee')"><span>Employee</span></button>
-<button type="button" class="mode-tab-btn" id="tabBtnIncharge" onclick="selectSetupTab('incharge')"><span>In-Charge</span></button>
-</div>
-<div class="mode-pane active" id="modePaneEmployee">
-<div class="mode-info-box">
-<strong>One-time ID setup:</strong> Enter your ID once and your monthly overtime report will load automatically every time you open the app.
-</div>
-<label for="regEmpIdInput" style="margin-top:0;">Enter your ID number:</label>
-<input type="text" id="regEmpIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="onRegEmpIdInputChange()">
-<div id="regCurrentSavedHint" style="display:none;margin-top:8px;font-size:12.5px;color:var(--success);font-weight:700;"></div>
-<div id="specialRoleAuthBox" class="special-role-auth-box">
-<div class="special-role-badge" id="specialRoleBadgeText">Authorized Role</div>
-<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;" id="specialRolePersonName">—</div>
-<label for="specialRolePassInput" style="margin-top:0;font-size:12px;">Enter Password / PIN for this ID:</label>
-<div class="pin-input-wrap">
-<input type="password" id="specialRolePassInput" placeholder="Enter password or PIN" autocomplete="off" style="font-size:16px;font-weight:800;letter-spacing:0.15em;text-align:center;" oninput="document.getElementById('specialRolePinError')?.classList.remove('show')">
-</div>
-<div class="pin-error-msg" id="specialRolePinError">Incorrect password or PIN!</div>
-</div>
-<button type="button" class="btn-primary" id="regPrimarySubmitBtn" style="margin-top:14px;" onclick="saveEmployeeModeSetup()">Continue</button>
-<button type="button" class="btn-secondary" id="regSkipAdminNormalBtn" style="display:none;margin-top:8px;" onclick="saveNormalEmployeeBypass()">Continue as Normal Employee (No Password)</button>
-</div>
-<div class="mode-pane" id="modePaneIncharge">
-<div class="mode-info-box inc">
-<strong>Floor In-charge / Production In-charge mode:</strong> When you open the app in this mode, the <strong>monthly ranking and punch monitoring dashboard</strong> starts directly and you can view any employee report by searching their ID.
-</div>
-<label for="inchargeRoleSelect" style="margin-top:0;">Select your designation / role:</label>
-<select id="inchargeRoleSelect">
-<option value="Floor In-Charge">Floor In-Charge</option>
-<option value="Production In-Charge">Production In-Charge</option>
-</select>
-<label for="inchargeDefaultAreaSelect">Select default area:</label>
-<select id="inchargeDefaultAreaSelect">
-<option value="all">All Areas</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Softgel Production">Softgel Production</option>
-<option value="Overall">Executives</option>
-<option value="Packing Hall">Packing Hall</option>
-</select>
-<label for="inchargePinInput">Enter the 4-digit in-charge PIN code:</label>
-<div class="pin-input-wrap">
-<input type="password" id="inchargePinInput" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" oninput="clearInchargePinError()">
-<button type="button" class="pin-eye-btn" onclick="togglePinVisibility()" aria-label="Show PIN">Show</button>
-</div>
-<div class="pin-error-msg" id="inchargePinError">Wrong PIN code! Enter the correct 4-digit in-charge PIN.</div>
-<button type="button" class="btn-primary" style="margin-top:14px;background:linear-gradient(135deg, #312E81 0%, #4F46E5 100%);" onclick="saveInchargeModeSetup()">Verify PIN and activate in-charge mode</button>
-</div>
-</div>
-</div>
-<div id="welcomeBackModal" class="lb-modal" style="display:none;" onclick="wbBackdropClick(event)">
-<div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()">
-<div class="wb-title" style="margin-top:18px;">Welcome</div>
-<div class="wb-sub">Do you want to view the report with your saved ID?</div>
-<div id="wbSavedId" class="wb-id-badge">—</div>
-<div class="wb-actions">
-<button class="btn-primary wb-btn-primary" onclick="handleWelcomeBackSearch()">Yes, show</button>
-<button class="btn-secondary wb-btn-secondary" onclick="handleWelcomeBackChange()">Another ID</button>
-</div>
-</div>
+  <div class="lb-modal-content wb-modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="wb-title" id="confirmModalTitle" style="margin-top:18px;">Confirm</div>
+    <div class="wb-sub" id="confirmModalMsg">Are you sure you want to delete this?</div>
+    <div class="wb-actions">
+      <button type="button" class="btn-secondary" onclick="closeConfirmModal()">No, cancel</button>
+      <button type="button" class="btn-primary danger-btn" id="confirmModalYesBtn" onclick="runConfirmedAction()">Yes, delete</button>
+    </div>
+  </div>
 </div>
 
-<div id="adminHiddenCompatHost" aria-hidden="true">
+</div><!-- /#page-admin -->
 
-<div id="ptrIndicator" class="ptr-indicator" aria-live="polite">
-<span class="ptr-spinner"></span>
-<span id="ptrText">Pull down to refresh</span>
-</div>
-<div id="adminCatAuthModal" class="lb-modal" onclick="if(event.target.id==='adminCatAuthModal')closeAdminCatAuthModal()">
-<div class="lb-modal-content" style="max-width:380px;">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title">Enable Admin Category Mode</div>
-<div class="lb-modal-subtitle">Enter Admin password or In-Charge PIN to assign categories on Ranking</div>
-</div>
-<button type="button" class="lb-modal-close" onclick="closeAdminCatAuthModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body">
-<label for="adminCatQuickPassInp" style="margin-top:0;">Admin Password / PIN</label>
-<input type="password" id="adminCatQuickPassInp" placeholder="Enter password or PIN" autocomplete="off">
-<div class="btn-grid-2" style="margin-top:12px;">
-<button type="button" class="btn-primary" style="margin-top:0;" onclick="confirmAdminCatQuickAuth()">Enable +Cat Mode</button>
-<button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeAdminCatAuthModal()">Cancel</button>
-</div>
-</div>
-</div>
-</div>
-<div id="empAdminCatModal" class="lb-modal" onclick="if(event.target.id==='empAdminCatModal')closeEmpAdminCatModal()">
-<div class="lb-modal-content" style="max-width:440px;">
-<div class="lb-modal-header">
-<div class="lb-modal-title-wrap">
-<div class="lb-modal-title" id="empAdminCatModalTitle">Employee Categories & Area</div>
-<div class="lb-modal-subtitle" id="empAdminCatModalSub">Assign custom ranking categories & metadata</div>
-</div>
-<button type="button" class="lb-modal-close" onclick="closeEmpAdminCatModal()" aria-label="Close">✕</button>
-</div>
-<div class="lb-modal-body">
-<input type="hidden" id="empAdminCatTargetId" value="">
-<label style="margin-top:0;font-weight:700;font-size:12.5px;color:var(--brand-text);">Additional Ranking Categories (Tap to toggle):</label>
-<div class="emp-cat-chip-grid" id="empAdminCatChipsBox"></div>
-<div class="incharge-search-row" style="margin-bottom:12px;">
-<input type="text" id="newEmpCustomCatInp" placeholder="Create new category (e.g. Shift A, Line 1)..." autocomplete="off">
-<button type="button" class="btn-secondary" style="width:auto;min-height:38px;padding:0 12px;" onclick="addNewCustomCatFromModal()">+ Create</button>
-</div>
-<div style="border-top:1px dashed var(--border-strong);padding-top:10px;margin-top:6px;">
-<label style="margin-top:0;font-size:12px;font-weight:700;">Production Area & Sub-section:</label>
-<div class="row" style="margin-top:4px;margin-bottom:8px;">
-<select id="empAdminAreaSelect" onchange="onEmpAdminModalAreaChange()">
-<option value="Packing Hall">Packing Hall</option>
-<option value="Solid Production">Solid Production</option>
-<option value="Softgel Production">Softgel Production</option>
-<option value="Overall">Executives</option>
-</select>
-<select id="empAdminSubSelect">
-<option value="">No sub-section</option>
-</select>
-</div>
-<div class="row" style="margin-top:4px;margin-bottom:12px;">
-<div>
-<label style="margin-top:0;font-size:11.5px;">Gender</label>
-<select id="empAdminGenderSelect">
-<option value="">Unspecified</option>
-<option value="M">Male</option>
-<option value="F">Female</option>
-</select>
-</div>
-<div>
-<label style="margin-top:0;font-size:11.5px;">Employee Type</label>
-<select id="empAdminTypeSelect">
-<option value="CON">Contractual</option>
-<option value="JO">Junior Officer</option>
-<option value="CAS">Casual</option>
-<option value="EXEC">Executive/Above</option>
-</select>
-</div>
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" style="margin-top:0;" onclick="saveEmpAdminCatModal(false)">Save Changes</button>
-<button type="button" class="btn-secondary" style="margin-top:0;" onclick="saveEmpAdminCatModal(true)">Save & Sync Server</button>
-</div>
-</div>
-</div>
-</div>
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
-<div id="sideDrawerBackdrop" class="side-drawer-backdrop" onclick="closeSideDrawer()"></div>
-<nav class="topnav" aria-label="Main">
-<a class="topnav-brand" onclick="switchPage('search')">
-<img src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="topnav-brand-text">
-<strong>RPPF</strong>
-<small>Overtime Report</small>
-</div>
-</a>
-<div class="topnav-menu">
-<button class="topnav-item" data-nav="leaderboard" onclick="switchPage('leaderboard')">Rank</button>
-<button class="topnav-item active" data-nav="search" onclick="switchPage('search')">Home</button>
-<button class="topnav-item" data-nav="report" onclick="switchPage('report')">Report</button>
-<button class="topnav-item" data-nav="vs" onclick="switchPage('vs')">VS (1v1)</button>
-<button class="topnav-item" data-nav="notices" onclick="switchPage('notices')">Notices</button>
-<button class="topnav-item" data-nav="history" onclick="switchPage('history')">History</button>
-<button class="topnav-item" data-nav="team" onclick="switchPage('team')">ERP Team</button>
-<button class="topnav-item" data-nav="settings" onclick="switchPage('settings')">Settings</button>
-<button class="topnav-item" id="topnavAdminBtn" data-nav="admin" style="display:none;color:var(--warning);font-weight:800;" onclick="switchPage('admin')">Admin Panel</button>
-<button type="button" id="topnavModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Mode and ID settings">Mode</button>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme" title="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-</nav>
-<nav class="bottom-nav" aria-label="Main navigation">
-<button class="bn-item" data-nav="leaderboard" onclick="switchPage('leaderboard')">
-<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
-<span>Rank</span>
-</button>
-<button class="bn-item active" data-nav="search" onclick="switchPage('search')" aria-current="page">
-<svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
-<span>Home</span>
-</button>
-<button class="bn-item" data-nav="report" onclick="switchPage('report')">
-<svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
-<span>Report</span>
-</button>
-<button class="bn-item" data-nav="vs" onclick="switchPage('vs')">
-<span class="bn-vs-box">VS</span>
-<span>1V1</span>
-</button>
-<button class="bn-item" data-nav="more" onclick="switchPage('more')">
-<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/></svg>
-<span>More</span>
-<span class="nav-badge" id="noticesBadge" style="display:none;">!</span>
-</button>
-</nav>
-<div class="page active" id="page-search">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header" id="mainHeader">
-<h2>RPPF</h2>
-<p>Overtime report and calculator</p>
-</div>
-<button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
-<button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="Back to list">
-<svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
-</button>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<section class="welcome-slider" id="welcomeBanner" aria-label="Welcome Highlights">
-<div class="ws-track" id="wsTrack">
-<div class="ws-slide ws-slide--blue">
-<div class="ws-content">
-<span class="ws-badge">RPPF Production • Official PWA</span>
-<h3 class="ws-title">Monthly overtime report and auto calculator</h3>
-<p class="ws-desc">Enter your ID to see your overtime calculation instantly. OT Allowance, Holiday Allowance, Night Allowance and Regular Duty are calculated automatically.</p>
-<button type="button" class="ws-cta" onclick="focusSearchInput()">View now</button>
-</div>
-<div class="ws-art" aria-hidden="true">
-<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-</div>
-</div>
-<div class="ws-slide ws-slide--gold">
-<div class="ws-content">
-<span class="ws-badge">Monthly leaderboard</span>
-<h3 class="ws-title">Who is best this month? See your position</h3>
-<p class="ws-desc">Solid, Softgel and Packing Hall - see who has the most duty, OT and earnings.</p>
-<button type="button" class="ws-cta" onclick="switchPage('leaderboard')">View list</button>
-</div>
-<div class="ws-art" aria-hidden="true">
-<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
-</div>
-</div>
-<div class="ws-slide ws-slide--teal">
-<div class="ws-content">
-<span class="ws-badge">Rate chart</span>
-<h3 class="ws-title">CF, JO and JO (A/B) - rates at a glance</h3>
-<p class="ws-desc">CF: ৳38/hour (Night Allowance ৳300) • JO: ৳40/hour (Night Allowance ৳400) • JO A/B: ৳45/hour (Night Allowance ৳500)</p>
-<button type="button" class="ws-cta" onclick="openRateChartModal()">Rates and calculation</button>
-</div>
-<div class="ws-art" aria-hidden="true">
-<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
-</div>
-</div>
-<div class="ws-slide ws-slide--indigo">
-<div class="ws-content">
-<span class="ws-badge">Punch check and ERP support</span>
-<h3 class="ws-title">Problem with In/Out punch? Report it directly</h3>
-<p class="ws-desc">The app detects missing In/Out punches in your report by itself. Message the ERP team on WhatsApp with one tap.</p>
-<button type="button" class="ws-cta" onclick="switchPage('team')">ERP Team</button>
-</div>
-<div class="ws-art" aria-hidden="true">
-<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-</div>
-</div>
-</div>
-<div class="ws-controls">
-<div class="ws-dots" role="tablist" aria-label="Slider Pagination">
-<button type="button" class="ws-dot active" onclick="goToBannerSlide(0)" aria-label="Slide 1"></button>
-<button type="button" class="ws-dot" onclick="goToBannerSlide(1)" aria-label="Slide 2"></button>
-<button type="button" class="ws-dot" onclick="goToBannerSlide(2)" aria-label="Slide 3"></button>
-<button type="button" class="ws-dot" onclick="goToBannerSlide(3)" aria-label="Slide 4"></button>
-</div>
-<div class="ws-arrows">
-<button type="button" class="ws-arrow" onclick="prevBannerSlide()" aria-label="Previous slide">‹</button>
-<button type="button" class="ws-arrow" onclick="nextBannerSlide()" aria-label="Next slide">›</button>
-</div>
-</div>
-<div class="ws-progress"><div class="ws-progress-fill" id="bannerProgressFill"></div></div>
-</section>
-<div class="quick-actions-grid" id="quickActionsGrid">
-<button type="button" class="qa-tile" onclick="switchPage('leaderboard')">
-<span class="qa-icon"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span>
-<span>Leaderboard</span>
-</button>
-<button type="button" class="qa-tile" onclick="openRateChartModal()">
-<span class="qa-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>
-<span>Rates and calculation</span>
-</button>
-<button type="button" class="qa-tile" onclick="switchPage('notices')">
-<span class="qa-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
-<span>Notices</span>
-</button>
-<button type="button" class="qa-tile" onclick="switchPage('team')">
-<span class="qa-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-<span>ERP Help</span>
-</button>
-</div>
 
-<section class="inc-home-overview" id="inchargeHomeOverview" aria-label="In-Charge Overview Dashboard">
-  <div class="inc-ov-hero">
-    <div class="inc-ov-hero-top">
-      <div>
-        <span class="inc-ov-badge" id="incOvRoleBadge">In-Charge Mode • Live Overview</span>
-        <h3 class="inc-ov-title" id="incOvMainTitle">RPPF Production Overview</h3>
-        <p class="inc-ov-sub" id="incOvSubText">Active strength by section, today's ERP absent list &amp; category toppers</p>
-      </div>
-      <div class="inc-ov-total-pill" onclick="switchPage('leaderboard')" style="cursor:pointer;" title="View full ranking">
-        <span class="inc-ov-total-num" id="incOvTotalActive">0</span>
-        <span class="inc-ov-total-lbl">Total Active RPPF</span>
-      </div>
-    </div>
-    <div class="inc-count-grid">
-      <div class="inc-count-card" onclick="openInchargeAreaRanking('Solid Production')">
-        <div class="inc-count-head"><span>Solid Production</span><span>›</span></div>
-        <div class="inc-count-num" id="incCountSolid">0</div>
-        <div class="inc-count-meta" id="incMetaSolid">Active in section</div>
-      </div>
-      <div class="inc-count-card" onclick="openInchargeAreaRanking('Softgel Production')">
-        <div class="inc-count-head"><span>SG Production</span><span>›</span></div>
-        <div class="inc-count-num" id="incCountSg">0</div>
-        <div class="inc-count-meta" id="incMetaSg">Active in section</div>
-      </div>
-      <div class="inc-count-card" onclick="openInchargeAreaRanking('Packing Hall')">
-        <div class="inc-count-head"><span>Packing Hall</span><span>›</span></div>
-        <div class="inc-count-num" id="incCountPack">0</div>
-        <div class="inc-count-meta" id="incMetaPack">Active in section</div>
-      </div>
-      <div class="inc-count-card" onclick="openInchargeAreaRanking('Overall')">
-        <div class="inc-count-head"><span>Executives</span><span>›</span></div>
-        <div class="inc-count-num" id="incCountExec">0</div>
-        <div class="inc-count-meta" id="incMetaExec">Executive / Above</div>
-      </div>
-    </div>
-  </div>
+<!-- =====================================================================
+     SCRIPTS
+     ===================================================================== -->
+<!-- Compatibility stubs for IDs that existed only in the old copied main-app markup.
+     Safe to delete once js/admin/*.js no longer references them. -->
+<script src="js/admin/admin-compat.js"></script>
 
-  <!-- Approved Maternity & Long-Term Leave Tracker -->
-  <div class="inc-leaves-card" id="incHomeLeavesCard">
-    <div class="inc-section-head">
-      <div>
-        <h4 class="inc-section-title">
-          <span>Approved Maternity &amp; Long-Term Leaves</span>
-          <span class="badge info" id="incLeavesCountBadge">9 Active</span>
-        </h4>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Exempted from daily ERP absence list (HR &amp; Factory approved)</div>
-      </div>
-      <span class="inc-leaves-status-badge">6-Month Duration</span>
-    </div>
-    <div class="inc-leaves-pill-bar" id="incLeavesAreaBar">
-      <button type="button" class="inc-leaves-filter-btn active" data-leave-area="all" onclick="filterIncHomeLeaves('all')">All Sections (10)</button>
-      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Packing Hall" onclick="filterIncHomeLeaves('Packing Hall')">Packing Hall (9)</button>
-      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Solid Production" onclick="filterIncHomeLeaves('Solid Production')">Solid (0)</button>
-      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Softgel Production" onclick="filterIncHomeLeaves('Softgel Production')">Softgel (0)</button>
-      <button type="button" class="inc-leaves-filter-btn" data-leave-area="Overall" onclick="filterIncHomeLeaves('Overall')">Executives (1)</button>
-    </div>
-    <div class="inc-leaves-grid" id="incHomeLeavesList">
-      <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading approved leaves...</div>
-    </div>
-  </div>
+<script src="js/admin/admin-github.js"></script>
+<script src="js/admin/admin-core.js?v=20261105nt"></script>
+<script src="js/admin/admin-tools.js?v=20261105nt"></script>
+<script src="js/admin/admin-sync-bar.js"></script>
+<script>
+  ensureDefaultSubsections();
+  wireAllAutocompleteSearchInputs();
+  loadAbsentStore().then(() => {
+    renderAdminAbsentPane();
+  });
+  closeModeSetupModal();
+  document.body.setAttribute('data-page', 'admin');
+  initAdminPage();
+</script>
 
-  <!-- Today's Absent Employee List (Updated from Admin Corner by ERP) -->
-  <div class="inc-absent-card" id="incHomeAbsentCard">
-    <div class="inc-section-head">
-      <div>
-        <h4 class="inc-section-title">
-          <span>Today's Absent Employee List</span>
-          <span class="badge warn" id="incAbsentCountBadge">0</span>
-        </h4>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incAbsentDateMeta">Updated from Admin Corner by ERP</div>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <input type="date" id="incAbsentDatePicker" onchange="onIncAbsentDateChange(this.value)" style="width:auto;min-height:32px;padding:3px 8px;font-size:12px;margin:0;">
-        <button type="button" class="calc-mini-btn" id="incQuickEditAbsentBtn" onclick="openQuickAbsentModal()" style="display:none;">+ Update</button>
-      </div>
-    </div>
-    <div class="inc-absent-exemption-banner">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-      <span><strong>Maternity Exemption:</strong> Workers and employees currently on active 6-month maternity leave are factory-approved and automatically excluded from daily absent penalties.</span>
-    </div>
-    <div class="inc-absent-pill-bar" id="incAbsentAreaFilterBar">
-      <button type="button" class="inc-absent-filter-btn active" data-abs-area="all" onclick="filterIncHomeAbsent('all')">All Sections</button>
-      <button type="button" class="inc-absent-filter-btn" data-abs-area="Solid Production" onclick="filterIncHomeAbsent('Solid Production')">Solid</button>
-      <button type="button" class="inc-absent-filter-btn" data-abs-area="Softgel Production" onclick="filterIncHomeAbsent('Softgel Production')">SG</button>
-      <button type="button" class="inc-absent-filter-btn" data-abs-area="Packing Hall" onclick="filterIncHomeAbsent('Packing Hall')">Pack</button>
-      <button type="button" class="inc-absent-filter-btn" data-abs-area="Overall" onclick="filterIncHomeAbsent('Overall')">Executives</button>
-    </div>
-    <div class="inc-absent-grid" id="incHomeAbsentList">
-      <div class="empty-msg" style="padding:14px 8px;grid-column:1/-1;">No absent employees recorded for today.</div>
-    </div>
-  </div>
-
-  <!-- Historical Production & Shift Analytics -->
-  <div class="inc-history-card" id="incHomeHistoryCard">
-    <div class="inc-section-head">
-      <div>
-        <h4 class="inc-section-title">
-          <span>Historical Production &amp; Shift Analytics</span>
-          <span class="badge brand" id="incHistoryActiveMonthBadge">2026-10</span>
-        </h4>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incHistorySubMeta">Plant-wide duty hours, overtime, night shifts &amp; section comparison</div>
-      </div>
-      <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Drill Down ›</button>
-    </div>
-    <div class="inc-history-timeline-bar" id="incHistoryTimelineBar">
-      <!-- dynamically populated: Oct 2026, Sep 2026, Aug 2026, Jul 2026, Jun 2026... -->
-    </div>
-    <div class="inc-history-kpi-grid" id="incHistoryKpiGrid">
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Total Duty Hours</div>
-        <div class="inc-kpi-val" id="incKpiTotalDuty">0h</div>
-        <div class="inc-kpi-sub" id="incKpiDutyAvg">0h / emp</div>
-      </div>
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Total Overtime (OT)</div>
-        <div class="inc-kpi-val" id="incKpiTotalOt" style="color:var(--brand);">0h</div>
-        <div class="inc-kpi-sub" id="incKpiOtAvg">0h / emp</div>
-      </div>
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Night Shifts</div>
-        <div class="inc-kpi-val" id="incKpiNightShifts" style="color:var(--indigo);">0</div>
-        <div class="inc-kpi-sub">Total nights</div>
-      </div>
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Regular (4:30pm) Days</div>
-        <div class="inc-kpi-val" id="incKpiPlainDays" style="color:var(--success);">0</div>
-        <div class="inc-kpi-sub">Standard shift</div>
-      </div>
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Holiday Duties</div>
-        <div class="inc-kpi-val" id="incKpiHolidayDays" style="color:var(--warn);">0</div>
-        <div class="inc-kpi-sub">Holiday / Weekend</div>
-      </div>
-      <div class="inc-kpi-box">
-        <div class="inc-kpi-lbl">Active Workforce</div>
-        <div class="inc-kpi-val" id="incKpiActiveCount">0</div>
-        <div class="inc-kpi-sub">RPPF production</div>
-      </div>
-    </div>
-    <div class="inc-history-sec-table-wrap">
-      <div class="inc-sec-table-title">Section Performance Comparison</div>
-      <div class="table-scroll-x" style="overflow-x:auto;">
-        <table class="inc-sec-table" id="incHistorySecTable">
-          <thead>
-            <tr>
-              <th>Section</th>
-              <th style="text-align:right;">Active</th>
-              <th style="text-align:right;">Total Duty</th>
-              <th style="text-align:right;">Total OT</th>
-              <th style="text-align:right;">Night</th>
-              <th style="text-align:right;">Avg Duty</th>
-            </tr>
-          </thead>
-          <tbody id="incHistorySecTbody">
-            <!-- Dynamic rows -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Category Toppers Info (Without Earning Categories in In-Charge Mode) -->
-  <div class="inc-toppers-card" id="incHomeToppersCard">
-    <div class="inc-section-head">
-      <div>
-        <h4 class="inc-section-title">Category Toppers Overview</h4>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;" id="incToppersMonthSub">Top performers across duty &amp; attendance categories</div>
-      </div>
-      <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Full Ranking ›</button>
-    </div>
-    <div class="inc-toppers-area-pills" id="incToppersAreaBar">
-      <button type="button" class="inc-topper-area-btn active" data-top-area="all" onclick="setIncToppersArea('all')">All RPPF</button>
-      <button type="button" class="inc-topper-area-btn" data-top-area="Solid Production" onclick="setIncToppersArea('Solid Production')">Solid</button>
-      <button type="button" class="inc-topper-area-btn" data-top-area="Softgel Production" onclick="setIncToppersArea('Softgel Production')">SG</button>
-      <button type="button" class="inc-topper-area-btn" data-top-area="Packing Hall" onclick="setIncToppersArea('Packing Hall')">Packing</button>
-      <button type="button" class="inc-topper-area-btn" data-top-area="Overall" onclick="setIncToppersArea('Overall')">Executives</button>
-    </div>
-    <div class="inc-toppers-grid" id="incHomeToppersGrid">
-      <div class="empty-msg" style="padding:14px;grid-column:1/-1;">Loading category toppers...</div>
-    </div>
-  </div>
-
-  <!-- Attendance & Operational Risk Watchlist -->
-  <div class="inc-watchlist-card" id="incHomeWatchlistCard">
-    <div class="inc-section-head">
-      <div>
-        <h4 class="inc-section-title">
-          <span>Operational Risk &amp; Anomaly Watchlist</span>
-          <span class="badge warn" id="incWatchlistRiskBadge">Action Required</span>
-        </h4>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Discipline, single-punch &amp; recurring attendance anomalies</div>
-      </div>
-      <span class="inc-watchlist-hint">Tap employee to inspect dates</span>
-    </div>
-    <div class="inc-watchlist-tabs" id="incWatchlistTabs">
-      <button type="button" class="inc-watch-tab-btn active" data-watch-tab="absent" onclick="setIncWatchlistTab('absent')">High Absenteeism</button>
-      <button type="button" class="inc-watch-tab-btn" data-watch-tab="punch" onclick="setIncWatchlistTab('punch')">Punch Anomalies</button>
-      <button type="button" class="inc-watch-tab-btn" data-watch-tab="req" onclick="setIncWatchlistTab('req')">OT Requisitions</button>
-    </div>
-    <div class="inc-watchlist-list" id="incHomeWatchlistList">
-      <div class="empty-msg" style="padding:14px;">Loading watchlist...</div>
-    </div>
-  </div>
-</section>
-
-<!-- Quick Absent Update Modal for ERP / Admin / In-Charge -->
-<div id="quickAbsentModal" class="lb-modal" onclick="if(event.target.id==='quickAbsentModal')closeQuickAbsentModal()">
-  <div class="lb-modal-content" style="max-width:520px;" onclick="event.stopPropagation()">
-    <div class="lb-modal-header">
-      <div class="lb-modal-title-wrap">
-        <div class="lb-modal-title">ERP Daily Absent List Manager</div>
-        <div class="lb-modal-subtitle">Add or remove today's absent employees (syncs with Home Overview)</div>
-      </div>
-      <button type="button" class="lb-modal-close" onclick="closeQuickAbsentModal()">✕</button>
-    </div>
-    <div class="lb-modal-body">
-      <div class="row" style="margin-top:0;margin-bottom:8px;">
-        <div style="flex:1;">
-          <label style="margin-top:0;font-size:12px;">Absent Date</label>
-          <input type="date" id="qmAbsentDateInp" onchange="renderQuickAbsentModalList()" style="margin-top:4px;min-height:38px;">
-        </div>
-        <div style="flex:1;">
-          <label style="margin-top:0;font-size:12px;">Reason / Shift Note</label>
-          <select id="qmAbsentReasonSel" style="margin-top:4px;min-height:38px;">
-            <option value="Absent">Absent (Uninformed)</option>
-            <option value="Casual Leave (CL)">Casual Leave (CL)</option>
-            <option value="Sick Leave (SL)">Sick Leave (SL)</option>
-            <option value="Earned Leave (EL)">Earned Leave (EL)</option>
-            <option value="Shift Off / DO">Shift Off / DO</option>
-          </select>
-        </div>
-      </div>
-      <label style="margin-top:6px;font-size:12px;">Search Employee (Type ID, Name, Sub-section or Area):</label>
-      <div class="incharge-search-row" style="margin-top:4px;">
-        <input type="text" id="qmAbsentEmpInput" placeholder="Type ID or name (e.g. CF8355 or Ariful)..." autocomplete="off">
-        <button type="button" class="btn-primary" style="width:auto;min-height:38px;padding:0 14px;" onclick="addAbsentFromQuickModal()">+ Add</button>
-      </div>
-      <label style="margin-top:10px;font-size:12px;">Or Paste Multiple IDs (comma / space separated):</label>
-      <div class="incharge-search-row" style="margin-top:4px;">
-        <input type="text" id="qmAbsentBulkInput" placeholder="e.g. CF8355, RF20850, CF5242..." autocomplete="off">
-        <button type="button" class="btn-secondary" style="width:auto;min-height:38px;padding:0 12px;" onclick="addBulkAbsentFromQuickModal()">Bulk Add</button>
-      </div>
-      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-size:12.5px;font-weight:800;color:var(--text);" id="qmAbsentCountTitle">Absent List (0)</span>
-          <button type="button" class="calc-mini-btn danger-btn" onclick="clearDateAbsentList()">Clear Date</button>
-        </div>
-        <div id="qmAbsentCurrentList" style="max-height:200px;overflow-y:auto;"></div>
-      </div>
-      <div class="btn-grid-2" style="margin-top:12px;">
-        <button type="button" class="btn-primary" style="margin-top:0;" onclick="saveAbsentAndPushServer()">Save &amp; Sync Server</button>
-        <button type="button" class="btn-secondary" style="margin-top:0;" onclick="closeQuickAbsentModal()">Done</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="searchFormCard">
-<label for="monthSelect">Which month of overtime do you want to see?</label>
-<div class="row">
-<select id="yearSelect" aria-label="Year"></select>
-<select id="monthSelect" aria-label="Month">
-<option value="01">January</option><option value="02">February</option>
-<option value="03">March</option><option value="04">April</option>
-<option value="05">May</option><option value="06">June</option>
-<option value="07">July</option><option value="08">August</option>
-<option value="09">September</option><option value="10">October</option>
-<option value="11">November</option><option value="12">December</option>
-</select>
-</div>
-<label for="employeeId">Your ID number</label>
-<div class="input-clear-wrap">
-<input type="text" id="employeeId" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="toggleClearIdBtn()">
-<button type="button" id="clearIdBtn" class="input-clear-btn" onclick="clearEmployeeInput()" aria-label="Clear ID">✕</button>
-</div>
-<div class="recent-chips-wrap" id="recentSearchChips"></div>
-<button id="searchBtn" class="btn-primary" onclick="findReport()">View my overtime</button>
-<div id="spinner" class="spinner"></div>
-<div id="status" role="status" aria-live="polite"></div>
-<div id="progress"></div>
-</div>
-<div class="search-summary" id="searchSummary" onclick="expandSearchForm()">
-<div class="id-badge" id="summaryId">—</div>
-<div class="month-info" id="summaryMonth">—</div>
-<div class="edit-icon">Change</div>
-</div>
-<div class="vc-banner" id="viewingContextBanner" role="region" aria-label="Report mode information">
-<div class="vc-head">
-<span class="vc-badge" id="vcBadge">Your own report</span>
-<span style="font-size:12px;font-weight:700;color:var(--muted);" id="vcRightMeta"></span>
-</div>
-<div class="vc-title" id="vcTitle">Your own overtime report</div>
-<p class="vc-sub" id="vcSub">Showing the current month calculation for your permanent ID.</p>
-<div class="vc-actions" id="vcActions"></div>
-</div>
-<div class="month-nav-bar" id="monthNavBar" style="display:none;">
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)" id="prevMonthBtn">&lt; Previous month</button>
-<div class="month-nav-center" id="monthNavCurrentLabel">—</div>
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)" id="nextMonthBtn">Next month &gt;</button>
-</div>
-<div class="card" id="payslipCard" style="display:none;">
-<h3 class="card-h">How much will you get in total?</h3>
-<label for="inpSalary" style="margin-top:0" id="lblSalaryInput">Monthly salary (Regular Duty)</label>
-<input type="text" id="inpSalary" inputmode="numeric" autocomplete="off" placeholder="e.g. 18000" oninput="handleSalaryInput(this.value)">
-<div class="payslip-preview-box" id="payslipPreview" style="display:none;"></div>
-<div class="pay-actions" id="payslipActions" style="display:none;">
-<button type="button" class="btn-primary" onclick="downloadPayslipJPG()">⬇ Download</button>
-<button type="button" class="btn-secondary" onclick="sharePayslip()">Share</button>
-</div>
-</div>
-<div class="card calc-card" id="step3">
-<div class="card-head">
-<h3><span id="step3HeadingText">Your overtime</span> <span id="categoryBadge" class="badge">—</span></h3>
-<button type="button" class="calc-mini-btn" onclick="openRateChartModal()">Rate chart</button>
-</div>
-<div id="userGreeting" class="greeting-banner">
-<div class="greet-text"><span id="greetName">User</span>, your calculation is ready</div>
-<div class="greet-sub" id="greetSubText">Check it once against your report.</div>
-</div>
-<div id="gradeInfo" class="grade-info" style="display:none;"></div>
-<div id="calcInputs">
-<div class="grand-total-block">
-<span class="gt-label" id="gtLabelText">Total overtime you will receive</span>
-<span class="gt-value" id="lblGrandTotal">৳ 0</span>
-</div>
-<div class="rate-line"><span>Per hour: <b id="lblRate">৳ 0/hr</b></span><span id="lblRateSub">—</span></div>
-<div class="bill-list">
-<div class="bill-row ot">
-<div><div class="bill-name" data-i18n="otAllowance">OT Allowance</div><div class="bill-calc" id="lblOtFormula">0 hr × ৳0</div></div>
-<div class="bill-amt" id="lblOtAmount">৳ 0</div>
-</div>
-<div class="bill-row hol">
-<div><div class="bill-name" data-i18n="holidayAllowance">Holiday Allowance</div><div class="bill-calc" id="lblHolidayFormula">0 days</div></div>
-<div class="bill-amt" id="lblHolidayAmount">৳ 0</div>
-</div>
-<div class="bill-row night">
-<div><div class="bill-name" data-i18n="nightAllowance">Night Allowance</div><div class="bill-calc" id="lblNightFormula">0 nights</div></div>
-<div class="bill-amt" id="lblNightAmount">৳ 0</div>
-</div>
-</div>
-<div class="day-summary-grid" id="daySummaryGrid" style="display:none;">
-<div class="ds-cell"><span class="ds-value" id="dsRegularDays">—</span><span class="ds-label" data-i18n="totalDays">Total duty days</span></div>
-<div class="ds-cell"><span class="ds-value" id="dsHolidayDays">—</span><span class="ds-label">Holiday Allowance</span></div>
-<div class="ds-cell"><span class="ds-value" id="dsNightDays">—</span><span class="ds-label">Night Allowance</span></div>
-<div class="ds-cell plain"><span class="ds-value" id="dsPlainDays">—</span><span class="ds-label">4:30 pm</span></div>
-</div>
-<details class="adjust">
-<summary>See how much it will be if hours change</summary>
-<div class="adjust-body">
-<div class="calc-compact">
-<div class="field">
-<label for="inpCategory">Your category</label>
-<select id="inpCategory" onchange="recalculate()">
-<option value="CF">CF - Contractual</option>
-<option value="JO">JO - Junior Officer</option>
-<option value="JO_B">JO (A/B) - Junior Officer A/B</option>
-</select>
-</div>
-<div class="field">
-<label for="inpOtHours">OT hours</label>
-<div class="stepper">
-<button type="button" class="step-btn" onclick="stepVal('inpOtHours',-0.5)" aria-label="Decrease">−</button>
-<input type="number" id="inpOtHours" value="0" step="0.01" inputmode="decimal" oninput="recalculate()">
-<button type="button" class="step-btn" onclick="stepVal('inpOtHours',0.5)" aria-label="Increase">+</button>
-</div>
-</div>
-<div class="field">
-<label for="inpHoliday">Holiday Allowance (how many days)</label>
-<div class="stepper">
-<button type="button" class="step-btn" onclick="stepVal('inpHoliday',-1)" aria-label="Decrease">−</button>
-<input type="number" id="inpHoliday" value="0" step="1" inputmode="numeric" oninput="recalculate()">
-<button type="button" class="step-btn" onclick="stepVal('inpHoliday',1)" aria-label="Increase">+</button>
-</div>
-</div>
-<div class="field">
-<label for="inpNight">Night Allowance (how many nights)</label>
-<div class="stepper">
-<button type="button" class="step-btn" onclick="stepVal('inpNight',-1)" aria-label="Decrease">−</button>
-<input type="number" id="inpNight" value="0" step="1" inputmode="numeric" oninput="recalculate()">
-<button type="button" class="step-btn" onclick="stepVal('inpNight',1)" aria-label="Increase">+</button>
-</div>
-</div>
-</div>
-<div class="adjust-actions">
-<button type="button" class="btn-secondary" onclick="resetCalcToOriginal()">Original values</button>
-<button type="button" class="btn-secondary" onclick="copyCalcSummary()">Copy</button>
-</div>
-</div>
-</details>
-</div>
-</div>
-<div class="collapse-card calc-card" id="step5">
-<div class="collapse-header" onclick="toggleCollapse('step5Body', this)">
-<span class="title">Holiday and night duty dates</span>
-<span class="count">Holiday <b id="holidayCount">0</b></span>
-<span class="count">Night <b id="nightCount">0</b></span>
-<span class="arrow">▼</span>
-</div>
-<div class="collapse-body" id="step5Body">
-<div class="sub-h">Holiday Allowance dates</div>
-<div id="holidayList" class="info-list">—</div>
-<div class="sub-h">Night Allowance dates</div>
-<div id="nightList" class="info-list">—</div>
-</div>
-</div>
-<div class="home-jump-grid" id="homeJumpGrid">
-<button type="button" class="btn-primary" onclick="switchPage('report')">Report &amp; Punch Check</button>
-<button type="button" class="btn-secondary" onclick="switchPage('vs')">VS Compare (1:1 / 1:1:1)</button>
-</div>
-<div class="card" id="noticesCard">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); gap: 8px;">
-<div class="card-title">Notice board</div>
-<div style="display: flex; gap: 6px;">
-<button onclick="forceRefreshNotices()" class="reset-btn" style="width: auto; margin: 0; padding: 4px 11px; font-size: 13px;" title="Refresh" aria-label="Refresh">Refresh</button>
-<button onclick="switchPage('notices')" class="reset-btn" style="width: auto; margin: 0; padding: 4px 12px; font-size: 13px;">View all</button>
-</div>
-</div>
-<div id="noticesHomeList"></div>
-</div>
-</div>
-<div class="page" id="page-report">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header">
-<h2 id="reportPageTitle">Report &amp; Punch Confirmation</h2>
-<p id="reportPageSub">Daily work log and In/Out punch verification</p>
-</div>
-<button type="button" class="mode-pill-btn" onclick="switchPage('search')" title="Back to Home">Home</button>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="report-emp-card" id="reportEmpStrip" style="display:none;">
-<div class="report-strip-top">
-<div class="subpage-emp-meta">
-<span class="subpage-emp-id" id="reportEmpIdBadge">—</span>
-<div class="subpage-emp-text">
-<div class="subpage-emp-name" id="reportEmpNameLbl">—</div>
-<div class="subpage-emp-sub" id="reportEmpSubLbl">—</div>
-</div>
-</div>
-<button type="button" class="calc-mini-btn" onclick="switchPage('search');expandSearchForm();" style="flex-shrink:0;">Change ID</button>
-</div>
-<div class="report-strip-nav">
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(-1)">‹ Prev Month</button>
-<div class="report-strip-month-lbl" id="reportStripMonthLbl">—</div>
-<button type="button" class="month-nav-btn" onclick="navigateReportMonth(1)">Next Month ›</button>
-</div>
-</div>
-<div class="card" id="reportEmptyCard">
-<div class="empty-msg" style="padding:10px 0;">Enter an employee ID to verify punches and view the full daily report.</div>
-<div class="incharge-search-row">
-<input type="text" id="reportQuickIdInput" placeholder="Enter ID (e.g. RF20850)" autocomplete="off" autocapitalize="characters">
-<button type="button" class="btn-primary" onclick="searchFromReportPage()">Load Report</button>
-</div>
-</div>
-<div class="card calc-card" id="step7" style="padding:12px;">
-<div class="section-label" id="step7LabelText" style="margin:0 0 6px 0;padding:0 0 6px 0;border-bottom:1px solid var(--border);">Report &amp; Punch Verification Status</div>
-<div id="remarksBox" class="remarks-box remarks-info">—</div>
-<button type="button" class="btn-secondary" id="rptPreviewBtn" style="width:100%;margin-top:8px;" onclick="toggleReportPreview()">Preview daily report ▼</button>
-<div id="rptPreviewHost" style="display:none;margin-top:8px;"></div>
-<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-<button type="button" class="btn-primary" id="pngDlBtn" style="flex:1;min-width:140px;margin-top:0;" onclick="downloadReportPNG(false)">⬇ Download</button>
-<button type="button" class="btn-secondary" id="pngShareBtn" style="flex:1;min-width:110px;margin-top:0;" onclick="downloadReportPNG(true)">Share</button>
-</div>
-</div>
-</div>
-<div class="page" id="page-vs">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header">
-<h2 id="vsPageTitle">VS Comparison</h2>
-<p id="vsPageSub">Compare overtime &amp; allowances (1:1 or 1:1:1)</p>
-</div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card" id="step4">
-<div class="collapse-header" onclick="toggleCollapse('step4Body', this)" style="display:none;">
-<span class="title">Compare with another colleague</span>
-<span class="arrow">▼</span>
-</div>
-<div class="collapse-body show" id="step4Body" style="padding:0;">
-<div class="vs-mode-switch" role="tablist" aria-label="Comparison Mode" style="grid-template-columns:repeat(3,1fr);">
-<button type="button" class="vs-mode-btn active" id="vsModeBtn2" onclick="setVsMode(2)">1 : 1 Mode</button>
-<button type="button" class="vs-mode-btn" id="vsModeBtn3" onclick="setVsMode(3)">1 : 1 : 1 Mode</button>
-<button type="button" class="vs-mode-btn" id="vsModeBtnCustom" onclick="setVsMode('custom')">Custom VS</button>
-</div>
-<div id="compareInputArea">
-<div id="vsMonthBarWrap" class="vs-custom-bar">
-<div class="vs-bar-row">
-<span class="vs-bar-lbl">Period:</span>
-<select id="vsPeriodSelect" onchange="onVsPeriodChange()" aria-label="Comparison Period">
-<option value="current">Selected Month</option>
-<option value="3m">Last 3 Months Total</option>
-<option value="6m">Last 6 Months Total</option>
-<option value="alltime">All-Time 2026</option>
-</select>
-<select id="vsMonthOverrideSelect" onchange="onVsMonthOverrideChange()" aria-label="Comparison Month"></select>
-</div>
-<div class="vs-quick-picks" id="vsQuickPicksRow"></div>
-</div>
-<div id="compareMyAmount" class="grade-info" style="display:none;"></div>
-<div class="vs-custom-count-bar" id="vsCustomCountBar">
-<div style="font-size:12.5px;font-weight:700;color:var(--brand-text);">Compare Multiple Employees (<span id="vsCustomCountLbl">4</span> IDs)</div>
-<div style="display:flex;gap:6px;">
-<button type="button" class="calc-mini-btn" onclick="changeCustomVsSlots(-1)">− Remove</button>
-<button type="button" class="calc-mini-btn btn-success-solid" onclick="changeCustomVsSlots(1)">+ Add Employee</button>
-</div>
-</div>
-<div class="vs-inputs-grid mode-2" id="vsInputsGrid">
-<div class="vs-slot-box">
-<label for="compareId1">1st Employee ID</label>
-<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text">
-</div>
-<div class="vs-slot-box">
-<label for="compareId">2nd Employee ID (VS)</label>
-<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF20850" autocomplete="off" autocapitalize="characters" inputmode="text">
-</div>
-<div class="vs-slot-box" id="vsSlot3Wrap" style="display:none;">
-<label for="compareId3">3rd Employee ID (VS)</label>
-<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF9012" autocomplete="off" autocapitalize="characters" inputmode="text">
-</div>
-<div id="vsExtraSlotsContainer" style="display:contents;"></div>
-</div>
-<button id="compareBtn" class="btn-primary" onclick="runComparison()" style="margin-top:12px;">Compare Now (VS)</button>
-<div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
-</div>
-<div id="compareResult" style="display:none;"></div>
-</div>
-</div>
-</div>
-<div class="page" id="page-leaderboard">
-<div class="app-header" id="lbMainAppHeader">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header">
-<h2 id="lbPageMainTitle">Rank</h2>
-<p id="lbSubtitle">—</p>
-</div>
-<button type="button" id="headerModeBadgeLb" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div id="lbHubMenuWrap" class="rank-hub-menu">
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('duty')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">1</span>
-<div>
-<div class="rank-hub-title">Best Duty</div>
-<div class="rank-hub-sub" id="hubSubDuty">RPPF Highest Duty Hours Ranking</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValDuty">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('ot')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">2</span>
-<div>
-<div class="rank-hub-title">Best OT</div>
-<div class="rank-hub-sub" id="hubSubOt">RPPF Highest Overtime Hours Ranking</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValOt">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('earned')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">৳</span>
-<div>
-<div class="rank-hub-title">Best Earning</div>
-<div class="rank-hub-sub" id="hubSubEarned">RPPF Highest Overtime Allowance Ranking</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValEarned">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('plain')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">4:30</span>
-<div>
-<div class="rank-hub-title">Top 4:30pm</div>
-<div class="rank-hub-sub" id="hubSubPlain">Most 4:30 pm Regular Duty Days</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValPlain">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('otDays')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">OT</span>
-<div>
-<div class="rank-hub-title">Most OT Days</div>
-<div class="rank-hub-sub" id="hubSubOtDays">Most days with overtime (night days not included)</div>
-</div>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('holiday')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">H</span>
-<div>
-<div class="rank-hub-title">Holiday Duty</div>
-<div class="rank-hub-sub" id="hubSubHoliday">Most holiday / day-off duty days</div>
-</div>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('night')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">N</span>
-<div>
-<div class="rank-hub-title">Night Duty</div>
-<div class="rank-hub-sub" id="hubSubNight">Most night shifts</div>
-</div>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('lessDuty')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">↓D</span>
-<div>
-<div class="rank-hub-title">Less Duty</div>
-<div class="rank-hub-sub" id="hubSubLessDuty">Lowest Total Duty Hours</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValLessDuty">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item" onclick="openRankDrillDown('lessOt')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">↓O</span>
-<div>
-<div class="rank-hub-title">Less OT</div>
-<div class="rank-hub-sub" id="hubSubLessOt">Lowest Overtime Hours</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValLessOt">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item punch-hub" onclick="openRankDrillDown('punch')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">!</span>
-<div>
-<div class="rank-hub-title">Punch Problem</div>
-<div class="rank-hub-sub" id="hubSubPunch">Missing In/Out Punch List</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValPunch">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item absent-hub" onclick="openRankDrillDown('absent')" style="border-left: 3.5px solid #dc2626;">
-<div class="rank-hub-left">
-<span class="rank-hub-icon" style="background:#fee2e2;color:#dc2626;">🔴</span>
-<div>
-<div class="rank-hub-title">Highest Absent</div>
-<div class="rank-hub-sub" id="hubSubAbsent">General Working Days Absenteeism</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValAbsent" style="color:#dc2626;">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item req-hub"  onclick="openRankDrillDown('requisition')" style="border-left: 3px solid #f59e0b;">
-<div class="rank-hub-left">
-<span class="rank-hub-icon" style="background:#fef3c7;color:#d97706;">⚠️</span>
-<div>
-<div class="rank-hub-title">Requisition Problem</div>
-<div class="rank-hub-sub" id="hubSubReq">9–13.5h Worked but 0 OT in Empress</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValReq" style="color:#d97706;">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<div class="rank-hub-section-divider" id="inchargeHubUpcomingDivider" style="display:none;">
-<span>In-Charge &amp; Manager Analytics</span>
-<span>RPPF</span>
-</div>
-<button type="button" class="rank-hub-item incharge-hub-opt" id="hubBtnAvgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">⌀H</span>
-<div>
-<div class="rank-hub-title">Average Duty Hour</div>
-<div class="rank-hub-sub" id="hubSubAvgDuty">Daily Average Duty Hours</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValAvgDuty">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-<button type="button" class="rank-hub-item incharge-hub-opt" id="hubBtnAvgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">
-<div class="rank-hub-left">
-<span class="rank-hub-icon">⏱</span>
-<div>
-<div class="rank-hub-title">Avg In &amp; Out Time</div>
-<div class="rank-hub-sub" id="hubSubAvgInOut">Average In-Time &amp; Out-Time</div>
-</div>
-</div>
-<div class="rank-hub-right">
-<span class="rank-hub-val" id="hubValAvgInOut">—</span>
-</div>
-<span class="rank-hub-chev">›</span>
-</button>
-</div>
-<div id="iccRankDrillView" class="icc-rank-view">
-<div class="icc-frozen-header" id="iccFrozenHeader">
-<div class="icc-topbar">
-<button type="button" class="icc-back-btn" onclick="closeRankDrillDown()" aria-label="Back to Rank Menu">←</button>
-<div class="icc-topbar-title" id="iccDrillTitle">Best Duty RPPF</div>
-<button type="button" class="icc-admin-toggle-btn" id="iccAdminCatToggleBtn" onclick="toggleIccAdminCatMode()" title="Admin Category Mode">⚙ Cat</button>
-<button type="button" class="icc-search-toggle-btn" onclick="toggleIccSearchInput()" title="Search employee" aria-label="Search employee">🔍</button>
-</div>
-<div class="icc-crit-strip" id="iccCritStrip" role="tablist">
-<button type="button" class="icc-crit-tab active" data-icc-crit="duty" onclick="openRankDrillDown('duty')">Best Duty</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="ot" onclick="openRankDrillDown('ot')">Best OT</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="earned" onclick="openRankDrillDown('earned')">Best Earning</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="plain" onclick="openRankDrillDown('plain')">Top 4:30pm</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="otDays" onclick="openRankDrillDown('otDays')">OT Days</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="holiday" onclick="openRankDrillDown('holiday')">Holiday Duty</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="night" onclick="openRankDrillDown('night')">Night Duty</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="lessDuty" onclick="openRankDrillDown('lessDuty')">Less Duty</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="absent" onclick="openRankDrillDown('absent')">Absent</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">Req Fix</button>
-<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
-<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">Avg In/Out</button>
-</div>
-</div>
-<div class="icc-collapsible-filters" id="iccCollapsibleFilters">
-<div class="icc-period-strip" id="iccPeriodStrip" role="tablist" aria-label="Select Month or Period"></div>
-<div class="icc-area-wrap">
-<div class="icc-area-seg" id="iccAreaSegBar" role="tablist" aria-label="Filter by Area">
-<button type="button" class="icc-area-btn active" data-icc-area="all" onclick="selectIccArea('all')">All</button>
-<button type="button" class="icc-area-btn" data-icc-area="Packing Hall" onclick="selectIccArea('Packing Hall')">Packing</button>
-<button type="button" class="icc-area-btn" data-icc-area="Solid Production" onclick="selectIccArea('Solid Production')">Solid</button>
-<button type="button" class="icc-area-btn" data-icc-area="Softgel Production" onclick="selectIccArea('Softgel Production')">SG</button>
-<button type="button" class="icc-area-btn" id="iccAreaExecBtn" data-icc-area="Overall" style="display:none;" onclick="selectIccArea('Overall')">Exec</button>
-</div>
-<div class="area-filter-row" id="iccExtraFiltersRow">
-<select id="subFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Sub-section" style="display:none;"><option value="all">All sub-sections</option></select>
-<select id="genderFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Male / Female">
-<option value="all">Male + Female</option><option value="M">Male only</option><option value="F">Female only</option>
-</select>
-<select id="typeFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Employee type">
-<option value="all">All types</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option>
-</select>
-<select id="customCatFilter" onchange="applyAreaFilter(); renderIccDrillList();" aria-label="Additional Category">
-<option value="all">All categories</option>
-</select>
-</div>
-<div class="icc-search-row" id="iccSearchRowWrap" style="display:none;">
-<input type="text" id="iccSearchInput" placeholder="Search employee name or ID..." oninput="renderIccDrillList()">
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccPunchWaBtn" style="display:none;" onclick="openBulkPunchErpForward()">Forward to ERP</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccAbsentErpBtn" style="display:none;background:#dc2626;border-color:#dc2626;" onclick="openBulkAbsentForward()">Forward Absentees to In-Charge / HR</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
-</div>
-</div>
-<div class="icc-mypos-banner" id="iccMyPosBanner" style="display:none;"></div>
-<div class="icc-table-head">
-<span>Rank</span>
-<span>Employee</span>
-<span id="iccMetricColHeader" style="text-align:right;">Duty Hrs</span>
-</div>
-</div>
-<div class="icc-list-body" id="iccDrillListBody"></div>
-</div>
-<div class="incharge-lb-card" id="inchargeQuickCard">
-<div class="incharge-lb-head">
-<div class="incharge-lb-title" id="inchargeLbCardTitle">In-charge quick search and month selection</div>
-<span class="badge" id="inchargeLbRoleBadge">Ranking and monitoring</span>
-</div>
-<div class="row" style="margin-top:0;margin-bottom:8px;">
-<select id="lbYearSelect" aria-label="Year" onchange="onLbMonthYearChange()"></select>
-<select id="lbMonthSelect" aria-label="Month" onchange="onLbMonthYearChange()">
-<option value="01">January</option><option value="02">February</option>
-<option value="03">March</option><option value="04">April</option>
-<option value="05">May</option><option value="06">June</option>
-<option value="07">July</option><option value="08">August</option>
-<option value="09">September</option><option value="10">October</option>
-<option value="11">November</option><option value="12">December</option>
-</select>
-</div>
-<div class="incharge-search-row">
-<input type="text" id="lbQuickSearchInput" placeholder="Any employee ID (e.g. CF8355)" autocomplete="off" autocapitalize="characters" inputmode="text">
-<button type="button" class="btn-primary" onclick="searchEmployeeFromLbBar()">View report</button>
-</div>
-</div>
-<div class="card" id="lbInitialCard" style="display:none;">
-<div class="empty-msg" style="padding: 18px 0;">See the list of everyone: who did how much overtime this month.</div>
-<button class="btn-primary" onclick="startLeaderboardScan(true)">View everyone list</button>
-<div class="scan-hint">Verifying data, please wait...</div>
-</div>
-<div class="card" id="lbScanCard" style="display:none;">
-<div class="scan-counter" id="lbScanCounter">Verifying data, please wait...</div>
-<div class="scan-progress-bar"><div class="scan-progress-fill" id="lbScanFill"></div></div>
-<div class="scan-hint" id="lbScanHint">Verifying data, please wait...</div>
-</div>
-<div class="card lb-wrapper" id="lbResultCard" style="display:none;">
-<div class="area-filter-card">
-<div class="area-filter-head">
-<h3 class="area-filter-title">View by area</h3>
-<span class="area-filter-count" id="areaFilterCount">All areas</span>
-</div>
-<select class="area-filter-select" id="areaFilter" onchange="onAreaFilterChange()" aria-label="Area">
-<option value="all">All areas</option>
-</select>
-
-<div class="lb-mode-tabs" role="tablist" aria-label="Leaderboard Mode" style="margin-top:8px;margin-bottom:0;">
-<button type="button" class="lb-mode-btn active" id="lbModeBtnMonthly" onclick="switchLbTimeMode('monthly')">Monthly</button>
-<button type="button" class="lb-mode-btn" id="lbModeBtnRange" onclick="switchLbTimeMode('3m')">3M / 6M Avg</button>
-<button type="button" class="lb-mode-btn" id="lbModeBtnAllTime" onclick="switchLbTimeMode('alltime')">All-Time</button>
-</div>
-<div class="lb-range-sub" id="lbRangeSubRow" style="margin-top:5px;margin-bottom:0;">
-<button type="button" class="lb-mode-btn active" id="lbSubBtn3m" onclick="switchLbTimeMode('3m')">Last 3M</button>
-<button type="button" class="lb-mode-btn" id="lbSubBtn6m" onclick="switchLbTimeMode('6m')">Last 6M</button>
-</div>
-</div>
-<div class="lb-kpi-grid" id="lbSummaryMetrics">
-<div class="lb-kpi-box" onclick="activateLbCriteriaTab('duty')" style="cursor:pointer;"><span class="lb-kpi-label">Highest duty</span><span class="lb-kpi-val" id="kpiMaxDuty">—</span></div>
-<div class="lb-kpi-box" onclick="activateLbCriteriaTab('ot')" style="cursor:pointer;"><span class="lb-kpi-label">Average OT hours</span><span class="lb-kpi-val" id="kpiAvgOt">—</span></div>
-<div class="lb-kpi-box" onclick="activateLbCriteriaTab('earned')" style="cursor:pointer;"><span class="lb-kpi-label">Highest earning</span><span class="lb-kpi-val" id="kpiMaxEarned">—</span></div>
-<div class="lb-kpi-box punch-kpi" onclick="switchToLbPunchTab()" style="cursor:pointer;" title="View employees with punch problems">
-<span class="lb-kpi-label">Punch problems</span>
-<span class="lb-kpi-val" id="kpiPunchIssues">—</span>
-</div>
-</div>
-<div class="lb-tabs-card" style="margin-top:6px;">
-<div class="lb-tabs-head" style="margin:2px 0 8px 0;">
-<h3 class="lb-tabs-title" id="lbActiveCriterionHeading">Top Performers Ranking</h3>
-<span class="lb-hero-sub" id="lbHeroAreaLabel">Highest Duty Hours</span>
-</div>
-<div class="lb-tabs" role="tablist" aria-label="Ranking Criteria Navigation">
-<button class="lb-tab active" data-lb-tab="duty" id="lbTabDutyBtn" role="tab" aria-selected="true" type="button"><span class="lb-tab-label">Duty Hours</span></button>
-<button class="lb-tab" data-lb-tab="ot" id="lbTabOtBtn" role="tab" aria-selected="false" type="button"><span class="lb-tab-label">OT Hours</span></button>
-<button class="lb-tab" data-lb-tab="earned" id="lbTabEarnedBtn" role="tab" aria-selected="false" type="button"><span class="lb-tab-label">Total Earning</span></button>
-<button class="lb-tab" data-lb-tab="punch" id="lbTabPunchBtn" role="tab" aria-selected="false" type="button">
-<span class="lb-tab-label">Punch Fix</span>
-<span class="lb-tab-badge" id="lbPunchTabBadge">0</span>
-</button>
-</div>
-<div class="lb-panel active" data-lb-panel="duty">
-<div id="lbPodiumDuty" class="lb-podium-showcase"></div>
-<div id="lbTopDuty" class="lb-podium"></div>
-<div class="lb-mypos-strip" id="myPosStripDuty">
-<div class="lb-mypos-label">Your position - Duty Hours</div>
-<div class="lb-mypos-row">
-<span class="lb-mypos-id" id="myRankDutyId">—</span>
-<strong class="lb-mypos-pos" id="myRankDutyPos">—</strong>
-</div>
-</div>
-<button class="lb-expand-btn lb-expand-duty" onclick="openLbFullList('duty')" type="button">
-<span id="dutyBtnText">View full Duty list</span>
-<span class="lb-expand-arrow">→</span>
-</button>
-</div>
-<div class="lb-panel" data-lb-panel="ot">
-<div class="lb-panel-head" style="display:none;"><span class="lb-panel-sub">Top 3 by OT</span></div>
-<div id="lbPodiumOT" class="lb-podium-showcase"></div>
-<div id="lbTopOT" class="lb-panel-list"></div>
-<div class="lb-mypos-inline">
-<span class="lb-mypos-inline-label">Your position - OT Hours</span>
-<span class="lb-mypos-inline-id" id="myRankOTId">—</span>
-<strong class="lb-mypos-inline-pos" id="myRankOTPos">—</strong>
-</div>
-<button class="lb-expand-btn" onclick="openLbFullList('ot')" type="button">
-<span id="otBtnText">View full OT list</span>
-<span class="lb-expand-arrow">→</span>
-</button>
-</div>
-<div class="lb-panel" data-lb-panel="earned">
-<div class="lb-panel-head" style="display:none;"><span class="lb-panel-sub">Top 3 by earnings</span></div>
-<div id="lbPodiumEarned" class="lb-podium-showcase"></div>
-<div id="lbTopEarned" class="lb-panel-list"></div>
-<div class="lb-mypos-inline">
-<span class="lb-mypos-inline-label">Your position - Earnings</span>
-<span class="lb-mypos-inline-id" id="myRankEarnedId">—</span>
-<strong class="lb-mypos-inline-pos" id="myRankEarnedPos">—</strong>
-</div>
-<button class="lb-expand-btn" onclick="openLbFullList('earned')" type="button">
-<span id="earnedBtnText">View full Earning list</span>
-<span class="lb-expand-arrow">→</span>
-</button>
-</div>
-<div class="lb-panel" data-lb-panel="punch">
-<div class="lb-panel-head" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-<span class="lb-panel-sub" id="lbPunchPanelSub" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">Employees with In/Out punch problems</span>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="bulkForwardPunchBtn" onclick="openBulkPunchErpForward()">Send summary of the full list to ERP</button>
-</div>
-<div id="lbTopPunch" class="lb-panel-list"></div>
-<button class="lb-expand-btn" id="punchExpandBtn" onclick="openLbFullList('punch')" type="button" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">
-<span id="punchBtnText">View everyone with punch problems</span>
-<span class="lb-expand-arrow">→</span>
-</button>
-</div>
-</div>
-<button onclick="startLeaderboardScan(true)" class="reset-btn lb-rescan-btn">Search again</button>
-</div>
-</div>
-<div class="page" id="page-notices">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>Notice board</h2><p>General notices</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
-<div style="font-size: 13.5px; color: var(--muted); font-weight: 500;">Newest notices on top</div>
-<button onclick="forceRefreshNotices()" class="reset-btn" style="width: auto; margin: 0; padding: 4px 12px; font-size: 13px;">Refresh</button>
-</div>
-<div id="noticesFullList"></div>
-</div>
-</div>
-<div class="page" id="page-more">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>More</h2><p>Other options</p></div>
-</div>
-<div class="more-list">
-<button class="more-item" onclick="switchPage('notices')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
-<span class="mi-text">Notice board<small>Latest official announcements</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="openModeSetupModal()" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-<span class="mi-text">Saved ID Settings<small id="moreModeSummaryText">Set or change your ID number</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="openRateChartModal()" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>
-<span class="mi-text">Rate chart and quick calculation<small>CF, JO and JO A/B rates and calculation</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="switchPage('history')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-<span class="mi-text">My history<small>What you viewed before</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="switchPage('team')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
-<span class="mi-text">ERP Team<small>Report problems here</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" id="moreAdminItemBtn" style="display:none;" onclick="switchPage('admin')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-<span class="mi-text">Admin Control Panel<small>Excel data, rate packages, IDs and ERP team</small></span>
-<span class="mi-chev">›</span>
-</button>
-<button class="more-item" onclick="switchPage('settings')" type="button">
-<span class="mi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-<span class="mi-text">Settings<small>App information</small></span>
-<span class="mi-chev">›</span>
-</button>
-</div>
-<div class="card" style="margin-top: 14px;">
-<div class="card-title">Theme (color)</div>
-<div class="card-sub" style="white-space: normal;">Auto follows your phone settings.</div>
-<div class="theme-seg" role="group" aria-label="Theme">
-<button type="button" data-theme-opt="auto" onclick="setTheme('auto')">Auto</button>
-<button type="button" data-theme-opt="light" onclick="setTheme('light')">Light</button>
-<button type="button" data-theme-opt="dark" onclick="setTheme('dark')">Dark</button>
-</div>
-</div>
-</div>
-<div class="page" id="page-team">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>ERP Team</h2><p>Contact us if you have a problem</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card">
-<div class="info-banner">If you have a problem with the overtime report, In/Out punch or grade, message anyone below directly on WhatsApp.</div>
-<div id="teamList"></div>
-</div>
-</div>
-<div class="page" id="page-history">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>My history</h2><p>What you viewed before</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="card">
-<div id="historyList"></div>
-<button onclick="clearHistory()" class="reset-btn danger-btn">Clear history</button>
-</div>
-</div>
-<div class="page" id="page-settings">
-<div class="app-header">
-<img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
-<div class="header"><h2>Settings</h2><p>App information</p></div>
-<button class="icon-btn theme-toggle" onclick="toggleTheme()" aria-label="Change theme">
-<svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-<svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-</button>
-</div>
-<div class="settings-desktop-grid">
-<div class="card" id="settingsProfileCard">
-<div class="card-title" style="margin-bottom:4px;">Your Saved ID (Registration)</div>
-<div class="card-sub" style="white-space:normal;margin-bottom:12px;">Save your ID once so your current month overtime report loads automatically whenever you open the app.</div>
-<div class="settings-row" id="settingsModeRow" style="display:none;"><span class="label">Active Role</span><span class="value" id="settingsCurrentModeLabel">Employee</span></div>
-<div class="settings-row" id="settingsRegIdRow"><span class="label">Your Saved ID</span><span class="value" id="settingsRegisteredIdLabel" style="color:var(--brand-text);font-size:15px;">Not set</span></div>
-<div class="settings-row" id="settingsInchargeAreaRow" style="display:none;"><span class="label">Default Area</span><span class="value" id="settingsInchargeAreaLabel">All areas</span></div>
-<div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-strong);">
-<label for="settingsNewIdInput" style="margin-top:0;">Enter or change your ID number:</label>
-<div class="incharge-search-row">
-<input type="text" id="settingsNewIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters">
-<button type="button" class="btn-primary" onclick="savePermanentIdFromSettings()">Save</button>
-</div>
-</div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="reset-btn" style="margin-top:0;" onclick="openModeSetupModal()">ID Setup</button>
-<button type="button" class="reset-btn danger-btn" id="settingsDeleteIdBtn" style="margin-top:0;" onclick="deletePermanentIdFromSettings()">Delete Saved ID</button>
-</div>
-<div id="settingsAdminBtnWrap" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-<button type="button" class="btn-primary" style="margin-top:0;background:linear-gradient(135deg,#1E3A8A 0%,#2563EB 100%);" onclick="switchPage('admin')">⚙ Open Admin Control Panel</button>
-</div>
-</div>
-
-<div>
-<div class="card" style="margin-bottom:12px;">
-<div class="card-title">Theme (Appearance)</div>
-<div class="card-sub" style="white-space:normal;">Choose Light, Dark, or Auto phone theme.</div>
-<div class="theme-seg" role="group" aria-label="Theme">
-<button type="button" data-theme-opt="auto" onclick="setTheme('auto')">Auto</button>
-<button type="button" data-theme-opt="light" onclick="setTheme('light')">Light</button>
-<button type="button" data-theme-opt="dark" onclick="setTheme('dark')">Dark</button>
-</div>
-</div>
-<div class="card">
-<div class="settings-row"><span class="label">App Version</span><span class="value">3.2.0 (Enterprise Edition)</span></div>
-<div class="settings-row"><span class="label">Server Engine</span><span class="value">RPPF Cloud Server</span></div>
-<div class="settings-row"><span class="label">Developed by</span><span class="value" style="text-align:right;line-height:1.25;">Md. Ariful Islam<div style="font-size:11.5px;color:var(--muted);font-weight:600;">RPPF Production</div></span></div>
-<div class="settings-row"><span class="label">Facility Filter</span><span class="value" style="color:var(--success);">RPPF Only (Ranking)</span></div>
-<div class="settings-row"><span class="label">Areas Status</span><span class="value" id="settingsAreaCount">—</span></div>
-<div class="settings-row"><span class="label">Security &amp; Compliance</span><span class="value"><button type="button" class="calc-mini-btn" onclick="openComplianceModal()">Compliance Notice</button></span></div>
-<div class="settings-footer">© 2026 RPPF • Zero External Data Sharing</div>
-</div>
-</div>
-</div>
-</div>
-<div class="notice-ticker" id="noticeTicker" hidden onclick="switchPage('notices')" role="button" aria-label="Latest notices"><span class="nt-label">Notice</span><div class="nt-viewport"><div class="nt-track" id="ntTrack"></div></div></div>
-<a class="wa-float" href="javascript:void(0)" onclick="openErpSupportModal()" title="ERP Support" aria-label="ERP Support">
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
-</a>
-
-</div>
-
-  <!-- Modular Admin Scripts (Step 7) -->
-  <script src="js/admin/admin-github.js"></script>
-  <script src="js/admin/admin-core.js?v=20261105nt"></script>
-  <script src="js/admin/admin-tools.js?v=20261105nt"></script>
-  <script src="js/admin/admin-sync-bar.js"></script>
-  <script>
-    ensureDefaultSubsections();
-    wireAllAutocompleteSearchInputs();
-    loadAbsentStore().then(() => {
-      renderAdminAbsentPane();
-    });
-    closeModeSetupModal();
-    document.body.setAttribute('data-page', 'admin');
-    initAdminPage();
-  </script>
+<!-- Layout-only behaviour (sub-tabs, scroll-to-top on section change). No app logic. -->
+<script>
+(function () {
+  document.addEventListener('click', function (e) {
+    var sub = e.target.closest('[data-adm-sub]');
+    if (sub) {
+      var pane = sub.closest('.admin-section-pane');
+      if (!pane) return;
+      pane.querySelectorAll('.ax-subtab').forEach(function (b) { b.classList.toggle('active', b === sub); });
+      pane.querySelectorAll('.ax-sub').forEach(function (s) { s.classList.toggle('active', s.id === sub.getAttribute('data-adm-sub')); });
+      return;
+    }
+    var tab = e.target.closest('.ax-item');
+    if (tab) {
+      var nav = tab.closest('.ax-nav');
+      if (nav && window.matchMedia('(max-width: 959px)').matches) {
+        tab.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        var top = document.querySelector('.ax-main').getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 8;
+        if (window.scrollY > top) window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>

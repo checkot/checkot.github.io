@@ -1,0 +1,390 @@
+/* ==========================================================================
+   ADMIN-V2.CSS — RPPF Admin Panel layout & components
+   Load AFTER tokens.css, base.css and admin.css. Uses the existing design
+   tokens (light/dark), only the `ax-` prefix is new.
+   Structure:  1 Page shell · 2 Navigation · 3 Pane header · 4 Cards & forms
+               5 Buttons · 6 Sub-tabs · 7 Helpers · 8 Login · 9 Overrides
+   ========================================================================== */
+
+/* ---------- 1. PAGE SHELL ---------- */
+body[data-page="admin"] { padding: 0 0 48px 0 !important; }
+
+#page-admin {
+  max-width: 1240px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 12px 16px 48px !important;
+}
+
+#page-admin > .app-header { margin: 0 0 12px; }
+
+.ax-shell { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ax-main  { min-width: 0; }
+
+@media (min-width: 960px) {
+  .ax-shell { grid-template-columns: 232px minmax(0, 1fr); gap: 24px; align-items: start; }
+}
+
+/* ---------- 2. NAVIGATION ---------- */
+/* Mobile: one scrolling pill row that sticks to the top */
+.ax-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 0 -16px;
+  padding: 8px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.ax-nav::-webkit-scrollbar { display: none; }
+.ax-nav-group { display: contents; }
+.ax-nav-label { display: none; }
+
+.ax-nav .admin-tab-btn.ax-item {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-height: 40px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 700;
+  white-space: nowrap !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  text-align: left;
+}
+.ax-item svg {
+  width: 18px; height: 18px; flex-shrink: 0;
+  stroke: currentColor; fill: none; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.ax-nav .admin-tab-btn.ax-item:hover { background: var(--surface-2); color: var(--text); }
+.ax-nav .admin-tab-btn.ax-item.active {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: var(--brand);
+}
+.ax-count {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  line-height: 20px;
+  text-align: center;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+  font-variant-numeric: tabular-nums;
+}
+.ax-item.active .ax-count { background: rgba(255,255,255,.22); color: #fff; border-color: transparent; }
+
+/* Desktop: grouped sidebar */
+@media (min-width: 960px) {
+  .ax-nav {
+    flex-direction: column;
+    gap: 2px;
+    overflow: visible;
+    top: 16px;
+    margin: 0;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .ax-nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .ax-nav-group + .ax-nav-group { margin-top: 10px; }
+  .ax-nav-label {
+    display: block;
+    padding: 0 10px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ax-nav .admin-tab-btn.ax-item {
+    width: 100% !important;
+    min-height: 42px !important;
+    border-radius: var(--radius-sm) !important;
+    border-color: transparent;
+    background: transparent;
+    justify-content: flex-start;
+  }
+  .ax-nav .admin-tab-btn.ax-item.active {
+    background: var(--brand-soft);
+    color: var(--brand-text);
+    border-color: var(--brand-soft-border);
+  }
+  .ax-item.active .ax-count { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+}
+
+/* Status bar (server state + logout) */
+.ax-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 16px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  font-weight: 600;
+}
+@media (min-width: 960px) { .ax-statusbar { margin-top: 0; } }
+.ax-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; box-shadow: 0 0 0 3px var(--success-bg); }
+.ax-statusbar-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Test-repository warning */
+.ax-env {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ---------- 3. PANE HEADER ---------- */
+.ax-pane-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+}
+.ax-pane-head h2 {
+  margin: 0;
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: 1.25;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ax-pane-head p { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--muted); font-weight: 500; }
+
+.ax-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ax-actions--start { margin-top: 14px; }
+
+/* Save / sync result line (filled in by the admin scripts) */
+.ax-savestatus { margin: -4px 0 12px; font-size: var(--fs-sm); font-weight: 700; text-align: left; min-height: 0; }
+.ax-savestatus:empty { display: none; }
+.ax-card .ax-savestatus { margin: 10px 0 0; }
+
+/* ---------- 4. CARDS & FORMS ---------- */
+.ax-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+  margin: 0 0 12px;
+  min-width: 0;
+}
+.ax-card-title { margin: 0 0 4px; font-size: var(--fs-h3); font-weight: 700; color: var(--text); line-height: 1.3; }
+.ax-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.ax-card-head .ax-card-title { margin: 0; }
+.ax-card > .ax-muted:first-of-type { margin-top: 0; }
+
+.ax-grid { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
+@media (min-width: 560px) {
+  .ax-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ax-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ax-span-2  { grid-column: span 2; }
+}
+@media (min-width: 900px) { .ax-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.ax-two { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 1100px) { .ax-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
+.ax-field { display: flex; flex-direction: column; min-width: 0; }
+.ax-field label, .ax-card label { margin: 0 0 4px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.ax-field input, .ax-field select, .ax-field textarea,
+.ax-more-body input, .ax-more-body select, .ax-more-body textarea { margin-top: 0; }
+.ax-field--end { justify-content: flex-end; }
+.ax-gap { margin-top: 14px; }
+
+.ax-inline { display: flex; gap: 8px; align-items: stretch; }
+.ax-inline input, .ax-inline select { margin-top: 0; flex: 1; min-width: 0; }
+.ax-inline--auto { flex-wrap: wrap; }
+.ax-inline--auto input, .ax-inline--auto select { width: auto; min-height: 38px; flex: 0 1 180px; }
+.ax-inline--wrap { flex-wrap: wrap; }
+.ax-inline--wrap .ax-date { flex: 0 0 170px; }
+.ax-inline--wrap input[type="text"] { flex: 1 1 200px; }
+.ax-search { width: 100%; max-width: 240px; min-height: 38px; margin: 0; }
+
+.ax-toolbar { display: grid; gap: 8px; margin-bottom: 10px; grid-template-columns: minmax(0, 1fr); }
+.ax-toolbar input, .ax-toolbar select { margin: 0; min-height: 40px; }
+@media (min-width: 640px) { .ax-toolbar { grid-template-columns: 2fr 1fr 1fr; } }
+
+.ax-label { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.ax-muted { color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; margin: 4px 0 0; }
+.ax-small { font-size: var(--fs-xs); margin-top: 8px; }
+.ax-scroll-x { overflow-x: auto; }
+.ax-listbox { max-height: 240px; overflow: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+
+/* Stat boxes reuse the .admin-stat-box markup */
+.ax-stats { margin: 0 0 14px; }
+.ax-stats .admin-stat-box { background: var(--surface); box-shadow: var(--shadow-sm); padding: 12px 10px; }
+.ax-stats .as-num { font-size: 22px; }
+
+/* Collapsible "advanced" blocks */
+.ax-more { margin-top: 14px; border-top: 1px dashed var(--border-strong); padding-top: 4px; }
+.ax-more > summary {
+  list-style: none;
+  cursor: pointer;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--brand-text);
+  user-select: none;
+}
+.ax-more > summary::-webkit-details-marker { display: none; }
+.ax-more > summary::after { content: "▼"; font-size: 10px; transition: transform .2s ease; }
+.ax-more[open] > summary::after { transform: rotate(180deg); }
+.ax-more-body { padding: 4px 0 2px; }
+
+.ax-holiday-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+/* ---------- 5. BUTTONS ---------- */
+.ax-btn {
+  width: auto;
+  min-height: var(--tap);
+  padding: 8px 16px;
+  border-radius: var(--r-btn);
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.ax-btn--primary { background: var(--brand); color: var(--on-brand); }
+.ax-btn--primary:hover { background: var(--brand-strong); }
+.ax-btn--ghost { background: var(--surface); color: var(--text-2); border-color: var(--border-strong); }
+.ax-btn--ghost:hover { background: var(--surface-2); color: var(--text); }
+.ax-btn--danger { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+.ax-btn--danger:hover { background: var(--danger-bg); filter: brightness(.96); }
+.ax-btn--sm { min-height: var(--tap-sm); padding: 4px 12px; font-size: 12.5px; }
+.ax-btn--block { width: 100%; }
+
+@media (max-width: 559px) {
+  .ax-pane-head .ax-actions { width: 100%; }
+  .ax-pane-head .ax-actions .ax-btn { flex: 1; }
+  .ax-actions--start .ax-btn { flex: 1 1 100%; }
+}
+
+/* ---------- 6. SUB-TABS (segmented control) ---------- */
+.ax-subtabs {
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  gap: 2px;
+  margin: 0 0 14px;
+  padding: 3px;
+  background: var(--surface-3);
+  border-radius: 12px;
+  scrollbar-width: none;
+}
+.ax-subtabs::-webkit-scrollbar { display: none; }
+.ax-subtab {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 6px 16px;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-weight: 700;
+  border: none;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.ax-subtab:hover { background: transparent; color: var(--text); }
+.ax-subtab.active { background: var(--surface); color: var(--brand-text); box-shadow: var(--shadow-sm); }
+.ax-sub { display: none; }
+.ax-sub.active { display: block; animation: pageIn .2s ease; }
+
+/* ---------- 7. LEGACY COMPONENT TWEAKS (markup built by the admin scripts) ---------- */
+#page-admin .adm-kpi-strip { margin-bottom: 14px; }
+#page-admin .adm-table-wrap { border-radius: var(--radius-sm); }
+#page-admin .admin-chip-preview { margin-top: 8px; }
+#page-admin .rate-bucket-tabs { margin-top: 0; }
+#page-admin .admin-section-pane .badge { vertical-align: middle; }
+
+/* ---------- 8. LOGIN ---------- */
+.ax-login {
+  max-width: 420px;
+  margin: 8vh auto 0;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.ax-login h3 { margin: 0 0 4px; font-size: var(--fs-h2); color: var(--text); }
+.ax-login .ax-muted { margin: 0 0 16px; }
+.ax-login input { font-size: 16px; font-weight: 700; padding-right: 56px; }
+.ax-login-btn { margin-top: 14px; }
+
+/* ---------- 9. OVERRIDES OF THE OLD CSS ---------- */
+/* The old stylesheet hides logo + theme toggle on desktop (the main app had a top bar). Admin has none. */
+#page-admin > .app-header .logo { display: block; }
+#page-admin > .app-header .theme-toggle { display: inline-flex; }
+
+/* Batch toolbars: compact controls in one wrapping row (old rules made buttons 100% wide). */
+#page-admin .adm-batch-bar { padding: 8px 12px !important; gap: 8px 12px !important; border-radius: var(--radius-sm) !important; }
+#page-admin .adm-batch-right { flex: 1 1 auto; justify-content: flex-end; gap: 8px; }
+#page-admin .adm-batch-right .adm-table-select,
+#page-admin .adm-batch-right .adm-action-btn {
+  width: auto !important;
+  min-height: 36px !important;
+  padding: 4px 12px !important;
+  font-size: 12.5px !important;
+  border-radius: var(--radius-sm) !important;
+}
+#page-admin .adm-batch-right .adm-table-select { min-width: 150px; padding-right: 28px !important; }
+#page-admin .adm-batch-right .adm-action-btn { font-weight: 700; }
+@media (max-width: 559px) {
+  #page-admin .adm-batch-right { justify-content: stretch; }
+  #page-admin .adm-batch-right .adm-table-select { flex: 1 1 100%; }
+  #page-admin .adm-batch-right .adm-action-btn { flex: 1 1 auto; }
+}
+
+/* Old admin.css gave every .card / hero a max-width; the new shell controls width. */
+#page-admin .ax-card, #page-admin .ax-statusbar { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+#page-admin .ax-card { margin-bottom: 12px !important; }
+
+@media (max-width: 559px) {
+  #page-admin { padding-left: 12px !important; padding-right: 12px !important; }
+  .ax-nav { margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; }
+  .ax-card { padding: 14px 12px; }
+}
