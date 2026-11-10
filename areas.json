@@ -1,5 +1,7 @@
 {
   "areas": {
+    "556515": "Quality Assurance",
+    "556531": "Quality Assurance",
     "RF8327": "Solid Production",
     "CF3036": "Solid Production",
     "CF5101": "Solid Production",
@@ -421,11 +423,19 @@
     "RF5497": "Quality Assurance",
     "RF5523": "Quality Assurance",
     "RF5571": "Quality Assurance",
-    "RF8960": "Quality Assurance",
-    "556515": "Quality Assurance",
-    "556531": "Quality Assurance"
+    "RF8960": "Quality Assurance"
   },
   "details": {
+    "556515": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "556531": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
     "RF21062": {
       "t": "EXEC",
       "g": "F"
@@ -1956,16 +1966,6 @@
     "RF8960": {
       "g": "F",
       "t": "EXEC",
-      "s": ""
-    },
-    "556515": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
-    "556531": {
-      "g": "M",
-      "t": "CAS",
       "s": ""
     }
   },
