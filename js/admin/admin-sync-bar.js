@@ -216,6 +216,7 @@
   /* ---------- areas.json: dirty tracking, merge, save ---------- */
   let lastSeen = null, baseline = null, remoteStr = '', remoteObj = null, timer = null, loading = 0, saving = false;
   const payloadObj = () => ({
+    departments: (typeof getDepartmentsConfig === 'function' ? getDepartmentsConfig() : ((typeof AREA_DEPARTMENTS !== 'undefined' && AREA_DEPARTMENTS) ? AREA_DEPARTMENTS : null)),
     areas: AREA_MAP,
     details: AREA_DETAILS,
     subsections: AREA_SUBS,
@@ -301,6 +302,50 @@
     });
     return out;
   }
+  function mergeDepartmentScoped(theirs, mine, scope) {
+    if (!theirs || typeof theirs !== 'object') return mine;
+    if (scope === 'ALL' || scope === 'dev') {
+      return Object.assign({}, theirs, mine);
+    }
+    const allowedAreas = new Set(typeof getDepartmentAreas === 'function' ? getDepartmentAreas(scope) : []);
+    const resAreas = Object.assign({}, theirs.areas || {});
+    const resDetails = Object.assign({}, theirs.details || {});
+    const resSubs = Object.assign({}, theirs.subsections || {});
+
+    // Scope rule: Only modify IDs belonging to current admin's department areas
+    for (const [id, area] of Object.entries(mine.areas || {})) {
+      const existingArea = theirs.areas ? theirs.areas[id] : null;
+      if (allowedAreas.has(area) || (existingArea && allowedAreas.has(existingArea))) {
+        resAreas[id] = area;
+      }
+    }
+    // Handle deletions in scoped areas
+    for (const [id, area] of Object.entries(theirs.areas || {})) {
+      if (allowedAreas.has(area) && mine.areas && !(id in mine.areas)) {
+        delete resAreas[id];
+      }
+    }
+    // Details
+    for (const [id, det] of Object.entries(mine.details || {})) {
+      const a = resAreas[id];
+      if (a && allowedAreas.has(a)) resDetails[id] = det;
+    }
+    // Subsections
+    for (const [aName, sList] of Object.entries(mine.subsections || {})) {
+      if (allowedAreas.has(aName)) resSubs[aName] = sList;
+    }
+
+    return {
+      departments: theirs.departments || mine.departments || (typeof getDepartmentsConfig === 'function' ? getDepartmentsConfig() : null),
+      areas: resAreas,
+      details: resDetails,
+      subsections: resSubs,
+      designationRates: mine.designationRates || theirs.designationRates,
+      rateTable: mine.rateTable || theirs.rateTable,
+      holidays: mine.holidays || theirs.holidays
+    };
+  }
+
   async function saveAreasNow(fromAuto) {
     if (saving || S.saving) { if (fromAuto) schedule(1500); return false; }
     clearTimeout(timer);
@@ -308,28 +353,38 @@
     if (cur() === baseline) { setState('saved'); return true; }
     saving = true; setState('saving', 'Checking server for newer changes...');
     try {
+      const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
       let merged = false;
-      const t = await fetchRemoteRaw('areas.json');
-      if (t != null) {
-        let theirs = null; try { theirs = JSON.parse(t); } catch (e) {}
-        if (theirs && remoteStr && JSON.stringify(theirs) !== remoteStr) {          // someone else saved after we opened the page
-          const b = remoteObj || {}; const mine = payloadObj();
-          const bRates = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), b.rateTable || {});
-          const tRates = Object.assign(JSON.parse(JSON.stringify(DEFAULT_RATE_TABLE)), theirs.rateTable || {});
-          const m = {
-            areas: merge3(b.areas, mine.areas, theirs.areas), details: merge3(b.details, mine.details, theirs.details),
-            subsections: merge3(b.subsections, mine.subsections, theirs.subsections), designationRates: merge3(b.designationRates, mine.designationRates, theirs.designationRates),
-            rateTable: merge3(bRates, mine.rateTable, tRates),
-            holidays: mine.holidays || theirs.holidays || b.holidays || {}
-          };
-          applyPayload(m); merged = true;
+
+      // Inner helper that performs merge + put with 409 conflict retry
+      async function executeScopedSaveWithRetry(attempt = 1) {
+        const t = await fetchRemoteRaw('areas.json');
+        let theirs = null;
+        if (t != null) {
+          try { theirs = JSON.parse(t); } catch (e) {}
+        }
+        if (theirs) {
+          const scopedMergedPayload = mergeDepartmentScoped(theirs, payloadObj(), scope);
+          applyPayload(scopedMergedPayload);
+          merged = true;
+        }
+        S.msg = attempt > 1 ? 'Retrying save after resolving conflict...' : 'Uploading areas.json...';
+        render();
+        const jsonStr = JSON.stringify(payloadObj(), null, 2);
+        try {
+          await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via Admin Panel (${scope})`);
+        } catch (putErr) {
+          if (attempt === 1 && String(putErr.message || '').includes('409')) {
+            console.warn('[SYNC] 409 Conflict detected on areas.json, refetching latest SHA and retrying...');
+            return await executeScopedSaveWithRetry(2);
+          }
+          throw putErr;
         }
       }
-      S.msg = 'Uploading areas.json...'; render();
-      const jsonStr = JSON.stringify(payloadObj(), null, 2);
-      await githubPutFile('areas.json', utf8ToBase64(jsonStr), 'Update areas.json via RPPF Admin Panel');
+
+      await executeScopedSaveWithRetry(1);
       try { Object.keys(localStorage).forEach(k => { if (k.startsWith(NS + 'renata_lb_') || k.startsWith(NS + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
-      if (merged) { S.msg = 'Merged with newer changes from another device'; try { showToast('Merged with newer server changes and saved', 'info'); } catch (e) {} setState('saved', S.msg); }
+      if (merged) { S.msg = 'Merged with latest server data and saved'; try { showToast('Saved with latest changes safely merged', 'info'); } catch (e) {} setState('saved', S.msg); }
       saving = false; return true;
     } catch (e) {
       saving = false;

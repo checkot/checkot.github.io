@@ -88,6 +88,7 @@ def load_areas_json():
                 with open(p, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     return (
+                        data.get("departments", {}),
                         data.get("areas", {}),
                         data.get("details", {}),
                         data.get("rateTable", DEFAULT_RATE_TABLE),
@@ -96,7 +97,7 @@ def load_areas_json():
                     )
             except Exception as e:
                 print(f"[WARN] Could not parse {p}: {e}")
-    return {}, {}, DEFAULT_RATE_TABLE, {}, {}
+    return {}, {}, {}, DEFAULT_RATE_TABLE, {}, {}
 
 def clean_punch_value(val):
     if val is None:
@@ -448,13 +449,16 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
 
     return absent_dates, len(absent_dates)
 
-def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None, dept="PR"):
+def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None, dept="PR", departments_cfg=None):
     if dept == "QA":
-        # Strict requisition filter: only process employees who are listed in the QA requisition sheet (areas.json)
-        qa_allowed = {k.upper() for k, v in (area_map or {}).items() if v == "Quality Assurance"}
+        # Dynamic QA area lookup from 3-tier departments schema
+        qa_dept = (departments_cfg or {}).get("QA", {})
+        qa_areas = set(qa_dept.get("areas", ["IPQC PR", "IPQC Pack", "Documentation", "Executives", "Unassigned", "Quality Assurance"]))
         alias_map = {"556515": "CL6515", "CL6515": "556515", "556531": "CL6531", "CL6531": "556531"}
         cid = str(c["id"]).upper()
-        if cid not in qa_allowed and alias_map.get(cid) not in qa_allowed:
+        clean_cid = alias_map.get(cid, cid)
+        emp_area = (area_map or {}).get(cid) or (area_map or {}).get(clean_cid)
+        if not emp_area or emp_area not in qa_areas:
             return None
 
     detection = detect_category(c["designation"], c["id"], desig_rates=desig_rates)
@@ -552,7 +556,7 @@ def pick_best_employee(a, b):
         return a if a.get("holidayCount", 0) > b.get("holidayCount", 0) else b
     return a
 
-def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None, desig_rates=None, dept="PR"):
+def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None, desig_rates=None, dept="PR", departments_cfg=None):
     sheet_name = "Work Log" if "Work Log" in wb.sheetnames else wb.sheetnames[0]
     ws = wb[sheet_name]
     rows = list(ws.iter_rows(values_only=True))
@@ -567,7 +571,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     def flush():
         nonlocal cur
         if cur:
-            emp = finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates, dept=dept)
+            emp = finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates, dept=dept, departments_cfg=departments_cfg)
             if emp is not None:
                 out.append(emp)
             cur = None
@@ -890,7 +894,7 @@ def write_archive(month, file_dumps, target_dir=None):
 
 def build_month(named_workbooks, archive=True, update_latest=True, force_month=None, dept="PR", out_dir=None):
     """named_workbooks = [(file_name, openpyxl_workbook), ...] -> writes data/<month>.json (+ archive, + latest)."""
-    area_map, details, rate_table, holidays_cfg, desig_rates = load_areas_json()
+    departments_cfg, area_map, details, rate_table, holidays_cfg, desig_rates = load_areas_json()
     print(f"[INFO] Loaded {len(area_map)} area assignments from areas.json")
 
     all_employees_map = {}
@@ -900,7 +904,7 @@ def build_month(named_workbooks, archive=True, update_latest=True, force_month=N
     for fname, wb in named_workbooks:
         print(f"[INFO] Parsing '{fname}'...")
         try:
-            employees, month_counts = parse_workbook(wb, fname, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates, dept=dept)
+            employees, month_counts = parse_workbook(wb, fname, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates, dept=dept, departments_cfg=departments_cfg)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -939,7 +943,8 @@ def build_month(named_workbooks, archive=True, update_latest=True, force_month=N
         "employees": employees_list
     }
 
-    target_dir = out_dir if out_dir is not None else (DATA_DIR / "qa" if dept == "QA" else DATA_DIR)
+    dept_data_path = (departments_cfg or {}).get(dept, {}).get("dataPath", "data/qa/" if dept == "QA" else "data/")
+    target_dir = out_dir if out_dir is not None else pathlib.Path(dept_data_path)
     target_dir.mkdir(parents=True, exist_ok=True)
     month_file = target_dir / f"{detected_month}.json"
     with open(month_file, "w", encoding="utf-8") as f:

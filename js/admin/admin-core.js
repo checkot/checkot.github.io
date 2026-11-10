@@ -4663,7 +4663,7 @@ function applyAdminScopeUI() {
         sel.innerHTML = '<option value="Quality Assurance">Quality Assurance (QA)</option>';
         sel.value = 'Quality Assurance';
       }
-      adminSelectSectionCard('Quality Assurance');
+      renderAdminSectionCards(); populateAdminAreaSelects(); adminSelectSectionCard(_admCurrentActiveSection || 'Unassigned');
     } else if (scope === 'PR') {
       if (cardSolid) cardSolid.style.display = 'flex';
       if (cardSoftgel) cardSoftgel.style.display = 'flex';
@@ -9425,19 +9425,56 @@ let _admTableSelectedIds = new Set();
 let _admUnassignedList = [];
 let _admUnassignedSelectedIds = new Set();
 
+function renderAdminSectionCards() {
+  const grid = document.getElementById('admSecCardsGrid');
+  if (!grid) return;
+  const scope = getActiveAdminScope();
+  const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
+  if (!areas.includes(_admCurrentActiveSection)) {
+    _admCurrentActiveSection = areas[0] || 'Solid Production';
+  }
+
+  const iconMap = {
+    'Solid Production': '💊',
+    'Softgel Production': '💧',
+    'Packing Hall': '📦',
+    'Overall': '👔',
+    'IPQC PR': '🔍',
+    'IPQC Pack': '📦',
+    'Documentation': '📄',
+    'Executives': '👔',
+    'Unassigned': '⏳'
+  };
+
+  grid.innerHTML = areas.map(areaName => {
+    const icon = iconMap[areaName] || '📂';
+    const count = Object.keys(AREA_MAP || {}).filter(id => AREA_MAP[id] === areaName).length;
+    const title = areaName === 'Overall' ? 'Executives' : areaName;
+    const isActive = (_admCurrentActiveSection === areaName);
+    return `<button type="button" class="adm-sec-card-btn ${isActive ? 'active' : ''}" data-area="${esc(areaName)}" onclick="adminSelectSectionCard('${esc(areaName)}')">
+      <span class="adm-sec-card-icon">${icon}</span>
+      <div class="adm-sec-card-info">
+        <span class="adm-sec-card-title">${esc(title)}</span>
+        <span class="adm-sec-card-sub"><span>${count}</span> employees</span>
+      </div>
+    </button>`;
+  }).join('');
+}
+
 function adminSelectSectionCard(area) {
   _admCurrentActiveSection = area;
   _admCurrentActiveSub = '';
   _admTableSelectedIds.clear();
 
   document.querySelectorAll('.adm-sec-card-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.id === ('secCard' + (area === 'Solid Production' ? 'Solid' : area === 'Softgel Production' ? 'Softgel' : area === 'Packing Hall' ? 'Packing' : area === 'Quality Assurance' ? 'QA' : 'Overall')));
+    btn.classList.toggle('active', btn.getAttribute('data-area') === area || btn.id === ('secCard' + area));
   });
 
   const titleEl = document.getElementById('admCurrentSecName');
   if (titleEl) titleEl.textContent = area === 'Overall' ? 'Executives' : area;
 
-  // Also sync the legacy target area select so legacy handlers work
+  // Sync the area selects
+  populateAdminAreaSelects();
   const legAreaSel = document.getElementById('adminTargetAreaSelect');
   if (legAreaSel) {
     legAreaSel.value = area;
@@ -9447,6 +9484,22 @@ function adminSelectSectionCard(area) {
   adminRenderSubPills();
   adminFilterEmployeeTable();
   adminUpdateAllKpiCounters();
+}
+
+function populateAdminAreaSelects() {
+  const scope = getActiveAdminScope();
+  const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
+  const selectIds = ['adminTargetAreaSelect', 'admBatchTargetAreaSelect', 'admBatchAssignAreaSelect', 'adminEditEmpArea'];
+
+  selectIds.forEach(sId => {
+    const sel = document.getElementById(sId);
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = areas.map(a => `<option value="${esc(a)}">${esc(a === 'Overall' ? 'Executives' : a)}</option>`).join('');
+    if (areas.includes(prev)) sel.value = prev;
+    else if (areas.includes(_admCurrentActiveSection)) sel.value = _admCurrentActiveSection;
+    else if (areas.length > 0) sel.value = areas[0];
+  });
 }
 
 function adminRenderSubPills() {
@@ -9645,13 +9698,12 @@ function adminFilterEmployeeTable() {
     const isChecked = _admTableSelectedIds.has(id);
     const initials = dispName.slice(0, 2).toUpperCase();
 
-    // Section dropdown
-    const secSelect = `<select class="adm-table-select" onchange="adminTableChangeSection('${esc(id)}', this.value)">
-      <option value="Solid Production" ${area === 'Solid Production' ? 'selected' : ''}>Solid</option>
-      <option value="Softgel Production" ${area === 'Softgel Production' ? 'selected' : ''}>Softgel</option>
-      <option value="Packing Hall" ${area === 'Packing Hall' ? 'selected' : ''}>Packing</option>
-      <option value="Overall" ${area === 'Overall' ? 'selected' : ''}>Executives</option>
-    </select>`;
+    // Section dropdown (dynamically scoped by department)
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
+    const deptAreas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
+    const secSelect = `<select class="adm-table-select" onchange="adminTableChangeSection('${esc(id)}', this.value)">` +
+      deptAreas.map(a => `<option value="${esc(a)}" ${area === a ? 'selected' : ''}>${esc(a === 'Overall' ? 'Executives' : a)}</option>`).join('') +
+    `</select>`;
 
     // Sub-section dropdown
     const curSub = meta.sub || '';

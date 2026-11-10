@@ -5172,9 +5172,12 @@ const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hal
 function isListedEmployeeId(id) {
   if (!id) return false;
   const upper = String(id).toUpperCase().trim();
-  const area = (typeof AREA_MAP !== "undefined" && AREA_MAP) ? AREA_MAP[upper] : null;
-  if (area && ALLOWED_SECTIONS.includes(area)) return true;
-  return false;
+  const ID_ALIASES = { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = ID_ALIASES[upper] || upper;
+  const area = (typeof AREA_MAP !== "undefined" && AREA_MAP) ? (AREA_MAP[upper] || AREA_MAP[cleanId]) : null;
+  if (!area) return false;
+  const allAreas = (typeof getAllConfiguredAreas === 'function') ? getAllConfiguredAreas() : ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'IPQC PR', 'IPQC Pack', 'Documentation', 'Executives', 'Unassigned', 'Quality Assurance'];
+  return allAreas.includes(area);
 }
 
 function getListedEmployeesCountBySection() {

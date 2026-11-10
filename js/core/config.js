@@ -74,16 +74,58 @@ const DEPT_ALL = 'ALL';
 const OVERALL_AREA = 'Overall';
 const QA_AREA = 'Quality Assurance';
 
-const PR_AREAS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
-const QA_AREAS = ['Quality Assurance'];
-const QA_SUBSECTIONS = ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives'];
+const DEFAULT_DEPARTMENTS_CONFIG = {
+  PR: {
+    name: "Production",
+    label: "RPPF Production",
+    areas: ["Solid Production", "Softgel Production", "Packing Hall", "Overall"],
+    rawPath: "raw/pr/",
+    dataPath: "data/"
+  },
+  QA: {
+    name: "Quality Assurance",
+    label: "RPPF QA",
+    areas: ["IPQC PR", "IPQC Pack", "Documentation", "Executives", "Unassigned"],
+    rawPath: "raw/qa/",
+    dataPath: "data/qa/"
+  }
+};
 
-function getDeptForArea(area) {
+let AREA_DEPARTMENTS = null;
+
+function getDepartmentsConfig() {
+  if (typeof AREA_DEPARTMENTS === 'object' && AREA_DEPARTMENTS && Object.keys(AREA_DEPARTMENTS).length > 0) {
+    return AREA_DEPARTMENTS;
+  }
+  if (typeof window !== 'undefined' && window.AREA_DEPARTMENTS && typeof window.AREA_DEPARTMENTS === 'object') {
+    return window.AREA_DEPARTMENTS;
+  }
+  return DEFAULT_DEPARTMENTS_CONFIG;
+}
+
+function setDepartmentsConfig(cfg) {
+  if (cfg && typeof cfg === 'object') {
+    AREA_DEPARTMENTS = cfg;
+    if (typeof window !== 'undefined') window.AREA_DEPARTMENTS = cfg;
+  }
+}
+
+function getDepartmentForArea(area) {
   if (!area) return null;
   const a = String(area).trim();
-  if (QA_AREAS.includes(a)) return DEPT_QA;
-  if (PR_AREAS.includes(a)) return DEPT_PR;
-  return null;
+  const depts = getDepartmentsConfig();
+  for (const [code, d] of Object.entries(depts)) {
+    if (Array.isArray(d.areas) && d.areas.includes(a)) {
+      return code;
+    }
+  }
+  // Backward compatibility fallback for legacy data
+  if (a === 'Quality Assurance') return DEPT_QA;
+  return DEPT_PR;
+}
+
+function getDeptForArea(area) {
+  return getDepartmentForArea(area);
 }
 
 function getDeptForEmployeeId(id, areaMap) {
@@ -91,11 +133,42 @@ function getDeptForEmployeeId(id, areaMap) {
   const u = String(id).toUpperCase().trim();
   const map = areaMap || (typeof AREA_MAP !== 'undefined' ? AREA_MAP : {});
   const area = map[u];
-  if (area) {
-    return getDeptForArea(area);
-  }
-  return null;
+  if (!area) return null;
+  return getDepartmentForArea(area);
 }
+
+function getDepartmentAreas(deptCode) {
+  const depts = getDepartmentsConfig();
+  const d = depts[deptCode] || depts['PR'];
+  return Array.isArray(d?.areas) ? d.areas : [];
+}
+
+function getDepartmentDataPath(deptCode) {
+  const depts = getDepartmentsConfig();
+  const d = depts[deptCode] || depts['PR'];
+  return d?.dataPath || 'data/';
+}
+
+function getDepartmentRawPath(deptCode) {
+  const depts = getDepartmentsConfig();
+  const d = depts[deptCode] || depts['PR'];
+  return d?.rawPath || 'raw/pr/';
+}
+
+function getAllConfiguredAreas() {
+  const depts = getDepartmentsConfig();
+  const list = [];
+  for (const d of Object.values(depts)) {
+    if (Array.isArray(d.areas)) list.push(...d.areas);
+  }
+  // Include backward compatibility areas
+  list.push('Quality Assurance', 'Solid Production', 'Softgel Production', 'Packing Hall', 'Overall');
+  return [...new Set(list)];
+}
+
+const PR_AREAS = DEFAULT_DEPARTMENTS_CONFIG.PR.areas;
+const QA_AREAS = DEFAULT_DEPARTMENTS_CONFIG.QA.areas;
+const QA_SUBSECTIONS = ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives'];
 
 const DEFAULT_RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "Contractual (CF)" },
