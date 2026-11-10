@@ -348,7 +348,80 @@
     "RF8941": "Overall",
     "RF23849": "Overall",
     "RF23848": "Overall",
-    "RF20948": "Overall"
+    "RF20948": "Overall",
+    "CL6515": "Quality Assurance",
+    "CL6531": "Quality Assurance",
+    "CF2358": "Quality Assurance",
+    "CF3196": "Quality Assurance",
+    "CF3199": "Quality Assurance",
+    "CF3855": "Quality Assurance",
+    "CF3861": "Quality Assurance",
+    "CF3862": "Quality Assurance",
+    "CF4395": "Quality Assurance",
+    "CF4493": "Quality Assurance",
+    "CF4971": "Quality Assurance",
+    "CF4972": "Quality Assurance",
+    "CF4973": "Quality Assurance",
+    "CF4974": "Quality Assurance",
+    "CF4975": "Quality Assurance",
+    "CF4976": "Quality Assurance",
+    "CF8710": "Quality Assurance",
+    "CF8714": "Quality Assurance",
+    "CF8716": "Quality Assurance",
+    "CF8717": "Quality Assurance",
+    "CF8729": "Quality Assurance",
+    "CF8733": "Quality Assurance",
+    "CF8734": "Quality Assurance",
+    "CF8756": "Quality Assurance",
+    "CF8757": "Quality Assurance",
+    "CF8761": "Quality Assurance",
+    "CF8762": "Quality Assurance",
+    "CF8778": "Quality Assurance",
+    "CF8782": "Quality Assurance",
+    "CF9401": "Quality Assurance",
+    "CF9417": "Quality Assurance",
+    "CF9835": "Quality Assurance",
+    "CF10284": "Quality Assurance",
+    "CF10285": "Quality Assurance",
+    "CF10286": "Quality Assurance",
+    "CF10287": "Quality Assurance",
+    "RF20259": "Quality Assurance",
+    "RF20260": "Quality Assurance",
+    "RF20262": "Quality Assurance",
+    "RF20448": "Quality Assurance",
+    "RF20450": "Quality Assurance",
+    "RF20763": "Quality Assurance",
+    "RF21046": "Quality Assurance",
+    "RF21072": "Quality Assurance",
+    "RF21440": "Quality Assurance",
+    "RF21457": "Quality Assurance",
+    "RF21572": "Quality Assurance",
+    "RF21608": "Quality Assurance",
+    "RF21820": "Quality Assurance",
+    "RF21930": "Quality Assurance",
+    "RF21932": "Quality Assurance",
+    "RF21933": "Quality Assurance",
+    "RF22073": "Quality Assurance",
+    "RF22076": "Quality Assurance",
+    "RF22309": "Quality Assurance",
+    "RF22423": "Quality Assurance",
+    "RF22511": "Quality Assurance",
+    "RF22512": "Quality Assurance",
+    "RF22721": "Quality Assurance",
+    "RF23431": "Quality Assurance",
+    "RF23601": "Quality Assurance",
+    "RF23602": "Quality Assurance",
+    "RF23733": "Quality Assurance",
+    "RF23755": "Quality Assurance",
+    "RF23836": "Quality Assurance",
+    "RF23837": "Quality Assurance",
+    "RF23838": "Quality Assurance",
+    "RF23895": "Quality Assurance",
+    "RF24606": "Quality Assurance",
+    "RF5497": "Quality Assurance",
+    "RF5523": "Quality Assurance",
+    "RF5571": "Quality Assurance",
+    "RF8960": "Quality Assurance"
   },
   "details": {
     "RF21062": {
@@ -1517,6 +1590,371 @@
       "t": "EXEC",
       "g": "F",
       "d": "Assistant Manager"
+    },
+    "CL6515": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "CL6531": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "CF2358": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF3196": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF3199": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF3855": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF3861": {
+      "g": "F",
+      "t": "CF",
+      "s": ""
+    },
+    "CF3862": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4395": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4493": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4971": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4972": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4973": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4974": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4975": {
+      "g": "F",
+      "t": "CF",
+      "s": ""
+    },
+    "CF4976": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8710": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8714": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8716": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8717": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8729": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8733": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8734": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8756": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8757": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8761": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8762": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8778": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF8782": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF9401": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF9417": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF9835": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF10284": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF10285": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF10286": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "CF10287": {
+      "g": "M",
+      "t": "CF",
+      "s": ""
+    },
+    "RF20259": {
+      "g": "M",
+      "t": "JO_B",
+      "s": ""
+    },
+    "RF20260": {
+      "g": "M",
+      "t": "JO_B",
+      "s": ""
+    },
+    "RF20262": {
+      "g": "M",
+      "t": "JO",
+      "s": ""
+    },
+    "RF20448": {
+      "g": "F",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF20450": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF20763": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21046": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21072": {
+      "g": "F",
+      "t": "JO",
+      "s": ""
+    },
+    "RF21440": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21457": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21572": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21608": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21820": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21930": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21932": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF21933": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF22073": {
+      "g": "M",
+      "t": "JO",
+      "s": ""
+    },
+    "RF22076": {
+      "g": "M",
+      "t": "JO",
+      "s": ""
+    },
+    "RF22309": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF22423": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF22511": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF22512": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF22721": {
+      "g": "F",
+      "t": "JO",
+      "s": ""
+    },
+    "RF23431": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23601": {
+      "g": "F",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23602": {
+      "g": "F",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23733": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23755": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23836": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23837": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23838": {
+      "g": "F",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF23895": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF24606": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF5497": {
+      "g": "M",
+      "t": "EXEC",
+      "s": ""
+    },
+    "RF5523": {
+      "g": "M",
+      "t": "JO_B",
+      "s": ""
+    },
+    "RF5571": {
+      "g": "M",
+      "t": "JO_B",
+      "s": ""
+    },
+    "RF8960": {
+      "g": "F",
+      "t": "EXEC",
+      "s": ""
     }
   },
   "subsections": {
