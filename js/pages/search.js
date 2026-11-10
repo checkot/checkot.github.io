@@ -205,7 +205,15 @@ async function findReport() {
       showSearchError(`${month} overtime data has not been uploaded to the server yet.`);
       return;
     }
-    const matchedEmp = fastList.find(e => String(e.id || '').toUpperCase() === searchId);
+    const ID_ALIASES = {
+      'CL6515': '556515', '556515': 'CL6515',
+      'CL6531': '556531', '556531': 'CL6531'
+    };
+    const aliasId = ID_ALIASES[searchId] || null;
+    const matchedEmp = fastList.find(e => {
+      const eid = String(e.id || '').toUpperCase();
+      return eid === searchId || (aliasId && eid === aliasId);
+    });
     if (matchedEmp && isExecHiddenFor(matchedEmp)) {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;

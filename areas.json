@@ -421,7 +421,9 @@
     "RF5497": "Quality Assurance",
     "RF5523": "Quality Assurance",
     "RF5571": "Quality Assurance",
-    "RF8960": "Quality Assurance"
+    "RF8960": "Quality Assurance",
+    "556515": "Quality Assurance",
+    "556531": "Quality Assurance"
   },
   "details": {
     "RF21062": {
@@ -1954,6 +1956,16 @@
     "RF8960": {
       "g": "F",
       "t": "EXEC",
+      "s": ""
+    },
+    "556515": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "556531": {
+      "g": "M",
+      "t": "CAS",
       "s": ""
     }
   },

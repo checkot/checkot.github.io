@@ -80,8 +80,9 @@ DEFAULT_RATE_TABLE = {
 }
 
 def load_areas_json():
-    """Attempts to load areas.json from current directory or parent directory."""
-    for p in [pathlib.Path("areas.json"), pathlib.Path("../areas.json")]:
+    """Attempts to load areas.json from current directory, parent directory, or repo root."""
+    script_root = pathlib.Path(__file__).resolve().parent.parent / "areas.json"
+    for p in [pathlib.Path("areas.json"), pathlib.Path("../areas.json"), script_root]:
         if p.exists():
             try:
                 with open(p, "r", encoding="utf-8") as f:
@@ -448,6 +449,14 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
     return absent_dates, len(absent_dates)
 
 def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None, dept="PR"):
+    if dept == "QA":
+        # Strict requisition filter: only process employees who are listed in the QA requisition sheet (areas.json)
+        qa_allowed = {k.upper() for k, v in (area_map or {}).items() if v == "Quality Assurance"}
+        alias_map = {"556515": "CL6515", "CL6515": "556515", "556531": "CL6531", "CL6531": "556531"}
+        cid = str(c["id"]).upper()
+        if cid not in qa_allowed and alias_map.get(cid) not in qa_allowed:
+            return None
+
     detection = detect_category(c["designation"], c["id"], desig_rates=desig_rates)
     valid = bool(detection["valid"] and detection["category"])
     category = detection["category"] if valid else None
@@ -558,7 +567,9 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     def flush():
         nonlocal cur
         if cur:
-            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates, dept=dept))
+            emp = finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates, dept=dept)
+            if emp is not None:
+                out.append(emp)
             cur = None
 
     # Step A: Auto-detect Empress recognized Government/Company Holidays for this month
