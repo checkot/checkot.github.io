@@ -673,7 +673,7 @@ function init() {
   const orig = window.switchAdminTab;
   window.switchAdminTab = function (t) {
     if (t !== 'inbox' && t !== 'arank') return orig.apply(this, arguments);
-    document.querySelectorAll('.admin-nav-tabs .admin-tab-btn,.admin-section-pane').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-btn, .ax-item, .admin-section-pane').forEach(b => b.classList.remove('active'));
     $(t === 'inbox' ? 'admTabBtnInbox' : 'admTabBtnARank').classList.add('active');
     $(t === 'inbox' ? 'admPaneInbox' : 'admPaneARank').classList.add('active');
     if (t === 'inbox') (typeof loadAreaMap === 'function' ? loadAreaMap() : Promise.resolve()).then(() => renderInbox(true));
@@ -918,7 +918,7 @@ function init() {
   const orig = window.switchAdminTab;
   window.switchAdminTab = function (t) {
     if (t !== 'subtool') return orig.apply(this, arguments);
-    document.querySelectorAll('.admin-nav-tabs .admin-tab-btn,.admin-section-pane').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-btn, .ax-item, .admin-section-pane').forEach(b => b.classList.remove('active'));
     $('admTabBtnSub').classList.add('active'); $('admPaneSub').classList.add('active'); render();
   };
 }

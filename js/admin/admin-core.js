@@ -4745,8 +4745,28 @@ loginCard.style.display = 'none'; dashWrap.style.display = 'block';
 applyAdminScopeUI();
 const ySel = document.getElementById('yearSelect'); const mSel = document.getElementById('monthSelect');
 const admY = document.getElementById('adminPdfYear'); const admM = document.getElementById('adminPdfMonth');
-if (ySel && admY) { admY.innerHTML = ySel.innerHTML; admY.value = ySel.value; }
-if (mSel && admM) admM.value = mSel.value;
+if (admY) {
+  const nowY = new Date().getFullYear();
+  const defYear = (nowY >= 2020 && nowY <= 2032) ? String(nowY) : '2026';
+  if (ySel && ySel.options && ySel.options.length > 0) {
+    admY.innerHTML = ySel.innerHTML;
+    admY.value = ySel.value || defYear;
+  } else if (!admY.options || admY.options.length === 0) {
+    let opts = '';
+    for (let y = 2024; y <= 2032; y++) {
+      opts += '<option value="' + y + '" ' + (String(y) === defYear ? 'selected' : '') + '>' + y + '</option>';
+    }
+    admY.innerHTML = opts;
+    admY.value = defYear;
+  }
+}
+if (admM) {
+  if (mSel && mSel.value) admM.value = mSel.value;
+  else if (!admM.value) {
+    const curMon = String(new Date().getMonth() + 1).padStart(2, '0');
+    admM.value = curMon;
+  }
+}
 const tok = getGhToken();
 const tokInp = document.getElementById('adminGhTokenInput');
 const statusTxt = document.getElementById('adminTokenStatusText');
@@ -4756,7 +4776,7 @@ loadAreaMap().then(() => { updateAdminAreaStats(); renderAdminAreaPreview(); adm
 renderAdminNoticesList();
 }
 function switchAdminTab(tab) {
-  document.querySelectorAll('.admin-nav-tabs .admin-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn, .ax-item').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.admin-section-pane').forEach(p => p.classList.remove('active'));
 
   const tabBtnMap = {
@@ -4787,7 +4807,9 @@ function switchAdminTab(tab) {
   if (pane) pane.classList.add('active');
 
   if (tab === 'areas') {
-    adminSelectSectionCard(_admCurrentActiveSection || 'Solid Production');
+    const scope = getActiveAdminScope();
+    const defaultSec = scope === 'QA' ? 'Quality Assurance' : (_admCurrentActiveSection === 'Quality Assurance' ? 'Solid Production' : (_admCurrentActiveSection || 'Solid Production'));
+    adminSelectSectionCard(defaultSec);
   } else if (tab === 'unassigned') {
     adminScanUnassignedMonthlyEmployees();
   } else if (tab === 'absent') {

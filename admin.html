@@ -641,7 +641,15 @@ document.documentElement.setAttribute('data-theme', t);
             <div id="adminExcelDeptNote" class="info-banner" style="margin-bottom:12px;font-size:12.5px;"></div>
             <p class="ax-muted">Choose the .xlsx exported from Empress. The server converts it with <code>scripts/to_json.py</code>.</p>
             <div class="ax-grid ax-grid--2">
-              <div class="ax-field"><label for="adminPdfYear">Year</label><select id="adminPdfYear" onchange="adminCheckMonthData()"></select></div>
+              <div class="ax-field"><label for="adminPdfYear">Year</label><select id="adminPdfYear" onchange="adminCheckMonthData()">
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                </select></div>
               <div class="ax-field">
                 <label for="adminPdfMonth">Month</label>
                 <select id="adminPdfMonth" onchange="adminCheckMonthData()">
