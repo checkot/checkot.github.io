@@ -1,5 +1,5 @@
 // RENATA Overtime App — Service Worker (Offline PWA + Stale-While-Revalidate)
-const CACHE_NAME = 'checkot-pwa-v20261110-admin-syntax-fix-v1';
+const CACHE_NAME = 'checkot-pwa-v20261110-employee-mgmt-v1';
 
 const PRECACHE_ASSETS = [
   './',
@@ -43,6 +43,9 @@ const PRECACHE_ASSETS = [
   'js/admin/admin-tools.js',
   'js/admin/admin-github.js',
   'js/admin/admin-sync-bar.js',
+  'js/admin/admin-employees.js',
+  'js/admin/admin-compat.js',
+  'css/employee-mgmt.css',
   'areas.json',
   'team.json',
   'notices.json'

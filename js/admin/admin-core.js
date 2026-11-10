@@ -4844,6 +4844,7 @@ const statusTxt = document.getElementById('adminTokenStatusText');
 if (tokInp) tokInp.value = tok;
 if (statusTxt) statusTxt.innerHTML = tok ? 'RPPF Cloud Server is connected - files can be uploaded and optimized directly.' : 'Server Access Key has not been set yet.';
 loadAreaMap().then(() => {
+  if (window.EmpMgmt) EmpMgmt.show();
   renderAdminSectionCards();
   populateAdminAreaSelects();
   adminSelectSectionCard(_admCurrentActiveSection || ((typeof getActiveAdminScope === 'function' && getActiveAdminScope() === 'QA') ? 'Unassigned' : 'Solid Production'));
@@ -4860,6 +4861,7 @@ function switchAdminTab(tab) {
   document.querySelectorAll('.admin-section-pane').forEach(p => p.classList.remove('active'));
 
   const tabBtnMap = {
+    'employees': 'admTabBtnEmployees',
     'absent': 'admTabBtnAbsent',
     'areas': 'admTabBtnAreas',
     'unassigned': 'admTabBtnUnassigned',
@@ -4871,6 +4873,7 @@ function switchAdminTab(tab) {
   };
 
   const paneMap = {
+    'employees': 'admPaneEmployees',
     'absent': 'admPaneAbsent',
     'areas': 'admPaneAreas',
     'unassigned': 'admPaneUnassigned',
@@ -4886,7 +4889,9 @@ function switchAdminTab(tab) {
   if (btn) btn.classList.add('active');
   if (pane) pane.classList.add('active');
 
-  if (tab === 'areas') {
+  if (tab === 'employees') {
+    if (window.EmpMgmt) EmpMgmt.show();
+  } else if (tab === 'areas') {
     const scope = getActiveAdminScope();
     const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
     const defaultSec = (scope === 'QA') ? 'Unassigned' : (areas[0] || 'Solid Production');
