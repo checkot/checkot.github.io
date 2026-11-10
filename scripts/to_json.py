@@ -504,6 +504,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
 
     return {
         "valid": valid,
+        "dept": dept,
         "id": c["id"],
         "name": c["name"][:45],
         "grade": c["designation"],
@@ -937,7 +938,10 @@ def build_month(named_workbooks, archive=True, update_latest=True, force_month=N
     total_req_probs = sum(e.get("requisitionProblemCount", 0) for e in employees_list)
     print(f"[INFO] Detected {total_req_probs} Overtime Requisition Problems across employees.")
 
+    dept_name = (departments_cfg or {}).get(dept, {}).get("name", "Quality Assurance" if dept == "QA" else "Production")
     payload = {
+        "department": dept,
+        "departmentName": dept_name,
         "month": detected_month,
         "updatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "employees": employees_list

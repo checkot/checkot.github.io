@@ -1,8 +1,32 @@
 {
-  "departments": null,
+  "departments": {
+    "PR": {
+      "name": "Production",
+      "label": "RPPF Production",
+      "areas": [
+        "Solid Production",
+        "Softgel Production",
+        "Packing Hall",
+        "Overall"
+      ],
+      "rawPath": "raw/pr/",
+      "dataPath": "data/"
+    },
+    "QA": {
+      "name": "Quality Assurance",
+      "label": "RPPF QA",
+      "areas": [
+        "IPQC PR",
+        "IPQC Pack",
+        "Documentation",
+        "Executives",
+        "Unassigned"
+      ],
+      "rawPath": "raw/qa/",
+      "dataPath": "data/qa/"
+    }
+  },
   "areas": {
-    "556515": "Unassigned",
-    "556531": "Unassigned",
     "RF8327": "Solid Production",
     "CF3036": "Solid Production",
     "CF5101": "Solid Production",
@@ -424,19 +448,11 @@
     "RF5497": "Unassigned",
     "RF5523": "Unassigned",
     "RF5571": "Unassigned",
-    "RF8960": "Unassigned"
+    "RF8960": "Unassigned",
+    "556515": "Unassigned",
+    "556531": "Unassigned"
   },
   "details": {
-    "556515": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
-    "556531": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
     "RF21062": {
       "t": "EXEC",
       "g": "F"
@@ -1967,6 +1983,16 @@
     "RF8960": {
       "g": "F",
       "t": "EXEC",
+      "s": ""
+    },
+    "556515": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "556531": {
+      "g": "M",
+      "t": "CAS",
       "s": ""
     }
   },

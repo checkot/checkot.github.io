@@ -746,7 +746,7 @@ async function loadDir() {
 const syncAreas = () => {
   const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
   let allowed = ALLOWED;
-  if (scope === 'QA') allowed = ['Quality Assurance'];
+  if (scope === 'QA') allowed = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas('QA') : ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives', 'Unassigned'];
   else if (scope === 'PR') allowed = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
   const as = [...new Set(allowed.concat(_dir.map(e => e.area).filter(a => allowed.includes(a))))], key = as.join('|'); if (key === _areasKey) return;
   _areasKey = key; _areas = as; const sel = $('subArea'), cur = sel ? sel.value : ''; if (sel) { sel.innerHTML = as.map(a => `<option>${esc(a)}</option>`).join(''); if (as.includes(cur)) sel.value = cur; }

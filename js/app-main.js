@@ -968,7 +968,7 @@ const u = String(e.id || '').toUpperCase().trim();
 const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
 const subVal = e.sub || e.subsection || d.s || '';
 const mappedArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[u]) ? AREA_MAP[u] : null;
-const fallbackArea = currentDept === 'QA' ? 'Quality Assurance' : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'));
+const fallbackArea = currentDept === 'QA' ? 'Unassigned' : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'));
 const obj = {
 ...e,
 id: u,
@@ -985,9 +985,17 @@ return obj;
 
 // Scope employees by department
 if (currentDept === 'QA') {
-  normalized = normalized.filter(e => e.area === 'Quality Assurance');
+  normalized = normalized.filter(e => {
+    if (e.dept) return e.dept === 'QA';
+    const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(e.area) : ((typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : null);
+    return d === 'QA';
+  });
 } else if (currentDept === 'PR') {
-  normalized = normalized.filter(e => PR_AREAS.includes(e.area) || (!QA_AREAS.includes(e.area)));
+  normalized = normalized.filter(e => {
+    if (e.dept) return e.dept === 'PR';
+    const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(e.area) : ((typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : null);
+    return d === 'PR' || d === null;
+  });
 }
 
 normalized.forEach(applyTypeOverride);

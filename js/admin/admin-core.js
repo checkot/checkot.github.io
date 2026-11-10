@@ -8730,8 +8730,9 @@ function buildMasterEmployeeDirectory() {
     const id = String(rawId).toUpperCase().trim();
     const area = AREA_MAP[rawId];
     if (area && ALLOWED_SECTIONS.includes(area)) {
-      if (scope === 'QA' && area !== 'Quality Assurance') return;
-      if (scope === 'PR' && area === 'Quality Assurance') return;
+      const d = (typeof getDepartmentForArea === 'function') ? getDepartmentForArea(area) : 'PR';
+      if (scope === 'QA' && d !== 'QA') return;
+      if (scope === 'PR' && d !== 'PR') return;
       const meta = getEmpMeta(id);
       map.set(id, {
         id,
