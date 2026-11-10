@@ -144,7 +144,7 @@ async function findReport() {
     empInput?.focus();
     return;
   }
-  const searchId = rawId.toUpperCase().replace(/\s+/g, '');
+  const searchId = rawId.toUpperCase().replace(/[\s\u200B-\u200D\uFEFF]/g, '');
   currentSearchId = searchId;
   currentMonth = month;
   _lbView = false;
@@ -185,9 +185,13 @@ async function findReport() {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;
       if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
-      showSearchError(`"${rawId}" আইডিটি অনুমোদিত আরপিবিএফ সেকশন (সলিড, সফটজেল, প্যাকিং, এক্সিকিউটিভ)-এ তালিকাভুক্ত নয়। শুধুমাত্র তালিকাভুক্ত কর্মচারীদের হিসাব দেখা যাবে। অ্যাডমিন প্যানেল থেকে আইডি তালিকাভুক্ত করুন।`);
+      showSearchError(`"${rawId}" আইডি তালিকাভুক্ত নয়, অ্যাডমিনের সাথে যোগাযোগ করুন।`);
       return;
     }
+
+    const empArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[searchId] : null;
+    const empDept = (typeof getDeptForArea === 'function') ? getDeptForArea(empArea) : (empArea === 'Quality Assurance' ? 'QA' : 'PR');
+    if (typeof setClientDepartment === 'function') setClientDepartment(empDept);
     const prevMonth = getPrevMonthStr(month);
     const [fastList] = await Promise.all([
       fetchMonthPreIndexedData(month),

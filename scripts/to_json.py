@@ -447,7 +447,7 @@ def compute_general_absents_for_employee(daily_records, detected_hols=None, targ
 
     return absent_dates, len(absent_dates)
 
-def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None):
+def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, desig_rates=None, dept="PR"):
     detection = detect_category(c["designation"], c["id"], desig_rates=desig_rates)
     valid = bool(detection["valid"] and detection["category"])
     category = detection["category"] if valid else None
@@ -480,7 +480,11 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         night_amount = 0.0
 
     total_earned = round(ot_amount + holiday_amount + night_amount, 2)
-    area = area_map.get(c["id"], "Packing Hall" if c["isRppf"] else "Other facility")
+    if dept == "QA":
+        default_area = "Quality Assurance"
+    else:
+        default_area = "Packing Hall" if c["isRppf"] else "Other facility"
+    area = area_map.get(c["id"], default_area) if area_map else default_area
     sub_val = details.get(c["id"], {}).get("s", "") if details else ""
 
     req_problems = c.get("requisitionProblems", [])
@@ -539,7 +543,7 @@ def pick_best_employee(a, b):
         return a if a.get("holidayCount", 0) > b.get("holidayCount", 0) else b
     return a
 
-def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None, desig_rates=None):
+def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays_cfg=None, desig_rates=None, dept="PR"):
     sheet_name = "Work Log" if "Work Log" in wb.sheetnames else wb.sheetnames[0]
     ws = wb[sheet_name]
     rows = list(ws.iter_rows(values_only=True))
@@ -554,7 +558,7 @@ def parse_workbook(wb, source_name, area_map, rate_table, details=None, holidays
     def flush():
         nonlocal cur
         if cur:
-            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates))
+            out.append(finalize_excel_employee(cur, source_name, area_map, rate_table, details=details, desig_rates=desig_rates, dept=dept))
             cur = None
 
     # Step A: Auto-detect Empress recognized Government/Company Holidays for this month
@@ -843,10 +847,11 @@ def rebuild_workbook(dump):
     return wb
 
 
-def write_archive(month, file_dumps):
+def write_archive(month, file_dumps, target_dir=None):
     """file_dumps = [(source_file_name, dump_workbook(...)), ...]. One row per line so git diffs / AI reads stay sane."""
-    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
-    path = ARCHIVE_DIR / f"{month}.raw.json"
+    adir = target_dir if target_dir is not None else ARCHIVE_DIR
+    adir.mkdir(parents=True, exist_ok=True)
+    path = adir / f"{month}.raw.json"
     head = {
         "schema": ARCHIVE_SCHEMA,
         "month": month,
@@ -872,7 +877,7 @@ def write_archive(month, file_dumps):
     print(f"[SUCCESS] Archived raw Excel cells: {path} ({os.path.getsize(path):,} bytes)")
 
 
-def build_month(named_workbooks, archive=True, update_latest=True, force_month=None):
+def build_month(named_workbooks, archive=True, update_latest=True, force_month=None, dept="PR", out_dir=None):
     """named_workbooks = [(file_name, openpyxl_workbook), ...] -> writes data/<month>.json (+ archive, + latest)."""
     area_map, details, rate_table, holidays_cfg, desig_rates = load_areas_json()
     print(f"[INFO] Loaded {len(area_map)} area assignments from areas.json")
@@ -884,7 +889,7 @@ def build_month(named_workbooks, archive=True, update_latest=True, force_month=N
     for fname, wb in named_workbooks:
         print(f"[INFO] Parsing '{fname}'...")
         try:
-            employees, month_counts = parse_workbook(wb, fname, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates)
+            employees, month_counts = parse_workbook(wb, fname, area_map, rate_table, details=details, holidays_cfg=holidays_cfg, desig_rates=desig_rates, dept=dept)
             print(f"       -> Extracted {len(employees)} employee records")
             for e in employees:
                 eid = e["id"]
@@ -923,50 +928,89 @@ def build_month(named_workbooks, archive=True, update_latest=True, force_month=N
         "employees": employees_list
     }
 
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    month_file = DATA_DIR / f"{detected_month}.json"
+    target_dir = out_dir if out_dir is not None else (DATA_DIR / "qa" if dept == "QA" else DATA_DIR)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    month_file = target_dir / f"{detected_month}.json"
     with open(month_file, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
-    print(f"[SUCCESS] Saved: {month_file} ({os.path.getsize(month_file):,} bytes)")
+    print(f"[SUCCESS] Saved ({dept}): {month_file} ({os.path.getsize(month_file):,} bytes)")
 
     if archive and file_dumps:
         try:
-            write_archive(detected_month, file_dumps)
+            write_archive(detected_month, file_dumps, target_dir=target_dir)
         except Exception as err:
             # Archive must never break the normal data update.
             print(f"[WARN] Could not write raw archive: {err}")
 
-    if update_latest and len(all_employees_map) >= 50:
-        latest_file = DATA_DIR / "latest.json"
+    min_latest_count = 1 if dept == "QA" else 50
+    if update_latest and len(all_employees_map) >= min_latest_count:
+        latest_file = target_dir / "latest.json"
         with open(latest_file, "w", encoding="utf-8") as f:
             json.dump(payload, f, ensure_ascii=False, indent=2)
-        print(f"[SUCCESS] Saved: {latest_file} ({os.path.getsize(latest_file):,} bytes)")
+        print(f"[SUCCESS] Saved ({dept}): {latest_file} ({os.path.getsize(latest_file):,} bytes)")
     else:
         print(f"[INFO] latest.json not touched (employees={len(all_employees_map)}, update_latest={update_latest}).")
     return detected_month
 
 
 def main():
-    print("=== Empress Excel to JSON Converter ===")
+    print("=== Empress Excel to JSON Converter (Production & QA) ===")
 
     if not RAW_DIR.exists():
-        print(f"[WARN] Directory '{RAW_DIR}' does not exist. Creating it.")
         RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-    xlsx_files = sorted(RAW_DIR.glob("*.xlsx"))
-    if not xlsx_files:
-        print(f"[INFO] No .xlsx files found in '{RAW_DIR}'. Nothing to process.")
+    # 1. Check QA Excel files in raw/qa/
+    raw_qa_dir = RAW_DIR / "qa"
+    qa_files = sorted(raw_qa_dir.glob("*.xlsx")) if raw_qa_dir.exists() else []
+    if qa_files:
+        print(f"[INFO] Found {len(qa_files)} QA Excel file(s) in '{raw_qa_dir}'")
+        named_qa = []
+        for fpath in qa_files:
+            try:
+                named_qa.append((fpath.name, openpyxl.load_workbook(fpath, data_only=True)))
+            except Exception as err:
+                print(f"[ERROR] Failed to open QA file '{fpath.name}': {err}")
+        if named_qa:
+            build_month(named_qa, archive=True, update_latest=True, dept="QA", out_dir=DATA_DIR / "qa")
+
+    # 2. Check PR Excel files in raw/pr/ and top-level raw/
+    raw_pr_dir = RAW_DIR / "pr"
+    pr_files = []
+    if raw_pr_dir.exists():
+        pr_files.extend(sorted(raw_pr_dir.glob("*.xlsx")))
+    for f in sorted(RAW_DIR.glob("*.xlsx")):
+        if f.is_file():
+            pr_files.append(f)
+
+    if pr_files:
+        print(f"[INFO] Found {len(pr_files)} Production Excel file(s)")
+        named_pr = []
+        for fpath in pr_files:
+            try:
+                named_pr.append((fpath.name, openpyxl.load_workbook(fpath, data_only=True)))
+            except Exception as err:
+                print(f"[ERROR] Failed to open Production file '{fpath.name}': {err}")
+        if named_pr:
+            build_month(named_pr, archive=True, update_latest=True, dept="PR", out_dir=DATA_DIR)
+
+    if not qa_files and not pr_files:
+        print(f"[INFO] No .xlsx files found in '{RAW_DIR}', '{raw_qa_dir}', or '{raw_pr_dir}'. Nothing to process.")
         sys.exit(0)
 
-    named = []
-    for fpath in xlsx_files:
-        try:
-            named.append((fpath.name, openpyxl.load_workbook(fpath, data_only=True)))
-        except Exception as err:
-            print(f"[ERROR] Failed to open '{fpath.name}': {err}")
+    # Auto-stage data/qa/ output and clean raw/qa, raw/pr for git commit in manual-excel workflow
+    try:
+        import subprocess
+        subprocess.run("git add data/qa/*.json 2>/dev/null || true", shell=True, check=False)
+        subprocess.run("git rm -f --ignore-unmatch raw/qa/*.xlsx raw/qa/*.XLSX raw/pr/*.xlsx raw/pr/*.XLSX 2>/dev/null || true", shell=True, check=False)
+        for f in list(raw_qa_dir.glob("*.xlsx")) + list(raw_pr_dir.glob("*.xlsx")):
+            try:
+                f.unlink()
+            except Exception:
+                pass
+    except Exception:
+        pass
 
-    build_month(named, archive=True, update_latest=True)
-    print("[SUCCESS] Conversion completed successfully.")
+    print("[SUCCESS] All departmental conversions completed successfully.")
 
 if __name__ == "__main__":
     main()

@@ -65,8 +65,10 @@ function markAllNoticesRead() {
 function updateNoticesBadge() {
   const badge = document.getElementById('noticesBadge');
   if (!badge || !noticesData) return;
+  const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const scopedNotices = noticesData.filter(n => !n.dept || n.dept === 'ALL' || n.dept === dept);
   const read = getReadNotices();
-  const unreadCount = noticesData.filter(n => !read.includes(n.id)).length;
+  const unreadCount = scopedNotices.filter(n => !read.includes(n.id)).length;
   if (unreadCount > 0) {
     badge.style.display = 'inline-block';
     badge.textContent = typeof bn === 'function' ? bn(unreadCount) : unreadCount;
@@ -94,7 +96,13 @@ async function renderNoticesHome() {
     box.innerHTML = '<div class="empty-msg">No notices at the moment.</div>';
     return;
   }
-  const topList = list.slice(0, 3);
+  const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const scoped = list.filter(n => !n.dept || n.dept === 'ALL' || n.dept === dept);
+  if (!scoped.length) {
+    box.innerHTML = '<div class="empty-msg">No notices at the moment.</div>';
+    return;
+  }
+  const topList = scoped.slice(0, 3);
   box.innerHTML = topList.map(renderNoticeItem).join('');
 }
 
@@ -103,11 +111,13 @@ async function renderNoticesPage() {
   if (!box) return;
   box.innerHTML = '<div class="empty-msg" style="padding: 20px;">Loading notices...</div>';
   const list = await loadNoticesData();
-  if (!list || list.length === 0) {
+  const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const scoped = (list || []).filter(n => !n.dept || n.dept === 'ALL' || n.dept === dept);
+  if (!scoped || scoped.length === 0) {
     box.innerHTML = '<div class="empty-msg">No notices at the moment.</div>';
     return;
   }
-  box.innerHTML = list.map(renderNoticeItem).join('');
+  box.innerHTML = scoped.map(renderNoticeItem).join('');
   markAllNoticesRead();
 }
 

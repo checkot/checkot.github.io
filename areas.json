@@ -1562,7 +1562,13 @@
       "QA / Compliance",
       "ERP & Planning"
     ],
-    "__deleted_subs__": []
+    "__deleted_subs__": [],
+    "Quality Assurance": [
+      "IPQC PR",
+      "IPQC Pack",
+      "Documentation",
+      "Executives"
+    ]
   },
   "designationRates": {
     "officer a": "R_55",

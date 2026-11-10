@@ -8,8 +8,17 @@ function getPreferredId() {
 
 function setPreferredId(id) {
   try {
-    if (id) localStorage.setItem(PREFERRED_ID_KEY, String(id).toUpperCase().trim());
-    else localStorage.removeItem(PREFERRED_ID_KEY);
+    if (id) {
+      localStorage.setItem(PREFERRED_ID_KEY, String(id).toUpperCase().trim());
+    } else {
+      localStorage.removeItem(PREFERRED_ID_KEY);
+      if (typeof CLIENT_DEPT_KEY !== 'undefined') {
+        localStorage.removeItem(CLIENT_DEPT_KEY);
+        sessionStorage.removeItem(CLIENT_DEPT_KEY);
+      }
+      if (typeof clearDepartmentCaches === 'function') clearDepartmentCaches();
+      if (typeof updateClientBranding === 'function') updateClientBranding('NEUTRAL');
+    }
   } catch (e) {}
 }
 

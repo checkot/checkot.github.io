@@ -943,24 +943,37 @@ localStorage.setItem(MONTH_DATA_CACHE_PREFIX + month, JSON.stringify({ ts: Date.
 if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout: 3000 }); else setTimeout(run, 400);
 }
 async function _fetchMonthImpl(month, forceFresh = false, persist = true) {
-if (!forceFresh && monthIndexMemoryCache[month]) {
-if (persist && !_monthPersisted[month]) { _monthPersisted[month] = true; persistMonthCache(month, monthIndexMemoryCache[month]); }
-return monthIndexMemoryCache[month];
+const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const memKey = (currentDept === 'QA' ? 'qa_' : '') + month;
+if (!forceFresh && monthIndexMemoryCache[memKey]) {
+if (persist && !_monthPersisted[memKey]) { _monthPersisted[memKey] = true; persistMonthCache(memKey, monthIndexMemoryCache[memKey]); }
+return monthIndexMemoryCache[memKey];
 }
 try {
-const data = await fetchJsonResource(`data/${month}.json`);
+let data = null;
+if (currentDept === 'QA') {
+  try {
+    data = await fetchJsonResource(`data/qa/${month}.json`);
+  } catch (errQA) {
+    data = await fetchJsonResource(`data/${month}.json`);
+  }
+} else {
+  data = await fetchJsonResource(`data/${month}.json`);
+}
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : null);
 if (list && list.length > 0) {
 await loadAreaMap();
-const normalized = list.map(e => {
+let normalized = list.map(e => {
 const u = String(e.id || '').toUpperCase().trim();
 const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
 const subVal = e.sub || e.subsection || d.s || '';
+const mappedArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[u]) ? AREA_MAP[u] : null;
+const fallbackArea = currentDept === 'QA' ? 'Quality Assurance' : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'));
 const obj = {
 ...e,
 id: u,
 isRppf: e.isRppf !== false,
-area: (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[u]) ? AREA_MAP[u] : (e.area && e.area !== 'Not on the list' ? e.area : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'))),
+area: mappedArea || e.area || fallbackArea,
 sub: subVal,
 subsection: subVal
 };
@@ -969,10 +982,18 @@ getEmpOtDays(obj);
 didEmpWorkNightOnLastDay(obj, month);
 return obj;
 });
+
+// Scope employees by department
+if (currentDept === 'QA') {
+  normalized = normalized.filter(e => e.area === 'Quality Assurance');
+} else if (currentDept === 'PR') {
+  normalized = normalized.filter(e => PR_AREAS.includes(e.area) || (!QA_AREAS.includes(e.area)));
+}
+
 normalized.forEach(applyTypeOverride);
-monthIndexMemoryCache[month] = normalized;
+monthIndexMemoryCache[memKey] = normalized;
 getMonthDatasetMeta(month);
-if (persist) { _monthPersisted[month] = true; persistMonthCache(month, normalized); }
+if (persist) { _monthPersisted[memKey] = true; persistMonthCache(memKey, normalized); }
 return normalized;
 }
 } catch (e) {
@@ -1196,6 +1217,90 @@ const hasCats = Array.isArray(d.c) && d.c.length > 0;
 if (!d.g && !d.t && !d.s && !hasCats) delete AREA_DETAILS[id];
 });
 }
+
+function getClientDepartment() {
+  const savedId = (typeof getMyId === 'function') ? getMyId() : null;
+  if (savedId && typeof AREA_MAP !== 'undefined' && AREA_MAP[savedId]) {
+    const area = AREA_MAP[savedId];
+    if (typeof getDeptForArea === 'function') {
+      const d = getDeptForArea(area);
+      if (d) return d;
+    }
+  }
+  try {
+    return sessionStorage.getItem(CLIENT_DEPT_KEY) || localStorage.getItem(CLIENT_DEPT_KEY) || DEPT_PR;
+  } catch (e) {
+    return DEPT_PR;
+  }
+}
+
+function clearDepartmentCaches(prevDept, newDept) {
+  if (typeof monthIndexMemoryCache !== 'undefined') {
+    Object.keys(monthIndexMemoryCache).forEach(k => delete monthIndexMemoryCache[k]);
+  }
+  if (typeof _monthPersisted !== 'undefined') {
+    Object.keys(_monthPersisted).forEach(k => delete _monthPersisted[k]);
+  }
+  if (typeof _monthInflight !== 'undefined') {
+    Object.keys(_monthInflight).forEach(k => delete _monthInflight[k]);
+  }
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith(MONTH_DATA_CACHE_PREFIX) || k.startsWith(CACHE_PREFIX) || k.startsWith(COMPARE_CACHE_PREFIX) || k.startsWith(LEADERBOARD_PREFIX))) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch (e) {}
+
+  const daySum = document.getElementById('daySummaryGrid');
+  if (daySum) daySum.style.display = 'none';
+  const cmpRes = document.getElementById('compareResult');
+  if (cmpRes) cmpRes.style.display = 'none';
+  const greetBox = document.getElementById('workerGreetingBox');
+  if (greetBox) greetBox.style.display = 'none';
+  document.body.classList.remove('has-result');
+}
+
+function setClientDepartment(dept) {
+  if (!dept) return;
+  const prev = sessionStorage.getItem(CLIENT_DEPT_KEY) || localStorage.getItem(CLIENT_DEPT_KEY);
+  if (prev && prev !== dept) {
+    clearDepartmentCaches(prev, dept);
+  }
+  try {
+    sessionStorage.setItem(CLIENT_DEPT_KEY, dept);
+    localStorage.setItem(CLIENT_DEPT_KEY, dept);
+  } catch (e) {}
+  updateClientBranding(dept);
+}
+
+function updateClientBranding(dept) {
+  const isQA = (dept === 'QA');
+  const h2 = document.getElementById('mainHeaderH2') || (typeof document.querySelector === 'function' ? document.querySelector('#mainHeader h2') : null);
+  const p = document.getElementById('mainHeaderP') || (typeof document.querySelector === 'function' ? document.querySelector('#mainHeader p') : null);
+  if (h2) h2.textContent = isQA ? 'RPPF QA' : 'RPPF Production';
+  if (p) {
+    const activeSpan = (typeof p.querySelector === 'function') ? p.querySelector('span') : null;
+    const activeHtml = activeSpan ? activeSpan.outerHTML : '';
+    p.innerHTML = (isQA ? 'QA Overtime report and calculator • ' : 'Overtime report and calculator • ') + activeHtml;
+  }
+
+  const lbSub = document.getElementById('lbSubtitle');
+  if (lbSub) {
+    lbSub.textContent = isQA ? 'Quality Assurance (QA) Section' : 'Production Sections';
+  }
+
+  if (typeof populateAreaDropdown === 'function') populateAreaDropdown();
+}
+
+window.getClientDepartment = getClientDepartment;
+window.clearDepartmentCaches = clearDepartmentCaches;
+window.setClientDepartment = setClientDepartment;
+window.updateClientBranding = updateClientBranding;
+
 function getAreaForId(id, isRppf = true) {
 if (!id) return "Not on the list";
 const upperId = String(id).toUpperCase().trim();
@@ -1203,19 +1308,23 @@ if (AREA_MAP[upperId]) return AREA_MAP[upperId];
 return isRppf ? "Not on the list" : "Other facility";
 }
 function populateAreaDropdown() {
-const sel = document.getElementById('areaFilter');
-if (!sel) return;
-const standardAreas = ["Solid Production", "Softgel Production", "Packing Hall", OVERALL_AREA];
-const jsonAreas = [...new Set(Object.values(AREA_MAP))].filter(Boolean);
-const allAreas = [...new Set([...standardAreas, ...jsonAreas])].filter(a => a !== OVERALL_AREA || getAppMode() === 'incharge').sort((a, b) => a.localeCompare(b));
-let html = '<option value="all">All areas</option>';
-allAreas.forEach(a => {
-const lbl = a === OVERALL_AREA ? 'Executives' : a;
-html += `<option value="${esc(a)}">${esc(lbl)}</option>`;
-});
-const currentVal = sel.value || 'all';
-sel.innerHTML = html;
-if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
+  const sel = document.getElementById('areaFilter');
+  if (!sel) return;
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  let standardAreas = (currentDept === 'QA') ? QA_AREAS : PR_AREAS;
+  const jsonAreas = [...new Set(Object.values(AREA_MAP || {}))].filter(Boolean).filter(a => {
+    if (currentDept === 'QA') return QA_AREAS.includes(a);
+    return PR_AREAS.includes(a);
+  });
+  const allAreas = [...new Set([...standardAreas, ...jsonAreas])].filter(a => a !== OVERALL_AREA || getAppMode() === 'incharge').sort((a, b) => a.localeCompare(b));
+  let html = `<option value="all">All ${currentDept === 'QA' ? 'QA ' : ''}areas</option>`;
+  allAreas.forEach(a => {
+    const lbl = a === OVERALL_AREA ? 'Executives' : (a === 'Quality Assurance' ? 'Quality Assurance (QA)' : a);
+    html += `<option value="${esc(a)}">${esc(lbl)}</option>`;
+  });
+  const currentVal = sel.value || 'all';
+  sel.innerHTML = html;
+  if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
 }
 /* function updateSettingsAreaCount moved to js/pages/ */
 
@@ -2319,7 +2428,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 /* const ADMIN_PASS_KEY defined in js/core/config.js */
 /* const ADMIN_SESSION_KEY defined in js/core/config.js */
 /* const ADMIN_GH_TOKEN_KEY defined in js/core/config.js */
-const DEFAULT_ADMIN_PASS = 'admin1234';
+/* DEFAULT_ADMIN_PASS declared in js/core/config.js */
 function getAdminPassword() { try { return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_ADMIN_PASS; } catch (e) { return DEFAULT_ADMIN_PASS; } }
 function isAdminLoggedIn() { try { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' || localStorage.getItem(ADMIN_SESSION_KEY) === '1'; } catch (e) { return false; } }
 function setAdminLoggedIn(val) {
@@ -5050,29 +5159,13 @@ function renderQuickAbsentModalList() {
 /* ==========================================================================
    STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
-const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'Quality Assurance'];
 
 function isListedEmployeeId(id) {
   if (!id) return false;
   const upper = String(id).toUpperCase().trim();
   const area = (typeof AREA_MAP !== "undefined" && AREA_MAP) ? AREA_MAP[upper] : null;
   if (area && ALLOWED_SECTIONS.includes(area)) return true;
-  // Check loaded month data
-  for (const m of Object.keys(monthIndexMemoryCache || {})) {
-    const list = monthIndexMemoryCache[m];
-    if (Array.isArray(list)) {
-      const found = list.find(x => String(x && x.id || "").toUpperCase() === upper);
-      if (found) {
-        if (!found.area || found.area === "Not on the list" || ALLOWED_SECTIONS.includes(found.area)) return true;
-      }
-    }
-  }
-  // If AREA_MAP is empty or unpopulated, or ID matches standard employee pattern:
-  if (!area || ALLOWED_SECTIONS.includes(area)) {
-    if (/^[CR]F\d+$/i.test(upper) || /^CL\d+$/i.test(upper) || /^\d{5,8}$/.test(upper)) {
-      return true;
-    }
-  }
   return false;
 }
 

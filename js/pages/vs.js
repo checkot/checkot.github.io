@@ -582,6 +582,13 @@ async function runComparison(customIdsList, customHeaderNote) {
     showToast("Duplicate ID numbers entered. Enter different IDs.", "warn");
     return;
   }
+  const _depts = _cmpIds.map(id => typeof getDeptForEmployeeId === 'function' ? getDeptForEmployeeId(id) : null).filter(Boolean);
+  if (_depts.length > 1 && new Set(_depts).size > 1) {
+    showToast("ভিন্ন ডিপার্টমেন্টের কর্মীদের (Production ও QA) একসাথে তুলনা করা যাবে না।", "warn");
+    if (statusDiv) statusDiv.innerText = "";
+    if (compareBtn) compareBtn.disabled = false;
+    return;
+  }
   
   if (statusDiv) { statusDiv.style.color = "var(--primary-blue)"; statusDiv.innerText = "Comparing..."; }
   if (compareBtn) compareBtn.disabled = true;

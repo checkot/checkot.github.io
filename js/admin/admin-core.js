@@ -4283,7 +4283,139 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 const ADMIN_PASS_KEY = STORAGE_NAMESPACE + 'renata_admin_pass_v1';
 const ADMIN_SESSION_KEY = STORAGE_NAMESPACE + 'renata_admin_logged_in_v1';
 const ADMIN_GH_TOKEN_KEY = STORAGE_NAMESPACE + 'renata_gh_pat_v1';
-const DEFAULT_ADMIN_PASS = 'admin1234';
+// Department & Multi-Admin Authentication Setup
+const DEPT_PR = 'PR';
+const DEPT_QA = 'QA';
+const DEPT_ALL = 'ALL';
+
+const QA_AREA = 'Quality Assurance';
+const PR_AREAS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const QA_AREAS = ['Quality Assurance'];
+const QA_SUBSECTIONS = ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives'];
+
+function getDeptForArea(area) {
+  if (!area) return null;
+  const a = String(area).trim();
+  if (QA_AREAS.includes(a)) return DEPT_QA;
+  if (PR_AREAS.includes(a)) return DEPT_PR;
+  return null;
+}
+
+function getDeptForEmployeeId(id, areaMap) {
+  if (!id) return null;
+  const u = String(id).toUpperCase().trim();
+  const map = areaMap || (typeof AREA_MAP !== 'undefined' ? AREA_MAP : {});
+  const area = map[u];
+  if (area) return getDeptForArea(area);
+  return null;
+}
+
+const AUTH_SALT = 'RENATA_RPPF_SECURE_SALT_2026_#$!';
+const ADMIN_ACCOUNTS = {
+  "pradmin": {
+    hash: "a6b1cc0a9fc580c99a77a5041126061b047bf9a77842ce053b6d9ce366c5ad30",
+    saltedHash: "605a7fe86f537bf67f1f46c2df8c43c1003c0cdf556af4d4f783ab310aab10fb",
+    role: "pr_admin",
+    scope: "PR",
+    title: "Production Admin"
+  },
+  "qaadmin": {
+    hash: "b98040b4284d882ed3234760b28b9e01e355b650bbedc97450b619872d317b41",
+    saltedHash: "6280fe43813b7f17b1485c49e0a5cad47e58ae096c1a28a3f4ef19c40d15eb5e",
+    role: "qa_admin",
+    scope: "QA",
+    title: "QA Admin"
+  },
+  "dev": {
+    hash: "b1898424d4aa6d7b94d04d87531fd05b62b828dee1bb31558219afb08ce79df5",
+    saltedHash: "c0dd500f68d861e0f91b880d09163470b69607b1c4fc3a8310766cfc4cb5e9bc",
+    role: "super_admin",
+    scope: "ALL",
+    title: "Developer / Super Admin"
+  }
+};
+
+async function computeSha256(text) {
+  const str = String(text || '');
+  if (typeof crypto !== 'undefined' && crypto.subtle && typeof TextEncoder !== 'undefined') {
+    try {
+      const buffer = new TextEncoder().encode(str);
+      const digest = await crypto.subtle.digest('SHA-256', buffer);
+      return Array.from(new Uint8Array(digest))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (e) {}
+  }
+  return _sha256Fallback(str);
+}
+
+function _sha256Fallback(ascii) {
+  function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+  const mathPow = Math.pow;
+  const maxWord = mathPow(2, 32);
+  let lengthProperty = 'length';
+  let i, j;
+  let result = '';
+  const words = [];
+  const asciiBitLength = ascii[lengthProperty] * 8;
+  const hash = [];
+  const k = [];
+  let primeCounter = 0;
+  const isComposite = {};
+  for (let candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+      hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+      k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+    }
+  }
+  ascii += '\x80';
+  while (ascii[lengthProperty] % 64 - 56) ascii += '\x00';
+  for (i = 0; i < ascii[lengthProperty]; i++) {
+    j = ascii.charCodeAt(i);
+    words[i >> 2] |= j << ((3 - i) % 4) * 8;
+  }
+  words[words[lengthProperty]] = (asciiBitLength / maxWord) | 0;
+  words[words[lengthProperty]] = asciiBitLength;
+  for (j = 0; j < words[lengthProperty];) {
+    const w = words.slice(j, j += 16);
+    const oldHash = hash.slice(0);
+    for (i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const s0 = i < 16 ? w[i] : (w[i] = (
+        w[i - 16] +
+        (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) +
+        w[i - 7] +
+        (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+      ) | 0);
+      const s1 = rightRotate(hash[0], 2) ^ rightRotate(hash[0], 13) ^ rightRotate(hash[0], 22);
+      const ch = (hash[0] & hash[1]) ^ (~hash[0] & hash[2]);
+      const temp1 = hash[7] + (rightRotate(hash[4], 6) ^ rightRotate(hash[4], 11) ^ rightRotate(hash[4], 25)) +
+        ((hash[4] & hash[5]) ^ (~hash[4] & hash[6])) + k[i] + s0;
+      const temp2 = s1 + ((hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]));
+      hash[7] = hash[6];
+      hash[6] = hash[5];
+      hash[5] = hash[4];
+      hash[4] = (hash[3] + temp1) | 0;
+      hash[3] = hash[2];
+      hash[2] = hash[1];
+      hash[1] = hash[0];
+      hash[0] = (temp1 + temp2) | 0;
+    }
+    for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+  }
+  for (i = 0; i < 8; i++) {
+    for (let b = 3; b >= 0; b--) {
+      const byte = (hash[i] >> (8 * b)) & 255;
+      result += (byte < 16 ? '0' : '') + byte.toString(16);
+    }
+  }
+  return result;
+}
+
+const ADMIN_USER_KEY = STORAGE_NAMESPACE + 'renata_admin_user_v2';
+const ADMIN_SCOPE_KEY = STORAGE_NAMESPACE + 'renata_admin_scope_v2';
+/* DEFAULT_ADMIN_PASS declared in js/core/config.js */
 function getAdminPassword() { try { return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_ADMIN_PASS; } catch (e) { return DEFAULT_ADMIN_PASS; } }
 function isAdminLoggedIn() { try { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' || localStorage.getItem(ADMIN_SESSION_KEY) === '1'; } catch (e) { return false; } }
 function setAdminLoggedIn(val) {
@@ -4293,26 +4425,287 @@ else { sessionStorage.removeItem(ADMIN_SESSION_KEY); localStorage.removeItem(ADM
 } catch (e) {}
 }
 
+function getAdminUser() {
+  try { return sessionStorage.getItem(ADMIN_USER_KEY) || localStorage.getItem(ADMIN_USER_KEY) || ''; } catch (e) { return ''; }
+}
+
+function getActiveAdminScope() {
+  const user = getAdminUser();
+  if (user.toLowerCase() === 'dev') {
+    return sessionStorage.getItem('admin_dev_view_scope') || 'ALL';
+  }
+  return sessionStorage.getItem(ADMIN_SCOPE_KEY) || localStorage.getItem(ADMIN_SCOPE_KEY) || 'PR';
+}
+
 function toggleAdminPassVis() { const inp = document.getElementById('adminPassInput'); if (inp) inp.type = inp.type === 'password' ? 'text' : 'password'; }
 function toggleGhTokenVis() { const inp = document.getElementById('adminGhTokenInput'); if (inp) inp.type = inp.type === 'password' ? 'text' : 'password'; }
 function clearAdminLoginError() { document.getElementById('adminLoginError')?.classList.remove('show'); }
-function handleAdminLogin() {
-const inp = document.getElementById('adminPassInput');
-const raw = (inp ? inp.value : '').trim();
-const expected = getAdminPassword();
-if (raw !== expected) {
-document.getElementById('adminLoginError')?.classList.add('show');
-showToast('Wrong admin password!', 'error');
-if (inp) inp.focus();
-return;
+
+const LOGIN_ATTEMPTS_KEY = STORAGE_NAMESPACE + 'renata_adm_login_attempts';
+const LOGIN_LOCKOUT_KEY = STORAGE_NAMESPACE + 'renata_adm_lockout_ts';
+
+function checkAdminLoginLockout() {
+  try {
+    const lockUntil = parseInt(localStorage.getItem(LOGIN_LOCKOUT_KEY) || '0', 10);
+    if (lockUntil && Date.now() < lockUntil) {
+      return Math.ceil((lockUntil - Date.now()) / 1000);
+    }
+  } catch (e) {}
+  return 0;
 }
-setAdminLoggedIn(true);
-if (inp) inp.value = '';
-clearAdminLoginError();
-showToast('Welcome to the admin panel', 'success');
-initAdminPage();
+
+function recordFailedLoginAttempt() {
+  try {
+    const attempts = parseInt(localStorage.getItem(LOGIN_ATTEMPTS_KEY) || '0', 10) + 1;
+    localStorage.setItem(LOGIN_ATTEMPTS_KEY, String(attempts));
+    if (attempts >= 5) {
+      const lockDurationMs = 3 * 60 * 1000;
+      localStorage.setItem(LOGIN_LOCKOUT_KEY, String(Date.now() + lockDurationMs));
+      localStorage.removeItem(LOGIN_ATTEMPTS_KEY);
+      return 180;
+    }
+  } catch (e) {}
+  return 0;
 }
-function handleAdminLogout() { setAdminLoggedIn(false); showToast('Logged out of the admin panel.', 'info'); initAdminPage(); }
+
+function clearLoginAttempts() {
+  try {
+    localStorage.removeItem(LOGIN_ATTEMPTS_KEY);
+    localStorage.removeItem(LOGIN_LOCKOUT_KEY);
+  } catch (e) {}
+}
+
+async function handleAdminLogin() {
+  const waitSec = checkAdminLoginLockout();
+  if (waitSec > 0) {
+    const errEl = document.getElementById('adminLoginError');
+    if (errEl) {
+      errEl.textContent = `Too many failed attempts! Locked for ${waitSec}s`;
+      errEl.classList.add('show');
+    }
+    showToast(`Too many failed attempts! Try again in ${waitSec}s`, 'error');
+    return;
+  }
+
+  const idInp = document.getElementById('adminIdInput');
+  const passInp = document.getElementById('adminPassInput');
+  const rawId = (idInp ? idInp.value : '').trim();
+  const rawPass = (passInp ? passInp.value : '').trim();
+
+  if (!rawPass) {
+    document.getElementById('adminLoginError')?.classList.add('show');
+    showToast('Enter password', 'warn');
+    if (passInp) passInp.focus();
+    return;
+  }
+
+  let passHash = '';
+  let saltedHash = '';
+  const salt = (typeof AUTH_SALT !== 'undefined') ? AUTH_SALT : 'RENATA_RPPF_SECURE_SALT_2026_#$!';
+  if (typeof computeSha256 === 'function') {
+    passHash = await computeSha256(rawPass);
+    saltedHash = await computeSha256(rawPass + salt);
+  }
+
+  let matched = null;
+  if (typeof ADMIN_ACCOUNTS !== 'undefined') {
+    for (const [accId, accData] of Object.entries(ADMIN_ACCOUNTS)) {
+      if (accId.toLowerCase() === rawId.toLowerCase()) {
+        if ((accData.saltedHash && accData.saltedHash === saltedHash) || (accData.hash && accData.hash === passHash)) {
+          matched = { id: accId, ...accData };
+          break;
+        }
+      }
+    }
+  }
+
+  if (!matched) {
+    await new Promise(r => setTimeout(r, 600)); // Artificial delay against brute-force
+    const lockedSec = recordFailedLoginAttempt();
+    const errEl = document.getElementById('adminLoginError');
+    if (lockedSec > 0) {
+      if (errEl) {
+        errEl.textContent = `5 failed attempts! Locked for ${lockedSec}s`;
+        errEl.classList.add('show');
+      }
+      showToast('5 failed attempts! Admin login locked for 3 minutes.', 'error');
+    } else {
+      if (errEl) {
+        errEl.textContent = 'Invalid Admin ID or Password!';
+        errEl.classList.add('show');
+      }
+      showToast('Invalid Admin ID or Password!', 'error');
+    }
+    if (passInp) passInp.focus();
+    return;
+  }
+
+  clearLoginAttempts();
+  setAdminLoggedIn(true);
+  try {
+    sessionStorage.setItem(ADMIN_USER_KEY, matched.id);
+    localStorage.setItem(ADMIN_USER_KEY, matched.id);
+    sessionStorage.setItem(ADMIN_SCOPE_KEY, matched.scope);
+    localStorage.setItem(ADMIN_SCOPE_KEY, matched.scope);
+  } catch (e) {}
+
+  if (idInp) idInp.value = '';
+  if (passInp) passInp.value = '';
+  clearAdminLoginError();
+  showToast(`Welcome ${matched.title}`, 'success');
+  initAdminPage();
+}
+
+function handleAdminLogout() {
+  setAdminLoggedIn(false);
+  try {
+    sessionStorage.removeItem(ADMIN_USER_KEY);
+    localStorage.removeItem(ADMIN_USER_KEY);
+    sessionStorage.removeItem(ADMIN_SCOPE_KEY);
+    localStorage.removeItem(ADMIN_SCOPE_KEY);
+    sessionStorage.removeItem('admin_dev_view_scope');
+  } catch (e) {}
+  showToast('Logged out of the admin panel.', 'info');
+  initAdminPage();
+}
+
+function applyAdminScopeUI() {
+  const scope = getActiveAdminScope();
+  const user = getAdminUser();
+  const acc = (typeof ADMIN_ACCOUNTS !== 'undefined') ? (ADMIN_ACCOUNTS[user] || ADMIN_ACCOUNTS[user.toLowerCase()]) : null;
+  const title = acc?.title || (scope === 'QA' ? 'QA Admin' : (scope === 'PR' ? 'Production Admin' : 'Super Admin'));
+
+  const headTitle = document.getElementById('adminHeaderTitle');
+  const headSub = document.getElementById('adminHeaderSub');
+  const badgeWrap = document.getElementById('adminScopeBadgeWrap');
+  const activeBadge = document.getElementById('adminActiveBadge');
+  const devSelect = document.getElementById('adminDevScopeSelect');
+  const logoutBtn = document.getElementById('adminLogoutTopBtn');
+  const excelNote = document.getElementById('adminExcelDeptNote');
+
+  if (isAdminLoggedIn()) {
+    if (badgeWrap) badgeWrap.style.display = 'flex';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+    if (activeBadge) {
+      activeBadge.textContent = title;
+      activeBadge.style.color = (scope === 'QA' ? '#10b981' : (scope === 'PR' ? '#3b82f6' : '#8b5cf6'));
+    }
+    if (user.toLowerCase() === 'dev' && devSelect) {
+      devSelect.style.display = 'inline-block';
+      devSelect.value = scope;
+    } else if (devSelect) {
+      devSelect.style.display = 'none';
+    }
+
+    if (headTitle) {
+      headTitle.textContent = scope === 'QA' ? 'QA Admin Panel' : (scope === 'PR' ? 'Production Admin' : 'Admin Panel');
+    }
+    if (headSub) {
+      headSub.textContent = scope === 'QA' ? 'RPPF Quality Assurance' : (scope === 'PR' ? 'RPPF Production' : 'RPPF Multi-Department');
+    }
+
+    if (excelNote) {
+      if (scope === 'QA') {
+        excelNote.innerHTML = '📌 <strong>Active Target: Quality Assurance (QA)</strong><br>Uploaded files are saved to <code>raw/qa/</code> and auto-converted into <code>data/qa/{month}.json</code>.';
+      } else if (scope === 'PR') {
+        excelNote.innerHTML = '📌 <strong>Active Target: Production (PR)</strong><br>Uploaded files are saved to <code>raw/pr/</code> and auto-converted into <code>data/{month}.json</code>.';
+      } else {
+        excelNote.innerHTML = '📌 <strong>Developer Mode: Multi-Department</strong><br>Select target scope above to switch between Production (<code>raw/pr/</code>) and Quality Assurance (<code>raw/qa/</code>).';
+      }
+    }
+
+    const cardSolid = document.getElementById('secCardSolid');
+    const cardSoftgel = document.getElementById('secCardSoftgel');
+    const cardPacking = document.getElementById('secCardPacking');
+    const cardOverall = document.getElementById('secCardOverall');
+    const cardQA = document.getElementById('secCardQA');
+
+    const kpiQA = document.getElementById('kpiCardQA');
+    const kpiSolid = document.getElementById('admModSolidCount')?.parentElement;
+    const kpiSoftgel = document.getElementById('admModSoftgelCount')?.parentElement;
+    const kpiPacking = document.getElementById('admModPackingCount')?.parentElement;
+    const kpiExec = document.getElementById('admModExecCount')?.parentElement;
+
+    if (scope === 'QA') {
+      if (cardSolid) cardSolid.style.display = 'none';
+      if (cardSoftgel) cardSoftgel.style.display = 'none';
+      if (cardPacking) cardPacking.style.display = 'none';
+      if (cardOverall) cardOverall.style.display = 'none';
+      if (cardQA) cardQA.style.display = 'flex';
+
+      if (kpiSolid) kpiSolid.style.display = 'none';
+      if (kpiSoftgel) kpiSoftgel.style.display = 'none';
+      if (kpiPacking) kpiPacking.style.display = 'none';
+      if (kpiExec) kpiExec.style.display = 'none';
+      if (kpiQA) kpiQA.style.display = 'block';
+
+      const sel = document.getElementById('adminTargetAreaSelect');
+      if (sel) {
+        sel.innerHTML = '<option value="Quality Assurance">Quality Assurance (QA)</option>';
+        sel.value = 'Quality Assurance';
+      }
+      adminSelectSectionCard('Quality Assurance');
+    } else if (scope === 'PR') {
+      if (cardSolid) cardSolid.style.display = 'flex';
+      if (cardSoftgel) cardSoftgel.style.display = 'flex';
+      if (cardPacking) cardPacking.style.display = 'flex';
+      if (cardOverall) cardOverall.style.display = 'flex';
+      if (cardQA) cardQA.style.display = 'none';
+
+      if (kpiSolid) kpiSolid.style.display = 'block';
+      if (kpiSoftgel) kpiSoftgel.style.display = 'block';
+      if (kpiPacking) kpiPacking.style.display = 'block';
+      if (kpiExec) kpiExec.style.display = 'block';
+      if (kpiQA) kpiQA.style.display = 'none';
+
+      const sel = document.getElementById('adminTargetAreaSelect');
+      if (sel) {
+        sel.innerHTML = '<option value="Solid Production">Solid Production</option><option value="Softgel Production">Softgel Production</option><option value="Packing Hall">Packing Hall</option><option value="Overall">Executives (Executive / Above)</option>';
+        if (!PR_AREAS.includes(sel.value)) sel.value = 'Solid Production';
+      }
+      if (_admCurrentActiveSection === 'Quality Assurance') {
+        adminSelectSectionCard('Solid Production');
+      }
+    } else {
+      if (cardSolid) cardSolid.style.display = 'flex';
+      if (cardSoftgel) cardSoftgel.style.display = 'flex';
+      if (cardPacking) cardPacking.style.display = 'flex';
+      if (cardOverall) cardOverall.style.display = 'flex';
+      if (cardQA) cardQA.style.display = 'flex';
+
+      if (kpiSolid) kpiSolid.style.display = 'block';
+      if (kpiSoftgel) kpiSoftgel.style.display = 'block';
+      if (kpiPacking) kpiPacking.style.display = 'block';
+      if (kpiExec) kpiExec.style.display = 'block';
+      if (kpiQA) kpiQA.style.display = 'block';
+
+      const sel = document.getElementById('adminTargetAreaSelect');
+      if (sel) {
+        sel.innerHTML = '<option value="Solid Production">Solid Production</option><option value="Softgel Production">Softgel Production</option><option value="Packing Hall">Packing Hall</option><option value="Overall">Executives (Executive / Above)</option><option value="Quality Assurance">Quality Assurance (QA)</option>';
+      }
+    }
+  } else {
+    if (badgeWrap) badgeWrap.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (headTitle) headTitle.textContent = 'Admin Panel';
+    if (headSub) headSub.textContent = 'RPPF Overtime & Allowance';
+  }
+}
+
+function onAdminDevScopeChange(val) {
+  sessionStorage.setItem('admin_dev_view_scope', val);
+  applyAdminScopeUI();
+  updateAdminAreaStats();
+  renderAdminAreaPreview();
+  adminUpdateAllKpiCounters();
+  adminFilterEmployeeTable();
+  showToast(`Switched view to ${val === 'QA' ? 'Quality Assurance' : (val === 'PR' ? 'Production' : 'All Departments')}`, 'info');
+}
+
+window.getAdminUser = getAdminUser;
+window.getActiveAdminScope = getActiveAdminScope;
+window.applyAdminScopeUI = applyAdminScopeUI;
+window.onAdminDevScopeChange = onAdminDevScopeChange;
 function adminChangePassword() {
 const inp = document.getElementById('adminNewPassInput');
 const val = (inp ? inp.value : '').trim();
@@ -4349,6 +4742,7 @@ const dashWrap = document.getElementById('adminDashboardWrap');
 if (!loginCard || !dashWrap) return;
 if (!isAdminLoggedIn()) { loginCard.style.display = 'block'; dashWrap.style.display = 'none'; return; }
 loginCard.style.display = 'none'; dashWrap.style.display = 'block';
+applyAdminScopeUI();
 const ySel = document.getElementById('yearSelect'); const mSel = document.getElementById('monthSelect');
 const admY = document.getElementById('adminPdfYear'); const admM = document.getElementById('adminPdfMonth');
 if (ySel && admY) { admY.innerHTML = ySel.innerHTML; admY.value = ySel.value; }
@@ -4487,27 +4881,49 @@ if (regexMatches.length > 0) return [...new Set(regexMatches)];
 return [...new Set(upper.split(/[\s,;\n\r\t]+/).map(s => s.replace(/[^A-Z0-9]/g, '')).filter(s => s.length >= 3))];
 }
 function adminAddBulkAreaIds() {
-const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
-const inp = document.getElementById('adminBulkIdsInput');
-const raw = inp ? inp.value : '';
-const ids = extractEmployeeIdsFromText(raw);
-if (ids.length === 0) { showToast('No valid ID (e.g. CF8355 or RF20850) found!', 'warn'); if (inp) inp.focus(); return; }
-let added = 0, updated = 0;
-const subVal = document.getElementById('adminTargetSubSelect')?.value || '';
-const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
-const tVal = document.getElementById('adminTargetTypeSelect')?.value || '';
-ids.forEach(id => {
-if (!AREA_MAP[id]) added++; else if (AREA_MAP[id] !== targetArea) updated++;
-AREA_MAP[id] = targetArea;
-const d = AREA_DETAILS[id] || (AREA_DETAILS[id] = {});
-if (subVal === '__none__') delete d.s; else if (subVal) d.s = subVal;
-if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
-if (tVal === '__none__') delete d.t; else if (tVal) d.t = tVal;
-});
-saveAreaCache(); reapplyTypeOverrides();
-if (inp) inp.value = '';
-updateAdminAreaStats(); renderAdminAreaPreview();
-showToast(`${targetArea}: ${bn(ids.length)} IDs updated (do not forget to save to the server)`, 'success');
+  const targetArea = document.getElementById('adminTargetAreaSelect')?.value || 'Packing Hall';
+  const inp = document.getElementById('adminBulkIdsInput');
+  const raw = inp ? inp.value : '';
+  const ids = extractEmployeeIdsFromText(raw);
+  if (ids.length === 0) { showToast('No valid ID (e.g. CF8355 or RF20850) found!', 'warn'); if (inp) inp.focus(); return; }
+  
+  const targetDept = (typeof getDeptForArea === 'function') ? getDeptForArea(targetArea) : null;
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+
+  const conflicts = [];
+  const allowedIds = [];
+  ids.forEach(id => {
+    const existingArea = AREA_MAP[id];
+    const existingDept = (typeof getDeptForArea === 'function') ? getDeptForArea(existingArea) : null;
+    if (existingArea && existingDept && targetDept && existingDept !== targetDept && scope !== 'ALL') {
+      conflicts.push({ id, existingArea, existingDept });
+    } else {
+      allowedIds.push(id);
+    }
+  });
+
+  if (conflicts.length > 0) {
+    showToast(`সতর্কবার্তা: ${conflicts.length}টি আইডি ইতিমধ্যে ${conflicts[0].existingDept} (${conflicts[0].existingArea})-এ তালিকাভুক্ত আছে! একটি আইডি শুধু একটি ডিপার্টমেন্টেই থাকতে পারে।`, 'warn');
+  }
+
+  if (allowedIds.length === 0) return;
+
+  let added = 0, updated = 0;
+  const subVal = document.getElementById('adminTargetSubSelect')?.value || '';
+  const gVal = document.getElementById('adminTargetGenderSelect')?.value || '';
+  const tVal = document.getElementById('adminTargetTypeSelect')?.value || '';
+  allowedIds.forEach(id => {
+    if (!AREA_MAP[id]) added++; else if (AREA_MAP[id] !== targetArea) updated++;
+    AREA_MAP[id] = targetArea;
+    const d = AREA_DETAILS[id] || (AREA_DETAILS[id] = {});
+    if (subVal === '__none__') delete d.s; else if (subVal) d.s = subVal;
+    if (gVal === '__none__') delete d.g; else if (gVal) d.g = gVal;
+    if (tVal === '__none__') delete d.t; else if (tVal) d.t = tVal;
+  });
+  saveAreaCache(); reapplyTypeOverrides();
+  if (inp) inp.value = '';
+  updateAdminAreaStats(); renderAdminAreaPreview();
+  showToast(`${targetArea}: ${bn(allowedIds.length)} IDs updated (do not forget to save to the server)`, 'success');
 }
 function adminRemoveBulkAreaIds() {
 const inp = document.getElementById('adminBulkIdsInput');
@@ -5208,8 +5624,17 @@ async function renderAdminNoticesList() {
 const box = document.getElementById('adminCurrentNoticesList');
 if (!box) return;
 const list = await loadNoticesData();
-if (!list || list.length === 0) { box.innerHTML = '<div style="color:var(--muted);font-size:13px;">There are no notices.</div>'; return; }
-box.innerHTML = list.map(n => `<div class="admin-file-item"><div style="flex:1;min-width:0;"><div style="font-weight:800;color:var(--text);">${esc(n.title)}</div><div style="font-size:12px;color:var(--muted);">${esc(n.date)} • ${esc(n.priority || 'normal')}</div></div><button type="button" class="calc-mini-btn danger-btn" style="min-height:32px!important;padding:0 10px!important;" onclick="adminDeleteNotice('${esc(n.id)}')">Delete</button></div>`).join('');
+const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+const scopedList = (list || []).filter(n => {
+  if (scope === 'QA') return n.dept === 'QA';
+  if (scope === 'PR') return n.dept === 'PR' || !n.dept;
+  return true;
+});
+if (!scopedList || scopedList.length === 0) {
+  box.innerHTML = `<div style="color:var(--muted);font-size:13px;">There are no notices for ${scope === 'QA' ? 'QA' : (scope === 'PR' ? 'Production' : 'all departments')}.</div>`;
+  return;
+}
+box.innerHTML = scopedList.map(n => `<div class="admin-file-item"><div style="flex:1;min-width:0;"><div style="font-weight:800;color:var(--text);">${esc(n.title)} <span style="font-size:10px;padding:2px 5px;border-radius:4px;background:var(--border);">${n.dept || 'ALL'}</span></div><div style="font-size:12px;color:var(--muted);">${esc(n.date)} • ${esc(n.priority || 'normal')}</div></div><button type="button" class="calc-mini-btn danger-btn" style="min-height:32px!important;padding:0 10px!important;" onclick="adminDeleteNotice('${esc(n.id)}')">Delete</button></div>`).join('');
 }
 async function adminAddAndPushNotice() {
 const titleEl = document.getElementById('adminNoticeTitle');
@@ -5220,7 +5645,9 @@ const body = (bodyEl?.value || '').trim();
 const priority = prioEl?.value || 'normal';
 if (!title || !body) { showToast('Enter the notice title and details!', 'warn'); return; }
 const list = [...(await loadNoticesData())];
-const newNotice = { id: 'n' + Date.now(), title, body, date: new Date().toISOString().slice(0, 10), priority };
+const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+const dept = (scope === 'QA') ? 'QA' : ((scope === 'PR') ? 'PR' : 'ALL');
+const newNotice = { id: 'n' + Date.now(), title, body, date: new Date().toISOString().slice(0, 10), priority, dept };
 list.unshift(newNotice);
 noticesData = list;
 try { localStorage.setItem(NOTICES_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: noticesData })); } catch (e) {}
@@ -8212,7 +8639,7 @@ function renderAdminAbsentPane() {
 /* ==========================================================================
    STRICT PRODUCTION SECTION EMPLOYEE DIRECTORY & AUTOCOMPLETE
    ========================================================================== */
-const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const ALLOWED_SECTIONS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'Quality Assurance'];
 
 function isListedEmployeeId(id) {
   if (!id) return false;
@@ -8227,6 +8654,7 @@ function getListedEmployeesCountBySection() {
     'Softgel Production': 0,
     'Packing Hall': 0,
     'Overall': 0,
+    'Quality Assurance': 0,
     'Total': 0
   };
   Object.keys(AREA_MAP || {}).forEach(rawId => {
@@ -8249,11 +8677,14 @@ function buildMasterEmployeeDirectory() {
   }
   const map = new Map();
 
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
   // ONLY seed from AREA_MAP where area is in ALLOWED_SECTIONS
   Object.keys(AREA_MAP || {}).forEach(rawId => {
     const id = String(rawId).toUpperCase().trim();
     const area = AREA_MAP[rawId];
     if (area && ALLOWED_SECTIONS.includes(area)) {
+      if (scope === 'QA' && area !== 'Quality Assurance') return;
+      if (scope === 'PR' && area === 'Quality Assurance') return;
       const meta = getEmpMeta(id);
       map.set(id, {
         id,
@@ -8950,7 +9381,7 @@ function adminSelectSectionCard(area) {
   _admTableSelectedIds.clear();
 
   document.querySelectorAll('.adm-sec-card-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.id === ('secCard' + (area === 'Solid Production' ? 'Solid' : area === 'Softgel Production' ? 'Softgel' : area === 'Packing Hall' ? 'Packing' : 'Overall')));
+    btn.classList.toggle('active', btn.id === ('secCard' + (area === 'Solid Production' ? 'Solid' : area === 'Softgel Production' ? 'Softgel' : area === 'Packing Hall' ? 'Packing' : area === 'Quality Assurance' ? 'QA' : 'Overall')));
   });
 
   const titleEl = document.getElementById('admCurrentSecName');
@@ -9353,11 +9784,13 @@ function adminUpdateAllKpiCounters() {
   setEl('admModSoftgelCount', counts['Softgel Production']);
   setEl('admModPackingCount', counts['Packing Hall']);
   setEl('admModExecCount', counts['Overall']);
+  setEl('admModQACount', counts['Quality Assurance'] || 0);
 
   setEl('secCardSolidCount', counts['Solid Production']);
   setEl('secCardSoftgelCount', counts['Softgel Production']);
   setEl('secCardPackingCount', counts['Packing Hall']);
   setEl('secCardOverallCount', counts['Overall']);
+  setEl('secCardQACount', counts['Quality Assurance'] || 0);
 
   // Sync legacy stat numbers
   setEl('admCountSolid', counts['Solid Production']);

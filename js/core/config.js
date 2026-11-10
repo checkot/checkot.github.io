@@ -66,7 +66,36 @@ function erpWaLink(text, phone) {
   return `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
 }
 
+// Departments & Areas Configuration
+const DEPT_PR = 'PR';
+const DEPT_QA = 'QA';
+const DEPT_ALL = 'ALL';
+
 const OVERALL_AREA = 'Overall';
+const QA_AREA = 'Quality Assurance';
+
+const PR_AREAS = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const QA_AREAS = ['Quality Assurance'];
+const QA_SUBSECTIONS = ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives'];
+
+function getDeptForArea(area) {
+  if (!area) return null;
+  const a = String(area).trim();
+  if (QA_AREAS.includes(a)) return DEPT_QA;
+  if (PR_AREAS.includes(a)) return DEPT_PR;
+  return null;
+}
+
+function getDeptForEmployeeId(id, areaMap) {
+  if (!id) return null;
+  const u = String(id).toUpperCase().trim();
+  const map = areaMap || (typeof AREA_MAP !== 'undefined' ? AREA_MAP : {});
+  const area = map[u];
+  if (area) {
+    return getDeptForArea(area);
+  }
+  return null;
+}
 
 const DEFAULT_RATE_TABLE = {
   CF:   { otRate: 38, nightRate: 300, holidayType: "hourly", holidayHours: 8, holidayFlat: 304, name: "Contractual (CF)" },
@@ -135,8 +164,37 @@ const INCHARGE_AREA_KEY = STORAGE_NAMESPACE + 'renata_incharge_area_v1';
 const ABSENT_CACHE_KEY = STORAGE_NAMESPACE + 'renata_absent_data_v1';
 const ADMIN_PASS_KEY = STORAGE_NAMESPACE + 'renata_admin_pass_v1';
 const ADMIN_SESSION_KEY = STORAGE_NAMESPACE + 'renata_admin_logged_in_v1';
+const ADMIN_USER_KEY = STORAGE_NAMESPACE + 'renata_admin_user_v2';
+const ADMIN_SCOPE_KEY = STORAGE_NAMESPACE + 'renata_admin_scope_v2';
+const CLIENT_DEPT_KEY = STORAGE_NAMESPACE + 'renata_client_dept_v1';
 const ADMIN_GH_TOKEN_KEY = STORAGE_NAMESPACE + 'renata_gh_pat_v1';
 
+// Role-based Multi-Admin Credentials (SHA-256 Hashed Passwords)
+const AUTH_SALT = 'RENATA_RPPF_SECURE_SALT_2026_#$!';
+const ADMIN_ACCOUNTS = {
+  "pradmin": {
+    hash: "a6b1cc0a9fc580c99a77a5041126061b047bf9a77842ce053b6d9ce366c5ad30",
+    saltedHash: "605a7fe86f537bf67f1f46c2df8c43c1003c0cdf556af4d4f783ab310aab10fb",
+    role: "pr_admin",
+    scope: "PR",
+    title: "Production Admin"
+  },
+  "qaadmin": {
+    hash: "b98040b4284d882ed3234760b28b9e01e355b650bbedc97450b619872d317b41",
+    saltedHash: "6280fe43813b7f17b1485c49e0a5cad47e58ae096c1a28a3f4ef19c40d15eb5e",
+    role: "qa_admin",
+    scope: "QA",
+    title: "QA Admin"
+  },
+  "dev": {
+    hash: "b1898424d4aa6d7b94d04d87531fd05b62b828dee1bb31558219afb08ce79df5",
+    saltedHash: "c0dd500f68d861e0f91b880d09163470b69607b1c4fc3a8310766cfc4cb5e9bc",
+    role: "super_admin",
+    scope: "ALL",
+    title: "Developer / Super Admin"
+  }
+};
+const DEFAULT_ADMIN_PASS = 'admin1234';
 
 const OFFLINE_FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NIGHT_REST_CREDIT_HOURS = 8;
@@ -148,6 +206,22 @@ const FIREBASE_TELEMETRY_CONFIG = {
   databaseURL: "https://otchecker-2bfa1-default-rtdb.firebaseio.com",
   projectId: "otchecker-2bfa1"
 };
+
 if (typeof window !== 'undefined') {
   window.FIREBASE_TELEMETRY_CONFIG = FIREBASE_TELEMETRY_CONFIG;
+  window.DEPT_PR = DEPT_PR;
+  window.DEPT_QA = DEPT_QA;
+  window.DEPT_ALL = DEPT_ALL;
+  window.OVERALL_AREA = OVERALL_AREA;
+  window.QA_AREA = QA_AREA;
+  window.PR_AREAS = PR_AREAS;
+  window.QA_AREAS = QA_AREAS;
+  window.QA_SUBSECTIONS = QA_SUBSECTIONS;
+  window.getDeptForArea = getDeptForArea;
+  window.getDeptForEmployeeId = getDeptForEmployeeId;
+  window.ADMIN_ACCOUNTS = ADMIN_ACCOUNTS;
+  window.ADMIN_USER_KEY = ADMIN_USER_KEY;
+  window.ADMIN_SCOPE_KEY = ADMIN_SCOPE_KEY;
+  window.CLIENT_DEPT_KEY = CLIENT_DEPT_KEY;
+  window.AUTH_SALT = AUTH_SALT;
 }

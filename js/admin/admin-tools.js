@@ -364,13 +364,16 @@ async function processExcelUpload() {
       const buf = await file.arrayBuffer();
       const b64 = arrayBufferToBase64(buf);
       const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const targetPath = `raw/${cleanFileName}`;
+      const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
+      const targetDir = (scope === 'QA') ? 'raw/qa' : 'raw/pr';
+      const targetPath = `${targetDir}/${cleanFileName}`;
 
-      await githubPutFile(targetPath, b64, `Upload raw Excel ${cleanFileName} for conversion via to_json.py`);
+      await githubPutFile(targetPath, b64, `Upload raw Excel ${cleanFileName} (${scope}) for conversion via to_json.py`);
     }
 
     if (progFill) progFill.style.width = '100%';
-    if (progTxt) progTxt.innerHTML = `✓ Upload complete! GitHub Actions is now converting the file with <code>to_json.py</code>.<br><span style="font-size:11.5px;color:var(--muted)">The updated report will be live on site in ~30–45 seconds.</span>`;
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
+    if (progTxt) progTxt.innerHTML = `✓ Upload complete! GitHub Actions is converting ${scope} Excel into <code>data/${scope === 'QA' ? 'qa/' : ''}</code> with <code>to_json.py</code>.<br><span style="font-size:11.5px;color:var(--muted)">The updated report will be live on site in ~30–45 seconds.</span>`;
 
     if (fileInp) fileInp.value = '';
     showToast('Excel uploaded! Auto-converting via to_json.py...', 'success');
@@ -683,7 +686,7 @@ init();
 'use strict';
 const $ = id => document.getElementById(id);
 const LS = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
-const K_LOG = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : '') + 'rppf_admin_log_v1', ALLOWED = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+const K_LOG = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : '') + 'rppf_admin_log_v1', ALLOWED = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall', 'Quality Assurance'];
 /* The page calls persistAreaMap/Details/Subs but they are not defined in this file; fall back to the area cache writer. */
 ['Map', 'Details', 'Subs'].forEach(n => { if (typeof window['persistArea' + n] !== 'function') window['persistArea' + n] = () => { try { saveAreaCache(); } catch (e) {} }; });
 const persistAll = () => { persistAreaMap(); persistAreaDetails(); persistAreaSubs(); try { _masterDirLastBuildTs = 0; } catch (e) {} };
@@ -696,13 +699,34 @@ let _dir = [], _groups = [], _imp = null;
 
 function applySubs(changes, desc) {
   if (!changes.length) return showToast('Nothing to change', 'info');
-  const before = changes.map(c => snap(c.id));
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+  const conflicts = [];
+  const validChanges = [];
   changes.forEach(c => {
+    const existingArea = AREA_MAP[c.id];
+    const newArea = c.area || existingArea;
+    const existingDept = (typeof getDeptForArea === 'function') ? getDeptForArea(existingArea) : null;
+    const newDept = (typeof getDeptForArea === 'function') ? getDeptForArea(newArea) : null;
+    if (existingDept && newDept && existingDept !== newDept && scope !== 'ALL') {
+      conflicts.push({ id: c.id, from: existingDept, to: newDept });
+    } else {
+      validChanges.push(c);
+    }
+  });
+
+  if (conflicts.length > 0) {
+    showToast(`সতর্কবার্তা: ${conflicts.length}টি আইডি ইতিমধ্যে অন্য ডিপার্টমেন্টে তালিকাভুক্ত আছে! (যেমন: ${conflicts[0].id})`, 'warn');
+  }
+
+  if (!validChanges.length) return;
+
+  const before = validChanges.map(c => snap(c.id));
+  validChanges.forEach(c => {
     const a = c.area || AREA_MAP[c.id], s = c.sub ? canon(a, c.sub) : '';
     AREA_MAP[c.id] = a; const d = AREA_DETAILS[c.id] = AREA_DETAILS[c.id] || {};
     if (s) { d.s = s; AREA_SUBS[a] = AREA_SUBS[a] || []; if (!AREA_SUBS[a].includes(s)) AREA_SUBS[a].push(s); } else delete d.s;
   });
-  logChange(desc + ` (${changes.length})`, before); persistAll(); showToast(desc + ` (${changes.length})`, 'success'); render();
+  logChange(desc + ` (${validChanges.length})`, before); persistAll(); showToast(desc + ` (${validChanges.length})`, 'success'); render();
 }
 async function loadDir() {
   _diag = ''; const now = new Date();
@@ -718,8 +742,12 @@ async function loadDir() {
   _dir = Object.keys(AREA_MAP).filter(id => AREA_MAP[id]).map(id => { const m = nm[id] || {}; return { id, name: m.name || id, designation: m.grade || '', area: AREA_MAP[id], sub: (AREA_DETAILS[id] || {}).s || '' }; });
 }
 const syncAreas = () => {
-  const as = [...new Set(ALLOWED.concat(_dir.map(e => e.area)))], key = as.join('|'); if (key === _areasKey) return;
-  _areasKey = key; _areas = as; const sel = $('subArea'), cur = sel.value; sel.innerHTML = as.map(a => `<option>${esc(a)}</option>`).join(''); if (as.includes(cur)) sel.value = cur;
+  const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+  let allowed = ALLOWED;
+  if (scope === 'QA') allowed = ['Quality Assurance'];
+  else if (scope === 'PR') allowed = ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
+  const as = [...new Set(allowed.concat(_dir.map(e => e.area).filter(a => allowed.includes(a))))], key = as.join('|'); if (key === _areasKey) return;
+  _areasKey = key; _areas = as; const sel = $('subArea'), cur = sel ? sel.value : ''; if (sel) { sel.innerHTML = as.map(a => `<option>${esc(a)}</option>`).join(''); if (as.includes(cur)) sel.value = cur; }
 };
 const ensureXlsx = async () => { if (typeof XLSX === 'undefined') await _loadScript('https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js'); };
 

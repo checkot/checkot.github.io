@@ -246,8 +246,8 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="app-header">
 <img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header" id="mainHeader">
-<h2>RPPF</h2>
-<p>Overtime report and calculator • <span style="font-weight:700;color:var(--brand-text);"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="homeLiveActiveCount">18</span> active</span></p>
+<h2 id="mainHeaderH2">RENATA PLC</h2>
+<p id="mainHeaderP">Overtime report and calculator • <span style="font-weight:700;color:var(--brand-text);"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="homeLiveActiveCount">18</span> active</span></p>
 </div>
 <button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Change mode and ID">Mode</button>
 <button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="Back to list">
@@ -610,7 +610,7 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 <label for="employeeId">Your ID number</label>
 <div class="input-clear-wrap">
-<input type="text" id="employeeId" placeholder="e.g. CF8355" autocomplete="off" autocapitalize="characters" inputmode="text" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="toggleClearIdBtn()">
+<input type="text" id="employeeId" placeholder="e.g. CF8355, RF20850..." autocomplete="off" autocapitalize="characters" inputmode="text" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="toggleClearIdBtn()">
 <button type="button" id="clearIdBtn" class="input-clear-btn" onclick="clearEmployeeInput()" aria-label="Clear ID">✕</button>
 </div>
 <div class="recent-chips-wrap" id="recentSearchChips"></div>
@@ -1904,25 +1904,25 @@ document.documentElement.setAttribute('data-theme', t);
 <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3 0.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.5c-2 0-3.9-0.5-5.5-1.5l-0.4-0.2-4 1.1 1.1-3.9-0.3-0.4c-1.1-1.7-1.7-3.7-1.7-5.6 0-5.9 4.8-10.7 10.7-10.7s10.7 4.8 10.7 10.7-4.8 10.7-10.7 10.7z"/></svg>
 </a>
   <!-- Core & Calculations Modules (Step 4) -->
-  <script src="js/core/config.js"></script>
+  <script src="js/core/config.js?v=20261110qa"></script>
   <script src="js/core/state.js"></script>
   <script src="js/core/storage.js"></script>
-  <script src="js/core/utils.js?v=20261109compact2"></script>
+  <script src="js/core/utils.js?v=20261110qa"></script>
   <script src="js/calculations/rates.js?v=20261106b"></script>
   <script src="js/calculations/ranking.js?v=20261109full"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
-  <script src="js/pages/search.js?v=20261109compact2"></script>
+  <script src="js/pages/search.js?v=20261110qa"></script>
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js"></script>
   <script src="js/pages/report.js?v=20261109compact2"></script>
   <script src="js/pages/vs.js?v=20261109full"></script>
-  <script src="js/pages/notices.js"></script>
+  <script src="js/pages/notices.js?v=20261110qa"></script>
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
   <script src="js/pages/leaderboard.js?v=20261109full"></script>
-  <script src="js/app-main.js?v=20261109nav"></script>
+  <script src="js/app-main.js?v=20261110qa"></script>
   <script src="js/components/rank-details.js?v=20261105nt"></script>
   <script src="js/patches/manager-ux.js?v=20261109full"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
