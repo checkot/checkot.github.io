@@ -4875,8 +4875,9 @@ function switchAdminTab(tab) {
   if (pane) pane.classList.add('active');
 
   if (tab === 'areas') {
-    const scope = getActiveAdminScope();
-    const defaultSec = scope === 'QA' ? 'Quality Assurance' : (_admCurrentActiveSection === 'Quality Assurance' ? 'Solid Production' : (_admCurrentActiveSection || 'Solid Production'));
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
+    const defaultSec = (scope === 'QA') ? 'Unassigned' : 'Solid Production';
+    if (typeof renderAdminSectionCards === 'function') renderAdminSectionCards();
     adminSelectSectionCard(defaultSec);
   } else if (tab === 'unassigned') {
     adminScanUnassignedMonthlyEmployees();
