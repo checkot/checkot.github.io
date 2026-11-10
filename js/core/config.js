@@ -303,3 +303,185 @@ if (typeof window !== 'undefined') {
   window.CLIENT_DEPT_KEY = CLIENT_DEPT_KEY;
   window.AUTH_SALT = AUTH_SALT;
 }
+
+// Unified Department, Pool Area, Executive & Rankable Helpers
+const INCHARGE_DEPT_KEY = STORAGE_NAMESPACE + 'renata_incharge_dept_v1';
+const INCHARGE_EXEC_VIEW_KEY = STORAGE_NAMESPACE + 'renata_incharge_can_view_exec_v1';
+const ACCESS_CACHE_KEY = STORAGE_NAMESPACE + 'renata_access_cache_v1';
+
+function getInchargeDepartment() {
+  try {
+    return localStorage.getItem(INCHARGE_DEPT_KEY) || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  } catch (e) {
+    return (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  }
+}
+
+function getInchargeCanViewExecutives() {
+  try {
+    const val = localStorage.getItem(INCHARGE_EXEC_VIEW_KEY);
+    if (val !== null) return val === 'true';
+  } catch (e) {}
+  const role = (typeof getInchargeRoleLabel === 'function') ? getInchargeRoleLabel() : '';
+  return /manager|admin|officer|executive/i.test(role);
+}
+
+function isPoolArea(area) {
+  if (!area) return false;
+  const a = String(area).trim();
+  return a === 'Unassigned' || a === 'Unassigned PR' || a === 'Unassigned QA';
+}
+
+function getRealDepartmentAreas(deptCode) {
+  const d = deptCode || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(d) : (d === 'QA' ? QA_AREAS : PR_AREAS);
+  return (areas || []).filter(a => a && !isPoolArea(a) && a !== 'Quality Assurance');
+}
+
+function getExecutiveAreaForDept(deptCode) {
+  const d = deptCode || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  return (d === 'QA') ? 'Executives' : 'Overall';
+}
+
+function getSectionsForDept(deptCode) {
+  const d = deptCode || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  const real = getRealDepartmentAreas(d);
+  const execArea = getExecutiveAreaForDept(d);
+  
+  const metaMap = {
+    'Solid Production': { short: 'Solid', icon: '💊', color: '#3b82f6' },
+    'Softgel Production': { short: 'Softgel', icon: '🟡', color: '#f59e0b' },
+    'Packing Hall': { short: 'Packing', icon: '📦', color: '#10b981' },
+    'Overall': { short: 'Executives', icon: '👔', color: '#8b5cf6', isExec: true },
+    'IPQC PR': { short: 'IPQC PR', icon: '🔍', color: '#06b6d4' },
+    'IPQC Pack': { short: 'IPQC Pack', icon: '📦', color: '#10b981' },
+    'Documentation': { short: 'Documentation', icon: '📄', color: '#8b5cf6' },
+    'Executives': { short: 'Executives', icon: '👔', color: '#ec4899', isExec: true }
+  };
+
+  return real.map(key => {
+    const meta = metaMap[key] || { short: key, icon: '🏢', color: '#64748b' };
+    const isExec = (key === execArea) || meta.isExec === true;
+    return {
+      key,
+      name: key,
+      label: (key === 'Overall') ? 'Executives' : key,
+      short: meta.short,
+      icon: meta.icon,
+      color: meta.color,
+      isExec: isExec
+    };
+  });
+}
+
+function isExecutiveRecord(e, deptCode) {
+  if (!e) return false;
+  const id = String(e.id || '').toUpperCase().trim();
+  const d = deptCode || e.dept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+
+  if (e.kind === 'EXEC' || e.type === 'EXEC') return true;
+
+  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = aliases[id] || id;
+
+  const details = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS) ? AREA_DETAILS : null;
+  const meta = details ? (details[id] || details[cleanId]) : null;
+  if (meta && meta.t === 'EXEC') return true;
+
+  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
+  const area = (map && (map[id] || map[cleanId])) || e.area;
+  if (area === 'Overall' || area === 'Executives') return true;
+
+  return false;
+}
+
+function canViewExecutives(targetDept) {
+  const d = targetDept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+
+  // 1. Admin login
+  if (typeof isAdminLoggedIn === 'function' && isAdminLoggedIn()) {
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+    const user = (typeof getAdminUser === 'function') ? getAdminUser().toLowerCase() : '';
+    if (user === 'dev' || scope === 'ALL') return true;
+    if (scope === 'PR') return d === 'PR';
+    if (scope === 'QA') return d === 'QA';
+    return false;
+  }
+
+  // 2. Client In-Charge session
+  if (typeof getAppMode === 'function' && getAppMode() === 'incharge') {
+    const inchargeDept = getInchargeDepartment();
+    if (inchargeDept !== d) return false; // Department isolation
+    return getInchargeCanViewExecutives();
+  }
+
+  return false;
+}
+
+function isExecHiddenFor(e, deptCode) {
+  if (!e) return false;
+  const d = deptCode || e.dept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  return isExecutiveRecord(e, d) && !canViewExecutives(d);
+}
+
+function isRankableEmployee(e, deptCode) {
+  if (!e) return false;
+  if (e.valid === false) return false;
+  if (e.isRppf === false) return false;
+
+  const id = String(e.id || '').toUpperCase().trim();
+  if (!id) return false;
+
+  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = aliases[id] || id;
+
+  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
+  if (!map) return false;
+
+  const mappedArea = map[id] || map[cleanId];
+  if (!mappedArea) return false;
+
+  const d = deptCode || e.dept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  const realAreas = getRealDepartmentAreas(d);
+  if (!realAreas.includes(mappedArea)) return false;
+
+  if (isExecutiveRecord(e, d) && !canViewExecutives(d)) {
+    return false;
+  }
+
+  return true;
+}
+
+function isMappedAreaId(id, e, deptCode) {
+  if (!id) return false;
+  const upper = String(id).toUpperCase().trim();
+  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = aliases[upper] || upper;
+
+  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
+  if (!map) return false;
+
+  const mappedArea = map[upper] || map[cleanId];
+  if (!mappedArea || isPoolArea(mappedArea)) return false;
+
+  const d = deptCode || (e && e.dept) || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  const realAreas = getRealDepartmentAreas(d);
+  return realAreas.includes(mappedArea);
+}
+
+if (typeof window !== 'undefined') {
+  window.INCHARGE_DEPT_KEY = INCHARGE_DEPT_KEY;
+  window.INCHARGE_EXEC_VIEW_KEY = INCHARGE_EXEC_VIEW_KEY;
+  window.ACCESS_CACHE_KEY = ACCESS_CACHE_KEY;
+  window.getInchargeDepartment = getInchargeDepartment;
+  window.getInchargeCanViewExecutives = getInchargeCanViewExecutives;
+  window.isPoolArea = isPoolArea;
+  window.getRealDepartmentAreas = getRealDepartmentAreas;
+  window.getExecutiveAreaForDept = getExecutiveAreaForDept;
+  window.getSectionsForDept = getSectionsForDept;
+  window.isExecutiveRecord = isExecutiveRecord;
+  window.canViewExecutives = canViewExecutives;
+  window.isExecHiddenFor = isExecHiddenFor;
+  window.isRankableEmployee = isRankableEmployee;
+  window.isMappedAreaId = isMappedAreaId;
+}

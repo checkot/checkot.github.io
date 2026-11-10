@@ -481,7 +481,7 @@
     const a = t.getAttribute('data-em'), v = t.getAttribute('data-v');
     switch (a) {
       case 'step': S.step = (S.step === +v) ? 0 : +v; render(); break;
-      case 'dept': S.dept = v; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); break;
+      case 'dept': if (typeof onAdminDevScopeChange === 'function' && typeof getAdminUser === 'function' && getAdminUser().toLowerCase() === 'dev') { onAdminDevScopeChange(v); } else { S.dept = v; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); } break;
       case 'refresh': delete S.excel[dept()]; render(); toast('Reloading the last Excel…', 'info'); break;
       case 'backup': try { adminDownloadAreasJson(); } catch (err) { toast('Backup not available', 'error'); } break;
       case 'undo': doUndo(); break;
@@ -546,6 +546,7 @@
   window.EmpMgmt = {
     show() { bind(); S.mapRef = null; render(); },
     render,
+    setDept(d) { S.dept = d; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); },
     _state: S
   };
   bind();

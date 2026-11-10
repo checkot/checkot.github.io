@@ -4643,6 +4643,112 @@ function handleAdminLogout() {
   initAdminPage();
 }
 
+// Unified Department, Pool Area, Executive & Rankable Helpers
+function isPoolArea(area) {
+  if (!area) return false;
+  const a = String(area).trim();
+  return a === 'Unassigned' || a === 'Unassigned PR' || a === 'Unassigned QA';
+}
+
+function getRealDepartmentAreas(deptCode) {
+  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
+  const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(d === 'ALL' ? 'PR' : d) : (d === 'QA' ? QA_AREAS : PR_AREAS);
+  return (areas || []).filter(a => a && !isPoolArea(a) && a !== 'Quality Assurance');
+}
+
+function getExecutiveAreaForDept(deptCode) {
+  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
+  return (d === 'QA') ? 'Executives' : 'Overall';
+}
+
+function getSectionsForDept(deptCode) {
+  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
+  const real = getRealDepartmentAreas(d === 'ALL' ? 'PR' : d);
+  const execArea = getExecutiveAreaForDept(d === 'ALL' ? 'PR' : d);
+  
+  const metaMap = {
+    'Solid Production': { short: 'Solid', icon: '💊', color: '#3b82f6' },
+    'Softgel Production': { short: 'Softgel', icon: '🟡', color: '#f59e0b' },
+    'Packing Hall': { short: 'Packing', icon: '📦', color: '#10b981' },
+    'Overall': { short: 'Executives', icon: '👔', color: '#8b5cf6', isExec: true },
+    'IPQC PR': { short: 'IPQC PR', icon: '🔍', color: '#06b6d4' },
+    'IPQC Pack': { short: 'IPQC Pack', icon: '📦', color: '#10b981' },
+    'Documentation': { short: 'Documentation', icon: '📄', color: '#8b5cf6' },
+    'Executives': { short: 'Executives', icon: '👔', color: '#ec4899', isExec: true }
+  };
+
+  return real.map(key => {
+    const meta = metaMap[key] || { short: key, icon: '🏢', color: '#64748b' };
+    const isExec = (key === execArea) || meta.isExec === true;
+    return {
+      key,
+      name: key,
+      label: (key === 'Overall') ? 'Executives' : key,
+      short: meta.short,
+      icon: meta.icon,
+      color: meta.color,
+      isExec: isExec
+    };
+  });
+}
+
+function isExecutiveRecord(e, deptCode) {
+  if (!e) return false;
+  const id = String(e.id || '').toUpperCase().trim();
+  if (e.kind === 'EXEC' || e.type === 'EXEC') return true;
+
+  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = aliases[id] || id;
+
+  const details = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS) ? AREA_DETAILS : null;
+  const meta = details ? (details[id] || details[cleanId]) : null;
+  if (meta && meta.t === 'EXEC') return true;
+
+  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
+  const area = (map && (map[id] || map[cleanId])) || e.area;
+  if (area === 'Overall' || area === 'Executives') return true;
+
+  return false;
+}
+
+function canViewExecutives(targetDept) {
+  if (typeof isAdminLoggedIn === 'function' && isAdminLoggedIn()) {
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+    const user = (typeof getAdminUser === 'function') ? getAdminUser().toLowerCase() : '';
+    if (user === 'dev' || scope === 'ALL') return true;
+    if (scope === 'PR') return targetDept === 'PR';
+    if (scope === 'QA') return targetDept === 'QA';
+    return false;
+  }
+  return false;
+}
+
+function isRankableEmployee(e, deptCode) {
+  if (!e) return false;
+  if (e.valid === false) return false;
+  if (e.isRppf === false) return false;
+
+  const id = String(e.id || '').toUpperCase().trim();
+  if (!id) return false;
+
+  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
+  const cleanId = aliases[id] || id;
+
+  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
+  if (!map) return false;
+
+  const mappedArea = map[id] || map[cleanId];
+  if (!mappedArea || isPoolArea(mappedArea)) return false;
+
+  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
+  if (d !== 'ALL') {
+    const realAreas = getRealDepartmentAreas(d);
+    if (!realAreas.includes(mappedArea)) return false;
+  }
+
+  return true;
+}
+
 function applyAdminScopeUI() {
   const scope = getActiveAdminScope();
   const user = getAdminUser();
@@ -4664,11 +4770,19 @@ function applyAdminScopeUI() {
       activeBadge.textContent = title;
       activeBadge.style.color = (scope === 'QA' ? '#10b981' : (scope === 'PR' ? '#3b82f6' : '#8b5cf6'));
     }
-    if (user.toLowerCase() === 'dev' && devSelect) {
-      devSelect.style.display = 'inline-block';
-      devSelect.value = scope;
-    } else if (devSelect) {
-      devSelect.style.display = 'none';
+    const devScopeBar = document.getElementById('adminDevScopeBar');
+    if (user.toLowerCase() === 'dev') {
+      if (devScopeBar) devScopeBar.style.display = 'block';
+      document.querySelectorAll('.admin-dev-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-scope') === scope);
+      });
+      if (devSelect) {
+        devSelect.style.display = 'inline-block';
+        devSelect.value = scope;
+      }
+    } else {
+      if (devScopeBar) devScopeBar.style.display = 'none';
+      if (devSelect) devSelect.style.display = 'none';
     }
 
     if (headTitle) {
@@ -4766,11 +4880,65 @@ function applyAdminScopeUI() {
 function onAdminDevScopeChange(val) {
   sessionStorage.setItem('admin_dev_view_scope', val);
   applyAdminScopeUI();
+
+  // Sync dev buttons
+  document.querySelectorAll('.admin-dev-seg-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-scope') === val);
+  });
+  const devSelect = document.getElementById('adminDevScopeSelect');
+  if (devSelect) devSelect.value = val;
+
+  // 1. Re-render Employees tab (EmpMgmt)
+  if (window.EmpMgmt) {
+    if (typeof EmpMgmt.setDept === 'function') {
+      EmpMgmt.setDept(val === 'QA' ? 'QA' : 'PR');
+    } else if (typeof EmpMgmt.render === 'function') {
+      EmpMgmt.render();
+    }
+  }
+
+  // 2. Re-render Absent & Leave tab
+  if (typeof renderAdminAbsentPane === 'function') {
+    renderAdminAbsentPane();
+  }
+
+  // 3. Re-render ERP Team tab
+  if (typeof renderAdminTeamManager === 'function') {
+    renderAdminTeamManager();
+  }
+
+  // 4. Re-render Rates & Desig tab
+  if (typeof renderRateTable === 'function') renderRateTable();
+  if (typeof renderDesigRates === 'function') renderDesigRates();
+
+  // 5. Monthly Data (Excel dept picker + month status)
+  const deptSelect = document.getElementById('adminExcelDeptSelect');
+  if (deptSelect && val !== 'ALL') deptSelect.value = val;
+  if (typeof onAdminExcelDeptChange === 'function') {
+    onAdminExcelDeptChange(val === 'QA' ? 'QA' : 'PR');
+  }
+
+  // 6. Notices tab
+  if (typeof renderAdminNoticesList === 'function') {
+    renderAdminNoticesList();
+  }
+
+  // 7. Access tab
+  if (window.AccessMgmt) {
+    if (typeof AccessMgmt.setDept === 'function') {
+      AccessMgmt.setDept(val === 'ALL' ? null : val);
+    } else if (typeof AccessMgmt.render === 'function') {
+      AccessMgmt.render();
+    }
+  }
+
+  // 8. Areas & KPIs
   updateAdminAreaStats();
   renderAdminAreaPreview();
   adminUpdateAllKpiCounters();
   adminFilterEmployeeTable();
-  showToast(`Switched view to ${val === 'QA' ? 'Quality Assurance' : (val === 'PR' ? 'Production' : 'All Departments')}`, 'info');
+
+  showToast(`Switched view to ${val === 'QA' ? 'Quality Assurance (QA)' : (val === 'PR' ? 'Production (PR)' : 'All Departments')}`, 'info');
 }
 
 window.getAdminUser = getAdminUser;
@@ -4862,6 +5030,7 @@ function switchAdminTab(tab) {
 
   const tabBtnMap = {
     'employees': 'admTabBtnEmployees',
+    'access': 'admTabBtnAccess',
     'absent': 'admTabBtnAbsent',
     'areas': 'admTabBtnAreas',
     'unassigned': 'admTabBtnUnassigned',
@@ -4874,6 +5043,7 @@ function switchAdminTab(tab) {
 
   const paneMap = {
     'employees': 'admPaneEmployees',
+    'access': 'admPaneAccess',
     'absent': 'admPaneAbsent',
     'areas': 'admPaneAreas',
     'unassigned': 'admPaneUnassigned',
@@ -4891,6 +5061,8 @@ function switchAdminTab(tab) {
 
   if (tab === 'employees') {
     if (window.EmpMgmt) EmpMgmt.show();
+  } else if (tab === 'access') {
+    if (window.AccessMgmt) AccessMgmt.render();
   } else if (tab === 'areas') {
     const scope = getActiveAdminScope();
     const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;

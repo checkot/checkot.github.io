@@ -42,26 +42,26 @@ window.ensureEmpAvgStats = ensureEmpAvgStats;
    RANKING.JS - Leaderboard Engine & Strict Area Mapping Enforcement
    ========================================================================== */
 
-function isMappedAreaId(id, emp) {
+function isMappedAreaId(id, emp, deptCode) {
+  if (typeof window !== 'undefined' && typeof window.isMappedAreaId === 'function') {
+    return window.isMappedAreaId(id, emp, deptCode);
+  }
   if (!id) return false;
   const upperId = String(id).toUpperCase().trim();
-  if (typeof AREA_MAP !== "undefined" && AREA_MAP && AREA_MAP[upperId]) return true;
-  if (emp && emp.area && emp.area !== "Not on the list" && emp.area !== "Other facility") return true;
-  if (typeof monthIndexMemoryCache !== "undefined") {
-    for (const m of Object.keys(monthIndexMemoryCache)) {
-      const list = monthIndexMemoryCache[m];
-      if (Array.isArray(list)) {
-        const found = list.find(x => String(x && x.id || "").toUpperCase() === upperId);
-        if (found && found.area && found.area !== "Not on the list" && found.area !== "Other facility") return true;
-      }
-    }
+  if (typeof AREA_MAP !== "undefined" && AREA_MAP && AREA_MAP[upperId]) {
+    const a = AREA_MAP[upperId];
+    return a !== 'Unassigned' && a !== 'Unassigned PR';
   }
   return false;
 }
 
 function buildLeaderboardPayloadFromList(month, allList) {
   // Business Rule: Ranking uses ONLY IDs listed in areas.json (no fallback)
-  const rppfEmployees = (allList || []).filter(e => e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id, e));
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const rppfEmployees = (allList || []).filter(e => {
+    if (typeof isRankableEmployee === 'function') return isRankableEmployee(e, currentDept);
+    return e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id, e, currentDept);
+  });
   const normalized = rppfEmployees.map(e => ({
     ...e,
     plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),

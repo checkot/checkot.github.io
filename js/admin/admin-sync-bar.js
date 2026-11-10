@@ -34,7 +34,7 @@
         HIST_KEY = nsError ? '__BLOCKED__' : (NS + 'rppf_sync_hist_v2'),
         AUTO_KEY = nsError ? '__BLOCKED__' : (NS + 'rppf_autosave_v2'),
         LAST_SAVED_KEY = nsError ? '__BLOCKED__' : (NS + 'rppf_last_saved_ts');
-  const ADMIN_FILES = ['areas.json', 'team.json', 'notices.json', 'absent.json'];
+  const ADMIN_FILES = ['areas.json', 'team.json', 'notices.json', 'absent.json', 'access.json'];
   const AUTOSAVE_DELAY = 4000;
   const esc2 = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const apiBase = () => `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/`;
@@ -345,6 +345,56 @@
       holidays: mine.holidays || theirs.holidays
     };
   }
+
+  function mergeAccessScoped(theirs, mine, scope) {
+    if (!theirs || typeof theirs !== 'object') return mine;
+    if (scope === 'ALL' || scope === 'dev') return Object.assign({}, theirs, mine);
+    const theirsMembers = Array.isArray(theirs.members) ? theirs.members : [];
+    const mineMembers = Array.isArray(mine.members) ? mine.members : [];
+    let mergedMembers = [];
+    if (scope === 'PR') {
+      const qaMembers = theirsMembers.filter(m => m.dept === 'QA');
+      const prMembers = mineMembers.filter(m => m.dept === 'PR');
+      mergedMembers = [...prMembers, ...qaMembers];
+    } else if (scope === 'QA') {
+      const prMembers = theirsMembers.filter(m => m.dept === 'PR');
+      const qaMembers = mineMembers.filter(m => m.dept === 'QA');
+      mergedMembers = [...prMembers, ...qaMembers];
+    } else {
+      mergedMembers = mineMembers;
+    }
+    return {
+      version: mine.version || theirs.version || 1,
+      updatedAt: new Date().toISOString(),
+      departments: Object.assign({}, theirs.departments || {}, mine.departments || {}),
+      members: mergedMembers
+    };
+  }
+
+  async function adminSaveAccessNow(store) {
+    if (!getGhToken()) {
+      try { showToast('Save Server Access Key in "Server setup" to publish access changes', 'warn'); } catch (e) {}
+      return false;
+    }
+    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
+    try {
+      let theirs = null;
+      const t = await fetchRemoteRaw('access.json');
+      if (t != null) {
+        try { theirs = JSON.parse(t); } catch (e) {}
+      }
+      const merged = mergeAccessScoped(theirs, store, scope);
+      const jsonStr = JSON.stringify(merged, null, 2);
+      await githubPutFile('access.json', utf8ToBase64(jsonStr), `Update access.json via Admin Panel (${scope})`);
+      try { showToast('Access changes safely saved to server', 'success'); } catch (e) {}
+      return true;
+    } catch (err) {
+      try { showToast('Failed to save access.json: ' + err.message, 'error'); } catch (e) {}
+      return false;
+    }
+  }
+  window.mergeAccessScoped = mergeAccessScoped;
+  window.adminSaveAccessNow = adminSaveAccessNow;
 
   async function saveAreasNow(fromAuto) {
     if (saving || S.saving) { if (fromAuto) schedule(1500); return false; }

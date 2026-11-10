@@ -374,7 +374,57 @@ setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 260);
 /* const APP_MODE_KEY defined in js/core/config.js */
 /* const INCHARGE_ROLE_KEY defined in js/core/config.js */
 /* const INCHARGE_AREA_KEY defined in js/core/config.js */
-const INCHARGE_PIN_CODE = '2026';
+const INCHARGE_LOCKOUT_KEY = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : '') + 'renata_inc_lockout_ts';
+const INCHARGE_ATTEMPTS_KEY = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : '') + 'renata_inc_attempts';
+
+function checkInchargeLoginLockout() {
+  try {
+    const lockUntil = parseInt(localStorage.getItem(INCHARGE_LOCKOUT_KEY) || '0', 10);
+    if (lockUntil && Date.now() < lockUntil) {
+      return Math.ceil((lockUntil - Date.now()) / 1000);
+    }
+  } catch (e) {}
+  return 0;
+}
+
+function recordFailedInchargeAttempt() {
+  try {
+    const attempts = parseInt(localStorage.getItem(INCHARGE_ATTEMPTS_KEY) || '0', 10) + 1;
+    localStorage.setItem(INCHARGE_ATTEMPTS_KEY, String(attempts));
+    if (attempts >= 5) {
+      const lockDurationMs = 3 * 60 * 1000;
+      localStorage.setItem(INCHARGE_LOCKOUT_KEY, String(Date.now() + lockDurationMs));
+      localStorage.removeItem(INCHARGE_ATTEMPTS_KEY);
+      return 180;
+    }
+  } catch (e) {}
+  return 0;
+}
+
+function clearInchargeAttempts() {
+  try {
+    localStorage.removeItem(INCHARGE_ATTEMPTS_KEY);
+    localStorage.removeItem(INCHARGE_LOCKOUT_KEY);
+  } catch (e) {}
+}
+
+async function verifyDepartmentFallbackPin(rawPin, dept) {
+  const d = dept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+  const store = (typeof loadAccessStore === 'function') ? await loadAccessStore() : null;
+  if (store && store.departments && store.departments[d]) {
+    const fb = store.departments[d];
+    if (fb.fallbackPinHash && fb.fallbackPinSalt && typeof computeSha256 === 'function') {
+      const hash = await computeSha256(rawPin + fb.fallbackPinSalt);
+      return hash === fb.fallbackPinHash;
+    }
+  }
+  const salt = (typeof AUTH_SALT !== 'undefined' ? AUTH_SALT : 'RENATA_RPPF_SECURE_SALT_2026_#$!');
+  if (typeof computeSha256 === 'function') {
+    const hash = await computeSha256(rawPin + salt);
+    return hash === '6fc43dab19ade78399334b097c9bdf461446dc51f85a3b117dc62864100e30a9';
+  }
+  return false;
+}
 /* let _memAppMode = null; declared in js/core/state.js */
 function getAppMode() {
 try {
@@ -539,16 +589,31 @@ if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
 switchPage('search');
 findReport();
 }
-function saveInchargeModeSetup() {
+async function saveInchargeModeSetup() {
 const pinInp = document.getElementById('inchargePinInput');
 const rawPin = String(pinInp ? pinInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
 const err = document.getElementById('inchargePinError');
-if (rawPin !== INCHARGE_PIN_CODE) {
-if (err) err.classList.add('show');
-showToast('Wrong PIN code! Enter the correct 4-digit in-charge PIN.', 'error');
-if (pinInp) pinInp.focus();
-return;
+const lockSec = checkInchargeLoginLockout();
+if (lockSec > 0) {
+  if (err) { err.textContent = `Too many failed attempts! Locked for ${lockSec}s`; err.classList.add('show'); }
+  showToast(`Locked for ${lockSec}s due to 5 failed attempts`, 'error');
+  return;
 }
+const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const valid = await verifyDepartmentFallbackPin(rawPin, currentDept);
+if (!valid) {
+  const lockedSec = recordFailedInchargeAttempt();
+  if (lockedSec > 0) {
+    if (err) { err.textContent = `5 failed attempts! Locked for ${lockedSec}s`; err.classList.add('show'); }
+    showToast(`5 failed attempts! Locked for 3 minutes`, 'error');
+  } else {
+    if (err) { err.textContent = 'Wrong PIN code! Enter the correct PIN.'; err.classList.add('show'); }
+    showToast('Wrong PIN code! Enter the correct PIN.', 'error');
+  }
+  if (pinInp) pinInp.focus();
+  return;
+}
+clearInchargeAttempts();
 const roleVal = document.getElementById('inchargeRoleSelect')?.value || 'Floor In-Charge';
 const areaVal = document.getElementById('inchargeDefaultAreaSelect')?.value || 'all';
 try { localStorage.setItem(INCHARGE_ROLE_KEY, roleVal); localStorage.setItem(INCHARGE_AREA_KEY, areaVal); } catch (e) {}
@@ -972,13 +1037,14 @@ const cleanId = ID_ALIASES[u] || u;
 const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && (AREA_DETAILS[u] || AREA_DETAILS[cleanId])) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
 const subVal = e.sub || e.subsection || d.s || '';
 const mappedArea = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? (AREA_MAP[u] || AREA_MAP[cleanId]) : null;
-const fallbackArea = currentDept === 'QA' ? 'Unassigned' : ((e.isRppf !== false) ? getAreaForId(u, true) : (e.area || 'Other facility'));
+const isMapped = Boolean(mappedArea && !isPoolArea(mappedArea));
 const obj = {
 ...e,
 id: u,
 dept: e.dept || currentDept,
 isRppf: e.isRppf !== false,
-area: mappedArea || e.area || fallbackArea,
+listed: Boolean(mappedArea),
+area: mappedArea || (e.isRppf === false ? 'Other facility' : 'Not on the list'),
 sub: subVal,
 subsection: subVal
 };
@@ -1062,7 +1128,15 @@ Object.keys(monthIndexMemoryCache).forEach(m => (monthIndexMemoryCache[m] || [])
   applyTypeOverride(e);
 }));
 }
-function isExecHiddenFor(e) {
+function isExecHiddenFor(e, deptCode) {
+if (typeof window !== 'undefined' && typeof window.isExecHiddenFor === 'function' && window.isExecHiddenFor !== isExecHiddenFor) {
+  return window.isExecHiddenFor(e, deptCode);
+}
+if (!e) return false;
+const d = deptCode || e.dept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+if (typeof isExecutiveRecord === 'function' && typeof canViewExecutives === 'function') {
+  return isExecutiveRecord(e, d) && !canViewExecutives(d);
+}
 return Boolean(e) && getAppMode() !== 'incharge' && e.kind === 'EXEC' && e.valid === true;
 }
 function pickBestEmployee(a, b) {
@@ -1349,6 +1423,21 @@ function switchClientDepartment(dept) {
   const pillQA = document.getElementById('modalDeptPillQA');
   if (pillPR) pillPR.classList.toggle('active', dept === 'PR');
   if (pillQA) pillQA.classList.toggle('active', dept === 'QA');
+
+  // Fully reset filters/selected area
+  const areaSel = document.getElementById('areaFilter');
+  if (areaSel) areaSel.value = 'all';
+  const subSel = document.getElementById('subFilter');
+  if (subSel) subSel.value = 'all';
+  if (typeof _lbFilterState !== 'undefined' && _lbFilterState) {
+    _lbFilterState.area = 'all';
+    _lbFilterState.sub = 'all';
+  }
+  if (typeof populateAreaDropdown === 'function') populateAreaDropdown();
+  if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar();
+  if (typeof refreshSubFilter === 'function') refreshSubFilter();
+  if (typeof selectIccArea === 'function') selectIccArea('all');
+
   if (typeof showToast === 'function') {
     showToast(dept === 'QA' ? 'Switched to Quality Assurance (QA)' : 'Switched to Production (PR)', 'info');
   }
@@ -1367,21 +1456,42 @@ function populateAreaDropdown() {
   const sel = document.getElementById('areaFilter');
   if (!sel) return;
   const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-  let standardAreas = (currentDept === 'QA') ? QA_AREAS : PR_AREAS;
-  const jsonAreas = [...new Set(Object.values(AREA_MAP || {}))].filter(Boolean).filter(a => {
-    if (currentDept === 'QA') return QA_AREAS.includes(a);
-    return PR_AREAS.includes(a);
-  });
-  const allAreas = [...new Set([...standardAreas, ...jsonAreas])].filter(a => a !== OVERALL_AREA || getAppMode() === 'incharge').sort((a, b) => a.localeCompare(b));
+  const realAreas = (typeof getRealDepartmentAreas === 'function') ? getRealDepartmentAreas(currentDept) : (currentDept === 'QA' ? QA_AREAS : PR_AREAS);
+  const execArea = (typeof getExecutiveAreaForDept === 'function') ? getExecutiveAreaForDept(currentDept) : 'Overall';
+  const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+
+  const validAreas = realAreas.filter(a => (a !== execArea || canExec) && !isPoolArea(a));
+
   let html = `<option value="all">All ${currentDept === 'QA' ? 'QA ' : ''}areas</option>`;
-  allAreas.forEach(a => {
-    const lbl = a === OVERALL_AREA ? 'Executives' : (a === 'Quality Assurance' ? 'Quality Assurance (QA)' : a);
+  validAreas.forEach(a => {
+    const lbl = (a === 'Overall' || a === 'Executives') ? 'Executives' : (a === 'Quality Assurance' ? 'Quality Assurance (QA)' : a);
     html += `<option value="${esc(a)}">${esc(lbl)}</option>`;
   });
   const currentVal = sel.value || 'all';
   sel.innerHTML = html;
   if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal;
+  else sel.value = 'all';
+
+  if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar();
 }
+
+function renderIccAreaSegBar() {
+  const segBar = document.getElementById('iccAreaSegBar');
+  if (!segBar) return;
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const curArea = document.getElementById('areaFilter')?.value || 'all';
+  const sections = (typeof getSectionsForDept === 'function') ? getSectionsForDept(currentDept) : [];
+  const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+
+  let html = `<button type="button" class="icc-area-btn ${curArea === 'all' ? 'active' : ''}" data-icc-area="all" onclick="selectIccArea('all')">All</button>`;
+  sections.forEach(s => {
+    if (s.isExec && !canExec) return;
+    const isAct = (curArea === s.key);
+    html += `<button type="button" class="icc-area-btn ${isAct ? 'active' : ''}" data-icc-area="${esc(s.key)}" onclick="selectIccArea('${esc(s.key)}')">${esc(s.short)}</button>`;
+  });
+  segBar.innerHTML = html;
+}
+window.renderIccAreaSegBar = renderIccAreaSegBar;
 /* function updateSettingsAreaCount moved to js/pages/ */
 
 /* function initYearDropdown moved to js/pages/ */
@@ -2119,7 +2229,7 @@ const mNum = parseInt(String(mStr).split('-')[1], 10) || 1;
 const mShortLbl = shortMonths[mNum - 1] || mStr;
 
 list.forEach(e => {
-if (!e || e.isRppf === false || e.valid === false || !isMappedAreaId(e.id, e)) return;
+if (typeof isRankableEmployee === 'function' ? !isRankableEmployee(e, currentDept) : (!e || e.isRppf === false || e.valid === false || !isMappedAreaId(e.id, e, currentDept))) return;
 const empKey = resolveEmpAliasId(e.id) || String(e.id || '').toUpperCase();
 const cur = map.get(empKey);
 const uid = String(e.id || '').toUpperCase();
@@ -3285,239 +3395,76 @@ setTimeout(wireLeaderboardScroll, 120);
 
 /* ===== ROUND 4: Admin Categories on Ranking, Pull-to-Refresh & Back-Button / Miss-Touch Guard ===== */
 /* ===== ROUND 5: Unified Single-ID Role Login (Hidden In-Charge, Manager & Admin Modes) ===== */
-const SPECIAL_ROLE_IDS = {
-'RF8941': {
-id: 'RF8941',
-name: 'Debashish Mitra',
-mode: 'incharge',
-roleTitle: 'In-Charge (Solid)',
-defaultArea: 'Solid Production',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['8941', '2026', '1234']
-},
-'RF20716': {
-id: 'RF20716',
-name: 'Milon Ahamed',
-mode: 'incharge',
-roleTitle: 'In-Charge (SG)',
-defaultArea: 'Softgel Production',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['20716', '2026', '1234']
-},
-'RF5473': {
-id: 'RF5473',
-name: 'Rabiul Alam',
-mode: 'incharge',
-roleTitle: 'Production Manager',
-defaultArea: 'all',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['5473', '2026', '1234']
-},
-'RF23849': {
-id: 'RF23849',
-name: 'Asrar Mahamud Neloy',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23849', '2026', '1234']
-},
-'RF23848': {
-id: 'RF23848',
-name: 'Md Faysal Miah',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23848', '2026', '1234']
-},
-'RF23810': {
-id: 'RF23810',
-name: 'Mehedi Hasan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23810', '2026', '1234']
-},
-'RF22690': {
-id: 'RF22690',
-name: 'Md. Mehdi Hasan',
-mode: 'incharge',
-roleTitle: 'Senior Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['22690', '2026', '1234']
-},
-'RF0364': {
-id: 'RF0364',
-name: 'Md. Mokaddesh Uddin Khan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['0364', '364', '2026', '1234']
-},
-'RF364': {
-id: 'RF0364',
-name: 'Md. Mokaddesh Uddin Khan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['0364', '364', '2026', '1234']
-},
-'RF23234': {
-id: 'RF23234',
-name: 'Sabbir Ahmed',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23234', '2026', '1234']
-},
-'RF21291': {
-id: 'RF21291',
-name: 'Sabuj Karmoker',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21291', '2026', '1234']
-},
-'RF21062': {
-id: 'RF21062',
-name: 'Namita Rani Nath',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21062', '2026', '1234']
-},
-'RF20948': {
-id: 'RF20948',
-name: 'Hadia Farzana',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['20948', '2026', '1234']
-},
-'RF21283': {
-id: 'RF21283',
-name: 'Tanzina Aktar',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21283', '2026', '1234']
-},
-'RF20850': {
-id: 'RF20850',
-name: 'Md. Ariful Islam',
-mode: 'incharge',
-roleTitle: 'System Admin',
-defaultArea: 'all',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['20850', 'admin1234', '2026']
-},
-'RF22111': {
-id: 'RF22111',
-name: 'Mr. Md. Sohel Mia',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['22111', 'admin1234', '2026']
-},
-'CF5242': {
-id: 'CF5242',
-name: 'Mr. Md. Shohidul Islam',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['5242', 'admin1234', '2026']
-},
-'CF8355': {
-id: 'CF8355',
-name: 'Mr. Johirul Islam Porag',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['8355', 'admin1234', '2026']
-},
-'RF21561': {
-id: 'RF21561',
-name: 'Mr. MD. Rahid Hossain',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Packing Hall',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['21561', 'admin1234', '2026']
-},
-'RF22849': {
-id: 'RF22849',
-name: 'Mr. Md. Ashraful Alam',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Softgel Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['22849', 'admin1234', '2026']
-},
-'ADMIN': {
-id: 'ADMIN',
-name: 'Md. Ariful Islam (Admin)',
-mode: 'incharge',
-roleTitle: 'System Admin',
-defaultArea: 'all',
-isAdmin: true,
-pins: ['admin1234', '2026']
+let _accessStore = null;
+async function loadAccessStore() {
+  if (_accessStore) return _accessStore;
+  try {
+    const cached = localStorage.getItem(typeof ACCESS_CACHE_KEY !== 'undefined' ? ACCESS_CACHE_KEY : 'renata_access_cache_v1');
+    if (cached) _accessStore = JSON.parse(cached);
+  } catch (e) {}
+  try {
+    const resp = await fetch('access.json?ts=' + Date.now(), { cache: 'no-store' });
+    if (resp.ok) {
+      const data = await resp.json();
+      _accessStore = data;
+      try {
+        localStorage.setItem(typeof ACCESS_CACHE_KEY !== 'undefined' ? ACCESS_CACHE_KEY : 'renata_access_cache_v1', JSON.stringify(data));
+      } catch (e) {}
+    }
+  } catch (e) {}
+  return _accessStore;
 }
-};
-function getSpecialRoleSpec(rawId) {
-const clean = String(rawId || '').trim().toUpperCase().replace(/\s+/g, '');
-if (!clean) return null;
-if (SPECIAL_ROLE_IDS[clean]) return SPECIAL_ROLE_IDS[clean];
-// Also dynamically recognize any member added to ERP Team (team.json / teamData) as ERP Team Admin!
-if (Array.isArray(teamData)) {
-const tm = teamData.find(m => m && String(m.id || '').trim().toUpperCase() === clean);
-if (tm && clean !== '—') {
-const numPart = clean.replace(/[^0-9]/g, '');
-return {
-id: clean,
-name: tm.name || clean,
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: (tm.area && tm.area !== 'All') ? tm.area : 'all',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '1234', ...(numPart ? [numPart] : [])]
-};
-}
-}
-return null;
+window.loadAccessStore = loadAccessStore;
+
+function getSpecialRoleSpec(rawId, optDept) {
+  const clean = String(rawId || '').trim().toUpperCase().replace(/\s+/g, '');
+  if (!clean) return null;
+  const currentDept = optDept || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
+
+  if (_accessStore && Array.isArray(_accessStore.members)) {
+    const m = _accessStore.members.find(x => x.active !== false && String(x.id).toUpperCase().trim() === clean && (x.dept === currentDept || x.dept === 'ALL'));
+    if (m) {
+      return {
+        id: clean,
+        name: m.name || clean,
+        dept: m.dept || currentDept,
+        mode: 'incharge',
+        roleTitle: m.role || 'Floor In-Charge',
+        defaultArea: (Array.isArray(m.areas) && m.areas.length === 1) ? m.areas[0] : (m.areas?.includes('all') ? 'all' : (m.areas?.[0] || 'all')),
+        areas: m.areas || ['all'],
+        canViewExecutives: Boolean(m.canViewExecutives),
+        isAdmin: Boolean(m.role && m.role.toLowerCase().includes('admin')),
+        allowNormalBypass: m.allowNormalBypass !== false,
+        pinHash: m.pinHash,
+        pinSalt: m.pinSalt
+      };
+    }
+  }
+
+  // Also recognize ERP Team members dynamically
+  if (Array.isArray(teamData)) {
+    const tm = teamData.find(m => m && String(m.id || '').trim().toUpperCase() === clean);
+    if (tm && clean !== '—') {
+      const tmDept = (tm.dept || (typeof getDeptForArea === 'function' ? getDeptForArea(tm.area) : 'PR'));
+      if (tmDept === currentDept) {
+        return {
+          id: clean,
+          name: tm.name || clean,
+          dept: currentDept,
+          mode: 'incharge',
+          roleTitle: 'ERP Team Admin',
+          defaultArea: (tm.area && tm.area !== 'All') ? tm.area : 'all',
+          areas: [tm.area || 'all'],
+          canViewExecutives: false,
+          isAdmin: true,
+          allowNormalBypass: true,
+          pinHash: null,
+          pinSalt: null
+        };
+      }
+    }
+  }
+  return null;
 }
 function syncPrivilegedUI() {
 const mode = getAppMode();
@@ -3586,6 +3533,7 @@ syncPrivilegedUI();
 openModeSetupModal = function() {
 const modal = document.getElementById('modeSetupModal');
 if (!modal) return;
+if (typeof loadAccessStore === 'function') loadAccessStore();
 if (typeof pushAppNavState === 'function') pushAppNavState('modal:modeSetup');
 const myId = getPreferredId();
 const regInp = document.getElementById('regEmpIdInput');
@@ -3602,7 +3550,7 @@ modal.classList.add('open');
 document.body.style.overflow = 'hidden';
 setTimeout(() => regInp?.focus(), 100);
 };
-saveEmployeeModeSetup = function() {
+saveEmployeeModeSetup = async function() {
 const inp = document.getElementById('regEmpIdInput');
 const raw = String(inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
 if (!raw) {
@@ -3612,12 +3560,17 @@ return;
 }
 const detectedDept = (typeof getDeptForEmployeeId === 'function') ? (getDeptForEmployeeId(raw) || getClientDepartment()) : 'PR';
 if (typeof setClientDepartment === 'function') setClientDepartment(detectedDept);
-const spec = getSpecialRoleSpec(raw);
+if (!_accessStore && typeof loadAccessStore === 'function') await loadAccessStore();
+const spec = getSpecialRoleSpec(raw, detectedDept);
 if (!spec) {
 // Normal Employee: No password required!
 setAdminLoggedIn(false);
 setPreferredId(raw);
 setAppMode('employee');
+try {
+  localStorage.removeItem(typeof INCHARGE_DEPT_KEY !== 'undefined' ? INCHARGE_DEPT_KEY : 'renata_incharge_dept_v1');
+  localStorage.removeItem(typeof INCHARGE_EXEC_VIEW_KEY !== 'undefined' ? INCHARGE_EXEC_VIEW_KEY : 'renata_incharge_can_view_exec_v1');
+} catch (e) {}
 updateModeUI();
 closeModeSetupModal();
 showToast(`Saved ID (${raw}) [${detectedDept}]`, 'success');
@@ -3627,6 +3580,7 @@ switchPage('search');
 findReport();
 return;
 }
+
 // Special Role ID: Verify Password / PIN
 const authBox = document.getElementById('specialRoleAuthBox');
 if (authBox && !authBox.classList.contains('show')) {
@@ -3636,26 +3590,64 @@ return;
 }
 const passInp = document.getElementById('specialRolePassInput');
 const rawPass = String(passInp ? passInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
-// If this ID allows normal employee bypass (e.g. RF20850 or ERP Team member) and password was left blank, log in directly as Normal Employee!
+
 if (!rawPass && spec.allowNormalBypass) {
 saveNormalEmployeeBypass();
 return;
 }
-const validPins = [...(spec.pins || []), getAdminPassword()];
-if (!rawPass || !validPins.includes(rawPass)) {
-document.getElementById('specialRolePinError')?.classList.add('show');
-showToast('Enter the valid password/PIN for ' + spec.name, 'error');
-passInp?.focus();
-return;
+
+const lockSec = (typeof checkInchargeLoginLockout === 'function') ? checkInchargeLoginLockout() : 0;
+if (lockSec > 0) {
+  const errEl = document.getElementById('specialRolePinError');
+  if (errEl) { errEl.textContent = `Too many failed attempts! Locked for ${lockSec}s`; errEl.classList.add('show'); }
+  showToast(`Locked for ${lockSec}s due to 5 failed attempts`, 'error');
+  return;
 }
-// Authenticated for Special Role inside index.html (In-Charge / Manager / Admin Ranking privileges)
+
+let isMatch = false;
+if (spec.pinHash && spec.pinSalt && typeof computeSha256 === 'function') {
+  const h = await computeSha256(rawPass + spec.pinSalt);
+  if (h === spec.pinHash) isMatch = true;
+}
+if (!isMatch && _accessStore && _accessStore.departments && _accessStore.departments[detectedDept]) {
+  const fb = _accessStore.departments[detectedDept];
+  if (fb.fallbackPinHash && fb.fallbackPinSalt && typeof computeSha256 === 'function') {
+    const h = await computeSha256(rawPass + fb.fallbackPinSalt);
+    if (h === fb.fallbackPinHash) isMatch = true;
+  }
+}
+if (!isMatch) {
+  // Check admin password fallback
+  if (typeof getAdminPassword === 'function' && rawPass === getAdminPassword()) {
+    isMatch = true;
+  }
+}
+
+if (!isMatch) {
+  const locked = (typeof recordFailedInchargeAttempt === 'function') ? recordFailedInchargeAttempt() : 0;
+  const errEl = document.getElementById('specialRolePinError');
+  if (locked > 0) {
+    if (errEl) { errEl.textContent = `5 failed attempts! Locked for ${locked}s`; errEl.classList.add('show'); }
+    showToast(`5 failed attempts! Locked for 3 minutes`, 'error');
+  } else {
+    if (errEl) { errEl.textContent = 'Invalid Password/PIN!'; errEl.classList.add('show'); }
+    showToast('Enter the valid password/PIN for ' + spec.name, 'error');
+  }
+  passInp?.focus();
+  return;
+}
+
+if (typeof clearInchargeAttempts === 'function') clearInchargeAttempts();
+
 const savedId = spec.id === 'ADMIN' ? (getPreferredId() || 'RF20850') : spec.id;
 setPreferredId(savedId);
 setAppMode(spec.mode);
-setAdminLoggedIn(Boolean(spec.isAdmin || rawPass === getAdminPassword()));
+setAdminLoggedIn(Boolean(spec.isAdmin));
 try {
-localStorage.setItem(INCHARGE_ROLE_KEY, `${spec.roleTitle} • ${spec.name}`);
-localStorage.setItem(INCHARGE_AREA_KEY, spec.defaultArea || 'all');
+  localStorage.setItem(INCHARGE_ROLE_KEY, `${spec.roleTitle} • ${spec.name}`);
+  localStorage.setItem(INCHARGE_AREA_KEY, spec.defaultArea || 'all');
+  localStorage.setItem(typeof INCHARGE_DEPT_KEY !== 'undefined' ? INCHARGE_DEPT_KEY : 'renata_incharge_dept_v1', spec.dept || detectedDept);
+  localStorage.setItem(typeof INCHARGE_EXEC_VIEW_KEY !== 'undefined' ? INCHARGE_EXEC_VIEW_KEY : 'renata_incharge_can_view_exec_v1', String(Boolean(spec.canViewExecutives)));
 } catch (e) {}
 window._memInchargeRole = `${spec.roleTitle} • ${spec.name}`;
 window._memInchargeArea = spec.defaultArea || 'all';
@@ -4597,22 +4589,19 @@ function renderInchargeHomeLeavesList() {
   });
   if (countBadge) countBadge.textContent = `${activeLeaves.length} Active`;
 
-  // Dynamically update area filter pill bar counts
-  const areaCounts = {
-    all: leaves.length,
-    'Packing Hall': leaves.filter(l => l.area === 'Packing Hall').length,
-    'Solid Production': leaves.filter(l => l.area === 'Solid Production').length,
-    'Softgel Production': leaves.filter(l => l.area === 'Softgel Production').length,
-    'Overall': leaves.filter(l => l.area === 'Overall').length
-  };
-  document.querySelectorAll('#incLeavesAreaBar .inc-leaves-filter-btn').forEach(btn => {
-    const a = btn.getAttribute('data-leave-area');
-    if (a === 'all') btn.textContent = `All Sections (${areaCounts.all})`;
-    else if (a === 'Packing Hall') btn.textContent = `Packing Hall (${areaCounts['Packing Hall']})`;
-    else if (a === 'Solid Production') btn.textContent = `Solid (${areaCounts['Solid Production']})`;
-    else if (a === 'Softgel Production') btn.textContent = `Softgel (${areaCounts['Softgel Production']})`;
-    else if (a === 'Overall') btn.textContent = `Executives (${areaCounts['Overall']})`;
-  });
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const sections = (typeof getSectionsForDept === 'function') ? getSectionsForDept(currentDept) : [];
+  const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+  const leavesBar = document.getElementById('incLeavesAreaBar');
+  if (leavesBar) {
+    let lHtml = `<button type="button" class="inc-leaves-filter-btn ${_incLeavesAreaFilter === 'all' ? 'active' : ''}" data-leave-area="all" onclick="filterIncHomeLeaves('all')">All Sections (${leaves.length})</button>`;
+    sections.forEach(s => {
+      if (s.isExec && !canExec) return;
+      const cnt = leaves.filter(l => l.area === s.key).length;
+      lHtml += `<button type="button" class="inc-leaves-filter-btn ${_incLeavesAreaFilter === s.key ? 'active' : ''}" data-leave-area="${esc(s.key)}" onclick="filterIncHomeLeaves('${esc(s.key)}')">${esc(s.short)} (${cnt})</button>`;
+    });
+    leavesBar.innerHTML = lHtml;
+  }
 
   const filtered = _incLeavesAreaFilter === 'all'
     ? leaves
@@ -4713,17 +4702,19 @@ async function renderInchargeHistoricalAnalytics(optMonth) {
     }
   }
 
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const rppfActive = Array.isArray(list)
-    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e))
+    ? list.filter(e => (typeof isRankableEmployee === 'function' ? isRankableEmployee(e, currentDept) : (e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e, currentDept))))
     : [];
 
   let totDuty = 0, totOt = 0, totNight = 0, totPlain = 0, totHoli = 0;
-  const secStats = {
-    'Packing Hall': { name: 'Packing Hall', active: 0, duty: 0, ot: 0, night: 0 },
-    'Solid Production': { name: 'Solid Production', active: 0, duty: 0, ot: 0, night: 0 },
-    'Softgel Production': { name: 'Softgel Production', active: 0, duty: 0, ot: 0, night: 0 },
-    'Overall': { name: 'Executives / Staff', active: 0, duty: 0, ot: 0, night: 0 }
-  };
+  const sections = (typeof getSectionsForDept === 'function') ? getSectionsForDept(currentDept) : [];
+  const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+  const secStats = {};
+  sections.forEach(s => {
+    if (s.isExec && !canExec) return;
+    secStats[s.key] = { name: s.label, active: 0, duty: 0, ot: 0, night: 0 };
+  });
 
   rppfActive.forEach(e => {
     const duty = Number(e.totalDuty || 0);
@@ -4738,17 +4729,12 @@ async function renderInchargeHistoricalAnalytics(optMonth) {
     totPlain += plain;
     totHoli += holi;
 
-    const area = getAreaForId(e.id, true);
-    let secKey = 'Overall';
-    if (area === 'Solid Production') secKey = 'Solid Production';
-    else if (area === 'Softgel Production') secKey = 'Softgel Production';
-    else if (area === 'Packing Hall') secKey = 'Packing Hall';
-
-    if (secStats[secKey]) {
-      secStats[secKey].active++;
-      secStats[secKey].duty += duty;
-      secStats[secKey].ot += ot;
-      secStats[secKey].night += night;
+    const area = (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[e.id]) || getAreaForId(e.id, true);
+    if (secStats[area]) {
+      secStats[area].active++;
+      secStats[area].duty += duty;
+      secStats[area].ot += ot;
+      secStats[area].night += night;
     }
   });
 
@@ -4802,9 +4788,10 @@ function renderInchargeWatchlist() {
   if (!container) return;
 
   const month = _incHistorySelectedMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '2026-10');
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const list = monthIndexMemoryCache[month] || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.allEmployees) || [];
   const rppfActive = Array.isArray(list)
-    ? list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e))
+    ? list.filter(e => (typeof isRankableEmployee === 'function' ? isRankableEmployee(e, currentDept) : (e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e, currentDept))))
     : [];
 
   if (rppfActive.length === 0) {
@@ -5008,16 +4995,29 @@ function renderInchargeHomeToppers() {
     return;
   }
 
-  const rppfActive = list.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e));
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const rppfActive = list.filter(e => (typeof isRankableEmployee === 'function' ? isRankableEmployee(e, currentDept) : (e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e, currentDept))));
   enrichLbEmployees(rppfActive);
   ensureEmpAvgStats(rppfActive);
+
+  const toppersBar = _el('incToppersAreaBar');
+  if (toppersBar) {
+    const sections = (typeof getSectionsForDept === 'function') ? getSectionsForDept(currentDept) : [];
+    const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+    let bHtml = `<button type="button" class="inc-topper-area-btn ${_incToppersAreaFilter === 'all' ? 'active' : ''}" data-top-area="all" onclick="setIncToppersArea('all')">All ${currentDept === 'QA' ? 'QA' : 'RPPF'}</button>`;
+    sections.forEach(s => {
+      if (s.isExec && !canExec) return;
+      bHtml += `<button type="button" class="inc-topper-area-btn ${_incToppersAreaFilter === s.key ? 'active' : ''}" data-top-area="${esc(s.key)}" onclick="setIncToppersArea('${esc(s.key)}')">${esc(s.short)}</button>`;
+    });
+    toppersBar.innerHTML = bHtml;
+  }
 
   const areaFiltered = _incToppersAreaFilter === 'all'
     ? rppfActive
     : rppfActive.filter(e => e.area === _incToppersAreaFilter);
 
   if (subEl) {
-    const areaLbl = _incToppersAreaFilter === 'all' ? 'All RPPF Sections' : (_incToppersAreaFilter === OVERALL_AREA ? 'Executives' : _incToppersAreaFilter);
+    const areaLbl = _incToppersAreaFilter === 'all' ? (currentDept === 'QA' ? 'All QA Sections' : 'All RPPF Sections') : (_incToppersAreaFilter === 'Overall' || _incToppersAreaFilter === 'Executives' ? 'Executives' : _incToppersAreaFilter);
     subEl.textContent = `${month} • ${areaLbl} (${areaFiltered.length} active employees)`;
   }
 
@@ -5111,44 +5111,36 @@ async function renderInchargeHomeOverview() {
   if (!monthList) {
     monthList = await fetchMonthPreIndexedData(month, false, true);
   }
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const activeRppf = Array.isArray(monthList)
-    ? monthList.filter(e => e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e))
+    ? monthList.filter(e => (typeof isRankableEmployee === 'function' ? isRankableEmployee(e, currentDept) : (e && e.isRppf !== false && e.valid !== false && isMappedAreaId(e.id, e, currentDept))))
     : [];
 
-  const useMonth = activeRppf.length > 0;
-  let solidCnt = 0, sgCnt = 0, packCnt = 0, execCnt = 0;
-
-  if (useMonth) {
-    activeRppf.forEach(e => {
-      const a = getAreaForId(e.id, true);
-      const m = getEmpMeta(e.id);
-      if (a === 'Solid Production') solidCnt++;
-      else if (a === 'Softgel Production') sgCnt++;
-      else if (a === 'Packing Hall') packCnt++;
-      else if (a === OVERALL_AREA || e.kind === 'EXEC' || m.type === 'EXEC') execCnt++;
-    });
-  } else {
-    Object.keys(AREA_MAP || {}).forEach(id => {
-      const a = AREA_MAP[id];
-      const m = getEmpMeta(id);
-      if (a === 'Solid Production') solidCnt++;
-      else if (a === 'Softgel Production') sgCnt++;
-      else if (a === 'Packing Hall') packCnt++;
-      else if (a === OVERALL_AREA || m.type === 'EXEC') execCnt++;
-    });
-  }
-
-  const totalActive = solidCnt + sgCnt + packCnt + execCnt;
   const setT = (id, t) => { const el = _el(id); if (el) el.textContent = String(t); };
-  setT('incOvTotalActive', totalActive);
-  setT('incCountSolid', solidCnt);
-  setT('incCountSg', sgCnt);
-  setT('incCountPack', packCnt);
-  setT('incCountExec', execCnt);
-  setT('incMetaSolid', `${(AREA_SUBS['Solid Production'] || []).length} sub-sections • Active`);
-  setT('incMetaSg', `${(AREA_SUBS['Softgel Production'] || []).length} sub-sections • Active`);
-  setT('incMetaPack', `${(AREA_SUBS['Packing Hall'] || []).length} sub-sections • Active`);
-  setT('incMetaExec', `Management & Officers`);
+  const sections = (typeof getSectionsForDept === 'function') ? getSectionsForDept(currentDept) : [];
+  const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : false;
+  let totalActive = 0;
+
+  const gridEl = document.querySelector('.inc-count-grid');
+  if (gridEl) {
+    let gHtml = '';
+    sections.forEach(s => {
+      if (s.isExec && !canExec) return;
+      const count = activeRppf.filter(e => {
+        const a = (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[e.id]) || getAreaForId(e.id, true);
+        return a === s.key;
+      }).length;
+      totalActive += count;
+      const subsCount = (AREA_SUBS && Array.isArray(AREA_SUBS[s.key])) ? AREA_SUBS[s.key].length : 0;
+      gHtml += `<div class="inc-count-card" onclick="openInchargeAreaRanking('${esc(s.key)}')">
+        <div class="inc-count-head"><span>${esc(s.label)}</span><span>›</span></div>
+        <div class="inc-count-num">${count}</div>
+        <div class="inc-count-meta">${subsCount > 0 ? subsCount + ' sub-sections • Active' : (s.isExec ? 'Management & Officers' : 'Active in section')}</div>
+      </div>`;
+    });
+    gridEl.innerHTML = gHtml;
+    setT('incOvTotalActive', totalActive);
+  }
 
   renderInchargeHomeLeavesList();
   renderInchargeHomeAbsentList();
@@ -5365,9 +5357,14 @@ function searchEmployeeDirectory(query, limit = 10, deptOverride = null) {
   for (let i = 0; i < all.length; i++) {
     const e = all[i];
     if (!isListedEmployeeId(e.id)) continue;
+    if (typeof isPoolArea === 'function' && isPoolArea(e.area)) continue;
     const empDept = (typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : (e.area === 'Quality Assurance' ? 'QA' : 'PR');
     if (empDept !== currentDept) continue;
-    if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
+    if (typeof isExecutiveRecord === 'function' && typeof canViewExecutives === 'function') {
+      if (isExecutiveRecord(e, currentDept) && !canViewExecutives(currentDept)) continue;
+    } else {
+      if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
+    }
     const idU = e.id.toUpperCase();
     const nameU = String(e.name || '').toUpperCase();
     const areaU = String(e.area || '').toUpperCase();
@@ -6008,7 +6005,7 @@ async function autoLoad() {
         ...e,
         id: String(e.id || '').toUpperCase().trim(),
         isRppf: e.isRppf !== false,
-        area: (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[String(e.id || '').toUpperCase().trim()]) ? AREA_MAP[String(e.id || '').toUpperCase().trim()] : (e.area && e.area !== 'Not on the list' ? e.area : ((e.isRppf !== false) ? getAreaForId(e.id, true) : (e.area || 'Other facility')))
+        area: (typeof AREA_MAP !== 'undefined' && AREA_MAP && AREA_MAP[String(e.id || '').toUpperCase().trim()]) ? AREA_MAP[String(e.id || '').toUpperCase().trim()] : (e.isRppf === false ? 'Other facility' : 'Not on the list')
       }));
       normalized.forEach(applyTypeOverride);
       normalized.forEach(e => { getEmpOtDays(e); });

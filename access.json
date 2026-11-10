@@ -1,0 +1,353 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-10T19:00:00+06:00",
+  "departments": {
+    "PR": {
+      "fallbackPinHash": "6c536fc8fecf85fdb586238991c5acbde91740c8b5734ceecaa4ae6933557abf",
+      "fallbackPinSalt": "18567df9ba4f2192"
+    },
+    "QA": {
+      "fallbackPinHash": "d17934985351d919335fa57079ecc74365f736c78a1ebcb4e146e17045689285",
+      "fallbackPinSalt": "db9c4e72c579f0b9"
+    }
+  },
+  "members": [
+    {
+      "id": "RF8941",
+      "name": "Debashish Mitra",
+      "dept": "PR",
+      "role": "In-Charge (Solid)",
+      "areas": [
+        "Solid Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "72a78273051e14db7f4ab432fc4b8d8b7374d183c9b28d29c6503f3d9fb35937",
+      "pinSalt": "7a863e01bec3f75a",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF20716",
+      "name": "Milon Ahamed",
+      "dept": "PR",
+      "role": "In-Charge (SG)",
+      "areas": [
+        "Softgel Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "34c7688ad9e31bfec24efd90dfc2c86b11ded635dda09221a11def7e717845e1",
+      "pinSalt": "747fc3195c86e3b9",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF5473",
+      "name": "Rabiul Alam",
+      "dept": "PR",
+      "role": "Production Manager",
+      "areas": [
+        "all"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "03dec88e9f79022fd7653cf023f6412617a57edede97756dc68c8996ba392500",
+      "pinSalt": "e2794a00557157e3",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF23849",
+      "name": "Asrar Mahamud Neloy",
+      "dept": "PR",
+      "role": "Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "78125c032d346f67c2c561e6f62b931710b3acb71597890db729f59d0bdd7414",
+      "pinSalt": "0dadc12b7d152d1e",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF23848",
+      "name": "Md Faysal Miah",
+      "dept": "PR",
+      "role": "Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "f97a458810274d431c1497f8fd026dfa29ec716cc97d34141bfecc21d4d6fabd",
+      "pinSalt": "d9e4dc1d087d89ae",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF23810",
+      "name": "Mehedi Hasan",
+      "dept": "PR",
+      "role": "Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "686dce4f165786b20a7090eee21d413d2d97e46f04daeecbd87f5ce1658c38a5",
+      "pinSalt": "a123d134e422f260",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF22690",
+      "name": "Md. Mehdi Hasan",
+      "dept": "PR",
+      "role": "Senior Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "8160de71672edf96b6df52ff02a8c5f0d045cd07b06e9298eeb0a25ffbe7dfba",
+      "pinSalt": "6cdbbb6c0deec42c",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF0364",
+      "name": "Md. Mokaddesh Uddin Khan",
+      "dept": "PR",
+      "role": "Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "9e407d10eaaa5477aa2d302d54cb099193aad070dfbecb90e8167685a030b1d7",
+      "pinSalt": "c921c6da8c978a04",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF23234",
+      "name": "Sabbir Ahmed",
+      "dept": "PR",
+      "role": "Officer (Executive)",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "2ba477a623d9b5f2150767c4be6aba6aa950f7ec4e006ca4fe729be30e351ef9",
+      "pinSalt": "9a91f6e7ac8d38e3",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF21291",
+      "name": "Sabuj Karmoker",
+      "dept": "PR",
+      "role": "Assistant Manager",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "211fdb9d2304a0183dfabe295b3716cc8f55ce40a9ef37fdffca7a41a784f5e9",
+      "pinSalt": "235efe102daabba0",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF21062",
+      "name": "Namita Rani Nath",
+      "dept": "PR",
+      "role": "Assistant Manager",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "63c02a5d527455826156a108d4426da5e6efab37224ede63a9ffe3bd23ebe1ab",
+      "pinSalt": "ebb7642956b5f3d5",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF20948",
+      "name": "Hadia Farzana",
+      "dept": "PR",
+      "role": "Assistant Manager",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "63b6dacc0d04a17d51ef2592625e0d2c0ac4d38c9ace6de25185431278481330",
+      "pinSalt": "fc125a7d425267cb",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF21283",
+      "name": "Tanzina Aktar",
+      "dept": "PR",
+      "role": "Assistant Manager",
+      "areas": [
+        "Overall"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "4021d10f8faf5c733c60366e442e6af4541dae646492458a085f528a4ff09185",
+      "pinSalt": "420c49a22e2dbb82",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF20850",
+      "name": "Md. Ariful Islam",
+      "dept": "PR",
+      "role": "System Admin",
+      "areas": [
+        "all"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "dev",
+      "pinHash": "d9798c379191a3dfeda5490483d25de3622c07c3f29c61802b597512b695ccb8",
+      "pinSalt": "6356ace8b910c5f6",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF22111",
+      "name": "Mr. Md. Sohel Mia",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "Solid Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "033ce296c468640ec0d92ad1c5ad5dd4f5de5d44eacc0d6e09b84ef80d7ea550",
+      "pinSalt": "ec60388dd9a85275",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "CF5242",
+      "name": "Mr. Md. Shohidul Islam",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "Solid Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "d2c809c2acc07043dac9b9a4cbe3a1d9abb5ae2f969c5cff19daa4727c64b465",
+      "pinSalt": "cdded11df9371008",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "CF8355",
+      "name": "Mr. Johirul Islam Porag",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "Solid Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "ba8f86f1805bffea4d9d26d6f633faf91740c0746147bbd6bb9bcd7ad2aaaf46",
+      "pinSalt": "dd3cfea2db3885b2",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF21561",
+      "name": "Mr. MD. Rahid Hossain",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "Packing Hall"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "ee075d925fae6614f8032d48c189940aa1eb408fbaca5e4fba5fbf5ee4bdd8b7",
+      "pinSalt": "a3578325a10e3301",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF22849",
+      "name": "Mr. Md. Ashraful Alam",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "Softgel Production"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "pradmin",
+      "pinHash": "d86eac0d52f4b5ff3173beee76572d0aaabd51a00a9f187936b04c7344314ab1",
+      "pinSalt": "27b15b0b979b8f6c",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF20259",
+      "name": "QA Section In-Charge",
+      "dept": "QA",
+      "role": "Section In-Charge",
+      "areas": [
+        "IPQC PR",
+        "IPQC Pack"
+      ],
+      "canViewExecutives": false,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "qaadmin",
+      "pinHash": "3faa7faa4b4430820ea3ee23b8791c4321e015f4df3eaba00b855d83023a2a9a",
+      "pinSalt": "f9c1d325a42250f3",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    },
+    {
+      "id": "RF20763",
+      "name": "QA Manager",
+      "dept": "QA",
+      "role": "Manager",
+      "areas": [
+        "all"
+      ],
+      "canViewExecutives": true,
+      "active": true,
+      "allowNormalBypass": true,
+      "createdBy": "qaadmin",
+      "pinHash": "f1015c52b8a662e00cd14990b5dfa158ad99d020713c04d92df640586e9446d3",
+      "pinSalt": "d6324278bd0f1c26",
+      "updatedAt": "2026-11-10T19:00:00+06:00"
+    }
+  ]
+}

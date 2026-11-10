@@ -493,11 +493,19 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         night_amount = 0.0
 
     total_earned = round(ot_amount + holiday_amount + night_amount, 2)
+    alias_map = {"556515": "CL6515", "CL6515": "556515", "556531": "CL6531", "CL6531": "556531"}
+    cid_u = str(c["id"]).strip().upper()
+    clean_cid = alias_map.get(cid_u, cid_u)
+    mapped_area = None
+    if area_map:
+        mapped_area = area_map.get(cid_u) or area_map.get(clean_cid) or area_map.get(str(c["id"]))
+    is_listed = bool(mapped_area is not None)
+
     if dept == "QA":
         default_area = "Quality Assurance"
     else:
         default_area = "Packing Hall" if c["isRppf"] else "Other facility"
-    area = area_map.get(c["id"], default_area) if area_map else default_area
+    area = mapped_area if mapped_area else default_area
     sub_val = details.get(c["id"], {}).get("s", "") if details else ""
 
     req_problems = c.get("requisitionProblems", [])
@@ -513,6 +521,7 @@ def finalize_excel_employee(c, source_name, area_map, rate_table, details=None, 
         "area": area,
         "sub": sub_val,
         "isRppf": c["isRppf"],
+        "listed": is_listed,
         "totalDuty": total_duty,
         "otHours": ot_hours,
         "holidayCount": holiday_count,
