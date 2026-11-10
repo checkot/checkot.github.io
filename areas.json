@@ -27,6 +27,8 @@
     }
   },
   "areas": {
+    "556515": "Unassigned",
+    "556531": "Unassigned",
     "RF8327": "Solid Production",
     "CF3036": "Solid Production",
     "CF5101": "Solid Production",
@@ -412,47 +414,55 @@
     "CF10285": "Unassigned",
     "CF10286": "Unassigned",
     "CF10287": "Unassigned",
-    "RF20259": "Unassigned",
+    "RF20259": "Executives",
     "RF20260": "Unassigned",
     "RF20262": "Unassigned",
-    "RF20448": "Unassigned",
-    "RF20450": "Unassigned",
-    "RF20763": "Unassigned",
-    "RF21046": "Unassigned",
+    "RF20448": "Executives",
+    "RF20450": "Executives",
+    "RF20763": "Executives",
+    "RF21046": "Executives",
     "RF21072": "Unassigned",
-    "RF21440": "Unassigned",
-    "RF21457": "Unassigned",
-    "RF21572": "Unassigned",
-    "RF21608": "Unassigned",
-    "RF21820": "Unassigned",
-    "RF21930": "Unassigned",
-    "RF21932": "Unassigned",
-    "RF21933": "Unassigned",
+    "RF21440": "Executives",
+    "RF21457": "Executives",
+    "RF21572": "Executives",
+    "RF21608": "Executives",
+    "RF21820": "Executives",
+    "RF21930": "Executives",
+    "RF21932": "Executives",
+    "RF21933": "Executives",
     "RF22073": "Unassigned",
     "RF22076": "Unassigned",
     "RF22309": "Unassigned",
-    "RF22423": "Unassigned",
+    "RF22423": "Executives",
     "RF22511": "Unassigned",
-    "RF22512": "Unassigned",
-    "RF22721": "Unassigned",
+    "RF22512": "Executives",
+    "RF22721": "Executives",
     "RF23431": "Unassigned",
-    "RF23601": "Unassigned",
-    "RF23602": "Unassigned",
-    "RF23733": "Unassigned",
-    "RF23755": "Unassigned",
-    "RF23836": "Unassigned",
-    "RF23837": "Unassigned",
-    "RF23838": "Unassigned",
+    "RF23601": "Executives",
+    "RF23602": "Executives",
+    "RF23733": "Executives",
+    "RF23755": "Executives",
+    "RF23836": "Executives",
+    "RF23837": "Executives",
+    "RF23838": "Executives",
     "RF23895": "Unassigned",
     "RF24606": "Unassigned",
-    "RF5497": "Unassigned",
+    "RF5497": "Executives",
     "RF5523": "Unassigned",
-    "RF5571": "Unassigned",
-    "RF8960": "Unassigned",
-    "556515": "Unassigned",
-    "556531": "Unassigned"
+    "RF5571": "Executives",
+    "RF8960": "Executives"
   },
   "details": {
+    "556515": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
+    "556531": {
+      "g": "M",
+      "t": "CAS",
+      "s": ""
+    },
     "RF21062": {
       "t": "EXEC",
       "g": "F"
@@ -1984,16 +1994,6 @@
       "g": "F",
       "t": "EXEC",
       "s": ""
-    },
-    "556515": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
-    "556531": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
     }
   },
   "subsections": {
@@ -2113,18 +2113,7 @@
   },
   "holidays": {
     "cancelled": [],
-    "custom": [
-      "17-MAR-2026",
-      "18-MAR-2026",
-      "21-MAR-2026",
-      "22-MAR-2026",
-      "23-MAR-2026",
-      "04-FEB-2026",
-      "10-FEB-2026",
-      "11-FEB-2026",
-      "04-OCT-2026",
-      "07-NOV-2026"
-    ],
+    "custom": [],
     "byMonth": {}
   }
 }
