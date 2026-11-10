@@ -1028,10 +1028,10 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="vs-solid-card" id="vsSolidShortcutSection">
 <div class="vs-solid-header">
 <div class="vs-solid-title-box">
-<span class="vs-solid-badge">Solid Production</span>
-<span class="vs-solid-title">Subsections Quick VS</span>
+<span class="vs-solid-badge" id="vsShortcutsBadge">Solid Production</span>
+<span class="vs-solid-title" id="vsShortcutsTitle">Subsections Quick VS</span>
 </div>
-<span class="vs-solid-hint">Tap any line to compare all employees in that subsection</span>
+<span class="vs-solid-hint" id="vsShortcutsHint">Tap any line to compare all employees in that subsection</span>
 </div>
 <div class="vs-solid-chips-scroll" id="vsSolidChipsContainer" role="group" aria-label="Solid Subsections">
 <button type="button" class="vs-sub-chip" data-sub="Granulation" onclick="quickCompareSolidSub('Granulation')"><span class="sub-icon">🌿</span> Granulation</button>
@@ -1045,7 +1045,7 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 <div class="vs-pair-row">
 <span class="vs-pair-title">⚡ Line vs Line:</span>
-<div class="vs-pair-chips">
+<div class="vs-pair-chips" id="vsPairChipsContainer">
 <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Granulation', 'Compression')">Granulation <span>vs</span> Compression</button>
 <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Compression', 'Coating')">Compression <span>vs</span> Coating</button>
 <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Dispensing', 'Granulation')">Dispensing <span>vs</span> Granulation</button>

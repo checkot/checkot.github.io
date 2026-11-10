@@ -395,12 +395,14 @@ if (!y || !m || !box) return;
 const monthFolder = `${y}-${m}`;
 box.textContent = 'Verifying data, please wait...';
 try {
-const data = await fetchJsonResource(`data/${monthFolder}.json`);
+const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
+const jsonPath = (scope === 'QA') ? `data/qa/${monthFolder}.json` : `data/${monthFolder}.json`;
+const data = await fetchJsonResource(jsonPath);
 const list = Array.isArray(data) ? data : (Array.isArray(data?.employees) ? data.employees : []);
 const when = data && data.updatedAt ? new Date(data.updatedAt).toLocaleString('en-GB') : '—';
 box.innerHTML = `<div class="admin-file-item">
 <div>
-<strong>data/${esc(monthFolder)}.json</strong>
+<strong>${esc(jsonPath)}</strong>
 <div style="font-size:12px;color:var(--muted);">Updated: ${esc(when)}</div>
 </div>
 <div class="admin-file-actions">

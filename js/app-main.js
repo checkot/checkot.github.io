@@ -1294,6 +1294,8 @@ function updateClientBranding(dept) {
   }
 
   if (typeof populateAreaDropdown === 'function') populateAreaDropdown();
+  if (typeof refreshSubFilter === 'function') refreshSubFilter();
+  if (typeof renderVsSubsectionShortcuts === 'function') renderVsSubsectionShortcuts();
 }
 
 window.getClientDepartment = getClientDepartment;
@@ -4187,7 +4189,8 @@ const DEFAULT_AREA_SUBSECTIONS = {
   'Solid Production': ['Granulation', 'Compression', 'Coating', 'Capsule Filling', 'Dispensing', 'Inspection'],
   'Softgel Production': ['Encapsulation', 'Gelatin Prep', 'Medicament Prep', 'Tumble Drying', 'Sorting & Inspection'],
   'Packing Hall': ['Blister Packing', 'Strip & Alu-Alu', 'Bottle Line', 'Cartoning', 'Secondary Packing', 'Labeling'],
-  'Overall': ['Production Management', 'Section In-Charge', 'QA / Compliance', 'ERP & Planning']
+  'Overall': ['Production Management', 'Section In-Charge', 'QA / Compliance', 'ERP & Planning'],
+  'Quality Assurance': ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives']
 };
 
 function ensureDefaultSubsections() {
@@ -4206,11 +4209,14 @@ function ensureDefaultSubsections() {
 
 function getAllSubsectionsForArea(area) {
   ensureDefaultSubsections();
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const deletedSet = new Set(AREA_SUBS.__deleted_subs__ || []);
   const fromDetails = [];
   Object.keys(AREA_DETAILS || {}).forEach(id => {
     const d = AREA_DETAILS[id];
     const empArea = AREA_MAP[id];
+    const empDept = (typeof getDeptForArea === 'function') ? getDeptForArea(empArea) : (empArea === 'Quality Assurance' ? 'QA' : 'PR');
+    if (empDept !== currentDept) return; // Strict department isolation
     if (d && d.s && !deletedSet.has(d.s) && (area === 'all' || empArea === area)) {
       fromDetails.push(String(d.s).trim());
     }
@@ -4219,6 +4225,8 @@ function getAllSubsectionsForArea(area) {
     const allSubs = [];
     Object.keys(AREA_SUBS).forEach(k => {
       if (k === '__custom_cats__' || k === '__deleted_subs__') return;
+      const kDept = (typeof getDeptForArea === 'function') ? getDeptForArea(k) : (k === 'Quality Assurance' ? 'QA' : 'PR');
+      if (kDept !== currentDept) return; // Strict department isolation
       if (Array.isArray(AREA_SUBS[k])) allSubs.push(...AREA_SUBS[k]);
     });
     return [...new Set([...allSubs, ...fromDetails].filter(s => Boolean(s) && !deletedSet.has(s)))];
@@ -5257,14 +5265,17 @@ function buildMasterEmployeeDirectory() {
   return _masterDirectoryCache;
 }
 
-function searchEmployeeDirectory(query, limit = 10) {
+function searchEmployeeDirectory(query, limit = 10, deptOverride = null) {
   const q = String(query || '').trim().toUpperCase();
   if (!q) return [];
+  const currentDept = deptOverride || (typeof getClientDepartment === 'function' ? getClientDepartment() : 'PR');
   const all = buildMasterEmployeeDirectory();
   const scored = [];
   for (let i = 0; i < all.length; i++) {
     const e = all[i];
     if (!isListedEmployeeId(e.id)) continue;
+    const empDept = (typeof getDeptForArea === 'function') ? getDeptForArea(e.area) : (e.area === 'Quality Assurance' ? 'QA' : 'PR');
+    if (empDept !== currentDept) continue;
     if (getAppMode() !== 'incharge' && !isAdminLoggedIn() && e.type === 'EXEC') continue;
     const idU = e.id.toUpperCase();
     const nameU = String(e.name || '').toUpperCase();

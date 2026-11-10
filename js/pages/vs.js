@@ -73,8 +73,16 @@ function populateVsMonthSelect() {
 function renderVsQuickPicks() {
   const box = document.getElementById('vsQuickPicksRow');
   if (!box) return;
-  const hist = (typeof getHistory === 'function' ? getHistory() : []).map(h => h.id);
-  const topLb = (currentLeaderboardResult?.sortedByDuty || []).slice(0, 4).map(e => e.id);
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const filterByDept = (id) => {
+    if (!id) return false;
+    const upper = String(id).toUpperCase().trim();
+    const area = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[upper] : null;
+    const dept = (typeof getDeptForArea === 'function') ? getDeptForArea(area) : (area === 'Quality Assurance' ? 'QA' : 'PR');
+    return dept === currentDept;
+  };
+  const hist = (typeof getHistory === 'function' ? getHistory() : []).map(h => h.id).filter(filterByDept);
+  const topLb = (currentLeaderboardResult?.sortedByDuty || []).slice(0, 6).map(e => e.id).filter(filterByDept);
   const candidates = [...new Set([...hist, ...topLb])].filter(id => id && id !== (document.getElementById('compareId1')?.value || '')).slice(0, 5);
   if (!candidates.length) { box.innerHTML = ''; return; }
   box.innerHTML = `<span style="font-size:11px;color:var(--muted);font-weight:700;">🕒 Recent:</span>` + candidates.map(id => `<button type="button" class="vs-Quick-chip" onclick="fillVsCandidateId('${esc(id)}')">${esc(id)}</button>`).join('');
@@ -209,12 +217,74 @@ async function updateVsAllPreviews() {
   if (id3) updateVsSlotPreview(3, id3);
 }
 
-/* ===== Solid Subsections Quick Comparison Shortcuts ===== */
+/* ===== Subsections Quick Comparison Shortcuts (Department-Scoped) ===== */
+function renderVsSubsectionShortcuts() {
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const badge = document.getElementById('vsShortcutsBadge');
+  const hint = document.getElementById('vsShortcutsHint');
+  const chipsScroll = document.getElementById('vsSolidChipsContainer');
+  const pairChips = document.getElementById('vsPairChipsContainer');
+
+  if (currentDept === 'QA') {
+    if (badge) {
+      badge.textContent = 'Quality Assurance';
+      badge.style.background = 'var(--brand-soft)';
+      badge.style.color = 'var(--brand)';
+    }
+    if (hint) hint.textContent = 'Tap any subsection to compare all QA colleagues in that subsection';
+    if (chipsScroll) {
+      chipsScroll.innerHTML = `
+        <button type="button" class="vs-sub-chip" data-sub="IPQC PR" onclick="quickCompareSolidSub('IPQC PR')"><span class="sub-icon">🔍</span> IPQC PR</button>
+        <button type="button" class="vs-sub-chip" data-sub="IPQC Pack" onclick="quickCompareSolidSub('IPQC Pack')"><span class="sub-icon">📦</span> IPQC Pack</button>
+        <button type="button" class="vs-sub-chip" data-sub="Documentation" onclick="quickCompareSolidSub('Documentation')"><span class="sub-icon">📄</span> Documentation</button>
+        <button type="button" class="vs-sub-chip" data-sub="Executives" onclick="quickCompareSolidSub('Executives')"><span class="sub-icon">👔</span> Executives</button>
+      `;
+    }
+    if (pairChips) {
+      pairChips.innerHTML = `
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'IPQC Pack')">IPQC PR <span>vs</span> IPQC Pack</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'Documentation')">IPQC PR <span>vs</span> Documentation</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC Pack', 'Documentation')">IPQC Pack <span>vs</span> Documentation</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'Executives')">IPQC PR <span>vs</span> Executives</button>
+      `;
+    }
+  } else {
+    if (badge) {
+      badge.textContent = 'Solid Production';
+      badge.style.background = '';
+      badge.style.color = '';
+    }
+    if (hint) hint.textContent = 'Tap any line to compare all employees in that subsection';
+    if (chipsScroll) {
+      chipsScroll.innerHTML = `
+        <button type="button" class="vs-sub-chip" data-sub="Granulation" onclick="quickCompareSolidSub('Granulation')"><span class="sub-icon">🌿</span> Granulation</button>
+        <button type="button" class="vs-sub-chip" data-sub="Compression" onclick="quickCompareSolidSub('Compression')"><span class="sub-icon">⚙️</span> Compression</button>
+        <button type="button" class="vs-sub-chip" data-sub="Coating" onclick="quickCompareSolidSub('Coating')"><span class="sub-icon">🧪</span> Coating</button>
+        <button type="button" class="vs-sub-chip" data-sub="Dispensing" onclick="quickCompareSolidSub('Dispensing')"><span class="sub-icon">⚖️</span> Dispensing</button>
+        <button type="button" class="vs-sub-chip" data-sub="Defoiling" onclick="quickCompareSolidSub('Defoiling')"><span class="sub-icon">📦</span> Defoiling</button>
+        <button type="button" class="vs-sub-chip" data-sub="Pri. Packing" onclick="quickCompareSolidSub('Pri. Packing')"><span class="sub-icon">📦</span> Pri. Packing</button>
+        <button type="button" class="vs-sub-chip" data-sub="IBC Wash" onclick="quickCompareSolidSub('IBC Wash')"><span class="sub-icon">🧼</span> IBC Wash</button>
+        <button type="button" class="vs-sub-chip" data-sub="ERP" onclick="quickCompareSolidSub('ERP')"><span class="sub-icon">💻</span> ERP</button>
+      `;
+    }
+    if (pairChips) {
+      pairChips.innerHTML = `
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Granulation', 'Compression')">Granulation <span>vs</span> Compression</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Compression', 'Coating')">Compression <span>vs</span> Coating</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Dispensing', 'Granulation')">Dispensing <span>vs</span> Granulation</button>
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('Defoiling', 'Pri. Packing')">Defoiling <span>vs</span> Packing</button>
+      `;
+    }
+  }
+}
+window.renderVsSubsectionShortcuts = renderVsSubsectionShortcuts;
+
 async function quickCompareSolidSub(subName) {
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const statusDiv = document.getElementById('compareStatus');
   if (statusDiv) {
     statusDiv.style.color = 'var(--brand)';
-    statusDiv.innerText = `Loading top operators from Solid → ${subName}...`;
+    statusDiv.innerText = `Loading top colleagues from ${currentDept === 'QA' ? 'QA' : 'Solid'} → ${subName}...`;
   }
   
   const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
@@ -232,12 +302,16 @@ async function quickCompareSolidSub(subName) {
     const a = String(e.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '') || ((typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[u] : '') || '').toLowerCase();
     const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
     const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
+    if (currentDept === 'QA') {
+      const isQA = a.includes('quality assurance') || a.includes('qa');
+      return isQA && (s === subLower || s.includes(subLower));
+    }
     const isSolid = a.includes('solid') || a === 'solid production';
     return isSolid && (s === subLower || s.includes(subLower));
   });
   
   if (matched.length < 2) {
-    if (typeof showToast === 'function') showToast(`Found ${matched.length} employees in Solid → ${subName}. Minimum 2 needed to compare.`, 'warn');
+    if (typeof showToast === 'function') showToast(`Found ${matched.length} employees in ${currentDept === 'QA' ? 'QA' : 'Solid'} → ${subName}. Minimum 2 needed to compare.`, 'warn');
     if (matched.length === 1) {
       const inp1 = document.getElementById('compareId1');
       if (inp1) { inp1.value = matched[0].id; updateVsSlotPreview(1, matched[0].id); }
@@ -263,21 +337,22 @@ async function quickCompareSolidSub(subName) {
   });
   
   if (typeof showToast === 'function') {
-    showToast(`Solid → ${subName}: Comparing all ${matched.length} employees`, 'success');
+    showToast(`${currentDept === 'QA' ? 'QA' : 'Solid'} → ${subName}: Comparing all ${matched.length} employees`, 'success');
   }
   
   if (statusDiv) statusDiv.innerText = '';
   
   // Compare ALL employees of this subsection directly!
   const allSubIds = matched.map(e => e.id);
-  runComparison(allSubIds, `Solid → ${subName} (${matched.length} Employees)`);
+  runComparison(allSubIds, `${currentDept === 'QA' ? 'QA' : 'Solid'} → ${subName} (${matched.length} Employees)`);
 }
 
 async function quickCompareSolidCross(sub1, sub2) {
+  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
   const statusDiv = document.getElementById('compareStatus');
   if (statusDiv) {
     statusDiv.style.color = 'var(--brand)';
-    statusDiv.innerText = `Loading top operators: ${sub1} vs ${sub2}...`;
+    statusDiv.innerText = `Loading top colleagues: ${sub1} vs ${sub2}...`;
   }
   
   const m = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '') || '2026-11';
@@ -296,6 +371,10 @@ async function quickCompareSolidCross(sub1, sub2) {
       const a = String(e.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '') || ((typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[u] : '') || '').toLowerCase();
       const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});
       const s = String(e.sub || e.subsection || d.s || '').toLowerCase();
+      if (currentDept === 'QA') {
+        const isQA = a.includes('quality assurance') || a.includes('qa');
+        return isQA && (s === sl || s.includes(sl));
+      }
       return (a.includes('solid') || a === 'solid production') && (s === sl || s.includes(sl));
     });
     emps.sort((a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)));
@@ -415,6 +494,7 @@ function initVsPage() {
   }
   populateVsMonthSelect();
   renderVsQuickPicks();
+  renderVsSubsectionShortcuts();
   updateVsAllPreviews();
   const sub = document.getElementById('vsPageSub');
   const mStr = document.getElementById('vsMonthOverrideSelect')?.value || currentMonth || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
