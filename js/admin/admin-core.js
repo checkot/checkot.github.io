@@ -4288,7 +4288,6 @@ const DEPT_PR = 'PR';
 const DEPT_QA = 'QA';
 const DEPT_ALL = 'ALL';
 
-const OVERALL_AREA = 'Overall';
 const QA_AREA = 'Quality Assurance';
 
 const DEFAULT_DEPARTMENTS_CONFIG = {
