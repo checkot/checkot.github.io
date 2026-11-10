@@ -306,12 +306,12 @@ document.documentElement.setAttribute('data-theme', t);
 
         <div class="adm-kpi-strip">
           <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModTotalCount">0</span><span class="adm-kpi-lbl">Total listed</span></div>
-          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModSolidCount">0</span><span class="adm-kpi-lbl">Solid</span></div>
-          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModSoftgelCount">0</span><span class="adm-kpi-lbl">Softgel</span></div>
-          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModPackingCount">0</span><span class="adm-kpi-lbl">Packing</span></div>
-          <div class="adm-kpi-card"><span class="adm-kpi-val" id="admModExecCount">0</span><span class="adm-kpi-lbl">Executives</span></div>
+          <div class="adm-kpi-card" id="kpiCardSolid"><span class="adm-kpi-val" id="admModSolidCount">0</span><span class="adm-kpi-lbl">Solid</span></div>
+          <div class="adm-kpi-card" id="kpiCardSoftgel"><span class="adm-kpi-val" id="admModSoftgelCount">0</span><span class="adm-kpi-lbl">Softgel</span></div>
+          <div class="adm-kpi-card" id="kpiCardPacking"><span class="adm-kpi-val" id="admModPackingCount">0</span><span class="adm-kpi-lbl">Packing</span></div>
+          <div class="adm-kpi-card" id="kpiCardExec"><span class="adm-kpi-val" id="admModExecCount">0</span><span class="adm-kpi-lbl">Executives</span></div>
           <div class="adm-kpi-card" id="kpiCardQA" style="display:none;"><span class="adm-kpi-val" id="admModQACount">0</span><span class="adm-kpi-lbl">QA</span></div>
-          <div class="adm-kpi-card" style="cursor:pointer;" onclick="switchAdminTab('unassigned')"><span class="adm-kpi-val" id="admModUnassignedCount" style="color:var(--warning);">0</span><span class="adm-kpi-lbl">Unassigned</span></div>
+          <div class="adm-kpi-card" id="kpiCardUnassigned" style="cursor:pointer;" onclick="switchAdminTab('unassigned')"><span class="adm-kpi-val" id="admModUnassignedCount" style="color:var(--warning);">0</span><span class="adm-kpi-lbl">Unassigned</span></div>
         </div>
 
         <div class="ax-subtabs" role="tablist">
@@ -927,6 +927,7 @@ document.documentElement.setAttribute('data-theme', t);
      Safe to delete once js/admin/*.js no longer references them. -->
 <script src="js/admin/admin-compat.js"></script>
 
+<script src="js/core/config.js?v=20261110qa"></script>
 <script src="js/admin/admin-github.js"></script>
 <script src="js/admin/admin-core.js?v=20261110qa"></script>
 <script src="js/admin/admin-tools.js?v=20261110qa"></script>
