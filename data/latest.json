@@ -1,6 +1,6 @@
 {
   "month": "2026-11",
-  "updatedAt": "2026-11-09T23:24:11.450746Z",
+  "updatedAt": "2026-11-10T00:43:23.615930Z",
   "employees": [
     {
       "valid": true,
@@ -37,7 +37,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -211,6 +213,20 @@
           0.0,
           0,
           "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:38",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 418.0,
@@ -254,7 +270,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "06-NOV-2026",
@@ -399,6 +417,20 @@
           "07:44",
           "21:51",
           14.12,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:38",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -14955,7 +14987,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -15061,6 +15095,20 @@
           "07:53",
           "22:06",
           14.22,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -19321,7 +19369,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -19399,6 +19449,20 @@
           "07:29",
           "21:55",
           14.43,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -23490,7 +23554,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -23554,6 +23620,20 @@
           "07:50",
           "21:52",
           14.03,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:33",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -25998,7 +26078,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -26048,6 +26130,20 @@
           "07:58",
           "21:51",
           13.88,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:31",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -42649,7 +42745,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -42727,6 +42825,20 @@
           "08:05",
           "21:50",
           13.75,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:32",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -42956,7 +43068,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -43006,6 +43120,20 @@
           "07:38",
           "21:51",
           14.22,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -53558,7 +53686,8 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "08-NOV-2026"
+        "08-NOV-2026",
+        "10-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -53662,6 +53791,20 @@
           "07:52",
           "21:55",
           14.05,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -57611,7 +57754,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "07-NOV-2026",
@@ -57732,6 +57877,20 @@
           0.0,
           0,
           "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 456.0,
@@ -57771,7 +57930,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -57863,6 +58024,20 @@
           "07:51",
           "21:56",
           14.08,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -59559,7 +59734,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -59637,6 +59814,20 @@
           "07:57",
           "21:56",
           13.98,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -60356,7 +60547,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "08-NOV-2026",
@@ -60459,6 +60652,20 @@
           "08:01",
           "21:56",
           13.92,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -78195,7 +78402,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -78312,6 +78521,20 @@
           "07:37",
           "21:54",
           14.28,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:45",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -80140,7 +80363,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -80218,6 +80443,20 @@
           "08:02",
           "21:59",
           13.95,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:42",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -80490,7 +80729,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -80582,6 +80823,20 @@
           "07:47",
           "21:50",
           14.05,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -80742,7 +80997,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -80813,6 +81070,20 @@
           0.0,
           0,
           "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 190.0,
@@ -80844,7 +81115,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -80922,6 +81195,20 @@
           "07:58",
           "21:50",
           13.87,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -84389,7 +84676,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -84434,6 +84723,20 @@
           0.0,
           1,
           "DN"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:51",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 418.0,
@@ -91313,7 +91616,8 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "08-NOV-2026"
+        "08-NOV-2026",
+        "10-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -91417,6 +91721,20 @@
           "07:48",
           "21:54",
           14.1,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -92094,7 +92412,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "07-NOV-2026",
@@ -92236,6 +92556,20 @@
           "07:48",
           "21:56",
           14.13,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -98526,7 +98860,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -98599,6 +98935,20 @@
           0.0,
           1,
           "DN"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "06:04",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 570.0,
@@ -103687,7 +104037,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -103779,6 +104131,20 @@
           "08:00",
           "21:50",
           13.83,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -104531,7 +104897,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -104609,6 +104977,20 @@
           "07:51",
           "21:52",
           14.02,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:32",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -104887,7 +105269,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -105018,6 +105402,20 @@
           "07:47",
           "21:47",
           14.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:34",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -107839,7 +108237,7 @@
       "sub": "Dispensing",
       "isRppf": true,
       "totalDuty": 88.42,
-      "otHours": 21.0,
+      "otHours": 20.0,
       "holidayCount": 2,
       "nightCount": 3,
       "regularDaysCount": 3,
@@ -107867,7 +108265,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -107932,8 +108332,22 @@
           "Mon",
           "07:52",
           "22:07",
-          8.25,
-          6.0,
+          9.25,
+          5.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:31",
+          "",
+          0.0,
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -107942,10 +108356,10 @@
           "G"
         ]
       ],
-      "otAmount": 798.0,
+      "otAmount": 760.0,
       "holidayAmount": 608,
       "nightAmount": 900,
-      "totalEarned": 2306.0,
+      "totalEarned": 2268.0,
       "fileName": "rf20716.xlsx"
     },
     {
@@ -107987,7 +108401,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -108079,6 +108495,20 @@
           "07:59",
           "21:55",
           13.93,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:36",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -110051,7 +110481,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -110115,6 +110547,20 @@
           "07:42",
           "21:52",
           14.17,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -110560,7 +111006,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -110638,6 +111086,20 @@
           "07:55",
           "21:55",
           14.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:37",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -111535,7 +111997,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "07-NOV-2026",
@@ -111666,6 +112130,20 @@
           "07:54",
           "21:56",
           14.03,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -126020,7 +126498,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -126112,6 +126592,20 @@
           "08:05",
           "22:02",
           13.95,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -135700,7 +136194,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -135792,6 +136288,20 @@
           "08:00",
           "21:54",
           13.9,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:45",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -136235,7 +136745,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "03-NOV-2026",
@@ -136349,6 +136861,20 @@
           "07:45",
           "21:55",
           14.17,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:29",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -136522,7 +137048,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -136614,6 +137142,20 @@
           "08:19",
           "21:57",
           13.63,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:30",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -136798,7 +137340,9 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -136890,6 +137434,20 @@
           "07:46",
           "21:54",
           14.13,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:31",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
@@ -138167,7 +138725,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "10-NOV-2026"
+      ],
       "requisitionProblems": [
         {
           "date": "09-NOV-2026",
@@ -138231,6 +138791,20 @@
           "07:38",
           "21:51",
           14.22,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
+        ],
+        [
+          "10-NOV-2026",
+          "Tue",
+          "05:31",
+          "",
+          0.0,
           0.0,
           0.0,
           0.0,
