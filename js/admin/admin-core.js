@@ -5413,6 +5413,7 @@ document.getElementById('complianceModal')?.classList.remove('open');
 async function renderAdminTeamManager() {
 const box = document.getElementById('adminTeamManagerList');
 if (!box) return;
+if (!document.getElementById('admTeamEditIdx') || document.getElementById('admTeamEditIdx').value === '-1') admPopulateTeamAreaSelect('All');
 const list = await loadTeamData();
 if (!list || list.length === 0) {
 box.innerHTML = '<div style="color:var(--muted);font-size:13px;">No ERP members.</div>';
@@ -5457,6 +5458,18 @@ img.src = e.target.result;
 };
 reader.readAsDataURL(file);
 }
+/* ERP member form: "Assigned area" options follow the active admin scope (PR areas for PR, QA areas for QA, both for ALL) */
+function admPopulateTeamAreaSelect(selected) {
+const sel = document.getElementById('admTeamArea');
+if (!sel) return;
+let areas = [];
+try { areas = (typeof admScopeAreas === 'function' ? admScopeAreas() : []).filter(x => x !== 'Overall' && x !== 'Unassigned'); } catch (e) {}
+if (!areas.length) areas = ['Solid Production', 'Packing Hall', 'Softgel Production'];
+const want = selected || sel.value || 'All';
+if (want && want !== 'All' && !areas.includes(want)) areas.push(want);
+sel.innerHTML = ['All'].concat(areas).map(x => `<option value="${esc(x)}">${x === 'All' ? 'All areas' : esc(x)}</option>`).join('');
+sel.value = want;
+}
 function adminEditTeamMember(idx) {
 if (!teamData || !teamData[idx]) return;
 const m = teamData[idx];
@@ -5464,7 +5477,7 @@ document.getElementById('admTeamEditIdx').value = String(idx);
 document.getElementById('admTeamName').value = m.name || '';
 document.getElementById('admTeamDesig').value = m.designation || '';
 document.getElementById('admTeamId').value = m.id || '';
-document.getElementById('admTeamArea').value = m.area || 'All';
+admPopulateTeamAreaSelect(m.area || 'All');
 document.getElementById('admTeamWa').value = m.whatsapp || '';
 const photoInp = document.getElementById('admTeamPhoto');
 if (photoInp) photoInp.value = (m.photo && m.photo !== 'https://checkot.github.io/icon.png' && m.photo !== 'icon.png') ? m.photo : '';
@@ -5476,7 +5489,7 @@ document.getElementById('admTeamEditIdx').value = '-1';
 document.getElementById('admTeamName').value = '';
 document.getElementById('admTeamDesig').value = '';
 document.getElementById('admTeamId').value = '';
-document.getElementById('admTeamArea').value = 'All';
+admPopulateTeamAreaSelect('All');
 document.getElementById('admTeamWa').value = '';
 const photoInp = document.getElementById('admTeamPhoto');
 if (photoInp) photoInp.value = '';
@@ -5545,8 +5558,15 @@ pendingErpArea = preferredArea || (currentSearchId ? getAreaForId(currentSearchI
 const modal = document.getElementById('erpSupportModal');
 const body = document.getElementById('erpModalListBody');
 if (!modal || !body) return;
-const list = await loadTeamData();
-const sorted = [...(list || DEFAULT_FALLBACK_TEAM)].sort((a, b) => {
+const _erpDepts = admScopeDepts();
+const list = (await loadTeamData() || []).filter(m => _erpDepts.includes(admDeptOfTeamMember(m)));
+if (!list.length) {
+window._currentErpSortedList = [];
+body.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:13px;">No ERP team members for this department yet. Add them from Admin > ERP Team.</div>';
+modal.classList.add('open');
+return;
+}
+const sorted = [...list].sort((a, b) => {
 const aMatch = (a.area && pendingErpArea && a.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
 const bMatch = (b.area && pendingErpArea && b.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
 return aMatch - bMatch;
@@ -5568,8 +5588,8 @@ function closeErpSupportModal() {
 document.getElementById('erpSupportModal')?.classList.remove('open');
 }
 function sendErpWhatsAppToMember(idx) {
-const list = window._currentErpSortedList || teamData || DEFAULT_FALLBACK_TEAM;
-const m = list[idx] || list[0];
+const list = window._currentErpSortedList || [];
+const m = list[idx];
 if (!m) return;
 const url = erpWaLink(pendingErpMessage, m.whatsapp);
 closeErpSupportModal();

@@ -11,11 +11,13 @@ The **RENATA PLC Overtime Report & Allowance Calculator** is a client-side Progr
 | **Application Architecture** | 100% Client-Side Static Progressive Web App (PWA) |
 | **Data Processing Engine** | In-Browser Excel (`.xlsx`) to Pre-Indexed JSON (`data/YYYY-MM.json`) |
 | **Hosting Infrastructure** | RPPF Cloud Server (HTTPS / TLS 1.3 Encrypted Static Hosting) |
-| **External Telemetry / Tracking** | None (Zero Third-Party Analytics, Ads, or Data Mining SDKs) |
+| **External Telemetry / Tracking** | No third-party analytics, ads or data-mining SDKs. One first-party Firebase Realtime Database is used only for an anonymous online counter and a "Who's active" board visible to all app users (employee ID, dept, mode, page, last-seen, daily check-in). See `FIREBASE_RULES.md`. |
 | **Document Version** | 3.0.0 (October 2026) |
 
 ## 2. Security & Data Privacy Compliance Notice
 
+
+> **Online presence note:** if an employee has saved their ID in the app, that ID (plus dept, mode, current page and a timestamp — no name, salary or punch data) is written to `telemetry/presence_ids/` while the app is open and removed on disconnect. By the owner's decision this is readable by all app users (rules in `FIREBASE_RULES.md`); a daily check-in record `telemetry/checkins/<date>/<ID>` (first/last open time) is also kept for 8 days. A device can opt out by setting `localStorage['renata_presence_share_v1'] = 'off'`.
 This application is designed in accordance with corporate IT governance and data minimization principles:
 
 1. **Zero Server-Side Database Exposure**: All overtime calculations, rate package evaluations, and leaderboard aggregations execute locally inside the user's browser sandbox. No external backend server or third-party cloud database processes or stores raw employee inputs.

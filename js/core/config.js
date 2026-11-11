@@ -203,6 +203,7 @@ const DEFAULT_FALLBACK_TEAM = [
     name: "Md. Ariful Islam",
     designation: "RPPF Production",
     id: "RF20850",
+    dept: "PR",
     area: "Solid Production",
     whatsapp: "8801845873227",
     photo: "https://checkot.github.io/icon.png"

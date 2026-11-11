@@ -2,6 +2,20 @@
    TEAM.JS - ERP Support Team Directory & WhatsApp Routing Controller
    ========================================================================== */
 
+/* ERP team membership: a member's `dept` field decides (PR or QA). No `dept` = PR (legacy entries). */
+function getTeamMemberDept(m) {
+  return String((m && m.dept) || 'PR').toUpperCase() === 'QA' ? 'QA' : 'PR';
+}
+function getErpTeamForDept(list, dept) {
+  const d = String(dept || 'PR').toUpperCase() === 'QA' ? 'QA' : 'PR';
+  return (Array.isArray(list) ? list : []).filter(m => getTeamMemberDept(m) === d);
+}
+function erpTeamEmptyMessage(dept) {
+  return dept === 'QA'
+    ? 'QA ERP team members will be added soon. Please contact your QA admin for now.'
+    : 'ERP team information is not available right now.';
+}
+
 let _teamInflight = null;
 function loadTeamData() {
   if (_teamInflight) return _teamInflight;
@@ -49,11 +63,9 @@ async function renderTeamPage() {
   box.innerHTML = '<div class="empty-msg" style="padding: 20px;">Loading...</div>';
   const _all = await loadTeamData();
   const _dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-  const _areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(_dept) : [];
-  /* members belong to a department: explicit dept field, else the department of their area, else PR */
-  const team = (_all || []).filter(m => { const d = m.dept || ((m.area && _areas.includes(m.area)) ? _dept : (m.area && m.area !== 'All' ? null : 'PR')); return d === _dept || (!m.dept && m.area && _areas.includes(m.area)); });
+  const team = getErpTeamForDept(_all, _dept);
   if (!team || team.length === 0) {
-    box.innerHTML = '<div class="empty-msg">ERP team information is not available right now.</div>';
+    box.innerHTML = '<div class="empty-msg">' + erpTeamEmptyMessage(_dept) + '</div>';
     return;
   }
   box.innerHTML = team.map(m => {

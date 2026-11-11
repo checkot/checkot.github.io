@@ -2651,8 +2651,15 @@ pendingErpArea = preferredArea || (currentSearchId ? getAreaForId(currentSearchI
 const modal = document.getElementById('erpSupportModal');
 const body = document.getElementById('erpModalListBody');
 if (!modal || !body) return;
-const list = await loadTeamData();
-const sorted = [...(list || DEFAULT_FALLBACK_TEAM)].sort((a, b) => {
+const _erpDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const list = getErpTeamForDept(await loadTeamData(), _erpDept);
+if (!list.length) {
+window._currentErpSortedList = [];
+body.innerHTML = `<div class="empty-msg" style="padding:16px;">${esc(erpTeamEmptyMessage(_erpDept))}</div>`;
+modal.classList.add('open');
+return;
+}
+const sorted = [...list].sort((a, b) => {
 const aMatch = (a.area && pendingErpArea && a.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
 const bMatch = (b.area && pendingErpArea && b.area.toLowerCase() === pendingErpArea.toLowerCase()) ? 0 : 1;
 return aMatch - bMatch;
@@ -2674,8 +2681,8 @@ function closeErpSupportModal() {
 document.getElementById('erpSupportModal')?.classList.remove('open');
 }
 function sendErpWhatsAppToMember(idx) {
-const list = window._currentErpSortedList || teamData || DEFAULT_FALLBACK_TEAM;
-const m = list[idx] || list[0];
+const list = window._currentErpSortedList || [];
+const m = list[idx];
 if (!m) return;
 const url = erpWaLink(pendingErpMessage, m.whatsapp);
 closeErpSupportModal();
@@ -4972,6 +4979,13 @@ async function renderInchargeHomeOverview() {
     if (!sec.exec) setT('incMetaSec_' + i, `${(AREA_SUBS[sec.area] || []).length} sub-sections • Active`);
   });
   setT('incOvTotalActive', totalActive);
+  try {
+    const _cnt = fn => activeRppf.filter(e => (typeof fn === 'function' ? fn(e) : 0) > 0).length;
+    const _fmt = n => (n > 0 ? `${n} pers` : 'None');
+    setT('incIssPunch', _fmt(_cnt(getPunchProblemCount)));
+    setT('incIssAbsent', _fmt(_cnt(typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount : null)));
+    setT('incIssReq', _fmt(_cnt(getRequisitionProblemCount)));
+  } catch (_e) { /* Action Center counts are best-effort */ }
 
   renderInchargeHomeLeavesList();
   renderInchargeHomeAbsentList();

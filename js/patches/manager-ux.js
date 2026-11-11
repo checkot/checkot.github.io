@@ -260,7 +260,7 @@
 
   /* ------------------------------------------------ 5. compact manager overview */
   const OV_TABS = [
-    { k: 'summary', t: 'Summary', sel: ['.inc-ov-hero', '#incHomeHistoryCard'] },
+    { k: 'summary', t: 'Summary', sel: ['.inc-ov-hero', '#incActionCenter', '#incHomeHistoryCard'] },
     { k: 'absent', t: 'Absent', sel: ['#incHomeAbsentCard'], badge: 'incAbsentCountBadge' },
     { k: 'leaves', t: 'Leaves', sel: ['#incHomeLeavesCard'], badge: 'incLeavesCountBadge' },
     { k: 'toppers', t: 'Toppers', sel: ['#incHomeToppersCard'] },
