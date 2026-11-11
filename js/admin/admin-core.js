@@ -4643,7 +4643,23 @@ function handleAdminLogout() {
   initAdminPage();
 }
 
+function applyAdminDeployVisibility() {
+  // Deploy (ZIP upload) is dev-only: show the sub-tab + section only for the 'dev' login.
+  const isDev = isAdminLoggedIn() && getAdminUser().toLowerCase() === 'dev';
+  const btn = document.getElementById('admSubDeployBtn');
+  const sec = document.getElementById('admSubSetupDeploy');
+  if (btn) btn.style.display = isDev ? '' : 'none';
+  if (sec) { if (isDev) sec.style.removeProperty('display'); else sec.style.setProperty('display', 'none', 'important'); }
+  if (!isDev && sec && sec.classList.contains('active')) {
+    sec.classList.remove('active');
+    document.getElementById('admSubSetupServer')?.classList.add('active');
+    document.querySelector('.ax-subtab[data-adm-sub="admSubSetupServer"]')?.classList.add('active');
+    btn?.classList.remove('active');
+  }
+}
+
 function applyAdminScopeUI() {
+  applyAdminDeployVisibility();
   const scope = getActiveAdminScope();
   const user = getAdminUser();
   const acc = (typeof ADMIN_ACCOUNTS !== 'undefined') ? (ADMIN_ACCOUNTS[user] || ADMIN_ACCOUNTS[user.toLowerCase()]) : null;
@@ -7138,6 +7154,13 @@ const _RMON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'
 const _rE = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const _rN = v => { v = Number(v) || 0; return v ? String(Math.round(v * 100) / 100) : ''; };
 const _rMin = t => { const q = String(t).match(/^(\d{1,2}):(\d{2})/); return q ? +q[1] * 60 + +q[2] : null; };
+// A work day is "closed" (absence can be confirmed) at 09:00 Bangladesh time the NEXT day.
+// Covers regular duty, OT and the longest (up to 24h / night-OT) extended shift. Before that, no-punch = pending, not Absent.
+function rptIsDayClosed(y, m, d) {
+  const closeUtcMs = Date.UTC(y, m - 1, d + 1, 9, 0, 0) - 6 * 3600 * 1000; // 09:00 BD (UTC+6) as UTC epoch
+  return Date.now() >= closeUtcMs;
+}
+
 function _rptRows(ctx) {
 const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
 let y = 0, m = 0;
@@ -7217,6 +7240,11 @@ if (afterNight) {
 } else if (!hasDaily && Number(e.totalDuty || 0) > 0 && !Array.isArray(e.activeDayNums)) {
   row.tone = 'none';
   row.note = 'No daily log cached';
+} else if (!rptIsDayClosed(y, m, d)) {
+  // Day not closed yet (before D+1 09:00 BD): no FP so far is pending, NOT a confirmed Absent
+  row.tone = 'none';
+  row.note = '⏳ FP not yet (day pending)';
+  row.fpPending = true;
 } else {
   // True General Working Day Absent
   row.tone = 'absent';
@@ -7226,9 +7254,17 @@ if (afterNight) {
 }
 else {
 Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night });
-const mi = o.forceMiss || (daily.length && isPunchMissing(o.inn)), mo = o.forceMiss || (daily.length && isPunchMissing(o.out));
+const _mi0 = o.forceMiss || (daily.length && isPunchMissing(o.inn)), _mo0 = o.forceMiss || (daily.length && isPunchMissing(o.out));
+// Day not closed yet (before D+1 09:00 BD): a missing out/in punch is only "pending", not a punch problem or Absent.
+const _fpPend = !o.forceMiss && !rptIsDayClosed(y, m, d) && !!(_mi0 || _mo0);
+const mi = _fpPend ? false : _mi0, mo = _fpPend ? false : _mo0;
 row.inn = mi ? 'MISSING' : o.inn; row.out = mo ? 'MISSING' : o.out; row.missIn = !!mi; row.missOut = !!mo;
-if (mi || mo) { row.tone = 'bad'; row.note = mi && mo ? 'In & Out punch missing' : mi ? 'In punch missing' : 'Out punch missing'; }
+if (_fpPend) {
+  row.fpPending = true; row.tone = 'none';
+  row.inn = _mi0 ? '' : o.inn; row.out = '';
+  row.note = _mi0 ? '⏳ FP not yet (day pending)' : '⏳ In ' + (o.inn || '') + ' — out pending';
+}
+else if (mi || mo) { row.tone = 'bad'; row.note = mi && mo ? 'In & Out punch missing' : mi ? 'In punch missing' : 'Out punch missing'; }
 else {
 const a = _rMin(o.inn), b = _rMin(o.out);
 if (a != null && b != null && b <= a && !o.night) { row.tone = 'bad'; row.note = 'Out is before In'; row.missOut = true; }

@@ -683,6 +683,12 @@ function openIccContextModal(empId, optCrit, optMonth) {
       mEmp.daily.forEach(row => {
         if (!Array.isArray(row) || row.length < 4) return;
         const [dt, day, inn, out] = row;
+        // Day not closed yet (before D+1 09:00 BD): missing punch is pending, not a problem
+        const _dm = String(dt || '').trim().match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/);
+        if (_dm && typeof rptIsDayClosed === 'function') {
+          const _mi = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'].indexOf(_dm[2].toUpperCase()) + 1;
+          if (_mi > 0 && !rptIsDayClosed(+_dm[3], _mi, +_dm[1])) return;
+        }
         const inMiss = typeof isPunchMissing === 'function' ? isPunchMissing(inn) : (!inn || inn === '--:--');
         const outMiss = typeof isPunchMissing === 'function' ? isPunchMissing(out) : (!out || out === '--:--');
         if (inMiss || outMiss) {

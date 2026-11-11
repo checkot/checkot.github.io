@@ -813,7 +813,7 @@ document.documentElement.setAttribute('data-theme', t);
 
         <div class="ax-subtabs" role="tablist">
           <button type="button" class="ax-subtab active" data-adm-sub="admSubSetupServer">Connection &amp; password</button>
-          <button type="button" class="ax-subtab" data-adm-sub="admSubSetupDeploy">Deploy site</button>
+          <button type="button" class="ax-subtab" data-adm-sub="admSubSetupDeploy" id="admSubDeployBtn" style="display:none;">Deploy site</button>
         </div>
 
         <div class="ax-sub active" id="admSubSetupServer">
@@ -843,7 +843,7 @@ document.documentElement.setAttribute('data-theme', t);
           </div>
         </div>
 
-        <div class="ax-sub" id="admSubSetupDeploy">
+        <div class="ax-sub" id="admSubSetupDeploy" style="display:none !important;">
           <div class="ax-card">
             <h3 class="ax-card-title">One-click site update</h3>
             <p class="ax-muted">Upload <code>deploy.zip</code> from your phone to update the live site without opening GitHub.</p>
@@ -949,8 +949,8 @@ document.documentElement.setAttribute('data-theme', t);
      Safe to delete once js/admin/*.js no longer references them. -->
 <script src="js/admin/admin-compat.js?v=20261110em"></script>
 
-<script src="js/admin/admin-github.js"></script>
-<script src="js/admin/admin-core.js?v=20261112q2"></script>
+<script src="js/admin/admin-github.js?v=20261112a1"></script>
+<script src="js/admin/admin-core.js?v=20261112a1"></script>
 <script src="js/admin/admin-tools.js?v=20261111ac"></script>
 <script src="js/admin/admin-sync-bar.js?v=20261111ac"></script>
 <script src="js/admin/admin-employees.js?v=20261111ac"></script>

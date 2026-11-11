@@ -156,6 +156,13 @@ githubDeleteFile = async function(repoPath, sha, commitMessage) {
 
 
 async function adminHandleZipUpload(files) {
+  // Site deploy is restricted to the 'dev' super admin (UI is hidden for others; this is the real guard).
+  const _adm = (typeof getAdminUser === 'function') ? String(getAdminUser() || '').toLowerCase() : '';
+  if (_adm !== 'dev') {
+    if (typeof showToast === 'function') showToast('Site deploy is available to the dev login only', 'warn');
+    const _inp = document.getElementById('adminZipFileInput'); if (_inp) _inp.value = '';
+    return;
+  }
   const file = files && files[0];
   if (!file) return;
   const statusEl = document.getElementById('adminZipUploadStatus');

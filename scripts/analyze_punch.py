@@ -128,6 +128,10 @@ def get_category_label(cat_type):
     }
     return labels.get(cat_type, "Staff")
 
+# Absent can only be suspected once the shift-start grace has passed (general shift 08:00 + 1h = 09:00 BD).
+# Before that, "no FP yet" is only pending. (One employee works from morning; duty/OT shifts are by time, up to 24h.)
+ABSENT_GRACE_MIN = 9 * 60
+
 def main():
     now_bd = get_bd_now()
     today_iso = now_bd.strftime("%Y-%m-%d")
@@ -248,6 +252,7 @@ def main():
         "on_time": 0,
         "late": 0,
         "absent": 0,
+        "pending_fp": 0,
         "night_rest": 0,
         "approved_leave": 0,
         "ot_done_total": 0,
@@ -488,7 +493,13 @@ def main():
             # Weekend / Holiday off day - NOT absent!
             continue
 
-        # Employee is genuinely Absent on a regular working day
+        # No FP yet: only suspect Absent after the grace time; earlier it is pending (not confirmed)
+        if (now_bd.hour * 60 + now_bd.minute) < ABSENT_GRACE_MIN:
+            stats["pending_fp"] += 1
+            print(f"[FP PENDING] {mask_id(emp_id)}: no FP yet, before {ABSENT_GRACE_MIN // 60:02d}:00 grace")
+            continue
+
+        # No FP after the grace time: Absent SUSPECTED (not confirmed that the employee did not actually work)
         stats["absent"] += 1
         stats["by_category"][emp_type]["absent"] += 1
 
@@ -522,7 +533,8 @@ def main():
         "━━━━━━━━━━━━━━━━━━━━",
         f"👥 মোট সক্রিয় কর্মী: {stats['total_listed']} জন",
         f"✅ মোট উপস্থিত: {stats['present']} জন (সময়মতো: {stats['on_time']} | ⏰ লেট: {stats['late']})",
-        f"❌ অনুপস্থিত (Absent): *{stats['absent']} জন*",
+        f"❌ অনুপস্থিত সন্দেহ (FP পাওয়া যায়নি, নিশ্চিত নয়): *{stats['absent']} জন*",
+        f"⏳ FP এখনও আসেনি (শিফট চলছে): {stats['pending_fp']} জন",
         f"🌙 নাইট রেস্ট (Night Rest): {stats['night_rest']} জন (বাদ)",
         f"🏥 মাতৃত্ব/অনুমোদিত ছুটি: {stats['approved_leave']} জন (বাদ)",
         "",
