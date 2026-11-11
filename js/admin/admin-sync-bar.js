@@ -305,9 +305,17 @@
   function mergeDepartmentScoped(theirs, mine, scope) {
     if (!theirs || typeof theirs !== 'object') return mine;
     if (scope === 'ALL' || scope === 'dev') {
-      return Object.assign({}, theirs, mine);
+      // super admin working on both departments: 3-way merge per ID (never blindly overwrite what the other
+      // department's admin saved meanwhile)
+      const base = remoteObj || {};
+      const out = Object.assign({}, theirs, mine);
+      ['areas', 'details', 'subsections'].forEach(k => { out[k] = merge3(base[k], mine[k], theirs[k]); });
+      return out;
     }
     const allowedAreas = new Set(typeof getDepartmentAreas === 'function' ? getDepartmentAreas(scope) : []);
+    allowedAreas.add(scope === 'QA' ? 'Unassigned' : 'Unassigned PR');            // the department's own pool
+    const otherAreas = new Set(typeof getDepartmentAreas === 'function' ? getDepartmentAreas(scope === 'QA' ? 'PR' : 'QA') : []);
+    allowedAreas.forEach(a => otherAreas.delete(a));
     const resAreas = Object.assign({}, theirs.areas || {});
     const resDetails = Object.assign({}, theirs.details || {});
     const resSubs = Object.assign({}, theirs.subsections || {});
@@ -315,6 +323,7 @@
     // Scope rule: Only modify IDs belonging to current admin's department areas
     for (const [id, area] of Object.entries(mine.areas || {})) {
       const existingArea = theirs.areas ? theirs.areas[id] : null;
+      if (existingArea && otherAreas.has(existingArea)) continue;                 // an ID that lives in the other department is not ours to move
       if (allowedAreas.has(area) || (existingArea && allowedAreas.has(existingArea))) {
         resAreas[id] = area;
       }
@@ -345,56 +354,6 @@
       holidays: mine.holidays || theirs.holidays
     };
   }
-
-  function mergeAccessScoped(theirs, mine, scope) {
-    if (!theirs || typeof theirs !== 'object') return mine;
-    if (scope === 'ALL' || scope === 'dev') return Object.assign({}, theirs, mine);
-    const theirsMembers = Array.isArray(theirs.members) ? theirs.members : [];
-    const mineMembers = Array.isArray(mine.members) ? mine.members : [];
-    let mergedMembers = [];
-    if (scope === 'PR') {
-      const qaMembers = theirsMembers.filter(m => m.dept === 'QA');
-      const prMembers = mineMembers.filter(m => m.dept === 'PR');
-      mergedMembers = [...prMembers, ...qaMembers];
-    } else if (scope === 'QA') {
-      const prMembers = theirsMembers.filter(m => m.dept === 'PR');
-      const qaMembers = mineMembers.filter(m => m.dept === 'QA');
-      mergedMembers = [...prMembers, ...qaMembers];
-    } else {
-      mergedMembers = mineMembers;
-    }
-    return {
-      version: mine.version || theirs.version || 1,
-      updatedAt: new Date().toISOString(),
-      departments: Object.assign({}, theirs.departments || {}, mine.departments || {}),
-      members: mergedMembers
-    };
-  }
-
-  async function adminSaveAccessNow(store) {
-    if (!getGhToken()) {
-      try { showToast('Save Server Access Key in "Server setup" to publish access changes', 'warn'); } catch (e) {}
-      return false;
-    }
-    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
-    try {
-      let theirs = null;
-      const t = await fetchRemoteRaw('access.json');
-      if (t != null) {
-        try { theirs = JSON.parse(t); } catch (e) {}
-      }
-      const merged = mergeAccessScoped(theirs, store, scope);
-      const jsonStr = JSON.stringify(merged, null, 2);
-      await githubPutFile('access.json', utf8ToBase64(jsonStr), `Update access.json via Admin Panel (${scope})`);
-      try { showToast('Access changes safely saved to server', 'success'); } catch (e) {}
-      return true;
-    } catch (err) {
-      try { showToast('Failed to save access.json: ' + err.message, 'error'); } catch (e) {}
-      return false;
-    }
-  }
-  window.mergeAccessScoped = mergeAccessScoped;
-  window.adminSaveAccessNow = adminSaveAccessNow;
 
   async function saveAreasNow(fromAuto) {
     if (saving || S.saving) { if (fromAuto) schedule(1500); return false; }

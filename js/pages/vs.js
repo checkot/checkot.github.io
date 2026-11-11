@@ -230,14 +230,12 @@ function renderVsSubsectionShortcuts() {
       badge.style.color = 'var(--brand)';
     }
     if (hint) hint.textContent = 'Tap any subsection to compare all QA colleagues in that subsection';
-    const canExecQA = (typeof canViewExecutives === 'function') ? canViewExecutives('QA') : false;
     if (chipsScroll) {
       chipsScroll.innerHTML = `
         <button type="button" class="vs-sub-chip" data-sub="IPQC PR" onclick="quickCompareSolidSub('IPQC PR')"><span class="sub-icon">🔍</span> IPQC PR</button>
         <button type="button" class="vs-sub-chip" data-sub="IPQC Pack" onclick="quickCompareSolidSub('IPQC Pack')"><span class="sub-icon">📦</span> IPQC Pack</button>
-        <button type="button" class="vs-sub-chip" data-sub="Documentation" onclick="quickCompareSolidSub('Documentation')"><span class="sub-icon">📄</span> Documentation</button>` +
-        (canExecQA ? `
-        <button type="button" class="vs-sub-chip" data-sub="Executives" onclick="quickCompareSolidSub('Executives')"><span class="sub-icon">👔</span> Executives</button>` : '') + `
+        <button type="button" class="vs-sub-chip" data-sub="Documentation" onclick="quickCompareSolidSub('Documentation')"><span class="sub-icon">📄</span> Documentation</button>
+        ${canViewExecutives('QA') ? `<button type="button" class="vs-sub-chip" data-sub="Executives" onclick="quickCompareSolidSub('Executives')"><span class="sub-icon">👔</span> Executives</button>` : ''}
         <button type="button" class="vs-sub-chip" data-sub="All QA" onclick="quickCompareSolidSub('All QA')"><span class="sub-icon">⭐</span> All QA</button>
       `;
     }
@@ -245,9 +243,8 @@ function renderVsSubsectionShortcuts() {
       pairChips.innerHTML = `
         <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'IPQC Pack')">IPQC PR <span>vs</span> IPQC Pack</button>
         <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'Documentation')">IPQC PR <span>vs</span> Documentation</button>
-        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC Pack', 'Documentation')">IPQC Pack <span>vs</span> Documentation</button>` +
-        (canExecQA ? `
-        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'Executives')">IPQC PR <span>vs</span> Executives</button>` : '') + `
+        <button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC Pack', 'Documentation')">IPQC Pack <span>vs</span> Documentation</button>
+        ${canViewExecutives('QA') ? `<button type="button" class="vs-pair-btn" onclick="quickCompareSolidCross('IPQC PR', 'Executives')">IPQC PR <span>vs</span> Executives</button>` : ''}
       `;
     }
   } else {
@@ -300,7 +297,6 @@ async function quickCompareSolidSub(subName) {
   const subLower = String(subName || '').trim().toLowerCase();
   const matched = list.filter(e => {
     if (!e || !e.id) return false;
-    if (typeof isRankableEmployee === 'function' && !isRankableEmployee(e, currentDept)) return false;
     const u = String(e.id || '').toUpperCase().trim();
     const a = String(e.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '') || ((typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP[u] : '') || '').toLowerCase();
     const d = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS && AREA_DETAILS[u]) || (typeof getEmpMeta === 'function' ? { s: getEmpMeta(u).sub } : {});

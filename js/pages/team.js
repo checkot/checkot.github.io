@@ -47,7 +47,11 @@ async function renderTeamPage() {
   const box = document.getElementById('teamList');
   if (!box) return;
   box.innerHTML = '<div class="empty-msg" style="padding: 20px;">Loading...</div>';
-  const team = await loadTeamData();
+  const _all = await loadTeamData();
+  const _dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const _areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(_dept) : [];
+  /* members belong to a department: explicit dept field, else the department of their area, else PR */
+  const team = (_all || []).filter(m => { const d = m.dept || ((m.area && _areas.includes(m.area)) ? _dept : (m.area && m.area !== 'All' ? null : 'PR')); return d === _dept || (!m.dept && m.area && _areas.includes(m.area)); });
   if (!team || team.length === 0) {
     box.innerHTML = '<div class="empty-msg">ERP team information is not available right now.</div>';
     return;

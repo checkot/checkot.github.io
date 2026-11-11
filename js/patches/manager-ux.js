@@ -155,7 +155,7 @@
     ranking: {
       title: 'How Ranking Works',
       html: `
-        <p>Only IDs listed in the app's section list (Solid, Softgel, Packing, Executives) are ranked.</p>
+        <p>Only IDs listed in this department's section list are ranked.</p>
         <ul>
           <li><b>Best Duty / OT / Earning:</b> highest totals for the selected month or period.</li>
           <li><b>Less Duty / Less OT:</b> lowest totals (follow-up list).</li>
@@ -364,7 +364,8 @@
   /* ------------------------------------------------ 6b. REPORT: manager finder */
   const RF = { month: '', area: '', issue: 'all', q: '', sort: 'name', list: null, shown: 40, seq: 0, collapsed: false, loading: false };
   const knownEmpty = new Set();
-  const AREAS = [['', 'All'], ['Solid Production', 'Solid'], ['Softgel Production', 'SG'], ['Packing Hall', 'Packing'], ['Overall', 'Exec']];
+  const deptNow = () => { try { return getClientDepartment(); } catch (e) { return 'PR'; } };
+  const getAreas = () => [['', 'All']].concat(getSectionsForDept(deptNow()).filter((x) => isAreaVisibleToViewer(x.area, deptNow())).map((x) => [x.area, x.short]));
   const ISSUES = [['all', 'All'], ['punch', 'Punch'], ['req', 'OT Missing'], ['absent', 'Absent']];
 
   function monthChoices() {
@@ -408,7 +409,7 @@
     const anchor = $('reportEmpStrip');
     if (anchor) page.insertBefore(f, anchor); else page.appendChild(f);
 
-    $('mgrRfArea').innerHTML = AREAS.map((a) => `<button type="button" class="mgr-chip" data-area="${esc(a[0])}">${a[1]}</button>`).join('');
+    $('mgrRfArea').innerHTML = getAreas().map((a) => `<button type="button" class="mgr-chip" data-area="${esc(a[0])}">${a[1]}</button>`).join('');
     $('mgrRfIssue').innerHTML = ISSUES.map((a) => `<button type="button" class="mgr-chip" data-issue="${a[0]}">${a[1]}${a[0] === 'req' ? '<span class="mgr-q" data-q="ot_missing" role="button" tabindex="0" aria-label="Explain OT Missing">?</span>' : a[0] === 'punch' ? '<span class="mgr-q" data-q="punch" role="button" tabindex="0" aria-label="Explain punch problem">?</span>' : ''}</button>`).join('');
 
     $('mgrRfHead').addEventListener('click', () => { RF.collapsed = !RF.collapsed; applyCollapse(); });
@@ -504,8 +505,7 @@
     const out = [];
     list.forEach((e) => {
       if (!e || !e.id) return;
-      try { if (typeof isMappedAreaId === 'function' && !isMappedAreaId(e.id, e)) return; } catch (x) { /* ignore */ }
-      try { if (typeof isExecHiddenFor === 'function' && isExecHiddenFor(e)) return; } catch (x) { /* ignore */ }
+      try { if (!isRankableEmployee(e)) return; } catch (x) { /* ignore */ }
       let area = e.area || '';
       try { area = getAreaForId(e.id, true) || area; } catch (x) { /* ignore */ }
       let pp = 0, rq = 0, ab = 0;
@@ -522,7 +522,8 @@
     const q = RF.q.trim().toLowerCase();
     let rows = RF.list.filter((e) => {
       if (RF.area) {
-        if (RF.area === 'Overall') { if (e.area !== 'Overall' && e.kind !== 'EXEC') return false; } else if (e.area !== RF.area) return false;
+        const exA = getExecAreaForDept(deptNow());
+        if (RF.area === exA) { if (e.area !== exA && e.kind !== 'EXEC') return false; } else if (e.area !== RF.area) return false;
       }
       if (RF.issue === 'punch' && !(e.pp > 0)) return false;
       if (RF.issue === 'req' && !(e.rq > 0)) return false;
@@ -557,7 +558,7 @@
     if ($('mgrRfSort').value !== RF.sort) $('mgrRfSort').value = RF.sort;
 
     const status = $('mgrRfStatus'), list = $('mgrRfList');
-    const areaName = (AREAS.find((a) => a[0] === RF.area) || ['', 'All'])[1];
+    const areaName = (getAreas().find((a) => a[0] === RF.area) || ['', 'All'])[1];
     if (RF.loading || RF.list === null) {
       status.innerHTML = `<span class="mgr-spin"></span> Loading ${esc(monLabel(RF.month))}…`;
       list.innerHTML = '<div class="mgr-skel"></div><div class="mgr-skel"></div><div class="mgr-skel"></div>';

@@ -47,7 +47,7 @@
     const sc = scope();
     if (sc === 'QA') return 'QA';
     if (sc === 'PR') return 'PR';
-    return S.dept || 'PR';
+    try { return sessionStorage.getItem('admin_dev_last_dept') === 'QA' ? 'QA' : 'PR'; } catch (e) { return 'PR'; }
   }
   const poolOf = d => (d === 'QA' ? POOL_QA : POOL_PR);
   const isPool = a => a === POOL_PR || a === POOL_QA;
@@ -428,9 +428,7 @@
     let h = '<div class="em-wrap"><div class="em-title">Employee Management</div><div class="em-meta">' +
       '<span class="em-pill">' + E(deptName(d)) + ' (' + E(d) + ')</span>' +
       '<span>' + (ex ? (ex.ok ? 'Last Excel: ' + E(ex.month || '—') + ' · ' + ex.byId.size + ' employees' : 'Last Excel: not available') : 'Last Excel: loading…') + '</span><span class="em-spacer"></span>';
-    if (scope() !== 'PR' && scope() !== 'QA') {
-      h += '<span class="em-seg"><button type="button" data-em="dept" data-v="PR" class="' + (d === 'PR' ? 'on' : '') + '">PR</button><button type="button" data-em="dept" data-v="QA" class="' + (d === 'QA' ? 'on' : '') + '">QA</button></span>';
-    }
+    if (scope() !== 'PR' && scope() !== 'QA') h += '<span class="em-note">Employees are managed one department at a time – use the PR / QA switch at the top to change.</span>';
     h += '<button type="button" class="em-link" data-em="refresh">↻ Reload Excel</button><button type="button" class="em-link" data-em="backup">Backup</button></div>';
     if (S.undo) h += '<div class="em-undo"><span>Done: ' + E(S.undo.label) + '</span><button type="button" class="em-btn" data-em="undo">Undo</button></div>';
     for (let i = 1; i <= 4; i++) {
@@ -481,7 +479,7 @@
     const a = t.getAttribute('data-em'), v = t.getAttribute('data-v');
     switch (a) {
       case 'step': S.step = (S.step === +v) ? 0 : +v; render(); break;
-      case 'dept': if (typeof onAdminDevScopeChange === 'function' && typeof getAdminUser === 'function' && getAdminUser().toLowerCase() === 'dev') { onAdminDevScopeChange(v); } else { S.dept = v; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); } break;
+      case 'dept': S.dept = v; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); break;
       case 'refresh': delete S.excel[dept()]; render(); toast('Reloading the last Excel…', 'info'); break;
       case 'backup': try { adminDownloadAreasJson(); } catch (err) { toast('Backup not available', 'error'); } break;
       case 'undo': doUndo(); break;
@@ -546,7 +544,6 @@
   window.EmpMgmt = {
     show() { bind(); S.mapRef = null; render(); },
     render,
-    setDept(d) { S.dept = d; S.area3 = null; Object.keys(S.sel).forEach(k => S.sel[k].clear()); S.f4 = { area: 'all', sub: 'all', notIn: false }; render(); },
     _state: S
   };
   bind();

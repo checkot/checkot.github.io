@@ -541,7 +541,7 @@ setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 260);
 const APP_MODE_KEY = STORAGE_NAMESPACE + 'renata_app_mode_v2';
 const INCHARGE_ROLE_KEY = STORAGE_NAMESPACE + 'renata_incharge_role_v1';
 const INCHARGE_AREA_KEY = STORAGE_NAMESPACE + 'renata_incharge_area_v1';
-const INCHARGE_PIN_CODE = '2026';
+/* legacy in-charge PIN removed (see access.json) */
 let _memAppMode = null;
 function getAppMode() {
 try {
@@ -712,7 +712,7 @@ function saveInchargeModeSetup() {
 const pinInp = document.getElementById('inchargePinInput');
 const rawPin = String(pinInp ? pinInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
 const err = document.getElementById('inchargePinError');
-if (rawPin !== INCHARGE_PIN_CODE) {
+if (true) { /* legacy global PIN removed; in-charge login lives in index.html (access.json) */
 if (err) err.classList.add('show');
 showToast('Wrong PIN code! Enter the correct 4-digit in-charge PIN.', 'error');
 if (pinInp) pinInp.focus();
@@ -4400,8 +4400,8 @@ const ADMIN_ACCOUNTS = {
   },
   "dev": {
     hash: "b1898424d4aa6d7b94d04d87531fd05b62b828dee1bb31558219afb08ce79df5",
-    altHash: "a78f8128f2109434daf14d867c665d97a242909409b29bc0a965111d8a4a9f80", // dev1234
-    adminHash: "ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270", // admin1234
+    altHash: "a78f8128f2109434daf14d867c665d97a242909409b29bc0a965111d8a4a9f80",
+    adminHash: "ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270",
     saltedHash: "c0dd500f68d861e0f91b880d09163470b69607b1c4fc3a8310766cfc4cb5e9bc",
     role: "super_admin",
     scope: "ALL",
@@ -4490,7 +4490,7 @@ function _sha256Fallback(ascii) {
 const ADMIN_USER_KEY = STORAGE_NAMESPACE + 'renata_admin_user_v2';
 const ADMIN_SCOPE_KEY = STORAGE_NAMESPACE + 'renata_admin_scope_v2';
 /* DEFAULT_ADMIN_PASS declared in js/core/config.js */
-function getAdminPassword() { try { return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_ADMIN_PASS; } catch (e) { return DEFAULT_ADMIN_PASS; } }
+function getAdminPassword() { return ''; }
 function isAdminLoggedIn() { try { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1' || localStorage.getItem(ADMIN_SESSION_KEY) === '1'; } catch (e) { return false; } }
 function setAdminLoggedIn(val) {
 try {
@@ -4643,112 +4643,6 @@ function handleAdminLogout() {
   initAdminPage();
 }
 
-// Unified Department, Pool Area, Executive & Rankable Helpers
-function isPoolArea(area) {
-  if (!area) return false;
-  const a = String(area).trim();
-  return a === 'Unassigned' || a === 'Unassigned PR' || a === 'Unassigned QA';
-}
-
-function getRealDepartmentAreas(deptCode) {
-  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
-  const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(d === 'ALL' ? 'PR' : d) : (d === 'QA' ? QA_AREAS : PR_AREAS);
-  return (areas || []).filter(a => a && !isPoolArea(a) && a !== 'Quality Assurance');
-}
-
-function getExecutiveAreaForDept(deptCode) {
-  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
-  return (d === 'QA') ? 'Executives' : 'Overall';
-}
-
-function getSectionsForDept(deptCode) {
-  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
-  const real = getRealDepartmentAreas(d === 'ALL' ? 'PR' : d);
-  const execArea = getExecutiveAreaForDept(d === 'ALL' ? 'PR' : d);
-  
-  const metaMap = {
-    'Solid Production': { short: 'Solid', icon: '💊', color: '#3b82f6' },
-    'Softgel Production': { short: 'Softgel', icon: '🟡', color: '#f59e0b' },
-    'Packing Hall': { short: 'Packing', icon: '📦', color: '#10b981' },
-    'Overall': { short: 'Executives', icon: '👔', color: '#8b5cf6', isExec: true },
-    'IPQC PR': { short: 'IPQC PR', icon: '🔍', color: '#06b6d4' },
-    'IPQC Pack': { short: 'IPQC Pack', icon: '📦', color: '#10b981' },
-    'Documentation': { short: 'Documentation', icon: '📄', color: '#8b5cf6' },
-    'Executives': { short: 'Executives', icon: '👔', color: '#ec4899', isExec: true }
-  };
-
-  return real.map(key => {
-    const meta = metaMap[key] || { short: key, icon: '🏢', color: '#64748b' };
-    const isExec = (key === execArea) || meta.isExec === true;
-    return {
-      key,
-      name: key,
-      label: (key === 'Overall') ? 'Executives' : key,
-      short: meta.short,
-      icon: meta.icon,
-      color: meta.color,
-      isExec: isExec
-    };
-  });
-}
-
-function isExecutiveRecord(e, deptCode) {
-  if (!e) return false;
-  const id = String(e.id || '').toUpperCase().trim();
-  if (e.kind === 'EXEC' || e.type === 'EXEC') return true;
-
-  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
-  const cleanId = aliases[id] || id;
-
-  const details = (typeof AREA_DETAILS !== 'undefined' && AREA_DETAILS) ? AREA_DETAILS : null;
-  const meta = details ? (details[id] || details[cleanId]) : null;
-  if (meta && meta.t === 'EXEC') return true;
-
-  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
-  const area = (map && (map[id] || map[cleanId])) || e.area;
-  if (area === 'Overall' || area === 'Executives') return true;
-
-  return false;
-}
-
-function canViewExecutives(targetDept) {
-  if (typeof isAdminLoggedIn === 'function' && isAdminLoggedIn()) {
-    const scope = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL';
-    const user = (typeof getAdminUser === 'function') ? getAdminUser().toLowerCase() : '';
-    if (user === 'dev' || scope === 'ALL') return true;
-    if (scope === 'PR') return targetDept === 'PR';
-    if (scope === 'QA') return targetDept === 'QA';
-    return false;
-  }
-  return false;
-}
-
-function isRankableEmployee(e, deptCode) {
-  if (!e) return false;
-  if (e.valid === false) return false;
-  if (e.isRppf === false) return false;
-
-  const id = String(e.id || '').toUpperCase().trim();
-  if (!id) return false;
-
-  const aliases = (typeof ID_ALIASES !== 'undefined' && ID_ALIASES) ? ID_ALIASES : { 'CL6515': '556515', '556515': 'CL6515', 'CL6531': '556531', '556531': 'CL6531' };
-  const cleanId = aliases[id] || id;
-
-  const map = (typeof AREA_MAP !== 'undefined' && AREA_MAP) ? AREA_MAP : null;
-  if (!map) return false;
-
-  const mappedArea = map[id] || map[cleanId];
-  if (!mappedArea || isPoolArea(mappedArea)) return false;
-
-  const d = deptCode || (typeof getActiveAdminScope === 'function' ? getActiveAdminScope() : 'PR');
-  if (d !== 'ALL') {
-    const realAreas = getRealDepartmentAreas(d);
-    if (!realAreas.includes(mappedArea)) return false;
-  }
-
-  return true;
-}
-
 function applyAdminScopeUI() {
   const scope = getActiveAdminScope();
   const user = getAdminUser();
@@ -4770,20 +4664,8 @@ function applyAdminScopeUI() {
       activeBadge.textContent = title;
       activeBadge.style.color = (scope === 'QA' ? '#10b981' : (scope === 'PR' ? '#3b82f6' : '#8b5cf6'));
     }
-    const devScopeBar = document.getElementById('adminDevScopeBar');
-    if (user.toLowerCase() === 'dev') {
-      if (devScopeBar) devScopeBar.style.display = 'block';
-      document.querySelectorAll('.admin-dev-seg-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-scope') === scope);
-      });
-      if (devSelect) {
-        devSelect.style.display = 'inline-block';
-        devSelect.value = scope;
-      }
-    } else {
-      if (devScopeBar) devScopeBar.style.display = 'none';
-      if (devSelect) devSelect.style.display = 'none';
-    }
+    if (devSelect) { devSelect.style.display = 'none'; devSelect.value = scope; }   /* legacy hidden select; the segmented bar is the control */
+    adminSyncScopeBar(user, scope);
 
     if (headTitle) {
       headTitle.textContent = scope === 'QA' ? 'QA Admin Panel' : (scope === 'PR' ? 'Production Admin' : 'Admin Panel');
@@ -4877,74 +4759,40 @@ function applyAdminScopeUI() {
   }
 }
 
+/* Segmented PR | QA | All switch (dev only). Single source of truth = sessionStorage 'admin_dev_view_scope'. */
+function adminSyncScopeBar(user, scope) {
+  const bar = document.getElementById('adminDevScopeBar');
+  if (!bar) return;
+  const isDev = String(user || '').toLowerCase() === 'dev';
+  bar.classList.toggle('show', isDev && isAdminLoggedIn());
+  bar.querySelectorAll('button[data-scope]').forEach(b => b.classList.toggle('on', b.getAttribute('data-scope') === scope));
+}
+function adminRefreshActiveTab() {
+  const pane = document.querySelector('.admin-section-pane.active');
+  const map = { admPaneEmployees: 'employees', admPaneAbsent: 'absent', admPaneAreas: 'areas', admPaneUnassigned: 'unassigned', admPaneRates: 'rates', admPaneData: 'data', admPaneTeam: 'team', admPaneNotices: 'notices', admPaneAccess: 'access', admPaneSetup: 'setup' };
+  const tab = pane ? map[pane.id] : 'employees';
+  if (tab && tab !== 'setup') switchAdminTab(tab);
+}
 function onAdminDevScopeChange(val) {
+  if (getAdminUser().toLowerCase() !== 'dev') return;            // only the super admin may switch department view
+  if (val !== 'PR' && val !== 'QA' && val !== 'ALL') val = 'ALL';
   sessionStorage.setItem('admin_dev_view_scope', val);
+  if (val !== 'ALL') sessionStorage.setItem('admin_dev_last_dept', val);
   applyAdminScopeUI();
-
-  // Sync dev buttons
-  document.querySelectorAll('.admin-dev-seg-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-scope') === val);
-  });
-  const devSelect = document.getElementById('adminDevScopeSelect');
-  if (devSelect) devSelect.value = val;
-
-  // 1. Re-render Employees tab (EmpMgmt)
-  if (window.EmpMgmt) {
-    if (typeof EmpMgmt.setDept === 'function') {
-      EmpMgmt.setDept(val === 'QA' ? 'QA' : 'PR');
-    } else if (typeof EmpMgmt.render === 'function') {
-      EmpMgmt.render();
-    }
-  }
-
-  // 2. Re-render Absent & Leave tab
-  if (typeof renderAdminAbsentPane === 'function') {
-    renderAdminAbsentPane();
-  }
-
-  // 3. Re-render ERP Team tab
-  if (typeof renderAdminTeamManager === 'function') {
-    renderAdminTeamManager();
-  }
-
-  // 4. Re-render Rates & Desig tab
-  if (typeof renderRateTable === 'function') renderRateTable();
-  if (typeof renderDesigRates === 'function') renderDesigRates();
-
-  // 5. Monthly Data (Excel dept picker + month status)
-  const deptSelect = document.getElementById('adminExcelDeptSelect');
-  if (deptSelect && val !== 'ALL') deptSelect.value = val;
-  if (typeof onAdminExcelDeptChange === 'function') {
-    onAdminExcelDeptChange(val === 'QA' ? 'QA' : 'PR');
-  }
-
-  // 6. Notices tab
-  if (typeof renderAdminNoticesList === 'function') {
-    renderAdminNoticesList();
-  }
-
-  // 7. Access tab
-  if (window.AccessMgmt) {
-    if (typeof AccessMgmt.setDept === 'function') {
-      AccessMgmt.setDept(val === 'ALL' ? null : val);
-    } else if (typeof AccessMgmt.render === 'function') {
-      AccessMgmt.render();
-    }
-  }
-
-  // 8. Areas & KPIs
   updateAdminAreaStats();
   renderAdminAreaPreview();
   adminUpdateAllKpiCounters();
   adminFilterEmployeeTable();
-
-  showToast(`Switched view to ${val === 'QA' ? 'Quality Assurance (QA)' : (val === 'PR' ? 'Production (PR)' : 'All Departments')}`, 'info');
+  adminRefreshActiveTab();                                         // re-render the open tab for the new department
+  showToast(`Switched view to ${val === 'QA' ? 'Quality Assurance' : (val === 'PR' ? 'Production' : 'All Departments')}`, 'info');
 }
 
 window.getAdminUser = getAdminUser;
 window.getActiveAdminScope = getActiveAdminScope;
 window.applyAdminScopeUI = applyAdminScopeUI;
 window.onAdminDevScopeChange = onAdminDevScopeChange;
+window.adminSyncScopeBar = adminSyncScopeBar;
+window.adminRefreshActiveTab = adminRefreshActiveTab;
 function adminChangePassword() {
 const inp = document.getElementById('adminNewPassInput');
 const val = (inp ? inp.value : '').trim();
@@ -5030,7 +4878,6 @@ function switchAdminTab(tab) {
 
   const tabBtnMap = {
     'employees': 'admTabBtnEmployees',
-    'access': 'admTabBtnAccess',
     'absent': 'admTabBtnAbsent',
     'areas': 'admTabBtnAreas',
     'unassigned': 'admTabBtnUnassigned',
@@ -5038,12 +4885,12 @@ function switchAdminTab(tab) {
     'data': 'admTabBtnData',
     'team': 'admTabBtnTeam',
     'notices': 'admTabBtnNotices',
+    'access': 'admTabBtnAccess',
     'setup': 'admTabBtnSetup'
   };
 
   const paneMap = {
     'employees': 'admPaneEmployees',
-    'access': 'admPaneAccess',
     'absent': 'admPaneAbsent',
     'areas': 'admPaneAreas',
     'unassigned': 'admPaneUnassigned',
@@ -5051,6 +4898,7 @@ function switchAdminTab(tab) {
     'data': 'admPaneData',
     'team': 'admPaneTeam',
     'notices': 'admPaneNotices',
+    'access': 'admPaneAccess',
     'setup': 'admPaneSetup'
   };
 
@@ -5061,8 +4909,6 @@ function switchAdminTab(tab) {
 
   if (tab === 'employees') {
     if (window.EmpMgmt) EmpMgmt.show();
-  } else if (tab === 'access') {
-    if (window.AccessMgmt) AccessMgmt.render();
   } else if (tab === 'areas') {
     const scope = getActiveAdminScope();
     const areas = (typeof getDepartmentAreas === 'function') ? getDepartmentAreas(scope) : PR_AREAS;
@@ -5080,6 +4926,8 @@ function switchAdminTab(tab) {
     renderAdminTeamManager();
   } else if (tab === 'notices') {
     renderAdminNoticesList();
+  } else if (tab === 'access') {
+    if (window.AccessAdmin) AccessAdmin.show();
   }
 }
 function onAdminAreaChange() {
@@ -5570,9 +5418,12 @@ if (!list || list.length === 0) {
 box.innerHTML = '<div style="color:var(--muted);font-size:13px;">No ERP members.</div>';
 return;
 }
-box.innerHTML = list.map((m, idx) => `<div class="admin-file-item">
+const _tDepts = admScopeDepts();
+const _tVis = list.map((m, idx) => ({ m, idx })).filter(o => _tDepts.includes(admDeptOfTeamMember(o.m)));
+if (!_tVis.length) { box.innerHTML = '<div style="color:var(--muted);font-size:13px;">No ERP members for this department.</div>'; return; }
+box.innerHTML = _tVis.map(({ m, idx }) => `<div class="admin-file-item">
 <div style="flex:1;min-width:0;">
-<div style="font-weight:800;color:var(--text);">${esc(m.name)} <span class="admin-tag">${esc(m.area || 'All')}</span></div>
+<div style="font-weight:800;color:var(--text);">${esc(m.name)} <span class="admin-tag">${esc(m.area || 'All')}</span> <span class="admin-tag">${admDeptOfTeamMember(m)}</span></div>
 <div style="font-size:12px;color:var(--muted);">${esc(m.designation || '')} • ID: ${esc(m.id || '')} • WA: ${esc(m.whatsapp || '')}</div>
 </div>
 <div class="admin-file-actions">
@@ -5650,8 +5501,10 @@ const editIdx = parseInt(document.getElementById('admTeamEditIdx')?.value || '-1
 const prevPhoto = (editIdx >= 0 && list[editIdx] && list[editIdx].photo && list[editIdx].photo !== 'https://checkot.github.io/icon.png' && list[editIdx].photo !== 'icon.png')
 ? list[editIdx].photo
 : (id && id !== '—' ? `https://checkot.github.io/photos/${id}.jpg` : 'https://checkot.github.io/icon.png');
+const _sc = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'PR';
 const memberObj = {
 name,
+dept: (editIdx >= 0 && list[editIdx] && list[editIdx].dept) ? list[editIdx].dept : (_sc === 'QA' ? 'QA' : 'PR'),
 designation: designation || 'ERP Representative',
 id: id || '—',
 area,
@@ -6650,240 +6503,8 @@ setTimeout(wireLeaderboardScroll, 120);
 
 /* ===== ROUND 4: Admin Categories on Ranking, Pull-to-Refresh & Back-Button / Miss-Touch Guard ===== */
 /* ===== ROUND 5: Unified Single-ID Role Login (Hidden In-Charge, Manager & Admin Modes) ===== */
-const SPECIAL_ROLE_IDS = {
-'RF8941': {
-id: 'RF8941',
-name: 'Debashish Mitra',
-mode: 'incharge',
-roleTitle: 'In-Charge (Solid)',
-defaultArea: 'Solid Production',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['8941', '2026', '1234', 'admin1234']
-},
-'RF20716': {
-id: 'RF20716',
-name: 'Milon Ahamed',
-mode: 'incharge',
-roleTitle: 'In-Charge (SG)',
-defaultArea: 'Softgel Production',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['20716', '2026', '1234', 'admin1234']
-},
-'RF5473': {
-id: 'RF5473',
-name: 'Rabiul Alam',
-mode: 'incharge',
-roleTitle: 'Production Manager',
-defaultArea: 'all',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['5473', '2026', '1234', 'admin1234']
-},
-'RF23849': {
-id: 'RF23849',
-name: 'Asrar Mahamud Neloy',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23849', '2026', '1234']
-},
-'RF23848': {
-id: 'RF23848',
-name: 'Md Faysal Miah',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23848', '2026', '1234']
-},
-'RF23810': {
-id: 'RF23810',
-name: 'Mehedi Hasan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23810', '2026', '1234']
-},
-'RF22690': {
-id: 'RF22690',
-name: 'Md. Mehdi Hasan',
-mode: 'incharge',
-roleTitle: 'Senior Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['22690', '2026', '1234']
-},
-'RF0364': {
-id: 'RF0364',
-name: 'Md. Mokaddesh Uddin Khan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['0364', '364', '2026', '1234']
-},
-'RF364': {
-id: 'RF0364',
-name: 'Md. Mokaddesh Uddin Khan',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['0364', '364', '2026', '1234']
-},
-'RF23234': {
-id: 'RF23234',
-name: 'Sabbir Ahmed',
-mode: 'incharge',
-roleTitle: 'Officer (Executive)',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['23234', '2026', '1234']
-},
-'RF21291': {
-id: 'RF21291',
-name: 'Sabuj Karmoker',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21291', '2026', '1234']
-},
-'RF21062': {
-id: 'RF21062',
-name: 'Namita Rani Nath',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21062', '2026', '1234']
-},
-'RF20948': {
-id: 'RF20948',
-name: 'Hadia Farzana',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['20948', '2026', '1234']
-},
-'RF21283': {
-id: 'RF21283',
-name: 'Tanzina Aktar',
-mode: 'incharge',
-roleTitle: 'Assistant Manager',
-defaultArea: 'Overall',
-isAdmin: false,
-allowNormalBypass: true,
-pins: ['21283', '2026', '1234']
-},
-'RF20850': {
-id: 'RF20850',
-name: 'Md. Ariful Islam',
-mode: 'incharge',
-roleTitle: 'System Admin',
-defaultArea: 'all',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '20850', '1234']
-},
-'RF22111': {
-id: 'RF22111',
-name: 'Mr. Md. Sohel Mia',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '22111', '1234']
-},
-'CF5242': {
-id: 'CF5242',
-name: 'Mr. Md. Shohidul Islam',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '5242', '1234']
-},
-'CF8355': {
-id: 'CF8355',
-name: 'Mr. Johirul Islam Porag',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Solid Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '8355', '1234']
-},
-'RF21561': {
-id: 'RF21561',
-name: 'Mr. MD. Rahid Hossain',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Packing Hall',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '21561', '1234']
-},
-'RF22849': {
-id: 'RF22849',
-name: 'Mr. Md. Ashraful Alam',
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: 'Softgel Production',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '22849', '1234']
-},
-'ADMIN': {
-id: 'ADMIN',
-name: 'Md. Ariful Islam (Admin)',
-mode: 'incharge',
-roleTitle: 'System Admin',
-defaultArea: 'all',
-isAdmin: true,
-pins: ['admin1234', '2026', '1234']
-}
-};
-function getSpecialRoleSpec(rawId) {
-const clean = String(rawId || '').trim().toUpperCase().replace(/\s+/g, '');
-if (!clean) return null;
-if (SPECIAL_ROLE_IDS[clean]) return SPECIAL_ROLE_IDS[clean];
-// Also dynamically recognize any member added to ERP Team (team.json / teamData) as ERP Team Admin!
-if (Array.isArray(teamData)) {
-const tm = teamData.find(m => m && String(m.id || '').trim().toUpperCase() === clean);
-if (tm && clean !== '—') {
-const numPart = clean.replace(/[^0-9]/g, '');
-return {
-id: clean,
-name: tm.name || clean,
-mode: 'incharge',
-roleTitle: 'ERP Team Admin',
-defaultArea: (tm.area && tm.area !== 'All') ? tm.area : 'all',
-isAdmin: true,
-allowNormalBypass: true,
-pins: ['admin1234', '2026', '1234', ...(numPart ? [numPart] : [])]
-};
-}
-}
-return null;
-}
+/* legacy role table removed: roles live in access.json (hashed PINs), managed in the Access tab */
+function getSpecialRoleSpec(rawId) { return null; }
 function syncPrivilegedUI() {
 const mode = getAppMode();
 const admin = isAdminLoggedIn();
@@ -7003,7 +6624,7 @@ return;
 }
 const passInp = document.getElementById('specialRolePassInput');
 const rawPass = String(passInp ? passInp.value : '').trim().replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d));
-const validPins = [...(spec.pins || []), getAdminPassword()];
+const validPins = [];
 if (!rawPass || !validPins.includes(rawPass)) {
 document.getElementById('specialRolePinError')?.classList.add('show');
 showToast('Enter the valid password/PIN for ' + spec.name, 'error');
@@ -7014,7 +6635,7 @@ return;
 const savedId = spec.id === 'ADMIN' ? (getPreferredId() || 'CF8355') : spec.id;
 setPreferredId(savedId);
 setAppMode(spec.mode);
-setAdminLoggedIn(Boolean(spec.isAdmin || rawPass === getAdminPassword()));
+setAdminLoggedIn(Boolean(spec.isAdmin));
 try {
 localStorage.setItem(INCHARGE_ROLE_KEY, `${spec.roleTitle} • ${spec.name}`);
 localStorage.setItem(INCHARGE_AREA_KEY, spec.defaultArea || 'all');
@@ -7144,21 +6765,7 @@ setTimeout(() => inp?.focus(), 80);
 function closeAdminCatAuthModal() {
 document.getElementById('adminCatAuthModal')?.classList.remove('open');
 }
-function confirmAdminCatQuickAuth() {
-const inp = document.getElementById('adminCatQuickPassInp');
-const trimmed = String(inp?.value || '').trim();
-if (trimmed === getAdminPassword()) {
-setAdminLoggedIn(true);
-_iccAdminCatModeManual = true;
-window._iccAdminForceHide = false;
-closeAdminCatAuthModal();
-syncIccAdminToggleBtn();
-renderIccDrillList();
-showToast('Admin Category Mode enabled — tap +Cat on any employee!', 'success');
-} else {
-showToast('Incorrect password/PIN', 'error');
-}
-}
+function confirmAdminCatQuickAuth() { try { showToast('Use the index.html sign-in (access.json).', 'error'); } catch (e) {} }
 
 let _modalTempSelectedCats = [];
 function openEmpAdminCatModal(empId, empName) {
@@ -8876,6 +8483,21 @@ function copyAbsentSummaryText() {
   fallbackCopyText(txt);
 }
 
+/* ---- department scope helpers for the admin tabs (one place) ---- */
+function admScopeDepts() { const sc = (typeof getActiveAdminScope === 'function') ? getActiveAdminScope() : 'ALL'; return sc === 'QA' ? ['QA'] : (sc === 'PR' ? ['PR'] : ['PR', 'QA']); }
+function admPoolAreaName(a) { return a === 'Unassigned' || a === 'Unassigned PR'; }
+function admScopeAreas() {
+  const out = [];
+  admScopeDepts().forEach(d => { ((typeof getDepartmentAreas === 'function' ? getDepartmentAreas(d) : []) || []).forEach(a => { if (!admPoolAreaName(a) && !out.includes(a)) out.push(a); }); });
+  return out;
+}
+function admAreaShort(a) { return ({ 'Solid Production': 'Solid', 'Softgel Production': 'Softgel', 'Packing Hall': 'Packing', 'Overall': 'Exec', 'Documentation': 'Docs' })[a] || a; }
+function admAreaLabel(a) { return a === 'Overall' ? 'Executives' : a; }
+function admDeptOfTeamMember(m) {
+  if (m && (m.dept === 'PR' || m.dept === 'QA')) return m.dept;
+  if (m && m.area && typeof getDepartmentForArea === 'function' && m.area !== 'All') return getDepartmentForArea(m.area) === 'QA' ? 'QA' : 'PR';
+  return 'PR';
+}
 function renderAdminAbsentPane() {
   try { renderAdminLongTermLeaves(); admLtPopulateEmployeeDatalist(); } catch(e) {}
   const container = _el('admAbsentItemsContainer');
@@ -8884,15 +8506,23 @@ function renderAdminAbsentPane() {
   const dt = (dtInp && dtInp.value) ? dtInp.value : (ABSENT_STORE.activeDate || getTodayDateStr());
   if (dtInp && !dtInp.value) dtInp.value = dt;
 
-  const allList = getAbsentListForDate(dt);
-  const solidCnt = allList.filter(x => x.area === 'Solid Production').length;
-  const sgCnt = allList.filter(x => x.area === 'Softgel Production').length;
-  const packCnt = allList.filter(x => x.area === 'Packing Hall').length;
-  const setN = (id, v) => { const el = _el(id); if (el) el.textContent = String(v); };
-  setN('admAbsCountTotal', allList.length);
-  setN('admAbsCountSolid', solidCnt);
-  setN('admAbsCountSg', sgCnt);
-  setN('admAbsCountPack', packCnt);
+  const scopeAreas = admScopeAreas();
+  const allList = getAbsentListForDate(dt).filter(x => {
+    const id = String(x && x.id || '').toUpperCase();
+    const a = (AREA_MAP && AREA_MAP[id]) || x.area || '';
+    return scopeAreas.includes(a);
+  });
+  const statGrid = _el('admAbsStatGrid');
+  if (statGrid) {
+    statGrid.innerHTML = `<div class="admin-stat-box"><span class="as-num" id="admAbsCountTotal">${allList.length}</span><span class="as-lbl">Absent today</span></div>` +
+      scopeAreas.filter(a => a !== 'Overall' && a !== 'Executives').map(a => `<div class="admin-stat-box"><span class="as-num">${allList.filter(x => (((AREA_MAP && AREA_MAP[String(x.id || '').toUpperCase()]) || x.area) === a)).length}</span><span class="as-lbl">${esc(admAreaShort(a))}</span></div>`).join('');
+  }
+  const afSel = _el('admAbsentFilterArea');
+  if (afSel) {
+    const keep = afSel.value;
+    afSel.innerHTML = '<option value="all">All areas</option>' + scopeAreas.map(a => `<option value="${esc(a)}">${esc(admAreaLabel(a))}</option>`).join('');
+    afSel.value = scopeAreas.includes(keep) ? keep : 'all';
+  }
 
   const hdr = _el('admAbsentListHeaderTitle');
   if (hdr) hdr.textContent = `Absent Employees on ${dt} (${allList.length}):`;

@@ -1,605 +1,287 @@
 /* ==========================================================================
-   ADMIN-ACCESS.JS - Manager & In-Charge Access Management Tab
-   Supports Create / Assign / Modify / Deactivate / Delete / PIN Reset
-   Enforces Department Scoping (PR / QA / dev), Salted SHA-256 Hashing
-   ========================================================================== */
+   admin-access.js - "Access" tab: create / assign / modify / delete the
+   Manager & In-Charge accounts that unlock In-Charge mode in index.html.
 
+   Data   : access.json (repo root)  { version, updatedAt, members:[...] }
+   Secrets: only a salted PBKDF2 hash is stored (js/core/access-crypto.js).
+            A newly set PIN is shown ONCE and never stored in readable form.
+   Scope  : pradmin -> PR members only, qaadmin -> QA only, dev -> both.
+            Enforced here AND in the save merge (members of a department the
+            admin does not manage are always taken from the server copy, and
+            only dev can grant/keep the isAdmin flag).
+   ========================================================================== */
 (function () {
   'use strict';
+  var FILE = 'access.json';
+  var POOLS = ['Unassigned', 'Unassigned PR'];
+  var ROLES = ['Floor In-Charge', 'Section In-Charge', 'Production Manager', 'Assistant Manager', 'Manager', 'Executive Officer', 'Officer (Executive)', 'ERP Team Admin'];
+  var S = { members: [], base: {}, loaded: false, loading: false, status: 'idle', msg: '', q: '', deptF: 'all', undo: null,
+            modal: null, saving: false, again: false, timer: null, scopeLoaded: null, notice: null };
+  var $ = function (id) { return document.getElementById(id); };
+  var E = function (s) { return (typeof esc === 'function') ? esc(s) : String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+  var toast = function (m, t) { try { showToast(m, t || 'info'); } catch (e) {} };
+  var user = function () { try { return String(getAdminUser() || '').toLowerCase(); } catch (e) { return ''; } };
+  var isDev = function () { return user() === 'dev'; };
+  var scope = function () { try { return getActiveAdminScope(); } catch (e) { return 'PR'; } };
+  var managed = function () { var s = scope(); return s === 'ALL' ? ['PR', 'QA'] : [s === 'QA' ? 'QA' : 'PR']; };
+  var keyOf = function (m) { return m.dept + '|' + String(m.id).toUpperCase().trim(); };
+  var up = function (x) { return String(x || '').toUpperCase().trim().replace(/\s+/g, ''); };
+  var deptName = function (d) { return d === 'QA' ? 'Quality Assurance' : 'Production'; };
+  function realAreas(d) {
+    var l = []; try { l = getDepartmentAreas(d) || []; } catch (e) {}
+    return l.filter(function (a) { return POOLS.indexOf(a) < 0; });
+  }
+  function snapshot(list) { var b = {}; list.forEach(function (m) { b[keyOf(m)] = JSON.stringify(m); }); return b; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  const S = {
-    store: null,
-    dept: null,        // 'PR' | 'QA' | null
-    q: '',
-    modal: null,       // null | { type: 'add'|'edit'|'pin', data: {...} }
-    undo: null,        // { label: string, members: Array }
-    saving: false
-  };
+  /* ------------------------------- data ------------------------------- */
+  async function load(force) {
+    if (S.loading) return;
+    if (S.loaded && !force) return;
+    S.loading = true; render();
+    var doc = null;
+    try { doc = await fetchJsonResource(FILE); } catch (e) { doc = null; }
+    S.members = (doc && Array.isArray(doc.members)) ? doc.members : [];
+    S.base = snapshot(S.members);
+    S.loaded = true; S.loading = false; S.status = 'saved'; S.msg = '';
+    render();
+  }
+  function setStatus(st, msg) { S.status = st; S.msg = msg || ''; paintStatus(); }
+  function touch() { setStatus('unsaved'); clearTimeout(S.timer); S.timer = setTimeout(save, 900); }
 
-  const $ = id => document.getElementById(id);
-  const E = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const toast = (msg, type) => { if (typeof showToast === 'function') showToast(msg, type); };
-
-  function activeScope() {
+  /* 3-way merge per member, restricted to the departments this admin manages */
+  function mergeMembers(theirs, mine) {
+    var mgd = managed();
+    var tMap = new Map(theirs.map(function (m) { return [keyOf(m), m]; }));
+    var mMap = new Map(mine.map(function (m) { return [keyOf(m), m]; }));
+    var out = new Map(tMap);
+    var keys = new Set(Object.keys(S.base).concat(Array.from(mMap.keys())));
+    keys.forEach(function (k) {
+      var dept = k.split('|')[0];
+      if (mgd.indexOf(dept) < 0) return;                        // data-layer scope enforcement
+      var m = mMap.get(k);
+      var mStr = m ? JSON.stringify(m) : undefined;
+      if (S.base[k] === mStr) return;                           // not touched by me -> keep server copy
+      if (!m) { out.delete(k); return; }
+      var rec = clone(m), t = tMap.get(k);
+      if (!isDev()) rec.isAdmin = t ? !!t.isAdmin : false;      // only dev may grant admin
+      out.set(k, rec);
+    });
+    return Array.from(out.values());
+  }
+  async function save() {
+    clearTimeout(S.timer);
+    if (S.saving) { S.again = true; return; }
+    if (S.status !== 'unsaved' && S.status !== 'error') return;
+    var tokenOk = false; try { tokenOk = !!getGhToken(); } catch (e) {}
+    if (!tokenOk) { setStatus('error', 'Server Access Key is not set (Server & Deploy tab).'); return; }
+    S.saving = true; setStatus('saving');
     try {
-      if (typeof getActiveAdminScope === 'function') return getActiveAdminScope();
-    } catch (e) {}
-    return 'PR';
+      var theirs = { members: [] };
+      try { var t = await fetchJsonResource(FILE); if (t && Array.isArray(t.members)) theirs = t; } catch (e) {}
+      var merged = mergeMembers(theirs.members, S.members);
+      var doc = { version: 1, updatedAt: new Date().toISOString(), members: merged };
+      await githubPutFile(FILE, utf8ToBase64(JSON.stringify(doc, null, 2) + '\n'), 'Update access.json via Admin Panel (' + scope() + ', ' + user() + ')');
+      S.members = merged; S.base = snapshot(merged);
+      setStatus('saved'); render();
+    } catch (e) { setStatus('error', (e && e.message) || 'Save failed'); }
+    S.saving = false;
+    if (S.again) { S.again = false; if (S.status === 'unsaved') save(); }
   }
 
-  function adminUser() {
-    try {
-      if (typeof getAdminUser === 'function') return getAdminUser().toLowerCase();
-    } catch (e) {}
-    return '';
+  /* ------------------------------- view ------------------------------- */
+  function visible() {
+    var mg = managed(), q = S.q.trim().toLowerCase();
+    return S.members.filter(function (m) {
+      if (mg.indexOf(m.dept) < 0) return false;
+      if (S.deptF !== 'all' && scope() === 'ALL' && m.dept !== S.deptF) return false;
+      if (q && !(m.id + ' ' + m.name + ' ' + m.role).toLowerCase().includes(q)) return false;
+      return true;
+    }).sort(function (a, b) { return a.dept.localeCompare(b.dept) || String(a.name || a.id).localeCompare(String(b.name || b.id)); });
   }
-
-  function canManageDept(deptCode) {
-    const user = adminUser();
-    const sc = activeScope();
-    if (user === 'dev' || sc === 'ALL') return true;
-    return sc === deptCode;
+  function statusHtml() {
+    var map = { saved: ['ok', 'Saved'], unsaved: ['warn', 'Unsaved changes'], saving: ['info', 'Saving…'], error: ['err', 'Not saved'], idle: ['info', ''] };
+    var s = map[S.status] || map.idle;
+    return '<span class="ac-status ' + s[0] + '" id="acStatus">' + E(s[1]) + (S.msg ? ' – ' + E(S.msg) : '') + '</span>';
   }
-
-  function currentViewDept() {
-    const sc = activeScope();
-    if (sc === 'QA') return 'QA';
-    if (sc === 'PR') return 'PR';
-    return S.dept || 'PR';
+  function paintStatus() { var el = $('acStatus'); if (el) el.outerHTML = statusHtml(); }
+  function areasText(m) { return (m.areas && m.areas.indexOf('all') >= 0) ? 'All areas' : (m.areas || []).join(', ') || '—'; }
+  function card(m) {
+    var weak = window.AccessCrypto && AccessCrypto.isWeakMember(m);
+    var b = '<span class="ac-badge ' + (m.active === false ? 'off' : 'on') + '">' + (m.active === false ? 'Inactive' : 'Active') + '</span>';
+    if (m.canViewExecutives) b += '<span class="ac-badge">Sees executives</span>';
+    if (m.isAdmin) b += '<span class="ac-badge adm">Admin</span>';
+    if (weak) b += '<span class="ac-badge warn">Legacy PIN – reset</span>';
+    return '<article class="ac-card' + (m.active === false ? ' inactive' : '') + '" data-k="' + E(keyOf(m)) + '">' +
+      '<div class="ac-card-top"><div class="ac-who"><div class="ac-name">' + E(m.name || m.id) + '</div><div class="ac-sub">' + E(m.id) + ' · ' + E(m.role || '') + '</div></div>' +
+      '<span class="ac-dept ' + m.dept + '">' + m.dept + '</span></div>' +
+      '<div class="ac-areas">' + E(areasText(m)) + '</div><div class="ac-badges">' + b + '</div>' +
+      '<div class="ac-actions"><button type="button" class="em-btn" data-ac="edit">Edit</button><button type="button" class="em-btn" data-ac="pin">' + (weak ? 'Reset PIN' : 'Set PIN') + '</button>' +
+      '<button type="button" class="em-btn" data-ac="toggle">' + (m.active === false ? 'Activate' : 'Deactivate') + '</button><button type="button" class="em-btn danger" data-ac="del">Delete</button></div></article>';
   }
-
-  function realAreasForDept(deptCode) {
-    if (typeof getRealDepartmentAreas === 'function') return getRealDepartmentAreas(deptCode);
-    return deptCode === 'QA' ? ['IPQC PR', 'IPQC Pack', 'Documentation', 'Executives'] : ['Solid Production', 'Softgel Production', 'Packing Hall', 'Overall'];
-  }
-
-  async function loadAccessData() {
-    if (S.store) return S.store;
-    try {
-      const cached = localStorage.getItem(typeof ACCESS_CACHE_KEY !== 'undefined' ? ACCESS_CACHE_KEY : 'renata_access_cache_v1');
-      if (cached) S.store = JSON.parse(cached);
-    } catch (e) {}
-    try {
-      const res = await fetch('access.json?ts=' + Date.now(), { cache: 'no-store' });
-      if (res.ok) {
-        S.store = await res.json();
-        try {
-          localStorage.setItem(typeof ACCESS_CACHE_KEY !== 'undefined' ? ACCESS_CACHE_KEY : 'renata_access_cache_v1', JSON.stringify(S.store));
-        } catch (e) {}
-      }
-    } catch (e) {
-      console.warn('Could not fetch access.json:', e);
-    }
-    if (!S.store) {
-      S.store = {
-        version: 1,
-        updatedAt: new Date().toISOString(),
-        departments: {
-          PR: { fallbackPinHash: '6fc43dab19ade78399334b097c9bdf461446dc51f85a3b117dc62864100e30a9', fallbackPinSalt: 'RENATA_RPPF_SECURE_SALT_2026_#$!' },
-          QA: { fallbackPinHash: '6fc43dab19ade78399334b097c9bdf461446dc51f85a3b117dc62864100e30a9', fallbackPinSalt: 'RENATA_RPPF_SECURE_SALT_2026_#$!' }
-        },
-        members: []
-      };
-    }
-    return S.store;
-  }
-
-  async function persistAccessStore() {
-    if (!S.store) return false;
-    S.store.updatedAt = new Date().toISOString();
-    try {
-      localStorage.setItem(typeof ACCESS_CACHE_KEY !== 'undefined' ? ACCESS_CACHE_KEY : 'renata_access_cache_v1', JSON.stringify(S.store));
-      localStorage.setItem(typeof LAST_ADMIN_SYNC_KEY !== 'undefined' ? LAST_ADMIN_SYNC_KEY : 'rppf_last_admin_sync_ts', String(Date.now()));
-    } catch (e) {}
-
-    // Save to GitHub if token available
-    if (typeof adminSaveAccessNow === 'function') {
-      return await adminSaveAccessNow(S.store);
-    }
-    return true;
-  }
-
   function render() {
-    const root = $('accessMgmtRoot');
-    if (!root) return;
-    if (!S.store) {
-      root.innerHTML = '<div class="em-loading">Loading Access Management…</div>';
-      loadAccessData().then(() => render());
-      return;
-    }
-
-    const sc = activeScope();
-    const d = currentViewDept();
-    const isDev = (adminUser() === 'dev' || sc === 'ALL');
-
-    let members = Array.isArray(S.store.members) ? S.store.members : [];
-    if (!isDev || sc !== 'ALL') {
-      members = members.filter(m => m.dept === d || (m.dept === 'ALL' && isDev));
-    } else if (S.dept) {
-      members = members.filter(m => m.dept === S.dept);
-    }
-
-    if (S.q.trim()) {
-      const q = S.q.trim().toUpperCase();
-      members = members.filter(m => {
-        const hay = `${m.id} ${m.name || ''} ${m.role || ''} ${(m.areas || []).join(' ')} ${m.dept}`.toUpperCase();
-        return hay.includes(q);
-      });
-    }
-
-    let h = '<div class="em-wrap">';
-    h += '<div class="em-title">Access Management (Manager &amp; In-Charge Roles)</div>';
-
-    // Meta bar
-    h += '<div class="em-meta">';
-    h += '<span class="em-pill">' + (d === 'QA' ? 'Quality Assurance (QA)' : 'Production (PR)') + '</span>';
-    h += '<span>' + members.length + ' authorized members</span>';
-    h += '<span class="em-spacer"></span>';
-
-    if (isDev) {
-      h += '<span class="em-seg">';
-      h += '<button type="button" class="' + (S.dept === 'PR' || (!S.dept && sc === 'PR') ? 'on' : '') + '" onclick="AccessMgmt.setDept(\'PR\')">PR</button>';
-      h += '<button type="button" class="' + (S.dept === 'QA' || sc === 'QA' ? 'on' : '') + '" onclick="AccessMgmt.setDept(\'QA\')">QA</button>';
-      h += '<button type="button" class="' + (!S.dept && sc === 'ALL' ? 'on' : '') + '" onclick="AccessMgmt.setDept(null)">All</button>';
-      h += '</span>';
-    }
-
-    h += '<button type="button" class="ax-btn ax-btn--primary ax-btn--sm" onclick="AccessMgmt.openAddModal()">+ Add In-Charge / Manager</button>';
-    h += '</div>';
-
-    // Undo alert
-    if (S.undo) {
-      h += '<div class="em-undo"><span>Done: ' + E(S.undo.label) + '</span><button type="button" class="em-btn" onclick="AccessMgmt.doUndo()">Undo</button></div>';
-    }
-
-    // Notice info card
-    h += '<div style="background:var(--brand-soft);border:1px solid var(--brand-soft-border);color:var(--brand-text);padding:10px 14px;border-radius:8px;font-size:12.5px;line-height:1.4;">' +
-      '🛡️ <strong>Client-Side Gate:</strong> Passwords and PINs are stored as <strong>salted SHA-256 hashes</strong> only. Short numeric PINs can be brute-forced offline from public repository JSON; enforce <strong>&ge;6-digit PINs</strong> for Manager and Executive accounts.' +
-      '</div>';
-
-    // Search bar
-    h += '<div style="display:flex;gap:8px;align-items:center;">';
-    h += '<input type="text" id="accessSearchInput" class="ax-input" placeholder="Search by name, ID or role…" value="' + E(S.q) + '" oninput="AccessMgmt.onSearch(this.value)" style="flex:1;">';
-    h += '</div>';
-
-    // Members cards
-    if (members.length === 0) {
-      h += '<div class="em-card" style="padding:24px;text-align:center;color:var(--muted);font-weight:600;">No authorized members found' + (S.q ? ' matching filter' : '') + '. Click "+ Add In-Charge / Manager" to grant access.</div>';
-    } else {
-      h += '<div style="display:flex;flex-direction:column;gap:8px;">';
-      members.forEach((m, idx) => {
-        const canEdit = canManageDept(m.dept);
-        const isActive = m.active !== false;
-        const areasStr = Array.isArray(m.areas) ? (m.areas.includes('all') ? 'All areas' : m.areas.join(', ')) : 'All';
-        h += '<div class="em-row' + (isActive ? '' : ' inactive') + '" style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
-        
-        // Col 1: Identity
-        h += '<div style="flex:1;min-width:200px;">';
-        h += '<div style="display:flex;align-items:center;gap:8px;">';
-        h += '<strong style="font-size:15px;color:var(--text);">' + E(m.name || m.id) + '</strong>';
-        h += '<span class="em-tag id">' + E(m.id) + '</span>';
-        h += '<span class="em-pill" style="font-size:11px;padding:2px 8px;background:' + (m.dept === 'QA' ? '#10b98122;color:#10b981;border-color:#10b98144' : '#3b82f622;color:#3b82f6;border-color:#3b82f644') + '">' + E(m.dept) + '</span>';
-        if (!isActive) {
-          h += '<span class="em-tag" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);">Deactivated</span>';
-        }
-        h += '</div>';
-        
-        // Col 2: Role and scopes
-        h += '<div style="font-size:12.5px;color:var(--muted);margin-top:4px;">';
-        h += '<span style="font-weight:700;color:var(--text-2);">' + E(m.role || 'Floor In-Charge') + '</span>';
-        h += ' • Areas: <b>' + E(areasStr) + '</b>';
-        if (m.canViewExecutives) {
-          h += ' • <span style="color:var(--brand);font-weight:700;">👔 Can view executives</span>';
-        }
-        if (m.allowNormalBypass !== false) {
-          h += ' • <span style="color:var(--muted);">Normal search bypass allowed</span>';
-        }
-        h += '</div>';
-        h += '</div>';
-
-        // Col 3: Actions
-        if (canEdit) {
-          h += '<div style="display:flex;gap:6px;align-items:center;margin-left:auto;">';
-          h += '<button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="AccessMgmt.openSetPinModal(\'' + E(m.id) + '\', \'' + E(m.dept) + '\')">🔑 Reset PIN</button>';
-          h += '<button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="AccessMgmt.openEditModal(\'' + E(m.id) + '\', \'' + E(m.dept) + '\')">✏️ Edit</button>';
-          h += '<button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" onclick="AccessMgmt.toggleActive(\'' + E(m.id) + '\', \'' + E(m.dept) + '\')">' + (isActive ? 'Deactivate' : 'Activate') + '</button>';
-          h += '<button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" style="color:var(--danger);" onclick="AccessMgmt.deleteMember(\'' + E(m.id) + '\', \'' + E(m.dept) + '\')">🗑️</button>';
-          h += '</div>';
-        }
-
-        h += '</div>';
-      });
-      h += '</div>';
-    }
-
-    h += '</div>';
-
-    // Render active modal if any
-    if (S.modal) {
-      h += renderModalHtml(S.modal);
-    }
-
-    root.innerHTML = h;
+    var root = $('accessMgmtRoot'); if (!root) return;
+    if (S.loading && !S.loaded) { root.innerHTML = '<div class="ac-empty">Loading access list…</div>'; return; }
+    var list = visible();
+    var weakN = S.members.filter(function (m) { return managed().indexOf(m.dept) >= 0 && AccessCrypto.isWeakMember(m); }).length;
+    var h = '<div class="ac-wrap"><div class="em-title">Access – Manager &amp; In-Charge</div>' +
+      '<div class="em-meta"><span class="em-pill">' + (scope() === 'ALL' ? 'All departments' : E(deptName(scope())) + ' (' + scope() + ')') + '</span>' + statusHtml() + '<span class="em-spacer"></span>' +
+      '<button type="button" class="em-link" data-ac="reload">↻ Reload</button><button type="button" class="em-btn primary" data-ac="add">+ Add</button></div>';
+    h += '<div class="ac-note">This is a client-side gate on a static site. PINs are stored only as salted hashes, but short numeric PINs in a public file can still be guessed offline – use 6+ digits for Manager / Executive / Admin roles.</div>';
+    if (weakN) h += '<div class="ac-warn">' + weakN + ' member(s) still use a legacy PIN carried over from the old table. Open <b>Reset PIN</b> on each and set a new 6-digit PIN.</div>';
+    if (S.undo) h += '<div class="em-undo"><span>Deleted ' + E(S.undo.m.name || S.undo.m.id) + '</span><button type="button" class="em-btn" data-ac="undo">Undo</button></div>';
+    h += '<div class="ac-filters"><input type="search" id="acSearch" placeholder="Search ID, name or role…" value="' + E(S.q) + '" autocomplete="off">';
+    if (scope() === 'ALL') h += '<span class="em-seg">' + ['all', 'PR', 'QA'].map(function (d) { return '<button type="button" data-ac="deptf" data-v="' + d + '" class="' + (S.deptF === d ? 'on' : '') + '">' + (d === 'all' ? 'All' : d) + '</button>'; }).join('') + '</span>';
+    h += '</div><div class="ac-count">' + list.length + ' member(s)</div>';
+    h += list.length ? '<div class="ac-list">' + list.map(card).join('') + '</div>' : '<div class="ac-empty">No members yet. Tap <b>+ Add</b> to give someone In-Charge / Manager access.</div>';
+    root.innerHTML = h + '</div>';
   }
 
-  function renderModalHtml(m) {
-    const isAdd = (m.type === 'add');
-    const isPin = (m.type === 'pin');
-    const isEdit = (m.type === 'edit');
-    const mem = m.data || {};
-    const d = mem.dept || currentViewDept();
-    const realAreas = realAreasForDept(d);
-
-    let h = '<div class="em-modal-wrap" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;">';
-    h += '<div class="em-modal-card" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);">';
-    
-    if (isPin) {
-      h += '<h3 style="margin-top:0;font-size:18px;">Reset / Set PIN for ' + E(mem.name || mem.id) + '</h3>';
-      h += '<p style="font-size:12.5px;color:var(--muted);">Enter a new numeric PIN (min 4 digits, recommended &ge;6 digits for security). The new PIN will be shown to you once and stored only as a salted SHA-256 hash.</p>';
-      h += '<div style="margin:16px 0;">';
-      h += '<label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">New PIN</label>';
-      h += '<input type="password" id="modalNewPinInput" class="ax-input" placeholder="e.g. 849201" minlength="4" style="width:100%;font-size:16px;letter-spacing:2px;">';
-      h += '</div>';
-      h += '<div style="display:flex;justify-content:flex-end;gap:8px;">';
-      h += '<button type="button" class="ax-btn ax-btn--ghost" onclick="AccessMgmt.closeModal()">Cancel</button>';
-      h += '<button type="button" class="ax-btn ax-btn--primary" onclick="AccessMgmt.saveNewPin(\'' + E(mem.id) + '\', \'' + E(mem.dept) + '\')">Save Hashed PIN</button>';
-      h += '</div>';
-    } else {
-      h += '<h3 style="margin-top:0;font-size:18px;">' + (isAdd ? 'Add New In-Charge / Manager' : 'Edit Access: ' + E(mem.name || mem.id)) + '</h3>';
-
-      // Department
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:block;font-weight:700;font-size:12.5px;margin-bottom:4px;">Department</label>';
-      if (isAdd && canManageDept('PR') && canManageDept('QA')) {
-        h += '<select id="modalDeptSelect" class="ax-select" style="width:100%;" onchange="AccessMgmt.onModalDeptChange(this.value)">';
-        h += '<option value="PR"' + (d === 'PR' ? ' selected' : '') + '>Production (PR)</option>';
-        h += '<option value="QA"' + (d === 'QA' ? ' selected' : '') + '>Quality Assurance (QA)</option>';
-        h += '</select>';
-      } else {
-        h += '<input type="text" class="ax-input" value="' + E(d) + '" disabled style="width:100%;opacity:0.7;">';
-        h += '<input type="hidden" id="modalDeptSelect" value="' + E(d) + '">';
-      }
-      h += '</div>';
-
-      // Employee Picker (from listed employees of dept)
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:block;font-weight:700;font-size:12.5px;margin-bottom:4px;">Employee ID &amp; Name</label>';
-      if (isAdd) {
-        h += '<input type="text" id="modalEmpIdInput" class="ax-input" placeholder="Search ID or name (e.g. RF20716)…" oninput="AccessMgmt.onModalEmpSearch(this.value)" style="width:100%;" autocomplete="off">';
-        h += '<div id="modalEmpSuggestBox" style="margin-top:4px;max-height:140px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;display:none;background:var(--surface);"></div>';
-        h += '<input type="hidden" id="modalSelectedId" value="">';
-        h += '<input type="hidden" id="modalSelectedName" value="">';
-      } else {
-        h += '<input type="text" class="ax-input" value="' + E(mem.name) + ' (' + E(mem.id) + ')" disabled style="width:100%;opacity:0.7;">';
-        h += '<input type="hidden" id="modalSelectedId" value="' + E(mem.id) + '">';
-        h += '<input type="hidden" id="modalSelectedName" value="' + E(mem.name) + '">';
-      }
-      h += '</div>';
-
-      // Role Title
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:block;font-weight:700;font-size:12.5px;margin-bottom:4px;">Role Title</label>';
-      h += '<input type="text" id="modalRoleInput" class="ax-input" placeholder="e.g. Floor In-Charge, Section In-Charge, Manager…" value="' + E(mem.role || 'Floor In-Charge') + '" style="width:100%;">';
-      h += '</div>';
-
-      // Areas (Multi-select)
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:block;font-weight:700;font-size:12.5px;margin-bottom:4px;">Authorized Areas</label>';
-      const currentAreas = new Set(mem.areas || ['all']);
-      h += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">';
-      h += '<label style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;cursor:pointer;">';
-      h += '<input type="checkbox" name="modalAreas" value="all"' + (currentAreas.has('all') ? ' checked' : '') + '> All areas';
-      h += '</label>';
-      realAreas.forEach(a => {
-        h += '<label style="display:inline-flex;align-items:center;gap:4px;font-size:12.5px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;cursor:pointer;">';
-        h += '<input type="checkbox" name="modalAreas" value="' + E(a) + '"' + (currentAreas.has(a) ? ' checked' : '') + '> ' + E(a);
-        h += '</label>';
-      });
-      h += '</div>';
-      h += '</div>';
-
-      // Executive Visibility Toggle
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;cursor:pointer;">';
-      h += '<input type="checkbox" id="modalCanViewExecInput"' + (mem.canViewExecutives ? ' checked' : '') + '>';
-      h += '<span>Can view executive records (Overall / Executives section)</span>';
-      h += '</label>';
-      h += '</div>';
-
-      // Normal Bypass Allowed Toggle
-      h += '<div style="margin-bottom:12px;">';
-      h += '<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">';
-      h += '<input type="checkbox" id="modalAllowBypassInput"' + (mem.allowNormalBypass !== false ? ' checked' : '') + '>';
-      h += '<span>Allow normal employee bypass if password is blank</span>';
-      h += '</label>';
-      h += '</div>';
-
-      // If Add: Require initial PIN
-      if (isAdd) {
-        h += '<div style="margin-bottom:16px;">';
-        h += '<label style="display:block;font-weight:700;font-size:12.5px;margin-bottom:4px;">Initial PIN (min 4 digits, recommend &ge;6 digits)</label>';
-        h += '<input type="password" id="modalInitialPinInput" class="ax-input" placeholder="e.g. 592810" minlength="4" style="width:100%;font-size:16px;letter-spacing:2px;">';
-        h += '</div>';
-      }
-
-      // Buttons
-      h += '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">';
-      h += '<button type="button" class="ax-btn ax-btn--ghost" onclick="AccessMgmt.closeModal()">Cancel</button>';
-      h += '<button type="button" class="ax-btn ax-btn--primary" onclick="AccessMgmt.saveMemberModal(' + isAdd + ')">' + (isAdd ? 'Create Access' : 'Save Changes') + '</button>';
-      h += '</div>';
-    }
-
-    h += '</div></div>';
+  /* ------------------------------- modal ------------------------------- */
+  function host() {
+    var h = $('acModalHost');
+    if (!h) { h = document.createElement('div'); h.id = 'acModalHost'; document.body.appendChild(h); h.addEventListener('click', onModalClick); h.addEventListener('input', onModalInput); h.addEventListener('change', onModalInput); }
     return h;
   }
-
-  /* ---------------- Event & Action Handlers ---------------- */
-
-  function setDept(d) {
-    S.dept = d;
-    render();
+  function closeModal() { S.modal = null; host().innerHTML = ''; document.body.classList.remove('ac-modal-open'); }
+  function sheet(title, body, foot) {
+    host().innerHTML = '<div class="ac-overlay" data-ac="close"><div class="ac-sheet"><div class="ac-sheet-head"><b>' + E(title) + '</b><button type="button" class="em-link" data-ac="close">✕</button></div><div class="ac-sheet-body">' + body + '</div><div class="ac-sheet-foot">' + foot + '</div></div></div>';
+    document.body.classList.add('ac-modal-open');
   }
-
-  function onSearch(val) {
-    S.q = val;
-    render();
+  function formHtml(F) {
+    var d = F.dept, areas = realAreas(d), all = F.areas.indexOf('all') >= 0;
+    var deptSel = scope() === 'ALL' && F.mode === 'add' ? '<label>Department</label><span class="em-seg">' + ['PR', 'QA'].map(function (x) { return '<button type="button" data-ac="fdept" data-v="' + x + '" class="' + (d === x ? 'on' : '') + '">' + x + '</button>'; }).join('') + '</span>' : '<div class="ac-fixed">' + E(deptName(d)) + ' (' + d + ')</div>';
+    var roleOpts = ROLES.map(function (r) { return '<option' + (F.role === r ? ' selected' : '') + '>' + E(r) + '</option>'; }).join('');
+    if (ROLES.indexOf(F.role) < 0 && F.role) roleOpts += '<option selected>' + E(F.role) + '</option>';
+    return deptSel +
+      '<label>Employee ID</label><input type="text" id="acfId" value="' + E(F.id) + '" ' + (F.mode === 'edit' ? 'readonly' : '') + ' autocapitalize="characters" autocomplete="off" placeholder="Search listed ID or name">' +
+      '<div id="acSuggest" class="ac-suggest"></div>' +
+      '<label>Name</label><input type="text" id="acfName" value="' + E(F.name) + '" autocomplete="off">' +
+      '<label>Role</label><select id="acfRole">' + roleOpts + '</select>' +
+      '<label>Areas this person can see</label><div class="ac-checks"><label class="ac-chk"><input type="checkbox" id="acfAll"' + (all ? ' checked' : '') + '> All areas</label>' +
+      areas.map(function (a, i) { return '<label class="ac-chk"><input type="checkbox" class="acfArea" value="' + E(a) + '"' + (!all && F.areas.indexOf(a) >= 0 ? ' checked' : '') + (all ? ' disabled' : '') + '> ' + E(a) + '</label>'; }).join('') + '</div>' +
+      '<label class="ac-chk"><input type="checkbox" id="acfExec"' + (F.canViewExecutives ? ' checked' : '') + '> Can view executive / above employees</label>' +
+      '<label class="ac-chk"><input type="checkbox" id="acfActive"' + (F.active ? ' checked' : '') + '> Active</label>' +
+      '<label class="ac-chk"><input type="checkbox" id="acfBypass"' + (F.allowNormalBypass ? ' checked' : '') + '> Allow “Continue as normal employee” (no PIN)</label>' +
+      (isDev() ? '<label class="ac-chk"><input type="checkbox" id="acfAdmin"' + (F.isAdmin ? ' checked' : '') + '> App admin (category editing in index.html) – dev only</label>' : '') +
+      (F.mode === 'add' ? '<label>PIN (min 4 digits, 6+ for Manager / Executive / Admin)</label><div class="ac-pinrow"><input type="text" id="acfPin" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="e.g. 482915"><button type="button" class="em-btn" data-ac="genpin">Generate</button></div>' : '<div class="ac-hint">To change the PIN use <b>Set PIN</b> on the card.</div>') +
+      '<div class="ac-err" id="acfErr"></div>';
   }
-
-  function openAddModal() {
-    S.modal = {
-      type: 'add',
-      data: {
-        dept: currentViewDept(),
-        role: 'Floor In-Charge',
-        areas: ['all'],
-        canViewExecutives: false,
-        allowNormalBypass: true
-      }
-    };
-    render();
+  function openForm(mode, m) {
+    var F = m ? { mode: mode, orig: keyOf(m), id: m.id, name: m.name || '', dept: m.dept, role: m.role || ROLES[0], areas: (m.areas || ['all']).slice(), canViewExecutives: !!m.canViewExecutives, active: m.active !== false, allowNormalBypass: m.allowNormalBypass !== false, isAdmin: !!m.isAdmin }
+      : { mode: 'add', id: '', name: '', dept: managed()[0], role: ROLES[0], areas: ['all'], canViewExecutives: false, active: true, allowNormalBypass: true, isAdmin: false };
+    S.modal = { type: 'form', F: F };
+    sheet(mode === 'edit' ? 'Edit access' : 'Add access', formHtml(F), '<button type="button" class="em-btn" data-ac="close">Cancel</button><button type="button" class="em-btn primary" data-ac="saveform">' + (mode === 'edit' ? 'Save' : 'Add') + '</button>');
   }
-
-  function openEditModal(id, dept) {
-    if (!S.store || !Array.isArray(S.store.members)) return;
-    const m = S.store.members.find(x => x.id === id && x.dept === dept);
-    if (!m) return;
-    S.modal = {
-      type: 'edit',
-      data: Object.assign({}, m)
-    };
-    render();
+  function readForm() {
+    var F = S.modal.F;
+    F.id = up(($('acfId') || {}).value); F.name = (($('acfName') || {}).value || '').trim(); F.role = ($('acfRole') || {}).value;
+    var all = $('acfAll') && $('acfAll').checked;
+    F.areas = all ? ['all'] : Array.prototype.map.call(document.querySelectorAll('.acfArea:checked'), function (c) { return c.value; });
+    F.canViewExecutives = !!($('acfExec') || {}).checked; F.active = !!($('acfActive') || {}).checked; F.allowNormalBypass = !!($('acfBypass') || {}).checked;
+    if ($('acfAdmin')) F.isAdmin = $('acfAdmin').checked;
+    return F;
   }
-
-  function openSetPinModal(id, dept) {
-    if (!S.store || !Array.isArray(S.store.members)) return;
-    const m = S.store.members.find(x => x.id === id && x.dept === dept);
-    if (!m) return;
-    S.modal = {
-      type: 'pin',
-      data: Object.assign({}, m)
-    };
-    render();
+  function fail(msg) { var e = $('acfErr'); if (e) e.textContent = msg; }
+  function listedIn(id, d) {
+    try { var a = AREA_MAP[id]; if (!a) return false; return realAreas(d).indexOf(a) >= 0 || POOLS.indexOf(a) >= 0 && getDepartmentForArea(a) === d || (d === 'PR' && a === 'Unassigned PR') || (d === 'QA' && a === 'Unassigned'); } catch (e) { return false; }
   }
-
-  function closeModal() {
-    S.modal = null;
-    render();
-  }
-
-  function onModalDeptChange(val) {
-    if (S.modal && S.modal.data) {
-      S.modal.data.dept = val;
-      render();
-    }
-  }
-
-  function onModalEmpSearch(query) {
-    const box = $('modalEmpSuggestBox');
-    if (!box) return;
-    const q = String(query || '').trim().toUpperCase();
-    if (q.length < 1) {
-      box.style.display = 'none';
-      return;
-    }
-    const d = $('modalDeptSelect')?.value || currentViewDept();
-    let emps = [];
-    if (typeof searchEmployeeDirectory === 'function') {
-      emps = searchEmployeeDirectory(q, 8, d);
-    }
-    if (!emps.length) {
-      box.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--muted);">No matching employee found in ' + E(d) + '.</div>';
-      box.style.display = 'block';
-      return;
-    }
-    box.innerHTML = emps.map(e => `
-      <div style="padding:6px 10px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12.5px;display:flex;justify-content:space-between;" onclick="AccessMgmt.selectEmpSuggestion('${E(e.id)}', '${E(e.name || e.id)}')">
-        <span><strong>${E(e.name || e.id)}</strong> (${E(e.id)})</span>
-        <span style="color:var(--muted);">${E(e.area)}</span>
-      </div>
-    `).join('');
-    box.style.display = 'block';
-  }
-
-  function selectEmpSuggestion(id, name) {
-    const inp = $('modalEmpIdInput');
-    const sId = $('modalSelectedId');
-    const sName = $('modalSelectedName');
-    const box = $('modalEmpSuggestBox');
-    if (inp) inp.value = `${name} (${id})`;
-    if (sId) sId.value = id;
-    if (sName) sName.value = name;
-    if (box) box.style.display = 'none';
-  }
-
-  async function computeHash(text, salt) {
-    if (typeof computeSha256 === 'function') {
-      return await computeSha256(text + salt);
-    }
-    // Fallback: SHA-256 via Web Crypto
-    const enc = new TextEncoder().encode(text + salt);
-    const buf = await crypto.subtle.digest('SHA-256', enc);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  function randomSalt() {
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      const bytes = new Uint8Array(8);
-      crypto.getRandomValues(bytes);
-      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-    return Math.random().toString(16).slice(2, 10);
-  }
-
-  async function saveNewPin(id, dept) {
-    const pinInp = $('modalNewPinInput');
-    const pin = (pinInp?.value || '').trim();
-    if (!pin || pin.length < 4) {
-      toast('PIN must be at least 4 digits (recommend ≥6 digits)', 'warn');
-      pinInp?.focus();
-      return;
-    }
-    if (!S.store || !Array.isArray(S.store.members)) return;
-    const m = S.store.members.find(x => x.id === id && x.dept === dept);
-    if (!m) return;
-
-    const salt = randomSalt();
-    const hash = await computeHash(pin, salt);
-    m.pinHash = hash;
-    m.pinSalt = salt;
-    m.updatedAt = new Date().toISOString();
-
-    closeModal();
-    await persistAccessStore();
-    toast(`New PIN saved for ${m.name || m.id}: ${pin} (Make sure to note it down)`, 'success');
-  }
-
-  async function saveMemberModal(isAdd) {
-    const id = ($('modalSelectedId')?.value || '').trim().toUpperCase();
-    const name = ($('modalSelectedName')?.value || id).trim();
-    const dept = $('modalDeptSelect')?.value || currentViewDept();
-    const role = ($('modalRoleInput')?.value || 'Floor In-Charge').trim();
-    const canViewExec = $('modalCanViewExecInput')?.checked || false;
-    const allowBypass = $('modalAllowBypassInput')?.checked || false;
-
-    if (!id) {
-      toast('Please select an employee by ID or name', 'warn');
-      $('modalEmpIdInput')?.focus();
-      return;
-    }
-
-    // Areas
-    const checkedAreas = [...document.querySelectorAll('input[name="modalAreas"]:checked')].map(el => el.value);
-    const areas = checkedAreas.length ? (checkedAreas.includes('all') ? ['all'] : checkedAreas) : ['all'];
-
-    if (!S.store) await loadAccessData();
-    if (!Array.isArray(S.store.members)) S.store.members = [];
-
-    if (isAdd) {
-      // Check unique ID per dept
-      if (S.store.members.some(x => x.id === id && x.dept === dept)) {
-        toast(`Employee ${id} already has access granted in ${dept}`, 'error');
-        return;
-      }
-
-      const pinInp = $('modalInitialPinInput');
-      const pin = (pinInp?.value || '').trim();
-      if (!pin || pin.length < 4) {
-        toast('Initial PIN must be at least 4 digits (recommend ≥6 digits)', 'warn');
-        pinInp?.focus();
-        return;
-      }
-
-      const salt = randomSalt();
-      const hash = await computeHash(pin, salt);
-
-      const newRec = {
-        id,
-        name,
-        dept,
-        role,
-        areas,
-        canViewExecutives: canViewExec,
-        pinHash: hash,
-        pinSalt: salt,
-        active: true,
-        allowNormalBypass: allowBypass,
-        createdBy: adminUser() || 'admin',
-        updatedAt: new Date().toISOString()
-      };
-      S.store.members.push(newRec);
-      closeModal();
-      await persistAccessStore();
-      toast(`Access created for ${name} (${id}) in ${dept}. PIN: ${pin}`, 'success');
+  async function submitForm() {
+    var F = readForm(), k = F.dept + '|' + F.id;
+    if (!F.id) return fail('Enter the employee ID.');
+    if (managed().indexOf(F.dept) < 0) return fail('You cannot manage this department.');
+    if (!F.name) return fail('Enter the name.');
+    if (!F.areas.length) return fail('Choose at least one area (or “All areas”).');
+    if (F.mode === 'add') {
+      if (S.members.some(function (m) { return keyOf(m) === k; })) return fail('This ID already has access in ' + F.dept + '. Edit it instead.');
+      if (!listedIn(F.id, F.dept)) return fail('ID must be a listed ' + F.dept + ' employee (add it in the Employees tab first).');
+      if (F.isAdmin && !isDev()) F.isAdmin = false;
+      var pv = AccessCrypto.validatePin(($('acfPin') || {}).value, F.role, F.isAdmin);
+      if (!pv.ok) return fail(pv.msg);
+      var rec;
+      try { rec = await AccessCrypto.makePinRecord(pv.pin, F.id, F.dept); } catch (e) { return fail(e.message); }
+      var m = Object.assign({ id: F.id, name: F.name, dept: F.dept, role: F.role, areas: F.areas, canViewExecutives: F.canViewExecutives }, rec,
+        { active: F.active, allowNormalBypass: F.allowNormalBypass, isAdmin: !!F.isAdmin, createdBy: user(), updatedAt: new Date().toISOString() });
+      S.members.push(m); touch(); render();
+      showPin(m, pv.pin, 'Access added');
     } else {
-      // Edit
-      const m = S.store.members.find(x => x.id === id && x.dept === dept);
-      if (!m) return;
-      m.role = role;
-      m.areas = areas;
-      m.canViewExecutives = canViewExec;
-      m.allowNormalBypass = allowBypass;
-      m.updatedAt = new Date().toISOString();
-      closeModal();
-      await persistAccessStore();
-      toast(`Updated access for ${m.name || m.id}`, 'success');
+      var cur = S.members.find(function (x) { return keyOf(x) === F.orig; });
+      if (!cur) return closeModal();
+      cur.name = F.name; cur.role = F.role; cur.areas = F.areas; cur.canViewExecutives = F.canViewExecutives; cur.active = F.active; cur.allowNormalBypass = F.allowNormalBypass;
+      if (isDev()) cur.isAdmin = !!F.isAdmin;
+      cur.updatedAt = new Date().toISOString();
+      touch(); closeModal(); render(); toast('Access updated', 'success');
     }
   }
-
-  async function toggleActive(id, dept) {
-    if (!S.store || !Array.isArray(S.store.members)) return;
-    const m = S.store.members.find(x => x.id === id && x.dept === dept);
-    if (!m) return;
-    m.active = (m.active === false);
-    m.updatedAt = new Date().toISOString();
-    render();
-    await persistAccessStore();
-    toast(`${m.name || m.id} is now ${m.active ? 'Active' : 'Deactivated'}`, 'info');
+  function showPin(m, pin, title) {
+    S.modal = { type: 'pin-shown' };
+    sheet(title, '<p>PIN for <b>' + E(m.name) + '</b> (' + E(m.id) + ', ' + m.dept + '):</p><div class="ac-pinshow" id="acPinShow">' + E(pin) + '</div><p class="ac-hint">Copy it now and share it privately. It is stored only as a hash and <b>cannot be shown again</b>.</p>',
+      '<button type="button" class="em-btn" data-ac="copypin" data-v="' + E(pin) + '">Copy</button><button type="button" class="em-btn primary" data-ac="close">Done</button>');
   }
-
-  async function deleteMember(id, dept) {
-    if (!S.store || !Array.isArray(S.store.members)) return;
-    const idx = S.store.members.findIndex(x => x.id === id && x.dept === dept);
-    if (idx === -1) return;
-    const m = S.store.members[idx];
-    if (!confirm(`Revoke access for ${m.name || m.id} (${m.role} in ${m.dept})?`)) return;
-
-    const backup = [...S.store.members];
-    S.store.members.splice(idx, 1);
-    S.undo = {
-      label: `Revoked access for ${m.name || m.id}`,
-      members: backup
-    };
-    render();
-    await persistAccessStore();
-    toast(`Access revoked for ${m.name || m.id}`, 'info');
+  function openPin(m) {
+    S.modal = { type: 'pin', k: keyOf(m) };
+    sheet('Set PIN – ' + (m.name || m.id), '<label>New PIN (min ' + AccessCrypto.minLenForRole(m.role, m.isAdmin) + ' digits)</label><div class="ac-pinrow"><input type="text" id="acfPin" inputmode="numeric" maxlength="12" autocomplete="off"><button type="button" class="em-btn" data-ac="genpin">Generate</button></div><div class="ac-err" id="acfErr"></div>',
+      '<button type="button" class="em-btn" data-ac="close">Cancel</button><button type="button" class="em-btn primary" data-ac="savepin">Save PIN</button>');
   }
-
-  async function doUndo() {
-    if (!S.undo || !S.undo.members) return;
-    S.store.members = S.undo.members;
-    S.undo = null;
-    render();
-    await persistAccessStore();
-    toast('Action undone successfully', 'success');
+  async function submitPin() {
+    var m = S.members.find(function (x) { return keyOf(x) === S.modal.k; }); if (!m) return closeModal();
+    var pv = AccessCrypto.validatePin(($('acfPin') || {}).value, m.role, m.isAdmin);
+    if (!pv.ok) return fail(pv.msg);
+    try { Object.assign(m, await AccessCrypto.makePinRecord(pv.pin, m.id, m.dept)); } catch (e) { return fail(e.message); }
+    delete m.weakPin; delete m.mustReset; m.updatedAt = new Date().toISOString();
+    touch(); render(); showPin(m, pv.pin, 'PIN updated');
   }
-
-  window.AccessMgmt = {
-    load: loadAccessData,
-    render,
-    setDept,
-    onSearch,
-    openAddModal,
-    openEditModal,
-    openSetPinModal,
-    closeModal,
-    onModalDeptChange,
-    onModalEmpSearch,
-    selectEmpSuggestion,
-    saveNewPin,
-    saveMemberModal,
-    toggleActive,
-    deleteMember,
-    doUndo
-  };
-
+  function openDelete(m) {
+    S.modal = { type: 'del', k: keyOf(m) };
+    sheet('Delete access?', '<p>Remove <b>' + E(m.name || m.id) + '</b> (' + E(m.id) + ', ' + m.dept + ') from In-Charge / Manager access? They will be able to use the app only as a normal employee. You can undo right after.</p>',
+      '<button type="button" class="em-btn" data-ac="close">Cancel</button><button type="button" class="em-btn danger" data-ac="confirmdel">Delete</button>');
+  }
+  var sugTimer = null;
+  function suggest() {
+    var F = S.modal && S.modal.F; if (!F || F.mode !== 'add') return;
+    var q = ($('acfId') || {}).value || ''; var box = $('acSuggest'); if (!box) return;
+    if (q.trim().length < 2) { box.innerHTML = ''; return; }
+    var res = []; try { res = searchEmployeeDirectory(q, 6, F.dept) || []; } catch (e) {}
+    box.innerHTML = res.map(function (r) { return '<button type="button" class="ac-sug" data-ac="pick" data-id="' + E(r.id) + '" data-name="' + E(r.name || '') + '">' + E(r.id) + ' · ' + E(r.name || '') + ' <small>' + E(r.area || '') + '</small></button>'; }).join('');
+  }
+  function onModalInput(e) {
+    var t = e.target;
+    if (t.id === 'acfId') { clearTimeout(sugTimer); sugTimer = setTimeout(suggest, 120); }
+    if (t.id === 'acfAll') { Array.prototype.forEach.call(document.querySelectorAll('.acfArea'), function (c) { c.disabled = t.checked; if (t.checked) c.checked = false; }); }
+  }
+  function onModalClick(e) {
+    var b = e.target.closest('[data-ac]'); if (!b) return;
+    var a = b.getAttribute('data-ac');
+    if (a === 'close') { if (e.target.closest('.ac-sheet') && b.classList.contains('ac-overlay')) return; closeModal(); }
+    else if (a === 'saveform') submitForm();
+    else if (a === 'savepin') submitPin();
+    else if (a === 'genpin') { var i = $('acfPin'); if (i) i.value = AccessCrypto.generatePin(6); }
+    else if (a === 'fdept') { readForm(); S.modal.F.dept = b.getAttribute('data-v'); S.modal.F.areas = ['all']; var bd = host().querySelector('.ac-sheet-body'); if (bd) bd.innerHTML = formHtml(S.modal.F); }
+    else if (a === 'pick') { $('acfId').value = b.getAttribute('data-id'); $('acfName').value = b.getAttribute('data-name'); $('acSuggest').innerHTML = ''; }
+    else if (a === 'copypin') { try { navigator.clipboard.writeText(b.getAttribute('data-v')); toast('PIN copied', 'success'); } catch (x) { toast('Select and copy the PIN manually', 'info'); } }
+    else if (a === 'confirmdel') {
+      var i2 = S.members.findIndex(function (x) { return keyOf(x) === S.modal.k; });
+      if (i2 >= 0) { S.undo = { m: S.members.splice(i2, 1)[0], i: i2 }; touch(); }
+      closeModal(); render();
+    }
+  }
+  function onRootClick(e) {
+    var b = e.target.closest('[data-ac]'); if (!b) return;
+    var a = b.getAttribute('data-ac'), c = b.closest('.ac-card'), m = c ? S.members.find(function (x) { return keyOf(x) === c.getAttribute('data-k'); }) : null;
+    if (a === 'add') openForm('add');
+    else if (a === 'edit' && m) openForm('edit', m);
+    else if (a === 'pin' && m) openPin(m);
+    else if (a === 'del' && m) openDelete(m);
+    else if (a === 'toggle' && m) { m.active = m.active === false; m.updatedAt = new Date().toISOString(); touch(); render(); }
+    else if (a === 'undo' && S.undo) { S.members.splice(Math.min(S.undo.i, S.members.length), 0, S.undo.m); S.undo = null; touch(); render(); toast('Restored', 'info'); }
+    else if (a === 'deptf') { S.deptF = b.getAttribute('data-v'); render(); }
+    else if (a === 'reload') { S.loaded = false; load(true); }
+  }
+  function show() {
+    var root = $('accessMgmtRoot'); if (!root) return;
+    if (!root.__acBound) { root.__acBound = true; root.addEventListener('click', onRootClick); root.addEventListener('input', function (e) { if (e.target.id === 'acSearch') { S.q = e.target.value; var pos = e.target.selectionStart; render(); var i = $('acSearch'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (x) {} } } }); }
+    if (S.scopeLoaded !== scope()) { S.scopeLoaded = scope(); S.deptF = 'all'; }
+    if (!S.loaded) load(); else render();
+  }
+  window.AccessAdmin = { _save: save, show: show, render: render, reload: function () { S.loaded = false; return load(true); }, _state: S };
 })();

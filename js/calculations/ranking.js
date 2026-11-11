@@ -42,26 +42,24 @@ window.ensureEmpAvgStats = ensureEmpAvgStats;
    RANKING.JS - Leaderboard Engine & Strict Area Mapping Enforcement
    ========================================================================== */
 
-function isMappedAreaId(id, emp, deptCode) {
-  if (typeof window !== 'undefined' && typeof window.isMappedAreaId === 'function') {
-    return window.isMappedAreaId(id, emp, deptCode);
-  }
+/* "Mapped" = present in the LIVE areas.json map AND in a real (non-pool) area of the current department.
+   No fallback to e.area / cached month rows: those could re-admit unlisted people (data JSON can be stale). */
+function isMappedAreaId(id, emp) {
   if (!id) return false;
   const upperId = String(id).toUpperCase().trim();
-  if (typeof AREA_MAP !== "undefined" && AREA_MAP && AREA_MAP[upperId]) {
-    const a = AREA_MAP[upperId];
-    return a !== 'Unassigned' && a !== 'Unassigned PR';
+  const area = (typeof AREA_MAP !== "undefined" && AREA_MAP) ? AREA_MAP[upperId] : null;
+  if (!area) return false;
+  if (typeof isPoolArea === "function" && isPoolArea(area)) return false;
+  if (typeof getRealAreasForDept === "function") {
+    const dept = (typeof getClientDepartment === "function") ? getClientDepartment() : "PR";
+    return getRealAreasForDept(dept).indexOf(area) >= 0;
   }
-  return false;
+  return true;
 }
 
 function buildLeaderboardPayloadFromList(month, allList) {
   // Business Rule: Ranking uses ONLY IDs listed in areas.json (no fallback)
-  const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-  const rppfEmployees = (allList || []).filter(e => {
-    if (typeof isRankableEmployee === 'function') return isRankableEmployee(e, currentDept);
-    return e && e.isRppf !== false && (e.valid !== false) && isMappedAreaId(e.id, e, currentDept);
-  });
+  const rppfEmployees = (allList || []).filter(e => isRankableEmployee(e));
   const normalized = rppfEmployees.map(e => ({
     ...e,
     plainDaysCount: Number(e.plainDaysCount != null ? e.plainDaysCount : e.plainDays || 0),

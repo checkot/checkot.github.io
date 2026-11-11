@@ -258,11 +258,7 @@ ${progHtml}
 function renderLeaderboardResult(result) {
 try {
 currentLeaderboardResult = result;
-const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-const allEmpsGlobal = (result.allEmployees || []).filter(e => {
-  if (typeof isRankableEmployee === 'function') return isRankableEmployee(e, currentDept);
-  return e.isRppf !== false && isMappedAreaId(e.id, e, currentDept);
-});
+const allEmpsGlobal = (result.allEmployees || []).filter(e => isRankableEmployee(e));
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
 result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
@@ -297,12 +293,11 @@ updateMyRankNotes(); updateAreaFilterCount();
 
 function updateRankHubCards(filteredList) {
 const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
-const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-const canExec = (typeof canViewExecutives === 'function') ? canViewExecutives(currentDept) : (getAppMode() === 'incharge' || isAdminLoggedIn());
+const inc = getAppMode() === 'incharge' || isAdminLoggedIn();
 const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
-if (execBtn) execBtn.style.display = canExec ? 'inline-flex' : 'none';
-if (segBar) segBar.classList.toggle('has-exec', canExec);
+if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
+if (segBar) segBar.classList.toggle('has-exec', inc);
 ['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
@@ -352,11 +347,7 @@ if (!currentLeaderboardResult) return;
 const st = getLbFilterState();
 const area = st.area;
 if (getAppMode() === 'incharge') { try { localStorage.setItem(INCHARGE_AREA_KEY, area); } catch (e) {} }
-const currentDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
-const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).filter(e => {
-  if (typeof isRankableEmployee === 'function') return isRankableEmployee(e, currentDept);
-  return e.isRppf !== false && isMappedAreaId(e.id, e, currentDept);
-}));
+const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).filter(e => isRankableEmployee(e) && isAreaVisibleToViewer(getAreaForId(e.id, true))));
 const filtered = allEmps.filter(e =>
 !isExecHiddenFor(e) &&
 (area === 'all' || e.area === area) &&

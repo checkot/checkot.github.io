@@ -1,16 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T19:00:00+06:00",
-  "departments": {
-    "PR": {
-      "fallbackPinHash": "6c536fc8fecf85fdb586238991c5acbde91740c8b5734ceecaa4ae6933557abf",
-      "fallbackPinSalt": "18567df9ba4f2192"
-    },
-    "QA": {
-      "fallbackPinHash": "d17934985351d919335fa57079ecc74365f736c78a1ebcb4e146e17045689285",
-      "fallbackPinSalt": "db9c4e72c579f0b9"
-    }
-  },
+  "updatedAt": "2026-11-10T12:58:57.251Z",
   "members": [
     {
       "id": "RF8941",
@@ -20,13 +10,17 @@
       "areas": [
         "Solid Production"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "92d1a05845412bfe2fdae5fd84ed2d7d66e756883367b2d8ee3f2e116de02bea",
+      "pinSalt": "ddfe6659956874c68fab7b01f9d5cd8c",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "72a78273051e14db7f4ab432fc4b8d8b7374d183c9b28d29c6503f3d9fb35937",
-      "pinSalt": "7a863e01bec3f75a",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF20716",
@@ -36,13 +30,17 @@
       "areas": [
         "Softgel Production"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "927d2f5c6bfe2ada38ebfda9239df603346b78cef623d33c64b896061745b3e3",
+      "pinSalt": "55d8d239996907f622969cb8fb94e583",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "34c7688ad9e31bfec24efd90dfc2c86b11ded635dda09221a11def7e717845e1",
-      "pinSalt": "747fc3195c86e3b9",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF5473",
@@ -53,12 +51,16 @@
         "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "c8d65c88db2516d7b62ad1313b7329cf363ac4861f50519201a31f1e07e9a5e1",
+      "pinSalt": "0fec1355791d7422406666c8ef34451e",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "03dec88e9f79022fd7653cf023f6412617a57edede97756dc68c8996ba392500",
-      "pinSalt": "e2794a00557157e3",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF23849",
@@ -66,15 +68,19 @@
       "dept": "PR",
       "role": "Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "52af536d47ceea13117ccec38607afd2c98bcba09e6be348b811ee290dd34de1",
+      "pinSalt": "95fd06b5af5f0ebf0a6a62d6c1696ac9",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "78125c032d346f67c2c561e6f62b931710b3acb71597890db729f59d0bdd7414",
-      "pinSalt": "0dadc12b7d152d1e",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF23848",
@@ -82,15 +88,19 @@
       "dept": "PR",
       "role": "Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "b6cc675b6500dfbbd367a32f496c6c8a4d05a1e789bff0afd20cf133dd74cbfd",
+      "pinSalt": "3980698bd22f908629f1ed20faba328a",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "f97a458810274d431c1497f8fd026dfa29ec716cc97d34141bfecc21d4d6fabd",
-      "pinSalt": "d9e4dc1d087d89ae",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF23810",
@@ -98,15 +108,19 @@
       "dept": "PR",
       "role": "Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "48bd5d150256e9b65efe6f905fc7444e3ba1334d541b01050af856c7df1dd7fa",
+      "pinSalt": "d6bf81b2e1e818623ed7f9e1be6cb6c8",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "686dce4f165786b20a7090eee21d413d2d97e46f04daeecbd87f5ce1658c38a5",
-      "pinSalt": "a123d134e422f260",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF22690",
@@ -114,15 +128,19 @@
       "dept": "PR",
       "role": "Senior Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "8e7c7c792f02a69a03839d2f1d3cd6976eca338a829d6077245d6396e5c3c059",
+      "pinSalt": "b201f01ef2effd3d969f2f1e958a9cc9",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "8160de71672edf96b6df52ff02a8c5f0d045cd07b06e9298eeb0a25ffbe7dfba",
-      "pinSalt": "6cdbbb6c0deec42c",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF0364",
@@ -130,15 +148,19 @@
       "dept": "PR",
       "role": "Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "e4b96fe6ae76d8918724a3b6ba9f6e0cfc3f69c0cfa6c0720138506112656247",
+      "pinSalt": "b1427925ab172fa7d38508482033baa7",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "9e407d10eaaa5477aa2d302d54cb099193aad070dfbecb90e8167685a030b1d7",
-      "pinSalt": "c921c6da8c978a04",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF23234",
@@ -146,15 +168,19 @@
       "dept": "PR",
       "role": "Officer (Executive)",
       "areas": [
-        "Overall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "2bc8c68e1dc2e01aee16932e2fbaddb762d150d59f3ea33d32a9b52bf4cab52b",
+      "pinSalt": "b4abf21917a78d9d316d5843ee93ad9c",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "2ba477a623d9b5f2150767c4be6aba6aa950f7ec4e006ca4fe729be30e351ef9",
-      "pinSalt": "9a91f6e7ac8d38e3",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF21291",
@@ -162,15 +188,19 @@
       "dept": "PR",
       "role": "Assistant Manager",
       "areas": [
-        "Overall"
+        "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "fc6e09661f3f12fbedc35702aba7c48381abc534f9060a6d267213804dc949a5",
+      "pinSalt": "d0e94a0288e7fb0cf699e110df40960c",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "211fdb9d2304a0183dfabe295b3716cc8f55ce40a9ef37fdffca7a41a784f5e9",
-      "pinSalt": "235efe102daabba0",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF21062",
@@ -178,15 +208,19 @@
       "dept": "PR",
       "role": "Assistant Manager",
       "areas": [
-        "Overall"
+        "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "8cf6590900ec83a5be7df760aa6ae247faa719e6a7a4dfa9303ec8ca86f0ef71",
+      "pinSalt": "08e43656ee0e4e6160ed0dff0c89488c",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "63c02a5d527455826156a108d4426da5e6efab37224ede63a9ffe3bd23ebe1ab",
-      "pinSalt": "ebb7642956b5f3d5",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF20948",
@@ -194,15 +228,19 @@
       "dept": "PR",
       "role": "Assistant Manager",
       "areas": [
-        "Overall"
+        "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "37e503387ba2c1c9f0841b5bc083159ce0b6488146631f7c0d17e6499790cea8",
+      "pinSalt": "2b57fedad5ec1327a5924d9e50f8ff63",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "63b6dacc0d04a17d51ef2592625e0d2c0ac4d38c9ace6de25185431278481330",
-      "pinSalt": "fc125a7d425267cb",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF21283",
@@ -210,15 +248,19 @@
       "dept": "PR",
       "role": "Assistant Manager",
       "areas": [
-        "Overall"
+        "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "64c98b52dac8b11eefd16d2362a93bc0e0a0a5ef2ba7c3a70f6b80e027c4db57",
+      "pinSalt": "3bda43ca6b2bcfc34af9891c9d7b1516",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "4021d10f8faf5c733c60366e442e6af4541dae646492458a085f528a4ff09185",
-      "pinSalt": "420c49a22e2dbb82",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": false,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF20850",
@@ -229,12 +271,16 @@
         "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "5c225f266c96891f072c601722a5b111f1eec685ac12a13280aa713fafe7db40",
+      "pinSalt": "b3f996f8c09dbb82128a008c7324ed76",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "dev",
-      "pinHash": "d9798c379191a3dfeda5490483d25de3622c07c3f29c61802b597512b695ccb8",
-      "pinSalt": "6356ace8b910c5f6",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF22111",
@@ -242,15 +288,19 @@
       "dept": "PR",
       "role": "ERP Team Admin",
       "areas": [
-        "Solid Production"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "637e51ce8289dae556c93518813427e196d8a954f3a7a35244614f83d983884b",
+      "pinSalt": "7b912ad9cd69a2c0a668ad51db5567a8",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "033ce296c468640ec0d92ad1c5ad5dd4f5de5d44eacc0d6e09b84ef80d7ea550",
-      "pinSalt": "ec60388dd9a85275",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "CF5242",
@@ -258,15 +308,19 @@
       "dept": "PR",
       "role": "ERP Team Admin",
       "areas": [
-        "Solid Production"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "4fa3fff00ec3724de1a1fc47e143ed99b9bc80a84ba6e094dc80a71baa67b831",
+      "pinSalt": "d49bbd38156c03daf6ec17a9140ff1f1",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "d2c809c2acc07043dac9b9a4cbe3a1d9abb5ae2f969c5cff19daa4727c64b465",
-      "pinSalt": "cdded11df9371008",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "CF8355",
@@ -274,15 +328,19 @@
       "dept": "PR",
       "role": "ERP Team Admin",
       "areas": [
-        "Solid Production"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "1166084cba0483ff32258b8a2217607a9d40fe9c2b98e98d27f9d9f163796ffb",
+      "pinSalt": "d7831c775507d7b6d00c0b1a6f691350",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "ba8f86f1805bffea4d9d26d6f633faf91740c0746147bbd6bb9bcd7ad2aaaf46",
-      "pinSalt": "dd3cfea2db3885b2",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF21561",
@@ -290,15 +348,19 @@
       "dept": "PR",
       "role": "ERP Team Admin",
       "areas": [
-        "Packing Hall"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "ac775c45a6a3c7a41b15a49ec8cb8897f3708ece7d14d7199c12285ac323ded8",
+      "pinSalt": "ad165f6d7219de2e0f964560b8db5e08",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "ee075d925fae6614f8032d48c189940aa1eb408fbaca5e4fba5fbf5ee4bdd8b7",
-      "pinSalt": "a3578325a10e3301",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
       "id": "RF22849",
@@ -306,48 +368,59 @@
       "dept": "PR",
       "role": "ERP Team Admin",
       "areas": [
-        "Softgel Production"
+        "all"
       ],
-      "canViewExecutives": false,
+      "canViewExecutives": true,
+      "pinHash": "fc537ab746df067d75e31648720ab65cf747341f4c2e36ce8c5199b7d4c9f8ea",
+      "pinSalt": "dc897b3051193a983daa44a4bf1a6be6",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "pradmin",
-      "pinHash": "d86eac0d52f4b5ff3173beee76572d0aaabd51a00a9f187936b04c7344314ab1",
-      "pinSalt": "27b15b0b979b8f6c",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     },
     {
-      "id": "RF20259",
-      "name": "QA Section In-Charge",
-      "dept": "QA",
-      "role": "Section In-Charge",
-      "areas": [
-        "IPQC PR",
-        "IPQC Pack"
-      ],
-      "canViewExecutives": false,
-      "active": true,
-      "allowNormalBypass": true,
-      "createdBy": "qaadmin",
-      "pinHash": "3faa7faa4b4430820ea3ee23b8791c4321e015f4df3eaba00b855d83023a2a9a",
-      "pinSalt": "f9c1d325a42250f3",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
-    },
-    {
-      "id": "RF20763",
-      "name": "QA Manager",
-      "dept": "QA",
-      "role": "Manager",
+      "id": "RF22846",
+      "name": "Mr. Md. Ohab Bin Zahery Anik",
+      "dept": "PR",
+      "role": "ERP Team Admin",
       "areas": [
         "all"
       ],
       "canViewExecutives": true,
+      "pinHash": "df8f28cc5dac69ba13060cb5c981d89f3a203c34ac56e8ac196955e21bd25cc0",
+      "pinSalt": "5f065728ad18a51b75148c76b8a8c8a9",
+      "pinAlgo": "pbkdf2-sha256-100000",
       "active": true,
       "allowNormalBypass": true,
-      "createdBy": "qaadmin",
-      "pinHash": "f1015c52b8a662e00cd14990b5dfa158ad99d020713c04d92df640586e9446d3",
-      "pinSalt": "d6324278bd0f1c26",
-      "updatedAt": "2026-11-10T19:00:00+06:00"
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
+    },
+    {
+      "id": "CF8578",
+      "name": "Mr. Habibul Bashar",
+      "dept": "PR",
+      "role": "ERP Team Admin",
+      "areas": [
+        "all"
+      ],
+      "canViewExecutives": true,
+      "pinHash": "09b097060a1201910b6f07bc06c46191a98e1a59554c3ab5a5b273d46a54545b",
+      "pinSalt": "1d959df13327cba478e53a169623f999",
+      "pinAlgo": "pbkdf2-sha256-100000",
+      "active": true,
+      "allowNormalBypass": true,
+      "isAdmin": true,
+      "weakPin": true,
+      "mustReset": true,
+      "createdBy": "migration",
+      "updatedAt": "2026-11-10T12:58:57.251Z"
     }
   ]
 }
