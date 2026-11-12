@@ -1,6 +1,13 @@
-/* Ranking page loader — "Milestone Climb" (used inside #lbScanCard).
+/* Ranking page loader — "Milestone Climb" (inline inside #iccRankDrillView employee list area).
    Theme-aware: colours come from css/tokens.css variables. */
-#lbScanCard.rkl-card { padding: 18px 16px 16px; text-align: center; }
+#lbScanCard.rkl-card {
+  margin: 12px;
+  padding: 18px 16px 16px;
+  text-align: center;
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 14px;
+}
 .rkl-stage {
   width: 100%;
   max-width: 400px;

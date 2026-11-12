@@ -135,8 +135,11 @@ async function startLeaderboardScan(forceRescan = false) {
 const month = getCurrentMonth();
 if (isScanning) return;
 isScanning = true;
+const showDrillLoader = (typeof iccDrillOpen !== 'undefined' && iccDrillOpen);
+const drillBody = document.getElementById('iccDrillListBody');
+if (drillBody && showDrillLoader) drillBody.style.display = "none";
 document.getElementById('lbInitialCard').style.display = "none";
-document.getElementById('lbScanCard').style.display = (typeof iccDrillOpen !== 'undefined' && iccDrillOpen) ? "none" : "block";
+document.getElementById('lbScanCard').style.display = showDrillLoader ? "block" : "none";
 document.getElementById('lbResultCard').style.display = "none";
 const counter = document.getElementById('lbScanCounter');
 const fill = document.getElementById('lbScanFill');
@@ -144,7 +147,7 @@ const hint = document.getElementById('lbScanHint');
 counter.innerText = "Verifying data, please wait...";
 fill.style.width = "35%";
 hint.innerText = "Verifying data, please wait...";
-if (window.RankLoader) RankLoader.start();
+if (showDrillLoader && window.RankLoader) RankLoader.start();
 try {
 await loadAreaMap();
 populateAreaDropdown();
@@ -172,6 +175,7 @@ currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
 document.getElementById('lbScanCard').style.display = "none";
+if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
 return;
@@ -190,6 +194,7 @@ currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
 document.getElementById('lbScanCard').style.display = "none";
+if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
 return;
@@ -202,6 +207,7 @@ currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
 document.getElementById('lbScanCard').style.display = "none";
+if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
 return;
@@ -215,6 +221,7 @@ hint.innerText = e.message;
 isScanning = false;
 setTimeout(() => {
 document.getElementById('lbScanCard').style.display = "none";
+if (drillBody) drillBody.style.display = "";
 if (!iccDrillOpen) document.getElementById('lbInitialCard').style.display = "block";
 else { currentLeaderboardResult = null; renderIccDrillList(); }
 }, 600);
@@ -1139,6 +1146,9 @@ renderIccDrillList();
 }
 
 function closeRankDrillDown() {
+const _sc = document.getElementById('lbScanCard'); if (_sc) _sc.style.display = 'none';
+const _db = document.getElementById('iccDrillListBody'); if (_db) _db.style.display = '';
+if (window.RankLoader) RankLoader.stop();
 iccDrillOpen = false;
 document.body.classList.remove('nav-scroll-hidden', 'drawer-fullscreen-active');
 const lbPage = document.getElementById('page-leaderboard');

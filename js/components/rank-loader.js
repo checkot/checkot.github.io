@@ -202,7 +202,7 @@
   }
 
   function isVisible() {
-    return !!(root && root.isConnected && root.offsetParent !== null && !document.hidden);
+    return !!(root && root.isConnected && root.getClientRects().length > 0 && !document.hidden);
   }
 
   function setText(id, t) { var n = document.getElementById(id); if (n && n.innerText !== t) n.innerText = t; }
@@ -243,7 +243,7 @@
 
   // Resume after tab returns to foreground while the card is still showing
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden && root && !reduced && rafId === null && root.offsetParent !== null) rafId = requestAnimationFrame(tick);
+    if (!document.hidden && root && !reduced && rafId === null && root.getClientRects().length > 0) rafId = requestAnimationFrame(tick);
   });
 
   window.RankLoader = { mount: mount, start: start, stop: stop };
