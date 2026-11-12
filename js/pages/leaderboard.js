@@ -1065,6 +1065,8 @@ view.classList.add('active');
 view.classList.remove('filters-scroll-hidden');
 }
 if (hub) hub.style.display = 'none';
+const _issCard = document.getElementById('lbIssuesCard');
+if (_issCard) _issCard.style.setProperty('display', 'none', 'important');   // Issues card belongs to the Rank hub only, not the full ranking view
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'none';
 if (appHdr) appHdr.style.display = 'none';
@@ -1148,6 +1150,8 @@ if (view) {
 view.classList.remove('active', 'filters-scroll-hidden');
 }
 if (hub) hub.style.display = 'flex';
+const _issCard2 = document.getElementById('lbIssuesCard');
+if (_issCard2) _issCard2.style.removeProperty('display');
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'block';
 if (appHdr) appHdr.style.display = 'flex';
