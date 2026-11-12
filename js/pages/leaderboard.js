@@ -144,6 +144,7 @@ const hint = document.getElementById('lbScanHint');
 counter.innerText = "Verifying data, please wait...";
 fill.style.width = "35%";
 hint.innerText = "Verifying data, please wait...";
+if (window.RankLoader) RankLoader.start();
 try {
 await loadAreaMap();
 populateAreaDropdown();
@@ -209,6 +210,7 @@ return;
 throw new Error(`${month} data was not found on the server.`);
 } catch (e) {
 console.error(e);
+if (window.RankLoader) RankLoader.stop();
 hint.innerText = e.message;
 isScanning = false;
 setTimeout(() => {

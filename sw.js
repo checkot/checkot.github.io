@@ -1,5 +1,5 @@
 // RENATA Overtime App — Service Worker (Offline PWA + Stale-While-Revalidate)
-const CACHE_NAME = 'checkot-pwa-v20261112-mt-v11';
+const CACHE_NAME = 'checkot-pwa-v20261112-rkl-v12';
 
 const PRECACHE_ASSETS = [
   './',
@@ -13,6 +13,7 @@ const PRECACHE_ASSETS = [
   'css/components.css',
   'css/nav.css',
   'css/pages.css',
+  'css/rank-loader.css',
   'css/admin.css',
   'css/manager-ux.css',
   'css/rank-details.css',
@@ -43,6 +44,7 @@ const PRECACHE_ASSETS = [
   'js/pages/assessment.js',
   'js/pages/leaderboard.js',
   'js/components/rank-details.js',
+  'js/components/rank-loader.js',
   'js/components/pwa-install.js',
   'js/components/telemetry.js',
   'js/components/presence-board.js',
