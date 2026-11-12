@@ -173,11 +173,18 @@ lbPayload.timeMode = currentLbTimeMode;
 lbPayload.loadedMonths = monthsToLoad;
 currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
+const _done = () => {
+if (drillBody) { drillBody.style.display = ""; drillBody.classList.remove('rkl-list-in'); void drillBody.offsetWidth; drillBody.classList.add('rkl-list-in'); }
 renderLeaderboardResult(lbPayload);
-document.getElementById('lbScanCard').style.display = "none";
-if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
+};
+if (showDrillLoader && window.RankLoader && typeof RankLoader.finish === 'function') {
+RankLoader.finish(_done);
+} else {
+document.getElementById('lbScanCard').style.display = "none";
+_done();
+}
 return;
 }
 }
@@ -192,11 +199,18 @@ lbPayload.timeMode = 'monthly';
 setLeaderboardCache(month, lbPayload);
 currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
+const _done = () => {
+if (drillBody) { drillBody.style.display = ""; drillBody.classList.remove('rkl-list-in'); void drillBody.offsetWidth; drillBody.classList.add('rkl-list-in'); }
 renderLeaderboardResult(lbPayload);
-document.getElementById('lbScanCard').style.display = "none";
-if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
+};
+if (showDrillLoader && window.RankLoader && typeof RankLoader.finish === 'function') {
+RankLoader.finish(_done);
+} else {
+document.getElementById('lbScanCard').style.display = "none";
+_done();
+}
 return;
 }
 if (!forceRescan) {
@@ -205,11 +219,18 @@ if (cached && Array.isArray(cached.allEmployees)) {
 const lbPayload = buildLeaderboardPayloadFromList(month, cached.allEmployees);
 currentLeaderboardResult = lbPayload;
 fill.style.width = "100%";
+const _done = () => {
+if (drillBody) { drillBody.style.display = ""; drillBody.classList.remove('rkl-list-in'); void drillBody.offsetWidth; drillBody.classList.add('rkl-list-in'); }
 renderLeaderboardResult(lbPayload);
-document.getElementById('lbScanCard').style.display = "none";
-if (drillBody) drillBody.style.display = "";
 document.getElementById('lbResultCard').style.display = "none";
 isScanning = false;
+};
+if (showDrillLoader && window.RankLoader && typeof RankLoader.finish === 'function') {
+RankLoader.finish(_done);
+} else {
+document.getElementById('lbScanCard').style.display = "none";
+_done();
+}
 return;
 }
 }
