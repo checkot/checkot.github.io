@@ -76,3 +76,13 @@
   .rl-dots i { animation: none; opacity: 1; }
   .rl-loader { transition: none; }
 }
+
+/* ==========================================================================
+   RANKING LIST SCROLL SMOOTHNESS
+   - will-change on the whole list made one huge GPU layer (flicker / memory on budget phones);
+     it is now applied only while the user is actually swiping between months.
+   ========================================================================== */
+.icc-list-body { will-change: auto !important; }
+.icc-list-body.swiping { will-change: transform, opacity !important; }
+#page-leaderboard { overscroll-behavior-y: contain; }
+.icc-collapsible-filters { contain: layout paint; }

@@ -3251,13 +3251,6 @@ if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
 isHoriz = Math.abs(dx) > Math.abs(dy) * 1.25;
 }
 }
-if (isHoriz === false) {
-const drill = document.getElementById('iccRankDrillView');
-if (drill && drill.classList.contains('active')) {
-if (dy < -22) drill.classList.add('filters-scroll-hidden');
-else if (dy > 16) drill.classList.remove('filters-scroll-hidden');
-}
-}
 if (isHoriz) {
 const body = document.getElementById('iccDrillListBody');
 if (body) {
@@ -3298,16 +3291,33 @@ document.addEventListener('touchend', finishSwipe, { passive: true });
 document.addEventListener('touchcancel', finishSwipe, { passive: true });
 
 // Handle scroll on window and side-drawer #page-leaderboard + vertical touch-scroll inside #iccRankDrillView
+// Filter block collapse/expand changes page height. Without guards that height change moves the
+// scroll position, which re-triggers the toggle -> visible flicker (worst on short lists).
+let _filtersLockUntil = 0;
+const FILTER_COLLAPSE_ROOM = 240 + 120;   // filter block height + a safe extra distance
+const setDrillFiltersHidden = (drill, hide) => {
+if (!drill) return;
+if (drill.classList.contains('filters-scroll-hidden') === hide) return;
+if (performance.now() < _filtersLockUntil) return;          // let the previous layout change settle
+if (hide) {
+const sc = document.getElementById('page-leaderboard');
+const room = sc ? (sc.scrollHeight - sc.clientHeight) : 0;
+if (room < FILTER_COLLAPSE_ROOM) return;                      // short list: page can't absorb the collapse
+}
+drill.classList.toggle('filters-scroll-hidden', hide);
+_filtersLockUntil = performance.now() + 450;
+};
 const handleScrollDelta = (curY, lastY) => {
 const delta = curY - lastY;
 const drill = document.getElementById('iccRankDrillView');
-if (curY <= 24 || delta < -4) {
+if (curY <= 24) {
 document.body.classList.remove('nav-scroll-hidden');
-if (drill) drill.classList.remove('filters-scroll-hidden');
+setDrillFiltersHidden(drill, false);
+} else if (delta < -12) {
+document.body.classList.remove('nav-scroll-hidden');
+setDrillFiltersHidden(drill, false);
 } else if (delta > 8 && curY > 36) {
-if (drill && drill.classList.contains('active')) {
-drill.classList.add('filters-scroll-hidden');
-}
+if (drill && drill.classList.contains('active')) setDrillFiltersHidden(drill, true);
 if (curY > 75 && !currentSideDrawerPage) {
 document.body.classList.add('nav-scroll-hidden');
 }
@@ -3326,7 +3336,11 @@ initSideDrawerClasses();
 const lbPage = document.getElementById('page-leaderboard');
 if (lbPage && !lbPage._scrollWired) {
 lbPage._scrollWired = true;
+let _lbScrollRaf = 0;
 lbPage.addEventListener('scroll', () => {
+if (_lbScrollRaf) return;
+_lbScrollRaf = requestAnimationFrame(() => {
+_lbScrollRaf = 0;
 const curY = Math.max(0, lbPage.scrollTop || 0);
 handleScrollDelta(curY, lastLbY);
 lastLbY = curY;
@@ -3335,6 +3349,7 @@ if (lbPage.scrollTop + lbPage.clientHeight >= lbPage.scrollHeight - 260) {
 loadMoreIccRows();
 }
 }
+});
 }, { passive: true });
 }
 }
