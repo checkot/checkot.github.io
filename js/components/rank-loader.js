@@ -61,7 +61,7 @@
 
   function addMilestoneCard(m, y, id) {
     var g = el('g', { transform: 'translate(342,' + y + ')' }, milestoneLayer);
-    el('rect', { x: -76, y: -21, width: 152, height: 46, rx: 5, fill: '#6b3e17' }, g);
+    el('rect', { x: -76, y: -21, width: 152, height: 46, rx: 5, fill: '#6b3e17', filter: 'url(#' + id + '-sh)' }, g);
     el('rect', { x: -76, y: -23, width: 152, height: 44, rx: 5, fill: 'url(#' + id + '-pl)', stroke: '#5d3411', 'stroke-width': 1 }, g);
     el('line', { x1: -72, y1: -21.5, x2: 72, y2: -21.5, stroke: '#dca66c', 'stroke-width': 1.2, opacity: 0.7 }, g);
     el('line', { x1: -68, y1: -11, x2: 68, y2: -11, stroke: '#6b3e17', 'stroke-width': 0.8, opacity: 0.25 }, g);
@@ -177,7 +177,7 @@
     var scene = el('g', { mask: 'url(#' + id + '-mk)' }, svg);
     var ropes = el('g', { stroke: '#c49556', 'stroke-width': 4.2, 'stroke-linecap': 'round' }, scene);
     [30, 78, 116, 164, 202, 250].forEach(function (x) { el('line', { x1: x, y1: -20, x2: x, y2: 260 }, ropes); });
-    rungLayer = el('g', { class: 'rkl-layer' }, scene);
+    rungLayer = el('g', {}, scene);
     for (var y = -RUNG_GAP; y <= 288; y += RUNG_GAP) {
       LANES.forEach(function (cx) {
         var u = el('use', { href: '#' + id + '-rg', transform: 'translate(' + cx + ',' + y + ')' }, rungLayer);
@@ -186,7 +186,7 @@
     }
     el('rect', { x: 336, y: -20, width: 12, height: 280, rx: 3, fill: 'url(#' + id + '-po)' }, scene);
     el('line', { x1: 339, y1: -20, x2: 339, y2: 260, stroke: '#b87e46', 'stroke-width': 1, opacity: 0.45 }, scene);
-    milestoneLayer = el('g', { class: 'rkl-layer' }, scene);
+    milestoneLayer = el('g', {}, scene);
     MILESTONES.forEach(function (m, i) {
       var my = 120 - i * MILESTONE_GAP;
       addMilestoneCard(m, my, id);
@@ -226,57 +226,19 @@
     rafId = requestAnimationFrame(tick);
   }
 
-  var finishTimer = null;
-
-  function clearFinish() {
-    if (finishTimer !== null) { clearTimeout(finishTimer); finishTimer = null; }
-  }
-
   function start() {
-    clearFinish();
     if (!root) mount(document.getElementById('rklStage'));
     if (!root) return;
-    var card = document.getElementById('lbScanCard');
-    if (card) {
-      card.classList.remove('rkl-leave');
-      card.classList.add('rkl-enter');
-      card.style.display = 'block';
-      void card.offsetWidth;
-      requestAnimationFrame(function () { card.classList.remove('rkl-enter'); });
-    }
     startedAt = performance.now(); stepIdx = -1; slowShown = false; lastTime = null;
     setText('lbScanCounter', STEPS[0]);
     setText('lbScanHint', 'Please wait a moment');
-    renderFrame(reduced ? 0.12 : phase);
-    if (reduced) return;
+    if (reduced) { renderFrame(0.12); return; }
     if (rafId === null) rafId = requestAnimationFrame(tick);
   }
 
   function stop() {
-    clearFinish();
     if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
     lastTime = null;
-  }
-
-  function finish(onDone) {
-    clearFinish();
-    var card = document.getElementById('lbScanCard');
-    if (!card || card.style.display === 'none') {
-      stop();
-      if (onDone) onDone();
-      return;
-    }
-    var elapsed = performance.now() - startedAt;
-    var minShow = reduced ? 0 : Math.max(0, 380 - elapsed);
-    finishTimer = setTimeout(function () {
-      if (!reduced) card.classList.add('rkl-leave');
-      finishTimer = setTimeout(function () {
-        stop();
-        card.style.display = 'none';
-        card.classList.remove('rkl-leave', 'rkl-enter');
-        if (onDone) onDone();
-      }, reduced ? 0 : 190);
-    }, minShow);
   }
 
   // Resume after tab returns to foreground while the card is still showing
@@ -284,5 +246,5 @@
     if (!document.hidden && root && !reduced && rafId === null && root.getClientRects().length > 0) rafId = requestAnimationFrame(tick);
   });
 
-  window.RankLoader = { mount: mount, start: start, stop: stop, finish: finish };
+  window.RankLoader = { mount: mount, start: start, stop: stop };
 })();
