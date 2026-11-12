@@ -1117,14 +1117,31 @@ document.documentElement.setAttribute('data-theme', t);
 const m = document.querySelector('meta[name="theme-color"]');
 if (m) m.setAttribute('content', t === 'dark' ? '#0A1220' : '#F3F6FB');
 document.querySelectorAll('[data-theme-opt]').forEach(b => b.classList.toggle('active', b.getAttribute('data-theme-opt') === pref));
+document.querySelectorAll('.theme-toggle').forEach(b => { b.setAttribute('role', 'switch'); b.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false'); b.setAttribute('aria-label', 'Dark mode'); b.title = t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'; });
 }
 function setTheme(pref) {
 try { if (pref === 'auto') localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, pref); } catch (e) {}
 applyTheme(pref);
 }
-function toggleTheme() {
+function toggleTheme(ev) {
 const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-setTheme(cur === 'dark' ? 'light' : 'dark');
+const next = cur === 'dark' ? 'light' : 'dark';
+const apply = () => setTheme(next);
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const btn = ev && ev.currentTarget && ev.currentTarget.getBoundingClientRect ? ev.currentTarget : null;
+if (!document.startViewTransition || reduce || !btn) { apply(); return; }
+try {
+const r = btn.getBoundingClientRect();
+const x = r.left + r.width / 2, y = r.top + r.height / 2;
+const rad = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+const vt = document.startViewTransition(apply);
+vt.ready.then(() => {
+document.documentElement.animate(
+{ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + rad + 'px at ' + x + 'px ' + y + 'px)'] },
+{ duration: 480, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)' }
+);
+}).catch(() => {});
+} catch (e) { apply(); }
 }
 function initTheme() {
 applyTheme(getThemePref());
@@ -3861,18 +3878,35 @@ function pushAppNavState(label) {}
 /* const _RMON, _RDAY, _rE, _rN, _rMin moved to js/pages/report.js */
 /* function _rptRows moved to js/pages/ */
 
-let _rptZoomLevel = 1;
+let _rptZoomLevel = 'fit';
 let _rptHideEmptyDays = false;
+function _rptFitZoom() {
+const wrap = document.getElementById('rptInnerScaleWrap');
+const box = wrap && wrap.parentElement;
+if (!box || !box.clientWidth) return null;
+wrap.style.zoom = '1';
+const t = wrap.firstElementChild;
+const NATURAL = Math.max(540, t ? t.scrollWidth : 540); /* real minimum width of the table (>= 540px) */
+return Math.max(0.4, Math.min(1, box.clientWidth / NATURAL));
+}
 function setReportZoom(z) {
 _rptZoomLevel = z;
 const wrap = document.getElementById('rptInnerScaleWrap');
 if (wrap) {
-wrap.style.zoom = String(z);
+let val = z;
+if (z === 'fit') { const f = _rptFitZoom(); val = (f === null) ? 1 : f; }
+wrap.style.zoom = String(val);
 }
 document.querySelectorAll('.rpt-zoom-btn[data-zoom]').forEach(btn => {
-btn.classList.toggle('active', parseFloat(btn.getAttribute('data-zoom')) === z);
+btn.classList.toggle('active', btn.getAttribute('data-zoom') === String(z));
 });
 }
+(function () {
+let t = null;
+const re = () => { if (_rptZoomLevel === 'fit' && document.getElementById('rptInnerScaleWrap')) setReportZoom('fit'); };
+window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(re, 120); });
+window.addEventListener('orientationchange', () => setTimeout(re, 250));
+})();
 function toggleReportDutyFilter(hideEmpty) {
 _rptHideEmptyDays = Boolean(hideEmpty);
 const ctx = window._rptCtx;

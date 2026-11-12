@@ -294,19 +294,20 @@ function toggleReportPreview() {
   const h = document.getElementById('rptPreviewHost'), b = document.getElementById('rptPreviewBtn'), ctx = window._rptCtx;
   if (!ctx || !ctx.emp) { showToast('Search a report first', 'warn'); return; }
   if (h.style.display === 'block') { _rptReset(); return; }
-  _rptZoomLevel = 1;
+  _rptZoomLevel = 'fit';
   const zoomBar = `<div class="rpt-zoom-bar">
 <div class="rpt-zoom-btns">
 <button type="button" class="rpt-zoom-btn rpt-filter-btn ${!_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="0" onclick="toggleReportDutyFilter(false)">Full Month</button>
 <button type="button" class="rpt-zoom-btn rpt-filter-btn ${_rptHideEmptyDays ? 'active' : ''}" data-hide-empty="1" onclick="toggleReportDutyFilter(true)">Duty Only</button>
 </div>
 <div class="rpt-zoom-btns">
-<button type="button" class="rpt-zoom-btn" data-zoom="0.85" onclick="setReportZoom(0.85)">Fit</button>
-<button type="button" class="rpt-zoom-btn active" data-zoom="1" onclick="setReportZoom(1)">100%</button>
+<button type="button" class="rpt-zoom-btn active" data-zoom="fit" onclick="setReportZoom('fit')">Fit</button>
+<button type="button" class="rpt-zoom-btn" data-zoom="1" onclick="setReportZoom(1)">100%</button>
 <button type="button" class="rpt-zoom-btn" data-zoom="1.15" onclick="setReportZoom(1.15)">115%</button>
 </div></div>`;
-  h.innerHTML = zoomBar + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff;"><div id="rptInnerScaleWrap">' + _rptHtml(ctx, false) + '</div></div>';
+  h.innerHTML = zoomBar + '<div class="rpt-scroll-box" style="overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff;"><div id="rptInnerScaleWrap">' + _rptHtml(ctx, false) + '</div></div>';
   h.style.display = 'block';
+  setReportZoom('fit');
   if (b) b.textContent = 'Hide daily report ▲';
 }
 
@@ -342,6 +343,43 @@ async function downloadReportPNG(share) {
   } finally {
     box.remove();
     btns.forEach(b => b.disabled = false);
+  }
+}
+
+/* Desktop print: prints the same report image that "Save" produces (A4 portrait) through a hidden iframe */
+async function printReport() {
+  const ctx = window._rptCtx;
+  if (!ctx || !ctx.emp) { showToast('Search a report first', 'warn'); return; }
+  const btn = document.getElementById('rptPrintBtn');
+  if (btn) btn.disabled = true;
+  showToast('Preparing print...', 'info');
+  let f = null;
+  try {
+    if (typeof generateWorkLogCanvas2D !== 'function') throw new Error('Report image is not available');
+    const canvas = await generateWorkLogCanvas2D(ctx);
+    const url = canvas.toDataURL('image/png');
+    document.querySelectorAll('iframe[data-rpt-print]').forEach(x => x.remove());
+    f = document.createElement('iframe');
+    f.setAttribute('data-rpt-print', '1');
+    f.setAttribute('aria-hidden', 'true');
+    f.style.cssText = 'position:fixed;left:-10000px;top:0;width:210mm;height:297mm;border:0;';
+    document.body.appendChild(f);
+    const d = f.contentWindow.document;
+    d.open();
+    d.write('<!doctype html><html><head><meta charset="utf-8"><title>WorkLog ' + _rE(ctx.id) + '</title><style>@page{size:A4 portrait;margin:8mm}html,body{margin:0;background:#fff}img{display:block;margin:0 auto;max-width:100%;max-height:281mm;width:auto;height:auto}</style></head><body><img id="i" src="' + url + '" alt=""></body></html>');
+    d.close();
+    const img = d.getElementById('i');
+    if (img.decode) { await img.decode().catch(() => {}); } else { await new Promise(r => { img.onload = r; img.onerror = r; }); }
+    const frame = f;
+    f.contentWindow.addEventListener('afterprint', () => setTimeout(() => frame.remove(), 500));
+    setTimeout(() => { if (frame.parentNode) frame.remove(); }, 120000);
+    f.contentWindow.focus();
+    f.contentWindow.print();
+  } catch (err) {
+    if (f) f.remove();
+    showToast('Could not open print: ' + ((err && err.message) || 'Unknown error'), 'error');
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 

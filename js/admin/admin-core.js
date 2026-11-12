@@ -7415,7 +7415,7 @@ const zoomBar = `<div class="rpt-zoom-bar" style="flex-wrap:wrap;gap:6px;">
 <button type="button" class="rpt-zoom-btn" data-zoom="1.15" onclick="setReportZoom(1.15)">115%</button>
 </div>
 </div>`;
-h.innerHTML = zoomBar + '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff;"><div id="rptInnerScaleWrap">' + _rptHtml(ctx, false) + '</div></div>';
+h.innerHTML = zoomBar + '<div class="rpt-scroll-box" style="overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff;"><div id="rptInnerScaleWrap">' + _rptHtml(ctx, false) + '</div></div>';
 h.style.display = 'block'; b.textContent = 'Hide daily report ▲';
 }
 async function downloadReportPNG(share) {
