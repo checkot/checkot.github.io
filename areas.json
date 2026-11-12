@@ -28,6 +28,9 @@
   },
   "areas": {
     "556515": "Unassigned",
+    "556523": "Solid Production",
+    "556524": "Solid Production",
+    "556525": "Solid Production",
     "556531": "Unassigned",
     "RF8327": "Solid Production",
     "CF3036": "Solid Production",
@@ -110,9 +113,6 @@
     "CF10266": "Solid Production",
     "CF10277": "Solid Production",
     "CF10280": "Solid Production",
-    "556523": "Solid Production",
-    "556524": "Solid Production",
-    "556525": "Solid Production",
     "RF22111": "Solid Production",
     "CF5242": "Solid Production",
     "CF8355": "Solid Production",
@@ -378,8 +378,6 @@
     "RF23849": "Overall",
     "RF23848": "Overall",
     "RF20948": "Overall",
-    "556515": "Unassigned",
-    "556531": "Unassigned",
     "CF2358": "Unassigned",
     "CF3196": "IPQC PR",
     "CF3199": "Unassigned",
@@ -457,6 +455,18 @@
       "g": "M",
       "t": "CAS",
       "s": ""
+    },
+    "556523": {
+      "s": "Defoiling",
+      "g": "M"
+    },
+    "556524": {
+      "s": "Defoiling",
+      "g": "M"
+    },
+    "556525": {
+      "s": "Defoiling",
+      "g": "M"
     },
     "556531": {
       "g": "M",
@@ -884,18 +894,6 @@
       "g": "M"
     },
     "CF10266": {
-      "s": "Defoiling",
-      "g": "M"
-    },
-    "556523": {
-      "s": "Defoiling",
-      "g": "M"
-    },
-    "556524": {
-      "s": "Defoiling",
-      "g": "M"
-    },
-    "556525": {
       "s": "Defoiling",
       "g": "M"
     },
@@ -1630,16 +1628,6 @@
       "g": "F",
       "d": "Assistant Manager"
     },
-    "556515": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
-    "556531": {
-      "g": "M",
-      "t": "CAS",
-      "s": ""
-    },
     "CF2358": {
       "g": "M",
       "t": "CF",
@@ -2113,7 +2101,9 @@
   },
   "holidays": {
     "cancelled": [],
-    "custom": [],
+    "custom": [
+      "04-OCT-2026"
+    ],
     "byMonth": {}
   }
 }
