@@ -314,7 +314,7 @@ const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
 if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
 if (segBar) segBar.classList.toggle('has-exec', inc);
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'hubBtnEarlyExit', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
 });
@@ -336,6 +336,9 @@ setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
 setTxt('hubSubAbsent', absCount > 0 ? '≥1 absent day' : 'No absents');
 setTxt('hubSubAvgDuty', 'Daily Average Duty Hours');
 setTxt('hubSubAvgInOut', 'Average In-Time (Punch In)');
+const eeCount = (filteredList || []).filter(e => (typeof getEarlyExitCount === 'function' ? getEarlyExitCount(e) : 0) > 0).length;
+setTxt('hubValEarlyExit', eeCount > 0 ? `${eeCount} pers` : 'None');
+setTxt('hubSubEarlyExit', eeCount > 0 ? 'Left before shift end' : 'No early exits');
 if (iccDrillOpen) renderIccDrillList();
 }
 
