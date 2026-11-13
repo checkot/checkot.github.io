@@ -220,7 +220,7 @@
       listTitle: function (A) { return 'Pending requisition dates (' + A.req.length + ' days)'; }
     },
     earlyExit: {
-      icon: '🚪', cls: 'req', color: 'var(--warning)', title: 'Early Exit / Gate Pass', bannerSub: 'Regular days when the Out punch is before the shift end (Admin → Shift Hours decides the shift end for each date)',
+      icon: '🚪', cls: 'req', color: 'var(--warning)', title: 'Gate Pass / Early Exit', bannerSub: 'Regular days when the Out punch is before the shift end (Admin → Shift Hours decides the shift end for each date)',
       metric: function (A) { return A.early.length; }, fmt: function (v) { return v + 'd'; },
       body: function (A) {
         return A.early.length ? table(['Date', 'Day', 'In – Out', 'Shift end', 'Left early by'], A.early.map(function (x) {
@@ -474,7 +474,7 @@
     var inc = isIncharge();
     var crit = CRIT_ALIAS[optCrit] || optCrit || CRIT_ALIAS[activeCrit()] || activeCrit();
     if (!TOPICS[crit]) crit = 'duty';
-    if (crit === 'earlyExit' && !(typeof isEarlyExitAllowedView === 'function' && isEarlyExitAllowedView())) crit = 'duty'; // private to In-Charge / Admin
+    
     if (TOPICS[crit].money && inc) crit = 'duty'; // in-charge mode never shows money
     var topic = TOPICS[crit];
 

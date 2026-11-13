@@ -314,7 +314,7 @@ const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
 if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
 if (segBar) segBar.classList.toggle('has-exec', inc);
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'hubBtnEarlyExit', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
 });
@@ -1150,7 +1150,7 @@ avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF',
 requisition: 'OT Requisition Missing RPPF',
-earlyExit: 'Early Exit / Gate Pass RPPF',
+earlyExit: 'Gate Pass / Early Exit RPPF',
 absent: 'Highest Absent (General Days) RPPF'
 };
 const colHeaders = {

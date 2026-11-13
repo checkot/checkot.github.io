@@ -3070,7 +3070,7 @@ return f.sortedByAvgInOut;
 if (crit === 'punch') return f.sortedByPunch || [];
 if (crit === 'earlyExit') {
   // Private to In-Charge / Admin. Rebuilt every time so edited shift rules apply immediately.
-  if (!(typeof isEarlyExitAllowedView === 'function' && isEarlyExitAllowedView())) return [];
+  
   const base = f._rawFiltered || f.allEmployees || [];
   return [...base].filter(e => getEarlyExitCount(e) > 0).sort((a,b) => (getEarlyExitCount(b) - getEarlyExitCount(a)) || (String(a.name || '').localeCompare(String(b.name || ''))));
 }
@@ -3409,7 +3409,7 @@ if (incAreaRow) incAreaRow.style.display = isPriv ? 'flex' : 'none';
 const execVsCard = document.getElementById('vsExecShortcutSection');
 if (execVsCard) execVsCard.style.display = isPriv ? 'block' : 'none';
 // Update Ranking Hub In-Charge items visibility
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'hubBtnEarlyExit', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = isPriv ? '' : 'none';
 });

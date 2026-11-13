@@ -210,9 +210,7 @@
   }
 
   function isEarlyExitAllowedView() {
-    try { if (typeof getAppMode === 'function' && getAppMode() === 'incharge') return true; } catch (e) { }
-    try { if (typeof isAdminLoggedIn === 'function' && isAdminLoggedIn()) return true; } catch (e) { }
-    return false;
+    return true;
   }
 
   /* ---------- Admin helper: propose special-shift periods from real punch data ----------
