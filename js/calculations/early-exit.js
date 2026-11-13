@@ -176,6 +176,7 @@
       var regDuty = Number(r[4]) || 0;
       var regOt = Number(r[5]) || 0;
       if (regDuty <= 0 || regOt > 0) return;                       // regular duty day without OT only
+      if (regDuty >= 10) return;                                   // 10h+ duty (e.g. unmarked 24h night) is never an early exit
       if ((Number(r[6]) || 0) > 0 || (Number(r[8]) || 0) > 0) return; // Day-Off / Holiday duty rows
       if (Number(r[10]) === 1) return;                              // night flag
       var code = String(r[11] == null ? '' : r[11]).toUpperCase();

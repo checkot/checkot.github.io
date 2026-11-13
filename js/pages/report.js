@@ -27,6 +27,15 @@ function rptIsDayClosed(y, m, d) {
 
 function _rptRows(ctx) {
 const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
+const earlyExitMap = new Map();
+try {
+  if (typeof computeEmpEarlyExits === 'function') {
+    computeEmpEarlyExits(e).forEach(ex => {
+      const dm = String(ex && ex.date || '').trim().match(/^(\d{1,2})-/);
+      if (dm) earlyExitMap.set(parseInt(dm[1], 10), ex);
+    });
+  }
+} catch (_e) {}
 let y = 0, m = 0;
 const mm = String(ctx.month || e._computedMonth || '').match(/(\d{4})-(\d{2})/);
 if (mm) { 
@@ -195,6 +204,18 @@ if (o && !o.night) {
     row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected (' + _why + ') but not marked in Empress — contact ERP team';
   }
 }
+// GATE PASS / EARLY EXIT REMARK
+if (o && !row.missIn && !row.missOut && !row.reqProblem && !row.nightSuspect) {
+  const ex = earlyExitMap.get(d);
+  if (ex) {
+    row.earlyExit = ex;
+    if (!row.tone) row.tone = 'ee';
+    const sm = Math.max(0, Math.round(ex.shortMin || 0));
+    const eeDur = sm >= 60 ? (Math.floor(sm / 60) + 'h ' + (sm % 60 ? (sm % 60) + 'm' : '')).trim() : (sm + 'm');
+    const eeNote = '🚪 Gate Pass / Early Exit (-' + eeDur + ')';
+    row.note = row.note ? (row.note + ' | ' + eeNote) : eeNote;
+  }
+}
 rows.push(row);
 }
 return { rows, y, m };
@@ -203,7 +224,7 @@ return { rows, y, m };
 function _rptHtml(ctx, forExport) {
   const e = ctx.emp, { rows, y, m } = _rptRows(ctx);
   const sum = [0, 0, 0, 0, 0, 0];
-  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0, nightSus = 0;
+  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0, nightSus = 0, earlyExits = 0;
   rows.forEach(r => {
     r.v.forEach((x, i) => sum[i] += x);
     if (r.inn || r.out) present++;
@@ -212,11 +233,12 @@ function _rptHtml(ctx, forExport) {
     if (r.tone === 'bad') issues++;
     if (r.tone === 'req' && !r.nightSuspect) reqIssues++;
     if (r.nightSuspect) nightSus++;
+    if (r.earlyExit) earlyExits++;
   });
   const displayRows = (typeof _rptHideEmptyDays !== 'undefined' && _rptHideEmptyDays)
     ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
     : rows;
-  const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', absent: '#fee2e2' };
+  const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', ee: '#ffedd5', absent: '#fee2e2' };
   const fsCell = forExport ? '12.5px' : '11px';
   const fsSmall = forExport ? '11.5px' : '10.5px';
   const fsHead = forExport ? '11.5px' : '10px';
@@ -260,6 +282,7 @@ ${pc(r.inn, r.missIn)}${pc(r.out, r.missOut)}${r.v.map(x => cell(x)).join('')}
 ${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
 ${nightSus ? chip('Night Check: ' + nightSus + 'd', '#9a3412', '#ffedd5') : ''}
 ${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}
+${earlyExits ? chip('Gate Pass: ' + earlyExits + 'd', '#b45309', '#ffedd5') : ''}
 ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
 <table style="border-collapse:collapse;width:100%;table-layout:fixed;">
 <colgroup>${colHeaders.map(c => `<col style="width:${c.w};">`).join('')}</colgroup>
