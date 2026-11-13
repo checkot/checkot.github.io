@@ -105,3 +105,6 @@
   pointer-events: auto !important;
 }
 @media (prefers-reduced-motion: reduce) { .icc-sticky-stack { transition: none; } }
+
+/* months that have not started yet */
+.icc-period-pill.icc-pill-future:not(.active) { opacity: 0.45; }

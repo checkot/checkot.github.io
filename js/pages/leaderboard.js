@@ -21,6 +21,7 @@ const lbYSel = document.getElementById('lbYearSelect');
 const lbMSel = document.getElementById('lbMonthSelect');
 if (ySel && lbYSel) { if (lbYSel.options.length !== ySel.options.length) lbYSel.innerHTML = ySel.innerHTML; lbYSel.value = ySel.value; }
 if (mSel && lbMSel) lbMSel.value = mSel.value;
+clampLbMonthToCalendar();
 }
 
 function onLbMonthYearChange() {
@@ -30,6 +31,7 @@ const ySel = document.getElementById('yearSelect');
 const mSel = document.getElementById('monthSelect');
 if (lbYSel && ySel) ySel.value = lbYSel.value;
 if (lbMSel && mSel) mSel.value = lbMSel.value;
+clampLbMonthToCalendar();
 initLeaderboardPage();
 }
 
@@ -221,6 +223,9 @@ throw new Error(`${month} data was not found on the server.`);
 } catch (e) {
 console.error(e);
 hint.innerText = e.message;
+// Drop the previous month's result right away. Otherwise the caller's renderIccDrillList() (which runs
+// as soon as this function returns) paints the OLD month's data under the newly selected month's label.
+currentLeaderboardResult = null;
 isScanning = false;
 setTimeout(() => {
 document.getElementById('lbScanCard').style.display = "none";
@@ -990,11 +995,49 @@ openLbFullList(savedType);
 
 function lbModalBackdropClick(e) { if (e.target.id === 'lbFullListModal') closeLbFullList(); }
 
+// Last month that has started in a given year: past year = 12, running year = this month, future year = 0.
+function getMaxMonthForYear(year) {
+const now = new Date();
+const y = parseInt(year, 10);
+if (!y || y < now.getFullYear()) return 12;
+return y === now.getFullYear() ? now.getMonth() + 1 : 0;
+}
+
+// Keep the selected month inside what has actually started; disable not-yet-started months in the hub dropdown.
+function clampLbMonthToCalendar() {
+const ySel = document.getElementById('yearSelect');
+const mSel = document.getElementById('monthSelect');
+const lbYSel = document.getElementById('lbYearSelect');
+const lbMSel = document.getElementById('lbMonthSelect');
+const nowY = new Date().getFullYear();
+let y = parseInt((lbYSel && lbYSel.value) || (ySel && ySel.value), 10) || nowY;
+if (y > nowY) {
+y = nowY;
+[ySel, lbYSel].forEach(sel => { if (sel && [...sel.options].some(o => o.value === String(y))) sel.value = String(y); });
+}
+const max = getMaxMonthForYear(y);
+if (lbMSel) [...lbMSel.options].forEach(o => { o.disabled = parseInt(o.value, 10) > max; });
+const cur = parseInt((mSel && mSel.value) || (lbMSel && lbMSel.value), 10) || 1;
+if (cur > max) {
+const v = String(max).padStart(2, '0');
+if (mSel) mSel.value = v;
+if (lbMSel) lbMSel.value = v;
+}
+}
+
+function isFutureYm(ym) {
+const m = /^(\d{4})-(\d{2})$/.exec(String(ym || ''));
+if (!m) return false;
+const now = new Date();
+return (+m[1] > now.getFullYear()) || (+m[1] === now.getFullYear() && +m[2] > now.getMonth() + 1);
+}
+
 function getIccPeriodOptions() {
 const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const curYear = document.getElementById('yearSelect')?.value || '2026';
 const opts = [];
-for (let m = 1; m <= 12; m++) {
+const maxM = getMaxMonthForYear(curYear);   // running year: only months that have started
+for (let m = 1; m <= maxM; m++) {
 const mStr = String(m).padStart(2, '0');
 opts.push({ key: `month:${curYear}-${mStr}`, label: shortMonths[m - 1], mode: 'monthly', month: mStr, year: curYear, ym: `${curYear}-${mStr}` });
 }
@@ -1019,6 +1062,7 @@ sel.appendChild(opt);
 sel.value = String(newYear);
 });
 currentLbTimeMode = 'monthly';
+clampLbMonthToCalendar();   // e.g. Dec 2025 -> 2026 lands on the latest started month, not a future December
 renderIccPeriodStrip();
 startLeaderboardScan(false).then(() => renderIccDrillList());
 }
@@ -1030,13 +1074,13 @@ const curMonth = document.getElementById('monthSelect')?.value || '10';
 const curYear = document.getElementById('yearSelect')?.value || '2026';
 const opts = getIccPeriodOptions();
 let yearOptsHtml = '';
-for (let y = 2020; y <= 2032; y++) {
+for (let y = 2020; y <= new Date().getFullYear(); y++) {
 yearOptsHtml += `<option value="${y}" ${String(y) === String(curYear) ? 'selected' : ''}>${y}</option>`;
 }
-const yearSelHtml = `<select id="iccYearSelect" class="icc-year-select" aria-label="Ranking Year (2020-2032)" onchange="onIccYearChange(this.value)">${yearOptsHtml}</select>`;
+const yearSelHtml = `<select id="iccYearSelect" class="icc-year-select" aria-label="Ranking Year" onchange="onIccYearChange(this.value)">${yearOptsHtml}</select>`;
 strip.innerHTML = yearSelHtml + opts.map((o, idx) => {
 const isActive = (currentLbTimeMode === 'monthly' && o.mode === 'monthly' && o.month === curMonth && o.year === curYear) || (currentLbTimeMode !== 'monthly' && o.mode === currentLbTimeMode);
-return `<button type="button" class="icc-period-pill ${isActive ? 'active' : ''}" data-pidx="${idx}" onclick="selectIccPeriodByIndex(${idx})">${esc(o.label)}</button>`;
+return `<button type="button" class="icc-period-pill ${isActive ? 'active' : ''}${(o.mode === 'monthly' && isFutureYm(o.ym)) ? ' icc-pill-future' : ''}" data-pidx="${idx}" onclick="selectIccPeriodByIndex(${idx})">${esc(o.label)}</button>`;
 }).join('');
 setTimeout(() => {
 const activePill = strip.querySelector('.icc-period-pill.active');
@@ -1176,7 +1220,14 @@ if (!body) return;
 if (!currentLeaderboardResult) {
 if (myBanner) myBanner.style.display = 'none';
 if (typeof isScanning !== 'undefined' && isScanning) return;   // loader is showing
-body.innerHTML = '<div class="empty-msg">No data found for this period. Tap another month above.</div>';
+const _ym = getCurrentMonth();
+const _MN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const _pm = /^(\d{4})-(\d{2})$/.exec(_ym);
+const _nm = _pm ? (_MN[+_pm[2] - 1] + ' ' + _pm[1]) : _ym;
+const _msg = (currentLbTimeMode === 'monthly' && isFutureYm(_ym))
+? `${_nm} hasn't started yet, so there is no data. Tap an earlier month above.`
+: (currentLbTimeMode === 'monthly' ? `No data found for ${_nm}. Tap another month above.` : 'No data found for this period. Tap another month above.');
+body.innerHTML = '<div class="empty-msg" style="padding:16px;text-align:center;">' + _msg + '</div>';
 return;
 }
 const f = currentLeaderboardResult.filtered || currentLeaderboardResult;
