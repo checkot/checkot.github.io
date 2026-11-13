@@ -144,6 +144,10 @@ document.documentElement.setAttribute('data-theme', t);
           <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
           <span>Monthly Data</span>
         </button>
+        <button type="button" class="admin-tab-btn ax-item" id="admTabBtnShift" onclick="switchAdminTab('shift')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>Shift Hours</span>
+        </button>
       </div>
       <div class="ax-nav-group">
         <span class="ax-nav-label">Publish</span>
@@ -548,6 +552,22 @@ document.documentElement.setAttribute('data-theme', t);
       </section>
 
       <!-- ======================= RATES ======================= -->
+      <!-- ======================= SHIFT HOURS (Early Exit / Gate Pass rules) ======================= -->
+      <section class="admin-section-pane" id="admPaneShift">
+        <div class="ax-pane-head">
+          <div>
+            <h2>Shift hours</h2>
+            <p>Decides when a person counts as an Early Exit / Gate Pass. Set Ramadan (or any special duty hours) here so it is never flagged by mistake.</p>
+          </div>
+          <div class="ax-actions">
+            <button type="button" class="ax-btn ax-btn--ghost" onclick="AdminShift.reload()">Reload</button>
+            <button type="button" class="ax-btn ax-btn--primary" id="admShiftSaveBtn" onclick="AdminShift.save()">Save to server</button>
+          </div>
+        </div>
+        <div class="ax-savestatus" id="admShiftStatus"></div>
+        <div id="admShiftRoot"><div class="ax-muted">Open this tab to load the shift rules…</div></div>
+      </section>
+
       <section class="admin-section-pane" id="admPaneRates">
         <div class="ax-pane-head">
           <div>
@@ -947,12 +967,14 @@ document.documentElement.setAttribute('data-theme', t);
      ===================================================================== -->
 <!-- Compatibility stubs for IDs that existed only in the old copied main-app markup.
      Safe to delete once js/admin/*.js no longer references them. -->
+<script src="js/calculations/early-exit.js?v=20261113ee1"></script>
 <script src="js/admin/admin-compat.js?v=20261110em"></script>
 
 <script src="js/admin/admin-github.js?v=20261112a1"></script>
-<script src="js/admin/admin-core.js?v=20261112a1"></script>
+<script src="js/admin/admin-core.js?v=20261113ee1"></script>
 <script src="js/admin/admin-tools.js?v=20261111ac"></script>
 <script src="js/admin/admin-sync-bar.js?v=20261111ac"></script>
+<script src="js/admin/admin-shift.js?v=20261113ee1"></script>
 <script src="js/admin/admin-employees.js?v=20261111ac"></script>
 <script src="js/core/access-crypto.js?v=20261111ac"></script>
 <script src="js/admin/admin-access.js?v=20261111ac"></script>

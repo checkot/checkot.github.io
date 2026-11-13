@@ -4899,6 +4899,7 @@ function switchAdminTab(tab) {
     'unassigned': 'admTabBtnUnassigned',
     'rates': 'admTabBtnRates',
     'data': 'admTabBtnData',
+    'shift': 'admTabBtnShift',
     'team': 'admTabBtnTeam',
     'notices': 'admTabBtnNotices',
     'access': 'admTabBtnAccess',
@@ -4912,6 +4913,7 @@ function switchAdminTab(tab) {
     'unassigned': 'admPaneUnassigned',
     'rates': 'admPaneRates',
     'data': 'admPaneData',
+    'shift': 'admPaneShift',
     'team': 'admPaneTeam',
     'notices': 'admPaneNotices',
     'access': 'admPaneAccess',
@@ -4938,6 +4940,8 @@ function switchAdminTab(tab) {
     adminRenderDesigRates();
   } else if (tab === 'data') {
     adminCheckMonthData();
+  } else if (tab === 'shift') {
+    if (window.AdminShift) AdminShift.show();
   } else if (tab === 'team') {
     renderAdminTeamManager();
   } else if (tab === 'notices') {
@@ -5948,7 +5952,7 @@ const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
 if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
 if (segBar) segBar.classList.toggle('has-exec', inc);
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
 });
@@ -6562,7 +6566,7 @@ if (incAreaRow) incAreaRow.style.display = isPriv ? 'flex' : 'none';
 const execVsCard = document.getElementById('vsExecShortcutSection');
 if (execVsCard) execVsCard.style.display = isPriv ? 'block' : 'none';
 // Update Ranking Hub In-Charge items visibility
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = isPriv ? '' : 'none';
 });

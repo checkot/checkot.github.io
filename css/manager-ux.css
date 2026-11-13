@@ -329,3 +329,14 @@ body.incharge-mode-active #vsExportTarget .compare-table .vs-money-row,
 body.incharge-mode-active #vsExportTarget .compare-table tr.total-row {
   display: none !important;
 }
+
+
+/* ===== Early Exit / Gate Pass (In-Charge & Admin only) ===== */
+.icc-row.icc-early-row {
+  border-left: 3.5px solid #b45309 !important;
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.06) 0%, rgba(255, 255, 255, 0) 100%) !important;
+}
+.icc-row.icc-early-row .icc-val-main { color: #b45309 !important; font-weight: 900 !important; }
+#incActionCenter .lb-issues-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 760px) { #incActionCenter .lb-issues-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.lb-issue-tile.early-hub .lb-issue-ico { filter: none; }

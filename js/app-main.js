@@ -2188,6 +2188,7 @@ const reqArr = Array.isArray(e.requisitionProblems) && e.requisitionProblems.len
   ? e.requisitionProblems
   : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
 const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
+const eeArr = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(e) : [];
 
 if (!cur) {
 map.set(empKey, {
@@ -2208,6 +2209,7 @@ generalAbsentCount: absArr.length,
 absentByMonth: absArr.length > 0 ? [{ month: mStr, label: mShortLbl, count: absArr.length, dates: [...absShortArr] }] : [],
 requisitionProblems: [...reqArr],
 requisitionProblemCount: reqArr.length,
+earlyExits: [...eeArr],
 _sumPresentDays: st.presentDaysCount || 0,
 _sumNightRestDays: st.nightRestDays || 0,
 _sumInMins: (st.avgInMins != null ? st.avgInMins : 480)
@@ -2234,6 +2236,8 @@ if (absArr.length > 0) {
 if (!Array.isArray(cur.requisitionProblems)) cur.requisitionProblems = [];
 cur.requisitionProblems.push(...reqArr);
 cur.requisitionProblemCount = cur.requisitionProblems.length;
+if (!Array.isArray(cur.earlyExits)) cur.earlyExits = [];
+cur.earlyExits.push(...eeArr);
 cur._sumPresentDays = (cur._sumPresentDays || 0) + (st.presentDaysCount || 0);
 cur._sumNightRestDays = (cur._sumNightRestDays || 0) + (st.nightRestDays || 0);
 cur._sumInMins = (cur._sumInMins || 0) + (st.avgInMins != null ? st.avgInMins : 480);
@@ -3064,6 +3068,12 @@ f.sortedByAvgInOut = [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) 
 return f.sortedByAvgInOut;
 }
 if (crit === 'punch') return f.sortedByPunch || [];
+if (crit === 'earlyExit') {
+  // Private to In-Charge / Admin. Rebuilt every time so edited shift rules apply immediately.
+  if (!(typeof isEarlyExitAllowedView === 'function' && isEarlyExitAllowedView())) return [];
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => getEarlyExitCount(e) > 0).sort((a,b) => (getEarlyExitCount(b) - getEarlyExitCount(a)) || (String(a.name || '').localeCompare(String(b.name || ''))));
+}
 if (crit === 'absent') {
   if (Array.isArray(f.sortedByAbsent)) return f.sortedByAbsent;
   const mStr = (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
@@ -3103,6 +3113,7 @@ if (crit === 'absent') {
   const c = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0;
   return `${c}d`;
 }
+if (crit === 'earlyExit') return `${typeof getEarlyExitCount === 'function' ? getEarlyExitCount(e) : 0}d`;
 return `${getPunchProblemCount(e)}d miss`;
 }
 const ICC_RENDER_BATCH_SIZE = 25;
@@ -3133,7 +3144,8 @@ const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
 const isReqCrit = activeIccCriterion === 'requisition';
 const isAbsCrit = activeIccCriterion === 'absent';
-const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (rk <= 3 ? `icc-rank-${rk}` : '')));
+const isEarlyCrit = activeIccCriterion === 'earlyExit';
+const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (isEarlyCrit ? 'icc-early-row' : (rk <= 3 ? `icc-rank-${rk}` : ''))));
 let absMetaUnderName = '';
 const isMultiTime = (typeof currentLbTimeMode !== 'undefined' && currentLbTimeMode !== 'monthly') || Boolean(e && (e.isMultiMonth || (e.monthsCount && e.monthsCount > 1)));
 if (isAbsCrit) {
@@ -3169,6 +3181,14 @@ if (isReqCrit) {
     reqMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(pDates)}</div>`;
   }
 }
+let earlyMetaUnderName = '';
+if (isEarlyCrit) {
+  const exits = Array.isArray(e.earlyExits) ? e.earlyExits : (typeof computeEmpEarlyExits === 'function' ? computeEmpEarlyExits(e) : []);
+  if (exits.length > 0) {
+    const short = x => { const m1 = String(x.date).match(/^(\d{1,2})-([A-Za-z]{3})/); return (m1 ? m1[1] + ' ' + m1[2][0].toUpperCase() + m1[2].slice(1).toLowerCase() : x.date) + ' ' + (x.out || ''); };
+    earlyMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#b45309;margin-top:2px;">🚪 ${esc(exits.slice(0, 4).map(short).join(' • '))}${exits.length > 4 ? ' +' + (exits.length - 4) + ' more' : ''}</div>`;
+  }
+}
 const desig = getDesignation(e);
 const empCats = Array.isArray(e.customCats) ? e.customCats : (getEmpMeta(e.id).cats || []);
 const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</span>`).join('');
@@ -3176,6 +3196,7 @@ let detailsBtnText = 'Show Details →';
 if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
 else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
 else if (activeIccCriterion === 'requisition') detailsBtnText = 'Req Details →';
+else if (activeIccCriterion === 'earlyExit') detailsBtnText = 'Exit Details →';
 else if (activeIccCriterion === 'ot' || activeIccCriterion === 'lessOt') detailsBtnText = isMultiTime ? 'OT by Month →' : 'OT Details →';
 else if (activeIccCriterion === 'duty' || activeIccCriterion === 'lessDuty' || activeIccCriterion === 'avgDuty') detailsBtnText = isMultiTime ? 'Duty by Month →' : 'Duty Details →';
 else if (activeIccCriterion === 'earned') detailsBtnText = isMultiTime ? 'Earnings by Month →' : 'Earning Details →';
@@ -3193,7 +3214,7 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${e
 <div class="icc-avatar">${esc(initials)}</div>
 <div class="icc-emp-text">
 <div class="icc-emp-name">${esc(e.name || e.id)}${isMine ? ' (You)' : ''}${catBadgesHtml}</div>
-<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}${absMetaUnderName}
+<div class="icc-emp-sub">${esc(e.id)} • ${esc(areaShort(e.area))}${desig ? ' • ' + esc(desig) : ''}</div>${reqMetaUnderName}${absMetaUnderName}${earlyMetaUnderName}
 </div>
 ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
@@ -3388,7 +3409,7 @@ if (incAreaRow) incAreaRow.style.display = isPriv ? 'flex' : 'none';
 const execVsCard = document.getElementById('vsExecShortcutSection');
 if (execVsCard) execVsCard.style.display = isPriv ? 'block' : 'none';
 // Update Ranking Hub In-Charge items visibility
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = isPriv ? '' : 'none';
 });
@@ -5033,6 +5054,7 @@ async function renderInchargeHomeOverview() {
     setT('incIssPunch', _fmt(_cnt(getPunchProblemCount)));
     setT('incIssAbsent', _fmt(_cnt(typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount : null)));
     setT('incIssReq', _fmt(_cnt(getRequisitionProblemCount)));
+    setT('incIssEarly', _fmt(_cnt(typeof getEarlyExitCount === 'function' ? getEarlyExitCount : null)));
   } catch (_e) { /* Action Center counts are best-effort */ }
 
   renderInchargeHomeLeavesList();

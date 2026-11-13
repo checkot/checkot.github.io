@@ -314,7 +314,7 @@ const execBtn = document.getElementById('iccAreaExecBtn');
 const segBar = document.getElementById('iccAreaSegBar');
 if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
 if (segBar) segBar.classList.toggle('has-exec', inc);
-['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
+['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut', 'iccCritTabEarlyExit'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
 });
@@ -1147,6 +1147,7 @@ avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF',
 requisition: 'OT Requisition Missing RPPF',
+earlyExit: 'Early Exit / Gate Pass RPPF',
 absent: 'Highest Absent (General Days) RPPF'
 };
 const colHeaders = {
@@ -1163,6 +1164,7 @@ avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In',
 punch: 'Missing',
 requisition: 'Missing OT',
+earlyExit: 'Early Exits',
 absent: 'Absent Days'
 };
 const titleEl = document.getElementById('iccDrillTitle');
@@ -1183,7 +1185,7 @@ const sRow = document.getElementById('iccSearchRowWrap');
 if (waBtn) waBtn.style.display = activeIccCriterion === 'punch' ? 'inline-flex' : 'none';
 if (absBtn) absBtn.style.display = activeIccCriterion === 'absent' ? 'inline-flex' : 'none';
 if (reqBtn) reqBtn.style.display = activeIccCriterion === 'requisition' ? 'inline-flex' : 'none';
-if (sRow && (activeIccCriterion === 'punch' || activeIccCriterion === 'absent' || activeIccCriterion === 'requisition')) sRow.style.display = 'flex';
+if (sRow && (activeIccCriterion === 'punch' || activeIccCriterion === 'absent' || activeIccCriterion === 'requisition' || activeIccCriterion === 'earlyExit')) sRow.style.display = 'flex';
 const curArea = document.getElementById('areaFilter')?.value || 'all';
 document.querySelectorAll('.icc-area-btn').forEach(btn => {
 btn.classList.toggle('active', btn.getAttribute('data-icc-area') === curArea);
@@ -1272,6 +1274,10 @@ body.innerHTML = firstBatch.map(e => buildIccRowHtml(e, myId, adminActive)).join
 
 const _prevOpenRankDrillDown = openRankDrillDown;
 openRankDrillDown = function(criterion) {
+  // Early Exit / Gate Pass is private: In-Charge and Admin only
+  if (criterion === 'earlyExit' && !(typeof isEarlyExitAllowedView === 'function' && isEarlyExitAllowedView())) {
+    criterion = 'duty';
+  }
   if (getAppMode() === 'incharge' && criterion === 'earned') {
     criterion = 'duty';
   }

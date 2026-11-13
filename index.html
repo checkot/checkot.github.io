@@ -48,7 +48,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/components.css?v=20261109compact">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/pages.css?v=20261109compact2">
-  <link rel="stylesheet" href="css/manager-ux.css?v=20261105nt">
+  <link rel="stylesheet" href="css/manager-ux.css?v=20261113ee1">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
   <link rel="stylesheet" href="css/fit.css?v=20261112o2">
@@ -441,6 +441,7 @@ document.documentElement.setAttribute('data-theme', t);
       <button type="button" class="lb-issue-tile punch-hub" onclick="openRankDrillDown('punch'); switchPage('leaderboard');"><span class="lb-issue-ico">!</span><span class="lb-issue-txt"><span class="lb-issue-title">Punch Problem</span><span class="lb-issue-sub">Missing In/Out</span></span><span class="lb-issue-val" id="incIssPunch">—</span></button>
       <button type="button" class="lb-issue-tile absent-hub" onclick="openRankDrillDown('absent'); switchPage('leaderboard');"><span class="lb-issue-ico">🔴</span><span class="lb-issue-txt"><span class="lb-issue-title">Highest Absent</span><span class="lb-issue-sub">≥1 absent day</span></span><span class="lb-issue-val" id="incIssAbsent">—</span></button>
       <button type="button" class="lb-issue-tile req-hub" onclick="openRankDrillDown('requisition'); switchPage('leaderboard');"><span class="lb-issue-ico">⚠️</span><span class="lb-issue-txt"><span class="lb-issue-title">Requisition Problem</span><span class="lb-issue-sub">Worked, 0 OT</span></span><span class="lb-issue-val" id="incIssReq">—</span></button>
+      <button type="button" class="lb-issue-tile early-hub" onclick="openRankDrillDown('earlyExit'); switchPage('leaderboard');"><span class="lb-issue-ico">🚪</span><span class="lb-issue-txt"><span class="lb-issue-title">Early Exit / Gate Pass</span><span class="lb-issue-sub">Left before shift end</span></span><span class="lb-issue-val" id="incIssEarly">—</span></button>
     </div>
   </div>
 
@@ -1346,6 +1347,7 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="absent" onclick="openRankDrillDown('absent')">Absent</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">Req Fix</button>
+<button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabEarlyExit" data-icc-crit="earlyExit" style="display:none;" onclick="openRankDrillDown('earlyExit')">Early Exit</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">AVG IN</button>
 </div>
@@ -1905,6 +1907,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/core/access-crypto.js?v=20261111ac"></script>
   <script src="js/core/access-control.js?v=20261111ac"></script>
   <script src="js/calculations/rates.js?v=20261106b"></script>
+  <script src="js/calculations/early-exit.js?v=20261113ee1"></script>
   <script src="js/calculations/ranking.js?v=20261111ac"></script>
   <script src="js/components/router.js"></script>
   <script src="js/components/loader.js"></script>
@@ -1918,9 +1921,9 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
-  <script src="js/pages/leaderboard.js?v=20261113fm2"></script>
-  <script src="js/app-main.js?v=20261113sc2"></script>
-  <script src="js/components/rank-details.js?v=20261105nt"></script>
+  <script src="js/pages/leaderboard.js?v=20261113ee1"></script>
+  <script src="js/app-main.js?v=20261113ee1"></script>
+  <script src="js/components/rank-details.js?v=20261113ee1"></script>
   <script src="js/patches/manager-ux.js?v=20261112r1"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>

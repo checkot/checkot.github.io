@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-13T00:00:00.000Z",
+  "default": {
+    "start": "08:00",
+    "end": "16:30",
+    "graceMin": 30
+  },
+  "allowedShiftCodes": [
+    "G"
+  ],
+  "periods": [
+    {
+      "id": "ramadan-2026",
+      "label": "Ramadan 2026",
+      "from": "2026-02-19",
+      "to": "2026-03-19",
+      "start": "08:00",
+      "end": "14:15",
+      "graceMin": 30,
+      "depts": []
+    }
+  ]
+}

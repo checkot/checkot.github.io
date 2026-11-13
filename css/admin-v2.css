@@ -388,3 +388,15 @@ body[data-page="admin"] { padding: 0 0 48px 0 !important; }
   .ax-nav { margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; }
   .ax-card { padding: 14px 12px; }
 }
+
+
+/* ===== Shift Hours pane ===== */
+.admsh-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; padding: 10px 0; border-top: 1px solid var(--border); }
+.admsh-row:first-of-type { border-top: 0; }
+.admsh-f { display: flex; flex-direction: column; gap: 4px; min-width: 120px; flex: 1 1 130px; }
+.admsh-f--wide { flex: 2 1 200px; }
+.admsh-f--sm { flex: 0 1 110px; min-width: 90px; }
+.admsh-f > span { font-size: var(--fs-sm); font-weight: 700; color: var(--text-2); }
+.admsh-f input, .admsh-f select { min-height: 40px; }
+.admsh-sug { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.admsh-sug:first-child { border-top: 0; }

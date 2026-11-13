@@ -7,7 +7,7 @@
    openIccContextModal(empId, crit, month)
      crit  : ranking criterion the user was looking at
              duty | ot | earned | plain | lessDuty | lessOt | punch | absent |
-             requisition | avgDuty | avgInOut | night | otDays | holiday
+             requisition | earlyExit | avgDuty | avgInOut | night | otDays | holiday
      month : optional 'YYYY-MM' (single-month ranking). Ignored in multi-month
              modes, where the loaded months of the ranking are used.
 
@@ -104,12 +104,13 @@
     });
     return out;
   }
+  function fmtShort(mins) { mins = Math.round(num(mins)); var h = Math.floor(mins / 60), m = mins % 60; return (h ? h + 'h ' : '') + (m || !h ? m + 'm' : '').trim(); }
   function hhmmToMins(s) { var m = String(s || '').match(/^(\d{1,2}):(\d{2})/); return m ? (parseInt(m[1], 10) * 60 + parseInt(m[2], 10)) : null; }
   function minsToHHMM(v) { if (v == null) return '—'; var n = ((Math.round(v) % 1440) + 1440) % 1440; return String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0'); }
 
   function analyzeMonth(mStr, rec) {
     var A = { month: mStr, label: monthLabel(mStr), has: !!rec, rec: rec || null,
-      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [],
+      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [], early: [],
       duty: 0, ot: 0, earned: 0, otAmt: 0, holAmt: 0, nightAmt: 0, avgIn: null, earliestIn: null, latestIn: null, avgPerDay: 0 };
     if (!rec) return A;
     var days = parseDaily(rec);
@@ -143,6 +144,8 @@
       A.req = (Array.isArray(rec.requisitionProblems) && rec.requisitionProblems.length) ? rec.requisitionProblems
         : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(rec) : []);
     } catch (e) { A.req = []; }
+    // early exit / gate pass (In-Charge & Admin only; rules come from shift-rules.json)
+    try { A.early = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(rec) : []; } catch (e) { A.early = []; }
     // in / out averages
     var ins = [], outs = [];
     A.worked.forEach(function (d) {
@@ -215,6 +218,21 @@
       total: function (as) { return grid([kpi('Total Pending', sum(as, 'req', true) + 'd', 'var(--warning)', true), kpi('Months Affected', as.filter(function (a) { return a.req.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.req.length; }, 'd'))]); },
       single: function (A) { return grid([kpi('Pending Days', A.req.length + 'd', 'var(--warning)', true), kpi('Overtime (paid)', r1(A.ot) + 'h'), kpi('Duty', r1(A.duty) + 'h')]); },
       listTitle: function (A) { return 'Pending requisition dates (' + A.req.length + ' days)'; }
+    },
+    earlyExit: {
+      icon: '🚪', cls: 'req', color: 'var(--warning)', title: 'Early Exit / Gate Pass', bannerSub: 'Regular days when the Out punch is before the shift end (Admin → Shift Hours decides the shift end for each date)',
+      metric: function (A) { return A.early.length; }, fmt: function (v) { return v + 'd'; },
+      body: function (A) {
+        return A.early.length ? table(['Date', 'Day', 'In – Out', 'Shift end', 'Left early by'], A.early.map(function (x) {
+          return '<tr><td class="b">' + E(x.date) + '</td><td class="m">' + E(x.day) + '</td><td>' + E(x.in) + ' – <b>' + E(x.out) + '</b></td><td class="m">' + E(x.shiftEnd) + (x.period ? ' <span class="icc-ctx-tag t-bad" style="font-size:9px;">' + E(x.period) + '</span>' : '') + '</td><td class="warn b">' + E(fmtShort(x.shortMin)) + '</td></tr>';
+        })) : empty('✓ No early exit this period');
+      },
+      total: function (as) { return grid([kpi('Total Early Exits', sum(as, 'early', true) + 'd', 'var(--warning)', true), kpi('Months Affected', as.filter(function (a) { return a.early.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.early.length; }, 'd'))]); },
+      single: function (A) {
+        var mx = A.early.reduce(function (m, x) { return Math.max(m, x.shortMin); }, 0);
+        return grid([kpi('Early Exits', A.early.length + 'd', 'var(--warning)', true), kpi('Worked Days', A.worked.length + 'd'), kpi('Longest Short', A.early.length ? fmtShort(mx) : '—'), kpi('Duty', r1(A.duty) + 'h')]);
+      },
+      listTitle: function (A) { return 'Early exit dates (' + A.early.length + ' days)'; }
     },
     ot: {
       icon: '⏱️', cls: 'duty', color: 'var(--brand-text)', title: 'Overtime', bannerSub: 'Days on which overtime was recorded',
@@ -388,6 +406,7 @@
       kpi('Duty', r1(duty) + 'h'), kpi('Overtime', r1(ot) + 'h'), kpi('OT Days', (multi ? sumLen(As, 'otDayList') : (As[0] ? As[0].otDayList.length : 0)) + 'd'), kpi('Holiday', num(emp.holidayCount) + 'd'), kpi('Night', num(emp.nightCount) + 'n'),
       kpi('4:30pm', num(emp.plainDaysCount) + 'd'), kpi('Absent', abs + 'd', abs > 0 ? 'var(--danger)' : ''), kpi('Punch Miss', pun + 'd', pun > 0 ? 'var(--warning)' : '')
     ];
+    if (incMode) { var ee = multi ? sumLen(As, 'early') : (As[0] ? As[0].early.length : 0); items.push(kpi('Early Exit', ee + 'd', ee > 0 ? 'var(--warning)' : '')); }
     if (!incMode) items.push(kpi('Earned', taka(earned)));
     return secTitle(multi ? 'Period totals — other indicators' : 'Other indicators this month') + '<div class="icc-ctx-grid small">' + items.join('') + '</div>';
   }
@@ -455,6 +474,7 @@
     var inc = isIncharge();
     var crit = CRIT_ALIAS[optCrit] || optCrit || CRIT_ALIAS[activeCrit()] || activeCrit();
     if (!TOPICS[crit]) crit = 'duty';
+    if (crit === 'earlyExit' && !(typeof isEarlyExitAllowedView === 'function' && isEarlyExitAllowedView())) crit = 'duty'; // private to In-Charge / Admin
     if (TOPICS[crit].money && inc) crit = 'duty'; // in-charge mode never shows money
     var topic = TOPICS[crit];
 
