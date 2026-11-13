@@ -3291,21 +3291,20 @@ document.addEventListener('touchend', finishSwipe, { passive: true });
 document.addEventListener('touchcancel', finishSwipe, { passive: true });
 
 // Handle scroll on window and side-drawer #page-leaderboard + vertical touch-scroll inside #iccRankDrillView
-// Filter block collapse/expand changes page height. Without guards that height change moves the
-// scroll position, which re-triggers the toggle -> visible flicker (worst on short lists).
-let _filtersLockUntil = 0;
-const FILTER_COLLAPSE_ROOM = 240 + 120;   // filter block height + a safe extra distance
+// The whole top stack (title + criteria tabs + month/area/sub-section filters) slides away with a
+// compositor-only transform. Nothing in the page layout changes, so the scroll position never jumps
+// and there is no flicker, even on a short list.
 const setDrillFiltersHidden = (drill, hide) => {
 if (!drill) return;
 if (drill.classList.contains('filters-scroll-hidden') === hide) return;
-if (performance.now() < _filtersLockUntil) return;          // let the previous layout change settle
 if (hide) {
-const sc = document.getElementById('page-leaderboard');
-const room = sc ? (sc.scrollHeight - sc.clientHeight) : 0;
-if (room < FILTER_COLLAPSE_ROOM) return;                      // short list: page can't absorb the collapse
+const stack = document.getElementById('iccStickyStack');
+const keep = document.getElementById('iccMyPosBanner');
+const head = (keep && keep.style.display !== 'none') ? keep : stack && stack.querySelector('.icc-table-head');
+if (!stack || !head) return;
+drill.style.setProperty('--icc-hide', '-' + Math.max(0, head.offsetTop) + 'px');   // keep column titles visible
 }
 drill.classList.toggle('filters-scroll-hidden', hide);
-_filtersLockUntil = performance.now() + 450;
 };
 const handleScrollDelta = (curY, lastY) => {
 const delta = curY - lastY;
@@ -3313,10 +3312,10 @@ const drill = document.getElementById('iccRankDrillView');
 if (curY <= 24) {
 document.body.classList.remove('nav-scroll-hidden');
 setDrillFiltersHidden(drill, false);
-} else if (delta < -12) {
+} else if (delta < -6) {
 document.body.classList.remove('nav-scroll-hidden');
 setDrillFiltersHidden(drill, false);
-} else if (delta > 8 && curY > 36) {
+} else if (delta > 6 && curY > 60) {
 if (drill && drill.classList.contains('active')) setDrillFiltersHidden(drill, true);
 if (curY > 75 && !currentSideDrawerPage) {
 document.body.classList.add('nav-scroll-hidden');

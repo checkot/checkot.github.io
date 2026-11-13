@@ -85,4 +85,23 @@
 .icc-list-body { will-change: auto !important; }
 .icc-list-body.swiping { will-change: transform, opacity !important; }
 #page-leaderboard { overscroll-behavior-y: contain; }
-.icc-collapsible-filters { contain: layout paint; }
+
+/* Whole top stack of the full ranking view: sticky, and hides by sliding up (transform only = no layout shift) */
+.icc-sticky-stack {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.icc-sticky-stack .icc-frozen-header { position: relative; top: auto; box-shadow: none; }
+.icc-rank-view.filters-scroll-hidden .icc-sticky-stack { transform: translateY(var(--icc-hide, -160px)); }
+/* the old max-height collapse is replaced by the slide above */
+.icc-rank-view.filters-scroll-hidden .icc-collapsible-filters {
+  max-height: 240px !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+@media (prefers-reduced-motion: reduce) { .icc-sticky-stack { transition: none; } }
