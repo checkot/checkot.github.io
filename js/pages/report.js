@@ -26,6 +26,10 @@ function rptIsDayClosed(y, m, d) {
 }
 
 function _rptRows(ctx) {
+if (typeof computeEmpMonthAttendance === 'function' && ctx && ctx.emp) {
+  const attRes = computeEmpMonthAttendance(ctx.emp, ctx.month, ctx);
+  return { rows: attRes.rows, y: attRes.y, m: attRes.m, summary: attRes };
+}
 const e = ctx.emp, daily = Array.isArray(e.daily) ? e.daily : [];
 const earlyExitMap = new Map();
 try {

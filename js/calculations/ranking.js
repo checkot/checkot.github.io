@@ -239,7 +239,18 @@ function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
     || (typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && currentLeaderboardResult.month)
     || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
 
-  // Dynamic live calculation using _rptRows
+  // Dynamic live calculation using shared computeEmpMonthAttendance / _rptRows
+  if (typeof computeEmpMonthAttendance === 'function') {
+    const att = computeEmpMonthAttendance(e, mStr, { prevNight: prevNightSetOrBool });
+    e.generalAbsentDays = att.generalAbsentDays;
+    e.generalAbsentShortDates = att.generalAbsentShortDates;
+    e.generalAbsentCount = att.generalAbsentCount;
+    e.approvedLeaveDays = att.approvedLeaveDays;
+    e.approvedLeaveCount = att.approvedLeaveCount;
+    e._computedMonth = mStr;
+    e._computedPrevNight = prevNightSetOrBool;
+    return { dates: att.generalAbsentDays, shortDates: att.generalAbsentShortDates, count: att.generalAbsentCount };
+  }
   if (typeof _rptRows === 'function') {
     const { rows, y, m } = _rptRows({ emp: e, month: mStr, prevNight: prevNightSetOrBool });
     const mons = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];

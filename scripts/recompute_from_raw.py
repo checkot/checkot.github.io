@@ -47,6 +47,11 @@ def main(argv):
         except SystemExit as e:
             print(f"[ERROR] {m} failed (exit {e.code}).")
             rc = 1
+    try:
+        import build_emp_history
+        build_emp_history.build_all_emp_histories()
+    except Exception as emp_err:
+        print(f"[WARN] Could not rebuild per-employee history files: {emp_err}")
     return rc
 
 

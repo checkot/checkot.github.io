@@ -1,7 +1,7 @@
 /* ==========================================================================
    ROUTER.JS - Hash Router & Browser History Controller for RPPF PWA
-   Routes: #/search, #/report, #/vs, #/leaderboard, #/notices, #/more,
-           #/team, #/history, #/settings
+   Routes: #/search, #/report, #/profile, #/vs, #/leaderboard, #/notices,
+           #/more, #/team, #/history, #/settings, #/assessment
    ========================================================================== */
 
 (function (root, factory) {
@@ -12,7 +12,7 @@
   }
 })(typeof window !== 'undefined' ? window : this, function () {
 
-  const VALID_PAGES = ['search', 'report', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings', 'assessment'];
+  const VALID_PAGES = ['search', 'report', 'profile', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings', 'assessment'];
   let _isNavigating = false;
   let _lastExitBackTs = 0;
   let _hasInitialized = false;
@@ -60,6 +60,13 @@
       }
       return '#/report';
     }
+    if (p === 'profile') {
+      const q = [];
+      if (params && params.id) q.push(`id=${encodeURIComponent(params.id)}`);
+      if (params && params.scope) q.push(`scope=${encodeURIComponent(params.scope)}`);
+      if (params && params.month) q.push(`month=${encodeURIComponent(params.month)}`);
+      return q.length > 0 ? `#/profile?${q.join('&')}` : '#/profile';
+    }
     return `#/${p}`;
   }
 
@@ -87,6 +94,16 @@
 
     // Handle modals / drill-downs if any were open
     closeAnyOpenModal();
+
+    if (page === 'profile') {
+      if (typeof window !== 'undefined') {
+        window._profileRouteParams = params || {};
+      }
+      if (typeof switchPage === 'function') {
+        switchPage('profile', true, true);
+      }
+      return;
+    }
 
     if (page === 'report') {
       if (params && params.id) { _isDeepLink = true; }
