@@ -6,6 +6,10 @@ on:
       - 'deploy*.zip'
       - 'deploy*.ZIP'
 
+concurrency:
+  group: deploy-zip
+  cancel-in-progress: false
+
 jobs:
   extract-and-deploy:
     runs-on: ubuntu-latest
@@ -54,6 +58,17 @@ jobs:
           echo "Removing uploaded zip file from git index and workspace..."
           git rm -f --ignore-unmatch "deploy*.zip" "deploy*.ZIP" "$ZIP_FILE"
           rm -rf /tmp/deploy_staging
+
+      - name: Write deploy stamp (live check for Admin tracker)
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          UPLOAD_SHA: ${{ github.sha }}
+        run: |
+          JOB_ID=$(printf '%s' "$COMMIT_MSG" | grep -o '\[job:[A-Za-z0-9_-]*\]' | head -n 1 | sed 's/^\[job://; s/\]$//' | tr -cd 'A-Za-z0-9_-')
+          if [ -z "$JOB_ID" ]; then JOB_ID=$(printf '%s' "$UPLOAD_SHA" | tr -cd 'A-Za-z0-9_-'); fi
+          ZIP_NAME=$(printf '%s' "$COMMIT_MSG" | head -n 1 | sed -n 's/.*(\([^)]*\)).*/\1/p' | tr -cd 'A-Za-z0-9._ -')
+          printf '{"id":"%s","zip":"%s","uploadSha":"%s","deployedAt":"%s"}\n' "$JOB_ID" "$ZIP_NAME" "$UPLOAD_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > deploy-info.json
+          cat deploy-info.json
 
       - name: Commit and push changes
         run: |
