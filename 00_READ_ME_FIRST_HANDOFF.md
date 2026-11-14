@@ -1,30 +1,38 @@
-# NEXT AI INSTRUCTIONS (পরবর্তী AI-এর জন্য নির্দেশনা)
-
-- **তুমি একটি অসম্পূর্ণ কাজ গ্রহণ করছ। আগের AI-এর লিমিট শেষ হয়ে গেছে।**
-- **কাজের লক্ষ্য (এক অনুচ্ছেদে):** Renata PLC (RPPF)-এর Overtime & Allowance ক্যালকুলেটর PWA (`checkot.github.io`)-তে একটি নতুন মোবাইল-ফার্স্ট **"Employee Profile" ("Me")** পেজ (`#/profile`) যুক্ত করা এবং মোবাইল বটম নেভিগেশন বার ও ডেক্সটপ টপ নেভিগেশন সংস্কার করা (`Home | Report | Me | Rank | More`, এবং `1V1 (VS)` পেজটিকে `More` ড্রয়ারে সরিয়ে নেওয়া)। এই পেজে কর্মীর সেভ করা আইডি (`getPreferredId()`) অনুযায়ী চলতি মাস, গত মাস, বা পুরো বছরের (২০২৬) সামগ্রিক ওভারটাইম ঘণ্টা, আয় (টাকা হাইড করার বাটনসহ), উপস্থিতি ও অনুপস্থিতি/ম্যাটার্নিটি লিভ (Report পেজের সাথে ১০০% অভিন্ন পিওর ফাংশন ব্যবহার করে), নাইট ডিউটি, হলিডে ডিউটি, গড় পাঞ্চ ইন/আউট টাইম, এবং পে-রোল পূর্ববর্তী Requisition/Night/Punch সমস্যার তালিকা ও এক-ট্যাপে ERP টিমকে WhatsApp রিপোর্ট পাঠানোর সুবিধা থাকবে। মোবাইল ডেটা বাঁচাতে প্রতি কর্মীর জন্য হালকা প্রি-ইনডেক্সড হিস্ট্রি ফাইল (`data/emp/<DEPT>/<ID>.json`) ও প্রগ্রেসিভ লোডিং ফলব্যাক থাকবে।
-- **প্রথমে এই ফাইল পুরো পড়ো। পুরো রেপো আবার পড়ো না। শুধু 'পরের ধাপে পড়ার ফাইল' তালিকার ফাইলগুলো দেখো।**
-- **কাজ শুরুর আগে এক-দুই লাইনে বলো তুমি কী বুঝেছ ও কোথা থেকে শুরু করছ, তারপর সরাসরি কাজ শুরু করো। অপ্রয়োজনীয় প্রশ্ন করো না। সত্যিই আটকে গেলে একটি নির্দিষ্ট প্রশ্ন করো।**
-- **আগের সিদ্ধান্ত ও শর্ত বদলাবে না।**
-- **তুমিও এই ফাইল আপডেট করতে থাকবে, কারণ তোমারও লিমিট শেষ হতে পারে।**
+# 00_READ_ME_FIRST_HANDOFF.md
+> সর্বশেষ আপডেট: 2026-11-14 · **সব Part (Stage 0 + 1–7) সম্পন্ন** · চূড়ান্ত প্যাকেজ P7 ডেলিভারড · কোনো কোড-কাজ বাকি নেই; শুধু §৫-এর "owner-এর হাতে বাকি" তালিকা
 
 ---
 
-## ১. লক্ষ্য ও চূড়ান্ত আউটপুট (কী, কোন ফরম্যাটে, কোন ভাষায়)
+# NEXT AI INSTRUCTIONS (পরবর্তী AI-এর জন্য — এটি আগে পুরো পড়ো)
 
-- **কী তৈরি হচ্ছে:**
-  1. নতুন মোবাইল বটম নেভিগেশন (`Home | Report | Me | Rank | More`) এবং `VS (1v1)`-কে `More` মেনুতে স্থানান্তর।
-  2. নতুন রুট `#/profile` (`PERMANENT_PAGES` ও `VALID_PAGES`-এ `profile` যুক্ত)।
-  3. শেয়ার্ড অ্যাটেনডেন্স ক্যালকুলেশন মডিউল (`js/calculations/attendance.js`) যা `js/pages/report.js`, `js/calculations/ranking.js`, এবং নতুন প্রোফাইল পেজে একই সাথে ব্যবহৃত হবে।
-  4. পিওর প্রোফাইল অ্যাগ্রিগেশন মডিউল (`js/calculations/profile.js`), প্রোফাইল পেজ রেন্ডারার (`js/pages/profile.js`), এবং স্টাইলশিট (`css/profile.css`)।
-  5. কর্মীভিত্তিক হালকা হিস্ট্রি JSON জেনারেটর (`scripts/build_emp_history.py` এবং `scripts/to_json.py` ও `scripts/recompute_from_raw.py`-এ ইন্টিগ্রেশন + GitHub Actions workflow আপডেট) এবং ক্লায়েন্ট-সাইড প্রগ্রেসিভ লোডিং ফলব্যাক (Option A + Option B)।
-  6. প্রোফাইল পেজের সেকশন A থেকে I পর্যন্ত সম্পূর্ণ ফিচার ইমপ্লিমেন্টেশন।
-  7. Node.js ইউনিট টেস্ট (`tests/test_profile_calc.js`), ব্রাউজার অটোমেশন স্ক্রিনশট (`docs/screens/`), সংখ্যার ক্রস-চেক ভেরিফিকেশন, `sw.js` আপডেট, `README.md` আপডেট, এবং `PROFILE_NOTES.md`।
-- **ফরম্যাট:** পরিবর্তিত ও নতুন ফাইলগুলো সরাসরি প্রজেক্ট ফোল্ডারে এবং ডাউনলোডযোগ্য আউটপুট হিসেবে (`00_READ_ME_FIRST_HANDOFF.md`, `PROFILE_NOTES.md`, ও সম্পূর্ণ আপডেটেড রেপো জিপ)।
-- **ভাষা:** হ্যান্ডঅফ ডকুমেন্টেশন বাংলায়; অ্যাপের UI লেবেলগুলো বর্তমান অ্যাপের কনভেনশন অনুযায়ী ইংরেজি + বাংলা (Hind Siliguri ফন্ট)।
+তুমি একটি **অসম্পূর্ণ কাজ গ্রহণ করছ। আগের AI-এর লিমিট শেষ হয়ে গেছে।**
+
+**কাজের লক্ষ্য (এক অনুচ্ছেদে):** `checkot.github.io` (RPPF Overtime PWA — vanilla HTML/CSS/JS, GitHub Pages, hash router, ডেটা `data/YYYY-MM.json`) অ্যাপে একটি নতুন "Me" (Employee Profile) পেজ যোগ করা, যেখানে কর্মী নিজের বছর/মাসভিত্তিক OT, রাত, ছুটির ডিউটি, Absent/Leave, গড় Punch, মাসিক আয় এবং payroll-আগে-চেক-করার সমস্যা (requisition/night/punch) একসাথে দেখবে; একই সাথে মোবাইল bottom-nav বদলে `Home | Report | Me | Rank | More` করা এবং VS (1v1) কে More-এ সরানো। ডেটা লোডিং হবে প্রতি-কর্মী ছোট history ফাইল (Option A) + progressive fallback (Option B) দিয়ে।
+
+**আমার মূল নির্দেশনা:** হুবহু নিচে "২. আমার মূল নির্দেশনা" অংশে আছে (সারাংশ নয়)।
+
+**কাজের নিয়ম:**
+1. প্রথমে এই ফাইল পুরো পড়ো। **পুরো রেপো আবার পড়ো না।** শুধু "৮. পরের ধাপে পড়ার ফাইল" তালিকার ফাইলগুলো দেখো।
+2. কাজ শুরুর আগে এক-দুই লাইনে বলো তুমি কী বুঝেছ ও কোথা থেকে শুরু করছ, তারপর সরাসরি কাজ শুরু করো। অপ্রয়োজনীয় প্রশ্ন করো না। সত্যিই আটকে গেলে **একটি** নির্দিষ্ট প্রশ্ন করো।
+3. **আগের সিদ্ধান্ত ও শর্ত বদলাবে না।**
+4. **তুমিও এই ফাইল আপডেট করতে থাকবে**, কারণ তোমারও লিমিট শেষ হতে পারে। প্রতিটি ধাপের আগে "এখন কী করতে যাচ্ছি" লেখো, শেষ হলেই `[x]` করো। অনেক ধাপ জমিয়ে পরে আপডেট করো না।
+5. **অনুমোদনের জন্য অপেক্ষা করবে না** (owner-এর সর্বশেষ সিদ্ধান্ত)। Stage 0 হয়ে গেছে → সরাসরি পরের অসম্পূর্ণ Part-এ যাও। শুধু কঠিন-ফেরানো-যায়-না এমন সিদ্ধান্ত বা নির্দেশনায় দ্বন্দ্ব হলে একটি নির্দিষ্ট প্রশ্ন করো।
+6. Part-by-part, নিজে নিজে একটার পর একটা। প্রতিটি Part শেষে: (a) এই ফাইল ও প্ল্যান আপডেট, (b) চ্যাটে অগ্রগতি + CHECKPOINT পোস্ট, (c) প্যাকেজ (এই ফাইল + বদলানো সব ফাইল + ছোট টেস্ট রেজাল্ট) আউটপুট ফোল্ডারে সেভ করে ডেলিভার, (d) সাথে সাথে পরের Part শুরু।
+7. চ্যাটে প্রতিটি ধাপের আগে এক লাইন `▶ NOW: ...`, পরে `✔ DONE: ...`। প্রতিটি উত্তরের শেষে **CHECKPOINT** ব্লক (শেষ হয়েছে / বাকি / পরের ধাপ) এবং বর্তমান PLAN checklist (`[ ] / [~] / [x]`) পেস্ট করো।
+8. ফাইলে "উপরে যেমন বলেছি" ধরনের রেফারেন্স লিখো না। সিদ্ধান্ত নিলে/কিছু বদলালে সাথে সাথে লগ করো। অনিশ্চিত বিষয় "অনুমান" হিসেবে চিহ্নিত করো।
+9. কাজের ওয়ার্কিং কপি: `/home/claude/repo/checkot.github.io-main/` (container রিসেট হলে আপলোড করা zip `checkot_github_io-main (36).zip` থেকে আবার unzip করে "৭. বদলানো ফাইলের তালিকা"-র ফাইলগুলো উপরে বসাও)। ডেলিভারি ফোল্ডার: `/mnt/user-data/outputs/`।
 
 ---
 
-## ২. আমার মূল নির্দেশনা (হুবহু)
+# ১. লক্ষ্য ও চূড়ান্ত আউটপুট
+- **কী:** রেপোতে কাজ-করা পরিবর্তন: `profile` পেজ (JS/CSS), nav পরিবর্তন, shared attendance function, per-employee history ফাইল (`data/emp/<DEPT>/<ID>.json`) + backfill script + workflow পরিবর্তন, `sw.js` বাম্প, `README.md` আপডেট, `PROFILE_NOTES.md`, স্ক্রিনশট `docs/screens/`।
+- **ফরম্যাট:** রেপো-ফাইল সম্পূর্ণ আকারে (বা patch) + প্রতি Part-এ ডাউনলোডযোগ্য প্যাকেজ (zip) + এই হ্যান্ডঅফ ফাইল।
+- **ভাষা:** UI লেবেল Bangla+English মিশ্র (অ্যাপের বিদ্যমান স্টাইল), হ্যান্ডঅফ ফাইল Bangla, কোড/কমেন্ট English।
+- **শেষে চূড়ান্ত সারাংশ:** কী বদলেছে, present-% এর সঠিক সূত্র, ডেটা-সাইজ প্রভাব, কী স্কিপ হয়েছে।
+
+---
+
+# ২. আমার মূল নির্দেশনা (হুবহু — owner-এর TASK SPEC)
 
 # TASK: Add an "Employee Profile" ("Me") page to the RPPF Overtime app (checkot.github.io) + fix mobile navigation
 
@@ -137,169 +145,216 @@ Naively fetching every month JSON is 40+ MB on mobile data. Implement this strat
 
 Working changes in the repo (all files listed above), the generated per-employee history files (if Option A), screenshots saved under `docs/screens/`, and a short final summary: what changed, the exact present-% formula, data-size impact, and what you skipped. Make small logical git commits if git is available.
 
----
-
-## ৩. শর্ত ও সিদ্ধান্ত (কী ঠিক হয়েছে, কেন)
-
-1. **মোবাইল বটম নেভ অর্ডার:** মালিকের চূড়ান্ত সিদ্ধান্ত অনুযায়ী বটম নেভের ৫টি ট্যাব হবে `Home | Report | Me | Rank | More`। `Me` থাকবে একদম মাঝখানে (৩য় স্লট), `Report` ২য় স্লটে, `Rank` ৪র্থ স্লটে।
-2. **VS (1v1) পেজ রাউটিং ও হাইলাইটিং:** `vs` এখন `PERMANENT_PAGES` থাকছে কিন্তু বটম নেভে নিজস্ব বাটন না থাকায় `updateNavHighlights()`-এ যখন `currentPermanentPage === 'vs'` হবে, তখন বটম নেভে `More` (`data-nav="more"`) হাইলাইট হবে এবং ডেক্সটপ `.topnav`-এ `VS (1v1)` হাইলাইট হবে। `#page-more`-এ একটি নতুন `more-item` ("VS (1v1) Compare") যুক্ত করা হয়েছে।
-3. **শেয়ার্ড অ্যাটেনডেন্স ইঞ্জিন (`js/calculations/attendance.js`):** `js/pages/report.js`-এর `_rptRows(ctx)` এবং `js/calculations/ranking.js`-এর `computeEmpGeneralAbsents`-কে একীভূত করে `computeEmpMonthAttendance(emp, ymStr, ctx)` তৈরি করা হবে। `_rptRows(ctx)` ভেতরে এই একই ফাংশন কল করবে, ফলে Report পেজ ও Profile পেজে সাধারণ অনুপস্থিতি (General Absent) এবং অনুমোদিত দীর্ঘ ছুটি (Approved Long Leave / Maternity Leave) সবসময় ১০০% এক হবে।
-4. **Present % ফর্মুলা:**
-   - `scheduledWorkingDays`: মাসের ১ তারিখ থেকে `min(lastDayOfMonth, maxDatasetDay)` পর্যন্ত যে দিনগুলো `rptIsDayClosed(y, m, d)` অনুযায়ী ক্লোজড এবং যেগুলো সাপ্তাহিক ছুটি (Thu/Fri), প্ল্যান্ট/সরকারি ছুটি (`isPlantOrGovtHolidayDate`), বা নাইট ডিউটি পরবর্তী বিশ্রাম দিবস (`afterNight`) নয়।
-   - যদি কোনো কর্মী সাপ্তাহিক ছুটি বা সরকারি ছুটির দিনে কাজ করেন (`o` থাকে), সেটি তার মোট উপস্থিত দিন (`totalPresentDays`) এবং ডিউটি আওয়ারে যোগ হবে, কিন্তু নির্ধারিত কার্যদিবসের উপস্থিতি (`presentOnScheduledDays`) হিসাব করা হবে শুধুমাত্র নির্ধারিত সাধারণ কার্যদিবসে উপস্থিতির ওপর, যাতে Present % কখনো ১০০%-এর বেশি না হয়:
-     `presentPct = scheduledWorkingDays > 0 ? Math.round((presentOnScheduledDays / scheduledWorkingDays) * 1000) / 10 : null`।
-   - অনুমোদিত দীর্ঘ ছুটি (`isApprovedLeave`, যেমন Maternity Leave) নির্ধারিত কার্যদিবসের অন্তর্ভুক্ত থাকে এবং সেখানে অনুপস্থিত থাকলে সেটি `approvedLeaveDays` হিসেবে আলাদা দেখায় (এবং `presentOnScheduledDays` কমায়), কিন্তু `generalAbsentDays`-এ যোগ হয় না।
-5. **পার-এমপ্লয়ি হিস্ট্রি ফাইল (`data/emp/<DEPT>/<ID>.json`) + মেটাডেটা:**
-   - `data/YYYY-MM.json`-এ প্রতিটি মাসে প্রায় ৯০০+ কর্মীর সম্পূর্ণ ডেটা থাকে (২–৬.২ মেগাবাইট)। কিন্তু একজন কর্মী যখন `Me` পেজ খোলেন, তার কেবল নিজের ১১–১২ মাসের ডেটা এবং সেকশন গড়/র‍্যাংকিংয়ের জন্য সামান্য সারাংশ দরকার।
-   - আমরা `scripts/build_emp_history.py` তৈরি করব যা প্রতিটি কর্মীর জন্য `data/emp/PR/<ID>.json` এবং `data/emp/QA/<ID>.json` তৈরি করবে। পাশাপাশি মাসভিত্তিক সেকশন গড় ও র‍্যাংকিং দ্রুত দেখানোর জন্য প্রতিটি ফাইলে ওই মাসের `sectionStats` (ঐ কর্মীর সেকশনের গড় OT, গড় ডিউটি, মোট কর্মী সংখ্যা এবং ওই কর্মীর র‍্যাংক পজিশন) প্রি-কম্পিউট করে যুক্ত থাকবে, যাতে র‍্যাংকিং বা সেকশন গড় দেখানোর জন্য ৬ মেগাবাইটের মাসিক ফাইল ডাউনলোড করতে না হয়!
-6. **টাকা লুকানোর বাটন (Hide Amounts Toggle):** `localStorage`-এ `STORAGE_NAMESPACE + 'renata_profile_hide_amt_v1'` কী-তে সংরক্ষিত থাকবে। অন থাকলে সকল টাকার অংক (`৳ ••••`) মাস্ক/ব্লার হবে।
-7. **In-Charge Mode ও "View another employee":** ইনচার্জ মোডেও `Me` ট্যাবে ডিফল্টভাবে ইনচার্জের নিজের সেভ করা আইডি দেখাবে, তবে হেডারে একটি **"View another employee"** সার্চ বাটন/ইনপুট থাকবে যা দিয়ে যেকোনো কর্মীর প্রোফাইল রিড-অনলি মোডে দেখা যাবে (এবং সহজেই "Back to my profile"-এ ফেরা যাবে)।
 
 ---
 
-## ৪. প্ল্যান: ছোট ছোট ধাপ (`[ ]` বাকি / `[~]` চলছে / `[x]` শেষ)
+# ৩. শর্ত ও সিদ্ধান্ত (কী ঠিক হয়েছে, কেন)
 
-- [x] **Stage 0:** রেপো বিশ্লেষণ, আর্কিটেকচার যাচাই এবং `00_READ_ME_FIRST_HANDOFF.md` (REPO MAP ও পূর্ণাঙ্গ প্ল্যানসহ) তৈরি।
-- [x] **Part 1 — Navigation & Routing:**
-  - `index.html`-এ বটম নেভ অর্ডার `Home | Report | Me | Rank | More` করা, ডেক্সটপ `.topnav`-এ `My Profile` যোগ করা, `#page-more`-এ `VS (1v1)` আইটেম যোগ করা, এবং `#page-profile` কন্টেইনার তৈরি করা।
-  - `js/components/router.js`-এ `VALID_PAGES`-এ `profile` যোগ করা ও `#/profile` রাউটিং সাপোর্ট।
-  - `js/app-main.js`-এ `PERMANENT_PAGES`-এ `profile` যোগ করা, `updateNavHighlights()`-এ `vs` পেজে থাকাকালীন বটম নেভের `More` হাইলাইট করা এবং `switchPage('profile')`-এ `initProfilePage()` কল করা।
-- [x] **Part 2 — Calculation Layer & Unit Tests:**
-  - `js/calculations/attendance.js` তৈরি: `computeEmpMonthAttendance(emp, ymStr, ctx)` ও `rptIsDayClosed(y, m, d)` এক্সট্র্যাক্ট করা এবং `js/pages/report.js` ও `js/calculations/ranking.js`-কে এই একক ফাংশনের সাথে যুক্ত করা।
-  - `js/calculations/profile.js` তৈরি: পিওর ফাংশনসমূহ (Year/Month scope aggregation, Attendance summary & heat-strip, Monthly OT income breakdown & MoM change, OT sparkline data, Night/Holiday dates aggregation, Requisition/NightSuspect/Punch issues grouping, Average Punch In/Out day vs night calculation, Streak & mini calendar, Early exits, Section average & rank summary)।
-  - `tests/test_profile_calc.js` লিখে Node.js দিয়ে বাস্তব `data/*.json` ফাইলের ওপর অটোমেটেড টেস্ট চালানো।
-- [x] **Part 3 — Data Loading (Per-Employee History + Backfill + Progressive Fallback + SW):**
-  - `scripts/build_emp_history.py` তৈরি ও চালানো (`data/emp/PR/<ID>.json` এবং `data/emp/QA/<ID>.json` জেনারেট করা, সাথে `datasetMeta` ও `sectionStats` সংযুক্ত করা)।
-  - `scripts/to_json.py`, `scripts/recompute_from_raw.py`, এবং `.github/workflows/*.yml` আপডেট করা যাতে নতুন ডেটা আসলে স্বয়ংক্রিয়ভাবে `data/emp/` আপডেট হয়।
-  - ক্লায়েন্ট লোডার (`fetchEmployeeProfileHistory` in `js/pages/profile.js`): প্রথমে ক্যাশড/সিলেক্টেড মাস রেন্ডার, এরপর Option A (`data/emp/<DEPT>/<ID>.json`) ফেচ, এবং ৪0৪ হলে Option B (প্রগ্রেসিভ মান্থলি লোডিং + কম্প্যাক্ট localStorage ক্যাশ + প্রগ্রেস বার)।
-  - `sw.js`-এ নতুন ফাইলগুলো প্রিক্যাশে যোগ করা ও `CACHE_NAME` বাম্প করা।
-- [x] **Part 4 — UI Sections A, B, C & Header/Empty State:**
-  - `css/profile.css` ও `js/pages/profile.js`-এ প্রোফাইল হেডার (অ্যাভাটার, নাম, আইডি, পদবি, সেকশন, ডিপার্টমেন্ট, স্কোপ সুইচার চিপস: This month | Last month | This year (2026) | Month Picker, এবং In-Charge/Colleague switcher)।
-  - সেভ করা আইডি না থাকলে বন্ধুসুলভ Empty State (আইডি ইনপুট + অটো-কমপ্লিট + "Save & open my profile")।
-  - Section A (Year/Scope at a glance hero card), Section B (Attendance — Leave/Absent + Month-wise heat-strip + "How is this calculated?" টুলটিপ), Section C (Monthly OT income stacked bar chart + 👁 Hide Amounts toggle)।
-- [x] **Part 5 — UI Sections D, E, F, H:**
-  - Section D (Total OT + month-wise SVG sparkline + avg OT/month)।
-  - Section E (Total Night + date chips + shift drawer integration)।
-  - Section F (Holiday duty + date chips with DO/Hol hours breakdown)।
-  - Section H (My average punch — Day shift In/Out vs Night shift Out, average duty hours/day, month-wise table + trend arrow)।
-- [x] **Part 6 — UI Section G & Section I Extras:**
-  - Section G ("Check before payroll" — Requisition issues, Night suspects, Punch problems grouped by month newest first, green "All clear ✅" state, per-item & bulk "Report to ERP Team" WhatsApp button reusing `openErpSupportModal`)।
-  - Section I Extras (১. Perfect-attendance streak / best month badge + mini calendar strip, ২. Early-exit count per month, ৩. My rank this month + 3-month trend + Open Rank link, ৪. OT vs anonymous section average, ৫. Share my summary as PNG image, ৬. Payslip shortcut, ৭. Open daily report link)।
-- [x] **Part 7 — Verification, Screenshots, Cross-Checks & Final Docs:**
-  - লোকাল সার্ভার (`python3 -m http.server`) ও হেডলেস Chromium (390×844, `deviceScaleFactor: 2`) দিয়ে রিয়েল আইডি (`556490`, নাইট ডিউটি কর্মী, হলিডে কর্মী, আংশিক মাসের কর্মী, জিরো-ইস্যু কর্মী, QA কর্মী, নো-আইডি স্টেট, লাইট ও ডার্ক থিম) টেস্ট ও স্ক্রিনশট (`docs/screens/`) গ্রহণ।
-  - Python স্ক্রিপ্ট দিয়ে অন্তত ৫ জন কর্মীর বার্ষিক ও মাসিক হিসাব স্বতন্ত্রভাবে যাচাই করে পেজের সাথে ১০০% মিল প্রমাণ করা।
-  - `README.md` আপডেট এবং `PROFILE_NOTES.md` তৈরি।
+**Owner-এর সিদ্ধান্ত (বদলানো যাবে না):**
+- D-O1: Bottom nav হবে ঠিক `Home | Report | Me | Rank | More`। Default landing = Home (Me নিজে খুলবে না)।
+- D-O2: VS More-এ যাবে, `#/vs` routable থাকবে, VS চলাকালীন More highlighted।
+- D-O3: Short casual/sick leave বলে কিছু নেই; punch ছাড়া কাজের দিন = Absent। "Approved long leave" শুধু `absent.json → longTermLeaves` থেকে `isEmployeeOnApprovedLeave()` দিয়ে, আলাদা কাউন্ট, শুধু non-zero হলে।
+- D-O4: কোনো approval-এর জন্য অপেক্ষা নয়; Part-by-part স্বয়ংক্রিয়।
+- D-O5: Amount কখনও নতুন করে হিসাব নয় (`totalEarned`, `otAmount`, `holidayAmount`, `nightAmount` পড়ো)।
+- D-O6: নতুন লাইব্রেরি/CDN/ফন্ট নয়; কোনো নতুন write/telemetry নয়।
+
+**আমার (AI-এর) সিদ্ধান্ত — Stage 0 থেকে (রেপো যাচাই করে):**
+- D-1 **`daily` কলাম ম্যাপ (spec-এর `?` গুলো ঠিক করা):** `r[0]=date 'DD-MON-YYYY'`, `r[1]=dayName`, `r[2]=in`, `r[3]=out`, `r[4]=regular duty`, `r[5]=OT extra`, `r[6]=dayoff duty`, `r[7]=dayoff extra`, `r[8]=holiday duty`, `r[9]=holiday extra`, `r[10]=night flag (0/1)`, `r[11]=shift code (G/DN/…)`। (সূত্র: `_buildEmpDayMap` app-main.js:243 এবং real data `['01-NOV-2026','Sun','07:49','19:32',11.72,0,0,0,0,0,0,'G']`)। Spec-এ `holDuty,holExtra` r[6],r[7] লেখা আছে — আসলে সেগুলো day-off duty; holiday = r[8],r[9]।
+- D-2 **Absent লজিক ইতিমধ্যে একটি ফাংশনে আছে:** `_rptRows(ctx)` (js/pages/report.js ~line 25–185), যা `{rows,y,m}` ফেরত দেয়; row-তে `tone`(off/offn/absent/none/bad/req/hol/do/ee), `isApprovedLeave`, `isGeneralAbsent`, `fpPending`, `afterNight`। → Part 2-এ সেটাকে `js/calculations/attendance.js`-এ `computeEmpMonthRows(ctx)` নামে সরাবো (লজিক হুবহু), `report.js`-এর `_rptRows` শুধু সেটাকে কল করবে। Profile একই ফাংশন কল করবে ⇒ দুই জায়গায় একই সংখ্যা।
+- D-3 `_rptRows` যেসব global-এর ওপর নির্ভর করে: `_buildEmpDayMap`, `getMonthDatasetMeta` (এটি `monthIndexMemoryCache[ym]` পড়ে — অর্থাৎ ওই মাসের পুরো মাসের ডেটা মেমরিতে লাগে, per-employee ফাইল দিয়ে হবে না!), `isPlantOrGovtHolidayDate` (localStorage-এর PLANT_HOLIDAYS/DAYTYPE_OV পড়ে), `isEmployeeOnApprovedLeave`, `hasPrevMonthLastNight`/`getPrevMonthNightSet`, `isPunchMissing`, `computeEmpEarlyExits`, `resolveEmpAliasId`, `rptIsDayClosed`। **ঝুঁকি:** `consensusHolidays`/`maxActiveDay` মাসের সব কর্মীর `daily` থেকে বের হয়। Option A-তে শুধু একজনের ফাইল থাকলে এটা বের করা যাবে না। **সিদ্ধান্ত:** per-employee ফাইলে `meta[ym] = {maxActiveDay, consensusHolidays[]}` প্রি-কম্পিউট করে রাখা হবে (build script-এ, `getMonthDatasetMeta`-এর হুবহু অ্যালগরিদম), এবং attendance ফাংশন ctx-এ `dsMeta` ইনজেক্ট করা যাবে (না দিলে আগের মতো `getMonthDatasetMeta(ym)`)। একইভাবে `prevNight` (আগের মাসের শেষ দিনে রাত ছিল কিনা) per-employee ফাইলে প্রি-কম্পিউট। এই কারণেই Part 2 ও Part 3 একসাথে ডিজাইন করতে হবে।
+- D-4 **Present % সূত্র (চূড়ান্ত):** `present% = presentDays ÷ scheduledDays × 100`, যেখানে `scheduledDays = presentDays + absentDays + approvedLeaveDays` (closed general working days; Thu/Fri, plant/govt holiday, post-night day-off বাদ; `fpPending` দিন বাদ), `presentDays` = ওই মাসের সেই দিনগুলো যাতে In/Out আছে এবং দিনটি scheduled working day (holiday/day-off-এ কাজ করা দিন সংখ্যায় ধরা হবে না, কারণ ওগুলো scheduled নয়)। `scheduledDays = 0` হলে "—"। কর্মী ফাইলে না থাকলে "—"।
+- D-5 **Rank** একটি side-drawer পেজ (`page-leaderboard`, left), More-এর পেজগুলো right drawer। Me হবে PERMANENT page (`page-profile`), তাই `switchPage` PERMANENT ব্রাঞ্চে যাবে। `updateNavHighlights()`-এ VS active হলে More highlight দিতে হবে (VS এখনও PERMANENT page থাকবে কিনা: **সিদ্ধান্ত** — `vs` PERMANENT_PAGES-এ থাকবে (রাউটিং/`initVsPage` অক্ষত রাখতে), শুধু `.bn-item` highlight ম্যাপিংয়ে `vs → more`)।
+- D-6 `app-main.js` হল লাইভ কোড। `js/admin/admin-core.js` (476 KB) একটি আলাদা bundle যাতে একই নামের ফাংশনের কপি আছে (admin.html-এর জন্য) — **ছোঁয়া যাবে না**; নতুন ফাইল admin.html-এ যোগ করা হবে না (যদি না admin.html একই script শেয়ার করে — Part 1-এ `grep` করে নিশ্চিত করা)।
+- D-7 রেপো git নয় (zip) ⇒ "small git commits" সম্ভব নয়; বদলে প্রতি Part-এর প্যাকেজই checkpoint।
+- D-8 Month-file সরাসরি লোডে `fetchMonthPreIndexedData(month)` Dept-aware (`getClientDepartment()`; QA হলে `data/qa/<month>.json`)। Per-employee path: `data/emp/<DEPT>/<ID>.json`, DEPT=`PR|QA`।
 
 ---
 
-## ৫. বর্তমান অবস্থা
-- **এই মুহূর্তে কোন ধাপে:** **সবগুলো ধাপ (Stage 0 এবং Part 1 থেকে Part 7 পর্যন্ত) ১০০% সম্পন্ন (`[x]`)!**
-- **শেষ কী করেছি:**
-  - **Stage 0 `[x]`**: রেপো সম্পূর্ণ বিশ্লেষণ করে `00_READ_ME_FIRST_HANDOFF.md` তৈরি করা হয়েছে।
-  - **Part 1 `[x]`**: মোবাইল বটম নেভিগেশন (`Home | Report | Me | Rank | More`), `#/profile` রাউট, `VS (1v1)`-কে `More`-এ স্থানান্তর, এবং Empty State সম্পন্ন।
-  - **Part 2 `[x]`**: `js/calculations/attendance.js`-এ শেয়ার্ড Absent/Leave/Present% পিওর ফাংশন আলাদা করে `report.js` ও `ranking.js`-এ যুক্ত করা হয়েছে; `js/calculations/profile.js` তৈরি এবং `tests/test_profile_calc.js`-এ ৫/৫ টেস্ট পাস।
-  - **Part 3 `[x]`**: `scripts/build_emp_history.py` তৈরি ও ব্যাকফিল রান করে ১,২১৩টি PR ফাইল (`data/emp/PR/*.json`, গড় ২৩.৭ KB) ও ৭২টি QA ফাইল (`data/emp/QA/*.json`, গড় ১.৮ KB) জেনারেট করা হয়েছে; ওয়ার্কফ্লো ও `sw.js` আপডেট করা হয়েছে।
-  - **Part 4 `[x]`**: প্রোফাইল হেডার, স্কোপ চিপস, কলিগ রিড-অনলি সুইচার, এবং Sections A (Hero), B (Attendance Heat-Strip + Tooltip + Approved Long Leave), C (Stacked OT Income + Hide Taka toggle) সম্পন্ন।
-  - **Part 5 `[x]`**: Sections D (Total OT + Sparkline + Date chips), E (Total Night + Date chips), F (Holiday Duty + Date chips), এবং H (My Average Punch — Day Out ও Night Out `(+1)` আলাদা করে টেবিল) সম্পন্ন।
-  - **Part 6 `[x]`**: Section G (Check Before Payroll + এক ট্যাপে `"Report to ERP Team"` WhatsApp মেসেজ) এবং Section I-এর ৭টি বোনাস ফিচার (`I1`..`I7` — Streak Calendar, Early Exits, Section Rank, OT vs Section Avg, Share PNG, Payslip, Shortcuts) সম্পন্ন।
-  - **Part 7 `[x]`**: হেডলেস Chromium ব্রাউজারে (`390×844 @ 2x DPR`) ১৪টি মোবাইল স্ক্রিনশট (`docs/screens/01_*.png` .. `14_*.png`) ক্যাপচার ও ভিজ্যুয়াল যাচাই; ৬ জন কর্মীর (`556490`, `RF20850`, `CF8355`, `CF3028`, `556496`, `556515`) জন্য স্বাধীন Python স্ক্রিপ্ট ও Report পেজের সাথে ১০০% মিল যাচাই; `README.md` ও `PROFILE_NOTES.md` তৈরি।
-- **পরের ধাপ কী:** কোনো ধাপ বাকি নেই — প্রজেক্টটি সরাসরি ডিপ্লয় করার জন্য প্রস্তুত।
+# ৪. প্ল্যান (ছোট ছোট ধাপ) — `[ ]` বাকি / `[~]` চলছে / `[x]` শেষ
 
-## ৬. REPO MAP
+**Stage 0**
+- [x] 0.1 রেপো পড়া (router, nav, switchPage, report.js, storage, data shape, scripts, workflows)
+- [x] 0.2 REPO MAP + PLAN লেখা (এই ফাইল)
 
-### ৬.১ প্রজেক্টের উদ্দেশ্য, টেক স্ট্যাক ও কমান্ড
-- **উদ্দেশ্য:** Renata PLC, Rajendrapur Potent Product Facility (RPPF)-এর প্রোডাকশন (PR) ও কোয়ালিটি অ্যাসুরেন্স (QA) কর্মীদের মাসিক ওভারটাইম, নাইট ডিউটি, হলিডে ভাতা, পাঞ্চ সমস্যা ও র‍্যাংকিং দেখার অফলাইন-ফার্স্ট PWA।
-- **টেক স্ট্যাক:** Vanilla HTML5, CSS3 (Custom Properties / Tokens, Dark/Light Theme), Vanilla JavaScript (ES6+, কোন ফ্রেমওয়ার্ক বা বান্ডলার নেই), Python 3 (`openpyxl` দিয়ে Excel → JSON বিল্ড স্ক্রিপ্ট), GitHub Pages + GitHub Actions।
-- **চালানো ও টেস্ট করার কমান্ড:**
-  - লোকাল সার্ভার: `python3 -m http.server 8000`
-  - ডেটা রিকম্পিউট: `python3 scripts/recompute_from_raw.py --all`
-  - কর্মী হিস্ট্রি ব্যাকফিল (নতুন): `python3 scripts/build_emp_history.py`
-  - ইউনিট টেস্ট (নতুন): `node tests/test_profile_calc.js`
+**Part 1 — Navigation**
+- [x] 1.1 `index.html` bottom-nav: নতুন order + Me বাটন; 1V1 বাটন সরানো; topnav-এ "My Profile"
+- [x] 1.2 `page-profile` খালি কন্টেইনার + `css/profile.css` স্টাব + `js/pages/profile.js` স্টাব (empty state with ID input)
+- [x] 1.3 `PERMANENT_PAGES`/`VALID_PAGES`/`switchPage`/`updateNavHighlights` (VS→More highlight)
+- [x] 1.4 More list-এ VS আইটেম; `css/nav.css` ৫-স্লট ঠিক আছে কিনা দেখা
+- [x] 1.5 Playwright smoke: ৫ ট্যাব, #/profile deep-link, back button, VS from More
+- [x] 1.6 প্যাকেজ P1
 
-### ৬.২ ফোল্ডার কাঠামো ও প্রতিটি গুরুত্বপূর্ণ ফাইলের এক লাইনের বর্ণনা
-- `index.html` — মূল সিঙ্গেল-পেজ অ্যাপ্লিকেশন (SPA) শেল; এতে সব পেজ কন্টেইনার (`#page-search`, `#page-report`, `#page-vs`, `#page-leaderboard`, `#page-more`, `#page-team`, `#page-notices`, `#page-history`, `#page-settings`, `#page-assessment`), বটম নেভ, টপ নেভ ও মোডালগুলো আছে।
-- `admin.html` — স্ট্যান্ডঅ্যালোন অ্যাডমিন কন্ট্রোল প্যানেল।
-- `sw.js` — সার্ভিস ওয়ার্কার (প্রিক্যাশ তালিকা + নেটওয়ার্ক-ফার্স্ট HTML/JSON এবং স্টেল-হোয়াইল-রিভ্যালিডেট স্ট্যাটিক অ্যাসেট)।
-- `areas.json` — কর্মীদের সেকশন/এরিয়া ম্যাপিং (`areas`), সাব-সেকশন ও জেন্ডার/টাইপ (`details`), রেট টেবিল (`rateTable`), এবং ছুটির কনফিগারেশন (`holidays`)।
-- `absent.json` — দৈনিক অনুপস্থিতির লগ এবং অনুমোদিত দীর্ঘমেয়াদী ছুটির তালিকা (`longTermLeaves`, যেমন ৬ মাসের Maternity Leave)।
-- `shift-rules.json` — সাধারণ ও বিশেষ শিফটের (যেমন রমজান) শুরুর ও শেষের সময় এবং গ্রেস মিনিট (`early-exit.js` ব্যবহার করে)।
-- `team.json` — ERP সাপোর্ট টিমের সদস্যদের নাম, আইডি, সেকশন ও WhatsApp নম্বর।
-- `notices.json` — ফ্যাক্টরির নোটিশ বোর্ডের ডেটা।
-- `css/tokens.css` — লাইট ও ডার্ক থিমের সব ডিজাইন টোকেন (`--bg`, `--surface`, `--brand`, `--success`, `--warning`, `--danger`, `--radius`, `--space-*`)।
-- `css/nav.css` — `.topnav`, `.bottom-nav`, `.bn-item`, এবং `.page` কন্টেইনারের স্টাইল।
-- `css/components.css` ও `css/pages.css` — কার্ড, বাটন, ব্যাজ, টেবিল, মোডাল এবং পেজগুলোর স্টাইল।
-- `js/core/config.js` — গ্লোবাল কনস্ট্যান্ট, ডিপার্টমেন্ট কনফিগারেশন (`PR`, `QA`), `STORAGE_NAMESPACE`, এবং `localStorage` কী-সমূহ।
-- `js/core/state.js` — ইন-মেমরি গ্লোবাল স্টেট (`RATE_TABLE`, `AREA_MAP`, `currentSearchId`, `currentMonth`, `monthIndexMemoryCache`, `ABSENT_STORE`)।
-- `js/core/storage.js` — `getPreferredId()`, `setPreferredId()`, `getSavedSalary()`, এবং সার্চ হিস্ট্রি হেল্পার।
-- `js/core/utils.js` — `esc()`, `bn()`, `resolveEmpAliasId()`, `cleanPunchValue()`, `isPunchMissing()`, `getEmpOtDays()`, `fitAll()`।
-- `js/core/access-control.js` ও `js/core/access-crypto.js` — রোল-বেসড অ্যাক্সেস কন্ট্রোল, ইনচার্জ ও এক্সিকিউটিভ ভিজিবিলিটি গার্ড (`isExecHiddenFor`)।
-- `js/calculations/rates.js` — ক্যাটাগরি ও গ্রেড অনুযায়ী ওভারটাইম, নাইট ও হলিডে টাকার হিসাব (`applyTypeOverride`, `calculateEarnings`)।
-- `js/calculations/early-exit.js` — শিফট শেষ হওয়ার আগে গেট পাস/আর্লি এক্সিট শনাক্তকরণ (`computeEmpEarlyExits`, `getEarlyExitCount`)।
-- `js/calculations/ranking.js` — লিডারবোর্ড সর্টিং, `computeEmpRequisitionProblems(e)` এবং `computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool)`।
-- `js/components/router.js` — হ্যাশ রাউটার (`VALID_PAGES`, `parseHash`, `getHashForPage`, `activateRoute`, ব্যাক বাটন ডাবল-প্রেস গার্ড)।
-- `js/app-main.js` — অ্যাপের মূল কন্ট্রোলার: `fetchMonthPreIndexedData()`, `_buildEmpDayMap()`, `getMonthDatasetMeta()`, `isPlantOrGovtHolidayDate()`, `isEmployeeOnApprovedLeave()`, `switchPage()`, `updateNavHighlights()`, `openErpSupportModal()`, `generatePayslipCanvas()`, `autoLoad()`।
-- `js/pages/report.js` — ডেইলি ওয়ার্ক লগ টেবিল (`_rptRows`, `_rptHtml`), `rptIsDayClosed()`, PNG ডাউনলোড (`downloadReportPNG`), এবং `renderInstantEmployeeRecord()`।
-- `js/pages/vs.js` — ১ বনাম ১ / কাস্টম কর্মী তুলনা পেজ (`initVsPage`, `runComparison`)।
-- `js/pages/leaderboard.js` — র‍্যাংকিং পেজ, `computeEmpAvgDutyAndInOut(e)`, এবং `viewEmployeeFromLeaderboard(empId)`।
-- `js/pages/more.js` — `More` ড্রয়ারের রেন্ডারার (`renderMorePage`)।
-- `scripts/to_json.py` ও `scripts/recompute_from_raw.py` — Empress Excel এবং `.raw.json` আর্কাইভ থেকে `data/YYYY-MM.json` ও `data/latest.json` তৈরির স্ক্রিপ্ট।
-- `data/2025-12.json` … `data/2026-11.json` এবং `data/qa/2026-11.json` — মাসিক প্রি-ইনডেক্সড কর্মী ডেটা।
+**Part 2 — Calculation layer**
+- [x] 2.1 `js/calculations/attendance.js` ← `_rptRows` লজিক হুবহু সরানো (ctx injection: dsMeta, prevNight, helpers)
+- [x] 2.2 `report.js` `_rptRows` → shared ফাংশন কল; Report আউটপুট আগের সাথে তুলনা (রিগ্রেশন টেস্ট)
+- [x] 2.3 `js/calculations/profile.js` (pure): মাসভিত্তিক aggregation (OT, night, holiday, earned split, present%, avg punch, issues, early exits)
+- [x] 2.4 Node টেস্ট (`tests/dump_profile.js`) real `data/*.json` দিয়ে + Python ক্রস-চেক (`tests/crosscheck_profile.py`) — ALL PASS
+- [x] 2.5 প্যাকেজ P2
 
-### ৬.৩ ডেটা ও কন্ট্রোল ফ্লো কীভাবে চলে
-1. অ্যাপ চালু হলে `autoLoad()` (`js/app-main.js`) বর্তমান ডিপার্টমেন্ট (`PR` বা `QA`) অনুযায়ী `data/latest.json` (বা `data/qa/latest.json`) এবং `areas.json` ও `absent.json` লোড করে `monthIndexMemoryCache`-এ রাখে।
-2. `Router.init()` URL-এর হ্যাশ (`#/search`, `#/report`, `#/profile` ইত্যাদি) পার্স করে `activateRoute()`-এর মাধ্যমে `switchPage()` কল করে।
-3. `PERMANENT_PAGES` (`search`, `report`, `profile`, `vs`) সরাসরি `.page.active` হিসেবে রেন্ডার হয়; আর `leaderboard` বাঁ দিকের ড্রয়ার এবং `more` ও `MORE_PAGES` ডান দিকের ড্রয়ার হিসেবে খোলে।
-4. প্রতিটি কর্মীর মাসিক অবজেক্টে `daily` অ্যারে থাকে: `[date, dayName, in, out, regDuty, regOt, doDuty, doOt, holDuty, holOt, nightFlag, shiftCode]`। টাকার অংক (`otAmount`, `holidayAmount`, `nightAmount`, `totalEarned`) বিল্ড টাইমে ও `applyTypeOverride(e)`-এ ক্যালকুলেট হয়।
+**Part 3 — Data loading**
+- [x] 3.1 `scripts/build_emp_history.py` (+ meta[ym], prevNight প্রি-কম্পিউট) ও backfill রান
+- [x] 3.2 `to_json.py` / `recompute_from_raw.py` / workflows (`git add data/emp`) পরিবর্তন
+- [x] 3.3 Client loader (`profile.js`): Option A → 404 হলে Option B (progressive, localStorage compact extract)
+- [x] 3.4 `sw.js` CACHE_NAME বাম্প + precache (emp JSON নয়)
+- [x] 3.5 ডেটা-সাইজ পরিমাপ; প্যাকেজ P3
 
-### ৬.৪ কোডিং কনভেনশন ও যা ভাঙা যাবে না
-- কোনো এক্সটার্নাল JS/CSS লাইব্রেরি বা ফ্রেমওয়ার্ক যোগ করা যাবে না (চার্টের জন্য ইনলাইন SVG বা পিওর CSS ব্যবহার করতে হবে)।
-- সব ডাইনামিক HTML স্ট্রিংয়ে `esc()` ব্যবহার করতে হবে।
-- থিমের জন্য হার্ডকোডেড রঙের বদলে `css/tokens.css`-এর CSS ভেরিয়েবল (`var(--surface)`, `var(--text)`, `var(--brand)`, ইত্যাদি) ব্যবহার করতে হবে যাতে লাইট ও ডার্ক উভয় থিমে নিখুঁত দেখায়।
-- টাকার হিসাব কখনো নতুন করে ফর্মুলা দিয়ে বানানো যাবে না—সবসময় `emp.otAmount`, `emp.holidayAmount`, `emp.nightAmount`, `emp.totalEarned` (অথবা `applyTypeOverride(emp)`-এর ফলাফল) থেকে পড়তে হবে।
-- রেট লজিক, লিডারবোর্ড, অ্যাডমিন প্যানেল, অ্যাক্সেস কন্ট্রোল (`isExecHiddenFor`), এবং ইনচার্জ ড্যাশবোর্ডের কোনো বিদ্যমান ফাংশন বা আইডি ভাঙা বা রিনেম করা যাবে না।
-
-### ৬.৫ কোন ফাইল এখনও ছোঁয়া হয়নি
-- এখন পর্যন্ত রেপোর কোনো কোড ফাইল পরিবর্তন করা হয়নি (শুধুমাত্র এই হ্যান্ডঅফ ফাইল `00_READ_ME_FIRST_HANDOFF.md` তৈরি করা হয়েছে)।
+**Part 4 — UI A, B, C** (hero, attendance, monthly income + 👁 toggle)
+- [x] 4.0 `js/pages/profile.js` রিরাইট: header, scope chips, `profLoadHistory` ওয়্যারিং, progress বার, skeleton, unknown-ID/error state
+- [x] 4.1 Section A (hero: OT, আয়, night, holiday, absent, avg present%, long leave শুধু non-zero হলে)
+- [x] 4.2 Section B (attendance + month-wise present% বার + "How is this calculated?")
+- [x] 4.3 Section C (SVG stacked bar OT/Holiday/Night + stats + 👁 hide-amounts toggle, localStorage)
+- [x] 4.4 Playwright স্মোক (390×844, light+dark) + স্ক্রিনশট + সংখ্যা ক্রস-চেক
+- [x] 4.5 প্যাকেজ P4
+**Part 5 — UI D, E, F, H** (OT, night, holiday, avg punch) — শেষ
+- [x] 5.1 Section D (Total OT: scope মোট, গড়/মাস, month-wise sparkline SVG + সংখ্যা টেক্সটে)
+- [x] 5.2 Section E (Night: scope count, month-wise, তারিখ chips; `#shiftDatesDrawer` ব্যবহারযোগ্য কিনা আগে দেখো, না হলে নিজস্ব chips)
+- [x] 5.3 Section F (Holiday: count, month-wise, তারিখ chips + duty/extra ঘণ্টা — `holidayDates[]` থেকে)
+- [x] 5.4 Section H (Avg In/Out/duty: scope + month-wise টেবিল, ▲▼ আগের মাসের সাথে; night আলাদা — `punch` অবজেক্ট থেকে, `profFmtTime12`)
+- [x] 5.5 Playwright স্মোক + স্ক্রিনশট (light/dark) + ক্রস-চেক (avg punch Python-এর সাথে) + প্যাকেজ P5
+**Part 6 — UI G + extras I** (issues + "Report to ERP Team" WhatsApp; I-1…I-7 অগ্রাধিকার ক্রমে)  ← পরের ধাপ
+- [x] 6.1 Section G: `summ[ym].issues` (requisition/nightSuspects/punchProblems) মাস অনুযায়ী newest-first, summary chips, "All clear ✅", প্রতি আইটেমে "Report to ERP Team" (`team.json`/`openErpSupportModal` WhatsApp লজিক পড়ে পুনর্ব্যবহার, pre-filled বার্তা)
+- [x] 6.2 I-1 streak/best month badge + মাসের mini calendar strip (`summ.strip` P/A/L/O/N/B/X)
+- [x] 6.3 (I-6 স্কিপড — নিচে D-33) I-2 early-exit (`summ.earlyExits`), I-3 rank (ranking.js), I-4 section avg OT (বেনামী, `area`), I-5 share PNG, I-6 payslip শর্টকাট, I-7 Report লিংক মাস প্রিফিল — সময় অনুযায়ী
+- [x] 6.4 স্মোক + স্ক্রিনশট + প্যাকেজ P6
+**Part 7 — Verification** ← শেষ (2026-11-14)
+- [x] 7.0 MERGED zip + base zip মিলিয়ে ওয়ার্কিং কপি বানানো; পুরনো সব টেস্ট রান: regress_report_rows (1918 employee-months, diffs 0), loader.test, emp_history_equiv (diffs 0), crosscheck_profile/p4/p5/p6/p6b, smoke_p1/p4/report/loader — ALL PASS
+- [x] 7.1 `tests/verify_p7.py` — ALL PASS (no-ID, unknown ID, ৫ ট্যাব light/dark, ৪ জন × ১১ সেকশন light/dark, overflow, tap-target, console, back/deeplink/VS, offline SW) → `docs/screens/p7_*` (109টি)
+- [x] 7.2 স্ক্রিনশট দেখা (top light/dark, G, G all-clear, C dark, offline): ক্র্যাম্পড/ক্লিপড কিছু নেই; ফিক্স লাগেনি। অফলাইনে year-scope-ও একই সংখ্যা (577h/৳51,542) দেখায় (SW runtime cache emp ফাইল দেয়)
+- [x] 7.3 `README.md` আপডেট (feature table-এ My Profile, VS-এর নোট, bottom-nav নোট, project structure: profile.css/attendance.js/profile.js/profile-data.js/data/emp/scripts/tests/docs, "My Profile — data loading" অংশ)
+- [x] 7.4 `PROFILE_NOTES.md` লেখা (সূত্র, ডেটা-সাইজ, ভেরিফিকেশন প্রমাণ, সিদ্ধান্ত, স্কিপড)
+- [x] 7.5 `sw.js` precache যাচাই (৫টি নতুন asset আছে, emp JSON নেই); CACHE_NAME `profile-p6b` রাখা হয়েছে (P7-এ কোনো অ্যাপ asset বদলায়নি); চূড়ান্ত প্যাকেজ P7
+(Part 4–7-এর সাব-ধাপ সেই Part শুরুর সময় এখানে বিস্তারিত লেখা হবে।)
 
 ---
 
-## ৭. বদলানো/তৈরি ফাইলের তালিকা
-
-1. `00_READ_ME_FIRST_HANDOFF.md` — নতুন তৈরি ও আপডেটেড (হ্যান্ডঅফ ট্র্যাকার, REPO MAP ও প্ল্যান; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-2. `index.html` — বদলানো হয়েছে (বটম নেভ `Home | Report | Me | Rank | More`, টপ নেভে `My Profile`, `#page-more`-এ `VS (1v1)`, `#page-profile` কন্টেইনার ও নতুন JS/CSS ট্যাগ যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-3. `js/components/router.js` — বদলানো হয়েছে (`VALID_PAGES`-এ `profile` এবং `#/profile` রাউট হ্যান্ডলিং যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-4. `js/app-main.js` — বদলানো হয়েছে (`PERMANENT_PAGES`-এ `profile`, `updateNavHighlights()`-এ `vs` → `more` হাইলাইট এবং `initProfilePage()` কল যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-5. `js/calculations/attendance.js` — নতুন তৈরি (শেয়ার্ড পিওর উপস্থিতি, অনুপস্থিতি ও অনুমোদিত ছুটির ইঞ্জিন; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-6. `js/calculations/profile.js` — নতুন তৈরি (প্রোফাইল পেজের পিওর অ্যাগ্রিগেশন ইঞ্জিন; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-7. `js/pages/report.js` — বদলানো হয়েছে (`_rptRows`-কে `computeEmpMonthAttendance`-এর সাথে যুক্ত করা হয়েছে; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-8. `js/calculations/ranking.js` — বদলানো হয়েছে (`computeEmpGeneralAbsents`-কে `computeEmpMonthAttendance`-এর সাথে যুক্ত করা হয়েছে; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-9. `tests/test_profile_calc.js` — নতুন তৈরি (Node.js অটোমেটেড ইউনিট টেস্ট স্যুট; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-10. `scripts/build_emp_history.py` — নতুন তৈরি (পার-এমপ্লয়ি হিস্ট্রি JSON বিল্ডার ও ব্যাকফিল স্ক্রিপ্ট; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-11. `scripts/to_json.py` — বদলানো হয়েছে (`build_emp_history` ইন্টিগ্রেশন যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-12. `scripts/recompute_from_raw.py` — বদলানো হয়েছে (`build_emp_history` ইন্টিগ্রেশন যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-13. `.github/workflows/empress.yml`, `manual-excel.yml`, `recompute-from-raw.yml` — বদলানো হয়েছে (`data/emp/` স্টেজিং যোগ; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-14. `sw.js` — বদলানো হয়েছে (`CACHE_NAME` বাম্প ও প্রিক্যাশ আপডেট; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-15. `data/emp/PR/*.json` ও `data/emp/QA/*.json` — নতুন তৈরি (১,২৮৫টি পার-এমপ্লয়ি হিস্ট্রি ফাইল; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-16. `css/profile.css` — নতুন তৈরি (প্রোফাইল পেজের সম্পূর্ণ রেসপনসিভ ও ডার্ক/লাইট থিম স্টাইলশিট; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
-17. `js/pages/profile.js` — নতুন তৈরি (ডেটা লোডার + হেডার + সেকশন A থেকে I পর্যন্ত সম্পূর্ণ ইমপ্লিমেন্টেশন; অবস্থা: সম্পূর্ণ)। *এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।*
+# ৫. বর্তমান অবস্থা
+- **এই মুহূর্তে (P7 শেষে):** পুরো কাজ সম্পন্ন। সব টেস্ট ALL PASS (`tests/verify_p7.py` সহ)। কোড বদলায়নি Part 7-এ — শুধু `tests/verify_p7.py`, `README.md`, `PROFILE_NOTES.md`, `docs/screens/p7_*`, এই ফাইল।
+- **owner-এর হাতে বাকি (AI করতে পারে না):** (১) রিয়েল ফোনে "Share my summary" একবার চালিয়ে PNG দেখা (স্যান্ডবক্সে নেটওয়ার্ক নেই — D-34); (২) রিয়েল GitHub Pages-এ `data/emp/` ডিপ্লয় হয়েছে কিনা ও `empress.yml` রান-এ নতুন ফাইল commit হচ্ছে কিনা দেখা; (৩) চাইলে `#payslipCard` চালু করে তারপর I-6 শর্টকাট (D-33)।
+- **স্কিপড (কারণসহ):** "View another employee" (§৬ প্রাইভেসির সাথে সংঘাত), I-3 তিন-মাসের ট্রেন্ড, I-6 payslip শর্টকাট — বিস্তারিত `PROFILE_NOTES.md` §৬।
+---
+## (পুরনো) Part 5 শেষের অবস্থা
+- **এই মুহূর্তে:** Part 5 শেষ; পরের AI সরাসরি 6.1 থেকে।
+- **শেষ কী করেছি (Part 5):** `js/pages/profile.js`-এ `_pfSectionD/E/F/H` + হেল্পার (`_pfMiniBars` SVG বার + সংখ্যা চার্টেই, `_pfChips` তারিখ চিপ, `_pfDutySection` Night/Holiday-র সাধারণ রেন্ডার)। D: OT (স্কোপ/গত মাস বা বছর/গড় + মাসওয়ারি বার); E: Night (গণনা + মাসওয়ারি তারিখ চিপ); F: Holiday (চিপে duty+extra ঘণ্টা); H: গড় In/Out/duty (দিনের শিফট), রাতের শিফট আলাদা নোট, মাসওয়ারি টেবিল + duty ▲▼। `css/profile.css`-এ `.prof-kv3/.prof-dchip/.prof-dlist/.prof-ptable`।
+- **টেস্ট:** `python3 tests/crosscheck_p5_page.py` — ৫ জন (৪ PR + ১ QA) এর বছরের OT, night, holiday, চিপ সংখ্যা (= nightDays/holidayDays দৈর্ঘ্য), avg In/Out পেজ ⇄ স্বাধীন Python: ALL PASS; overflow-x নেই; স্ক্রিনশট `docs/screens/p5_*`। P4 টেস্ট অপরিবর্তিত।
+- **পরের ধাপ:** Part 6 (§৪)। `profile.js`-এ `_pfSectionG()` লিখে `_pfRenderDynamic()`-এ H-এর পরে বসাও। WhatsApp: আগে `team.json` ও `openErpSupportModal` (app-main.js ~2669) পড়ো।
 
 ---
 
-## ৮. পরের ধাপে পড়ার ফাইল (শুধু নাম)
+# ৬. REPO MAP
 
-- `css/tokens.css`
-- `js/calculations/profile.js`
-- `js/pages/report.js`
-- `js/pages/search.js`
+**উদ্দেশ্য:** RENATA PLC Production Factory (RPPF) কর্মীদের Overtime/Night/Holiday রিপোর্ট, লিডারবোর্ড, VS তুলনা, payslip estimator, in-charge ড্যাশবোর্ড। PR ও QA দুই ডিপার্টমেন্ট।
+**টেক স্ট্যাক:** vanilla HTML/CSS/JS (ফ্রেমওয়ার্ক নেই), global-scope ফাংশন (ES modules নয়, `<script>` ট্যাগের ক্রমে লোড), Firebase compat (presence/telemetry), GitHub Pages, Service Worker PWA, ডেটা বিল্ড Python (openpyxl) GitHub Actions-এ।
+**চালানো:** `cd <repo> && python3 -m http.server 8000` → `http://localhost:8000/`। বিল্ড-স্টেপ নেই। **টেস্ট:** আগে কোনো টেস্ট নেই; নতুন Node টেস্ট `node tests/profile.test.js` (Part 2-এ তৈরি হবে)।
+
+**ফোল্ডার কাঠামো:**
+- `index.html` — একটিই SPA শেল, সব `<div class="page" id="page-X">`; bottom-nav ~line 225; topnav ~line 201; More পেজ `#page-more` ~line 1557; CSS লিংক line 46–56; script লিস্ট line 1916–1945 (ক্রম গুরুত্বপূর্ণ)।
+- `admin.html` + `js/admin/*` — অ্যাডমিন প্যানেল (admin-core.js 476 KB আলাদা bundle, **ছোঁয়া যাবে না**)।
+- `css/` — `tokens.css` (ডিজাইন টোকেন, dark/light), `base.css`, `components.css`, `nav.css` (top/bottom nav), `pages.css`, `manager-ux.css`, `rank-details.css`, `fit.css`, `modern-top.css`, `rank-loader.css`, ইত্যাদি।
+- `js/core/` — `config.js` (Firebase, REPO_NAME, STORAGE_NAMESPACE, dept config), `state.js` (global let/const: currentPermanentPage, currentSideDrawerPage, _monthInflight…), `storage.js` (`getPreferredId`/`setPreferredId` — key `PREFERRED_ID_KEY`; setPreferredId ডিপার্টমেন্টও সেট করে), `utils.js`, `access-*.js`।
+- `js/calculations/` — `rates.js` (OT/holiday/night রেট ইঞ্জিন), `early-exit.js` (`computeEmpEarlyExits`), `ranking.js`।
+- `js/components/` — `router.js` (hash router: `VALID_PAGES`, `parseHash`, `getHashForPage`, `onPageSwitched`; UMD), `loader.js`, `rank-loader.js`, `rank-details.js`, `presence-board.js`, `telemetry.js`, `pwa-install.js`।
+- `js/pages/` — `search.js` (Home), `report.js` (`_rptRows`, `_rptHtml`, `downloadReportPNG`, `rptIsDayClosed`), `vs.js`, `leaderboard.js` (+ `viewEmployeeFromLeaderboard`), `more.js`, `team.js`, `history.js`, `settings.js`, `notices.js`, `assessment.js`।
+- `js/app-main.js` (275 KB, লাইভ কোর): boot; `getMonthDatasetMeta` (:76), `isPlantOrGovtHolidayDate` (:136, hardcoded govt holidays + localStorage overrides), `_buildEmpDayMap` (:243), `fetchMonthPreIndexedData` (:950; ডিপার্টমেন্ট-অনুযায়ী `data/<m>.json` বা `data/qa/<m>.json`, `monthIndexMemoryCache`, `persistMonthCache` localStorage-এ `daily` বাদ দিয়ে), `PERMANENT_PAGES`/`MORE_PAGES` (:1513), `switchPage` (:1549), `updateNavHighlights` (:1533), `openModeSetupModal` (:491), `openErpSupportModal` (:2669), `isEmployeeOnApprovedLeave` (:6018)।
+- `js/patches/manager-ux.js` — in-charge/manager UX প্যাচ (60 KB)।
+- `data/YYYY-MM.json` (2025-12…2026-11; `{month, updatedAt, employees[]}` PR), `data/qa/YYYY-MM.json` (এখন শুধু 2026-11, 72 জন), `data/latest.json`, `data/*.raw.json` (raw আর্কাইভ); মোট `data/` ≈ 37 MB, Oct = 6.4 MB।
+- `absent.json` (`longTermLeaves`), `areas.json`, `team.json` (ERP টিম WhatsApp), `access.json`, `notices.json`, `shift-rules.json`, `manifest.json`, `sw.js` (CACHE_NAME `checkot-pwa-v20261113-ee-v5`, PRECACHE_ASSETS লিস্ট, stale-while-revalidate)।
+- `scripts/` — `to_json.py` (Excel→`data/*.json`, `build_month()` :917, `main()` :997), `recompute_from_raw.py`, `fetch_empress.py`, `analyze_punch.py`, `fetch_notices.py`। `.github/workflows/`: `empress.yml` (দৈনিক fetch → `to_json.py` → `git add data/*.json`), `recompute-from-raw.yml`, `manual-excel.yml`, `deploy-zip.yml`, `update-notices.yml`।
+
+**ডেটা/কন্ট্রোল ফ্লো:** boot → `app-main.js` → ID/মাস সিলেক্ট → `fetchMonthPreIndexedData(month)` → `monthIndexMemoryCache[month]` (normalized employees, `_buildEmpDayMap` দিয়ে `activeDayNums` সেট) → `findReport()` → `currentResult` → `switchPage('report')` → `initReportPage()` → `_rptHtml(ctx)` → `_rptRows(ctx)`। Router: `switchPage(page)` → `Router.onPageSwitched` → hash push; hash বদলালে `activateRoute` → `switchPage(page, true, true)`। Side-drawer পেজ (leaderboard বাম; more+MORE_PAGES ডান) permanent পেজের ওপরে খোলে।
+
+**কোডিং কনভেনশন / যা ভাঙা যাবে না:** global ফাংশন (নাম বদলানো যাবে না); HTML-escape হেল্পার (`_rE`, `esc`); `bn()` বাংলা সংখ্যা; CSS টোকেন (`var(--brand)`, `--surface-2`, `--border`…); dark theme `data-theme`; `body.nav-scroll-hidden`; safe-area insets; ID alias (`CL6515↔556515`, `CL6531↔556531`); ডিপার্টমেন্ট আইসোলেশন (`getClientDepartment()`); কোনো নতুন Firebase write নয়; rates/leaderboard/admin/access-control অপরিবর্তিত।
+
+**এখনও ছোঁয়া হয়নি (পড়া/বদলানো):** সব ফাইল (Stage 0-এ শুধু উপরে উল্লিখিত অংশগুলো পড়া হয়েছে)। বিশেষ করে এখনও পড়া হয়নি: `css/nav.css`, `css/tokens.css`, `js/calculations/early-exit.js`, `ranking.js`, `team.js`/`openErpSupportModal` WhatsApp লজিক, `isEmployeeOnApprovedLeave`, `getPrevMonthNightSet`, `index.html`-এ payslip মোডাল, `#shiftDatesDrawer`।
 
 ---
 
-## ৯. পরিচিত সমস্যা, অনুমান, এবং যা করা যাবে না
+# ৭. বদলানো/তৈরি ফাইলের তালিকা
+(এখনও কিছু বদলানো হয়নি। প্রতিটি এন্ট্রির পাশে থাকবে: "এটাই সর্বশেষ ভার্সন, রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো।")
 
-- **পরিচিত সমস্যা / ঝুঁকি:** ১২ মাসের সম্পূর্ণ JSON ফাইলগুলো একত্রে প্রায় ৩৬ মেগাবাইট। তাই মোবাইলে কখনোই সবগুলো পূর্ণ মাসিক ফাইল একসাথে ফেচ করা যাবে না—অবশ্যই পার-এমপ্লয়ি হিস্ট্রি ফাইল (`data/emp/<DEPT>/<ID>.json`) প্রথমে চেষ্টা করতে হবে এবং ফলব্যাক হিসেবে এক-একটি মাস প্রগ্রেসিভলি লোড করে শুধু ওই কর্মীর স্লিম অবজেক্ট `localStorage`-এ ক্যাশ করতে হবে।
-- **অনুমান (সিদ্ধান্ত হিসেবে নথিভুক্ত):**
-  - `This year (2026)` স্কোপ মানে ২০২৬ সালের জানুয়ারি থেকে সর্বশেষ উপলব্ধ মাস পর্যন্ত (`2026-01` … `2026-11`, এবং ভবিষ্যতে `2026-12` আসলে সেটিও)। `2025-12` মাসটি মান্থ-পিকার থেকে আলাদাভাবে দেখা যাবে, কিন্তু ২০২৬ সালের বার্ষিক যোগফলে ঢুকবে না (যাতে "This year (2026)" শিরোনামের সাথে ডেটার ১০০% সামঞ্জস্য থাকে; তবে ডিসেম্বর ২০২৫-এর ৩১ তারিখের নাইট ডিউটি জানুয়ারি ২০২৬-এর ১ তারিখের post-night rest day নির্ণয়ে ব্যবহৃত হবে)।
-- **যা করা যাবে না:**
-  - কোনো অবস্থাতেই নতুন কোনো শর্ট লিভ/সিক লিভ ফর্ম বা সেলফ-মার্কিং যোগ করা যাবে না।
-  - Firebase বা অন্য কোনো টেলিমেট্রিতে প্রোফাইল পেজের ডেটা পাঠানো বা রাইট করা যাবে না।
-  - হোম পেজ (`search`) পরিবর্তন করে অটোমেটিক `Me` পেজকে ডিফল্ট ল্যান্ডিং পেজ বানানো যাবে না।
+| পথ | কী বদলেছে | অবস্থা |
+|---|---|---|
+| `index.html` | bottom-nav নতুন order + Me; topnav My Profile; `#page-profile`; More-এ VS আইটেম; `css/profile.css` ও `js/pages/profile.js` রেজিস্টার | সম্পূর্ণ (সর্বশেষ ভার্সন; রেপোর পুরনো ফাইলের বদলে এটা ব্যবহার করো) |
+| `js/components/router.js` | `VALID_PAGES`-এ `profile` | সম্পূর্ণ (সর্বশেষ ভার্সন; পুরনোর বদলে এটা ব্যবহার করো) |
+| `js/app-main.js` | `PERMANENT_PAGES`-এ `profile`; `updateNavHighlights` (VS→More); `switchPage`-এ `initProfilePage()` কল | সম্পূর্ণ (সর্বশেষ ভার্সন; পুরনোর বদলে এটা ব্যবহার করো) |
+| `sw.js` | CACHE_NAME `checkot-pwa-v20261114-profile-p1`; precache-এ `css/profile.css`, `js/pages/profile.js` | সম্পূর্ণ (সর্বশেষ; Part 3-এ আবার বাড়বে) |
+| `css/profile.css` | নতুন: কার্ড/empty-state/বাটন/`.mi-vs-box` স্টাইল | আংশিক (সেকশন-স্টাইল পরের Part-এ যোগ হবে) |
+| `js/pages/profile.js` | নতুন: `initProfilePage()`, empty state, placeholder | আংশিক (সেকশন A–I পরের Part-এ) |
+| `tests/smoke_p1.py` (+ `docs/screens/p1_*.png`) | Playwright smoke টেস্ট ও স্ক্রিনশট | সম্পূর্ণ |
+| `js/calculations/attendance.js` | নতুন: `computeEmpMonthRows(ctx)`, `rptIsDayClosed` | সম্পূর্ণ (সর্বশেষ) |
+| `js/pages/report.js` | `_rptRows` → `computeEmpMonthRows` কল; `rptIsDayClosed` সরানো | সম্পূর্ণ (সর্বশেষ; পুরনোর বদলে এটা ব্যবহার করো) |
+| `index.html` / `sw.js` | attendance.js script ট্যাগ (early-exit.js-এর পর) ও precache | সম্পূর্ণ (সর্বশেষ) |
+| `js/calculations/profile.js` | নতুন pure aggregation (D-4 সূত্র ফাইলের হেডারে লেখা) | সম্পূর্ণ (সর্বশেষ) |
+| `tests/dump_profile.js`, `tests/crosscheck_profile.py` | Node dump + Python স্বাধীন ক্রস-চেক | সম্পূর্ণ |
+| `scripts/build_emp_history.py` | নতুন: per-employee history বিল্ডার | সম্পূর্ণ (সর্বশেষ) |
+| `data/emp/PR/*.json`, `data/emp/QA/*.json` | জেনারেটেড (backfill) — ১২৮৫ ফাইল | সম্পূর্ণ; প্যাকেজে শুধু নমুনা ৩টি, পুরোটা `python3 scripts/build_emp_history.py` দিয়ে আবার বানানো যায় |
+| `scripts/to_json.py`, `scripts/recompute_from_raw.py` | শেষে build_emp_history হুক | সম্পূর্ণ (সর্বশেষ) |
+| `.github/workflows/empress.yml`, `recompute-from-raw.yml`, `manual-excel.yml` | `git add -A data/emp` যোগ | সম্পূর্ণ (সর্বশেষ) |
+| `js/pages/profile-data.js` | নতুন লোডার (Option A/B) | সম্পূর্ণ (সর্বশেষ) |
+| `tests/emp_history_equiv.js`, `tests/loader.test.js`, `tests/smoke_loader.py` | Option A/B সমতা + লোডার টেস্ট | সম্পূর্ণ |
+| `js/pages/profile.js` (Part 4) | সম্পূর্ণ রিরাইট: header/chips/loader/A/B/C (`_pf*` ফাংশন-প্রিফিক্স; পুরনো `_pE`, `_profMyId`, `_profRenderEmpty`, `initProfilePage` অক্ষত নাম) | আংশিক (D–I পরের Part-এ); এটাই সর্বশেষ ভার্সন |
+| `css/profile.css` (Part 4) | header/chips/skeleton/hero/attendance/chart/hide-amounts স্টাইল যোগ | আংশিক; সর্বশেষ ভার্সন |
+| `js/pages/profile-data.js` (Part 4) | ছোট সংশোধন: primary মাসে কর্মী `null` হলে এবং emp-ফাইলে থাকলে emp-ফাইল ব্যবহার (D-24) | সম্পূর্ণ; সর্বশেষ |
+| `index.html` / `sw.js` (Part 4) | cache-buster `?v=20261114p4` (profile.css/profile.js/profile-data.js); `CACHE_NAME` = `checkot-pwa-v20261114-profile-p4` | সর্বশেষ |
+| `tests/smoke_p4.py`, `tests/crosscheck_p4_page.py` | Part 4 স্মোক + পেজ⇄Python ক্রস-চেক | সম্পূর্ণ |
+| `docs/screens/p4_*.png` | A/B/C স্ক্রিনশট (light/dark/hidden), unknown-ID | সম্পূর্ণ |
+| `js/pages/profile.js` / `css/profile.css` (Part 5) | সেকশন D/E/F/H + স্টাইল যোগ | আংশিক (G, I বাকি); সর্বশেষ ভার্সন |
+| `index.html` / `sw.js` (Part 5) | cache-buster `p5`; `CACHE_NAME` `checkot-pwa-v20261114-profile-p5` | সর্বশেষ |
+| `tests/crosscheck_p5_page.py`, `docs/screens/p5_*.png` | D/E/F/H পেজ⇄Python চেক + স্ক্রিনশট | সম্পূর্ণ |
+| `tests/verify_p7.py`, `docs/screens/p7_*.png` (Part 7) | চূড়ান্ত end-to-end ভেরিফিকেশন + ১০৯টি স্ক্রিনশট | সম্পূর্ণ |
+| `README.md`, `PROFILE_NOTES.md` (Part 7) | ফিচার টেবিল/স্ট্রাকচার আপডেট; সূত্র-সিদ্ধান্ত-সাইজ-স্কিপড নোট | সম্পূর্ণ (সর্বশেষ) |
+| `tests/_harness.js`, `tests/regress_report_rows.js`, `tests/smoke_report.py` | Node vm harness (app-main.js থেকে নাম ধরে ফাংশন extract), রিগ্রেশন, Report smoke | সম্পূর্ণ |
+
+---
+
+# ৮. পরের ধাপে পড়ার ফাইল (শুধু নাম)
+Part 5 এর জন্য: `js/pages/profile.js` (`_pf` স্টেট, `_pfSectionA/B/C`, `_pfRenderDynamic`), `js/calculations/profile.js` (`computeProfileMonth` আউটপুট: `punch`, `nightDates`, `holidayDates`), `css/profile.css`, `index.html` (`#shiftDatesDrawer` মার্কআপ — 5.2-এ চিপ পুনর্ব্যবহার সম্ভব কিনা দেখতে)। পুরনো Part 2-এর তালিকা নিচে:
+Part 2 এর জন্য: `js/pages/report.js` (লাইন ~25–185 `_rptRows`, `rptIsDayClosed`), `js/app-main.js` (:60–135 `getPrevMonthNightSet`/`hasPrevMonthLastNight`/`getMonthDatasetMeta`, :6018 `isEmployeeOnApprovedLeave`), `js/calculations/early-exit.js`, `absent.json`, `data/2026-11.json` (নমুনা), `js/pages/profile.js`।
+
+---
+
+# ৯. পরিচিত সমস্যা, অনুমান, এবং যা করা যাবে না
+- **ঝুঁকি R1:** `getMonthDatasetMeta` ও `prevNight` পুরো মাসের ডেটা চায় → per-employee ফাইলে প্রি-কম্পিউট করতে হবে (D-3)। Option B-তে মাসের পুরো ফাইল আসে তাই সরাসরি কাজ করে।
+- **ঝুঁকি R2:** `isPlantOrGovtHolidayDate` browser localStorage-এর overrides পড়ে ও hardcoded 2026 তালিকা ব্যবহার করে — Node টেস্টে stub/ইনজেক্ট করতে হবে।
+- **অনুমান A1:** present day = In/Out আছে এমন scheduled working day (D-4)। Owner ভিন্ন চাইলে বদলাবে।
+- **অনুমান A2:** QA-এর শুধু 2026-11 ডেটা আছে ⇒ QA প্রোফাইলে ১ মাসের ডেটা (edge case হিসেবে টেস্ট)।
+- **অনুমান A3:** `data/emp/` ফাইল GitHub Pages-এ সার্ভ হবে; ~1000+ ছোট ফাইল (PR ~1082 + QA ~72)।
+- **করা যাবে না:** rates/leaderboard/admin/access-control বদলানো; ফাংশন/ID রিনেম; নতুন লাইব্রেরি/CDN/ফন্ট; নতুন Firebase write/telemetry; `js/admin/admin-core.js` বদলানো; `emp` JSON precache করা।
+
+---
+
+# CHANGELOG / DECISION LOG (নতুন এন্ট্রি নিচে যোগ করো)
+- 2026-11-14 Part 7: D-35 চূড়ান্ত ভেরিফিকেশন `tests/verify_p7.py` ALL PASS (৪ জন × ১১ সেকশন × light/dark, ৫ ট্যাব, no-ID, unknown ID, back/deeplink/VS, offline SW)। ফল: কোনো UI ফিক্স লাগেনি। অফলাইনে year-scope কাজ করে (SW runtime cache `data/emp` ফাইল দেয়; localStorage ব্যবহার হয় না Option A-তে)।
+- 2026-11-14 Part 7: D-36 "View another employee" (optional) **স্কিপড**: §5 প্রাইভেসি ("শুধু saved ID-র নিজের ডেটা") ও §2 "only if cheap"-এ সংঘাত; in-charge-এর জন্য `viewEmployeeFromLeaderboard` আগে থেকেই আছে। Part 1–6-এ লগ হয়নি, এখানে লগ করা হলো।
+- 2026-11-14 Part 7: D-37 ডেটা-সাইজ পরিমাপ: spec-এর "≈40 MB" আসলে unzipped; gzip-এ ১২ মাস ≈ 3.0 MB (২০২৬-এর ১১ মাস ≈ 2.7 MB)। Option A: গড় 20.8 KB raw / 3.8 KB gzip, সর্বোচ্চ 34.5 KB / 5.8 KB; `data/emp` = ১২৮৫ ফাইল (PR ১২১৩ + QA ৭২), ২৭.৪ MB রেপো-স্পেস।
+- 2026-11-14 Part 7: D-38 tap-target চেকে `.theme-toggle` (48×26) বাদ — এটা অ্যাপের বিদ্যমান গ্লোবাল হেডার কন্ট্রোল (মূল index.html-এও আছে), এই ফিচারের নয়; বদলানো হয়নি। unknown-ID-তে `data/emp/...` 404 কনসোলে আসে — এটা নকশা-অনুযায়ী Option B ফলব্যাক, আসল error নয়।
+- 2026-11-14 Part 7: D-39 spec-এর টেস্ট-ডেটা যাচাই: 556490 নভেম্বরে requisition 5 + punch 2 (ফাইলে ও G সেকশনে মিলেছে)।
+- 2026-11-14 Part 6: D-32 I-3/I-4 একটি কার্ডে `_pfSectionI3`: সেকশন = ডেটার `area` ফিল্ড (অ্যাপের নিজস্ব সেকশন: PR-এ Packing Hall/Solid/Softgel/Overall; Packing Hall = ৮৯৭ জন), র‍্যাঙ্ক = OT ঘণ্টায় (`1 + আমার চেয়ে বেশি OT-ওয়ালা সংখ্যা`), গড় বেনামী; ৫ জনের কম হলে গড় লুকানো, অন্যের নাম/ID কখনও নয়। মাস-ফাইল ক্যাশে না থাকলে "Show my rank" বাটনে একবার লোড (বড় ফাইল)। ৩-মাসের ট্রেন্ড **স্কিপড** (৩টি বড় ফাইল লাগত)। মাস স্কোপে নির্বাচিত মাস, বছর স্কোপে চলতি মাস। টেস্ট `tests/crosscheck_p6b_page.py` ALL PASS (৪ জন)। "Open Rank" → leaderboard পেজ।
+- 2026-11-14 Part 6: D-33 I-6 **স্কিপড**: payslip কার্ড (`#payslipCard`) লাইভ কোডে কোথাও দৃশ্যমান করা হয় না (শুধু পুরনো `admin-core.js` কপিতে `display='block'` আছে), তাই শর্টকাট বাটন কাজ করত না; ডেড বাটন বাদ দেওয়া হয়েছে। চাইলে owner আগে payslip কার্ড চালু করবে, তারপর শর্টকাট।
+- 2026-11-14 Part 6: D-34 I-5 share image (`_pfShareSummary`) report-এর `downloadReportPNG` পদ্ধতি পুনর্ব্যবহার করে (html2canvas cdnjs থেকে lazy-load, যেমন Report পেজ করে — নতুন CDN নয়)। 👁 hide চালু থাকলে ছবিতে টাকা বাদ। **স্যান্ডবক্সে নেটওয়ার্ক নেই বলে প্রকৃত PNG তৈরি পরীক্ষা হয়নি**: শুধু কার্ড HTML ও ব্যর্থতার পথ (toast, error নেই, অস্থায়ী box মুছে যায়) যাচাই। রিয়েল ডিভাইসে একবার দেখে নিতে হবে। `.prof-links` wrap করে।
+- 2026-11-14 Part 6: D-31 I-2 `_pfSectionI2` (H-এর পরে, G-র আগে): স্কোপে মোট early exit + মাসওয়ারি (শুধু non-zero)। I-7: `Open daily report` এখন `yearSelect/monthSelect` প্রিফিল করে (month scope = নির্বাচিত মাস, year scope = চলতি মাস); যাচাই: Last month চিপ → `#/report?id=CF2170&month=2026-10`। ক্যালেন্ডারে আজকের পরের দিন `·` (pending) দেখায়, BD সময়ে। বাকি I-3/I-4/I-5/I-6 অনুরোধ অনুযায়ী পরের ধাপে; I-3/I-4 অন্য কর্মীর ডেটা লাগে (পুরো মাস-ফাইল) তাই বেনামী/গোপনীয়তা ও ডেটা-সাইজ ভেবে করতে হবে।
+- 2026-11-14 Part 6: D-29 Section G (`_pfSectionG`) H-এর পরে বসানো; স্কোপের মাসগুলো newest-first, প্রথম মাস খোলা, বাকি `<details>`। প্রতি আইটেম + মাসওয়ারি "Report all" বাটন `openErpSupportModal(msg, area)` ব্যবহার করে (বার্তা `_pfBuildErpMessage`)। টেস্ট `tests/crosscheck_p6_page.py` ALL PASS (৫ জন)। `.prof-btn-ghost/primary:hover` কনট্রাস্ট ফিক্স। cache-buster `p6`, CACHE_NAME `profile-p6`।
+- 2026-11-14 Part 6: D-30 I-1 `_pfSectionI1` (B-এর পরে): streak = শেষ মাস থেকে পিছনে একটানা present%=100 মাস; best = সর্বোচ্চ present% (সমান হলে নতুন মাস); ক্যালেন্ডার month-scope-এ নির্বাচিত মাস, year-scope-এ সর্বশেষ মাস; প্রতি ঘরে অক্ষর (P/A/L/O/N/B/·) যাতে শুধু রং-নির্ভর না হয়।
+- 2026-11-14 P5 অডিট (নতুন চ্যাট): P1–P5 মার্জ করে যাচাই — regress_report_rows (1918 employee-months, diffs 0), loader.test, emp_history_equiv (diffs 0), crosscheck_p5_page ALL PASS। প্ল্যানের 2.1/2.2 চেকবক্স পুরনো `[ ]` ছিল, আসলে সম্পন্ন — `[x]` করা হয়েছে। বাকি: Part 6 (G + I), Part 7 (README, PROFILE_NOTES.md, চূড়ান্ত ভেরিফিকেশন)। এই MERGED প্যাকেজই এখন একমাত্র সোর্স; আলাদা P1–P5 জিপ আর লাগবে না।
+- 2026-11-14 Part 5: D-28 H-এর duty ▲▼ রং নিরপেক্ষ-অর্থে (বেশি = amber, কম = green) শুধু সূচক; ভালো/খারাপ বলা হয়নি। রাতের শিফটের গড় দিনের গড় থেকে আলাদা নোটে। D/E/F-এর "Last month" কার্ড বছর-স্কোপে চলতি-থেকে-আগের মাস, মাস-স্কোপে "This year" দেখায়।
+- 2026-11-14 Part 4: D-22 👁 hide-amounts বাটন header-এ (সব ৳ ঢাকে — hero সহ) এবং Section C-র কার্ডেও আছে; দুটোই একই `localStorage <ns>rppf_prof_hide`। টাকার সব স্প্যান/SVG লেবেলে `.prof-amt` ক্লাস (blur)। নতুন টাকা দেখানো কোডে `_pfAmt()` ব্যবহার করতে হবে।
+- 2026-11-14 Part 4: D-23 Scope chips overflow-scroll বদলে wrap (চতুর্থ চিপ ডানে কাটা পড়ছিল)। "This year" = BD-সময়ের বর্তমান বছরের জানুয়ারি…চলতি মাস; Dec 2025 শুধু Pick month থেকে। Month-wise তালিকা/চার্ট সবসময় নির্বাচিত স্কোপের পুরো বছর দেখায় (month scope-এ নির্বাচিত মাস হাইলাইট)।
+- 2026-11-14 Part 4: D-24 **বাগ ফিক্স:** অ্যাপের `monthIndexMemoryCache` ডিপার্টমেন্ট-ভিত্তিক নয়; PR হিসেবে বুট করে Me-তে QA ID সেভ করলে primary মাসে PR তালিকা আসে → কর্মী `null`, "ID not found" দেখাচ্ছিল। এখন primary `null` হলে ও emp-ফাইলে (পাথেই dept আছে) থাকলে emp-ফাইল ব্যবহার। Option B-তে একই ধরনের stale-dept মেমরি-ক্যাশের ঝুঁকি থেকে যায় (অনুমান A5: বাস্তবে dept বদলালে অ্যাপ `clearDepartmentCaches` চালায়; সম্পূর্ণ নিশ্চিত নয়)।
+- 2026-11-14 Part 4: D-25 চলতি মাসে রেকর্ড না থাকলে (যেমন CF2990, শুধু আগের মাসে ছিল) "This month" কার্ডে "No record" দেখায়, স্কোপ নিজে বদলায় না (owner সিদ্ধান্ত ছাড়া auto-switch করা হয়নি)। চাইলে পরে ছোট পরিবর্তন।
+- 2026-11-14 Part 4: D-26 Section C-তে ▲▼ তুলনায় সর্বশেষ মাস চলতি (অসম্পূর্ণ) হলে "· month still running" লেখা হয়, যাতে আংশিক মাসকে ভুল পতন ভাবা না হয়। Best month/Avg-এ চলতি মাসও ধরা হয় (সব মাসের `totalEarned` যেমন ফাইলে আছে)।
+- 2026-11-14 Part 4: D-27 Month scope-এ Section B-র "Absent days" ও Hero-র "Absent" একই `computeEmpMonthRows` থেকে (Report-এর সাথে একই ফাংশন); মাসের মাঝে যোগ দেওয়া কর্মীর আগের দিনগুলো Absent ধরা বিদ্যমান Report আচরণ (A4), যেমন 556490-এর জুলাই 45%।
+- 2026-11-14 Part 3: D-18 Option B-তে current (বন্ধ-না-হওয়া) মাস সবসময় `fetchMonthPreIndexedData` দিয়ে (সেশনে একবার ফ্রেশ; spec-এর "updatedAt বদলালে refetch"-এর সরল রূপ), closed মাস localStorage compact cache থেকে, কখনও refetch নয়।
+- 2026-11-14 Part 3: D-19 primary মাস সবসময় মাস-ফাইল (ফ্রেশ) থেকে; emp-ফাইল থেকে শুধু তার `prevNight` সংশোধন (`revision` কলব্যাক)। QA-তে আগের মাসের ফাইল না থাকলে (404) "কোনো রেকর্ড নেই" ধরা হয়।
+- 2026-11-14 Part 3: D-20 `meta` লজিকের কপি ৩টি (app-main.js, build_emp_history.py, profile-data.js) — সমতা টেস্টে আটকানো; app-main.js-এর লজিক বদলালে তিনটিই বদলাতে হবে।
+- 2026-11-14 Part 3: D-21 emp ফাইলে `fileName` ফিল্ড বাদ; ফাইলনাম = ID uppercase (non-alnum → `_`)। Alias (CL6515↔556515) ক্লায়েন্ট দুটি নামই চেষ্টা করে।
+- 2026-11-14 Part 2: D-15 present-day গণনা: সারিতে In+Out আছে, pending নয়, এবং (regular duty/OT>0 অথবা day-off/holiday duty নেই)। শুধু day-off/holiday কলামে duty থাকলে scheduled নয়। এক punch missing (`missIn/missOut`) সারি scheduled-এর দুই দিকেই বাদ (punch problem)। Approved leave Thu/Fri-তে পড়লে গণনায় নয় (শুধু Thu/Fri — plant holiday আলাদা করে ধরা হয় না, কারণ attendance.js লজিক বদলানো যাবে না)। Year-level present% = pooled (Σpresent ÷ Σscheduled), mean-of-means নয়।
+- 2026-11-14 Part 2: D-16 Avg punch: দিনের শিফট In/Out সরল গড় (মিনিট); night সারি (r[10] বা shift DN/NIGHT) আলাদা (circular mean, মধ্যরাত পার হলেও ঠিক); Out≤In দিনের-শিফট সারি বাদ। "Avg duty hours" = r[4]+r[6]+r[8] (OT বাদ) এর গড় পাঞ্চ-সম্পূর্ণ দিনে।
+- 2026-11-14 Part 2: D-17 Issues (G) ফাইলের `requisitionProblems/nightSuspects/punchProblems` অ্যারে থেকে (spec অনুযায়ী); Report-এর রো-ভিত্তিক ফ্ল্যাগ থেকে নয়।
+- 2026-11-14 Part 2: অনুমান A4 — মাসের মাঝে যোগ/ছাড়া কর্মীর ক্ষেত্রে Report লজিক আগের দিনগুলোকে Absent ধরে (যেমন CF2990: ১ মাস, present 30%); এটা বিদ্যমান Report আচরণ, বদলানো হয়নি।
+- 2026-11-14 Part 2: D-13 `rptIsDayClosed` report.js থেকে attendance.js-এ সরানো (attendance.js report.js-এর আগে লোড হয়; leaderboard.js একই global নাম কল করে, অপরিবর্তিত)। attendance.js-এ আলাদা prefix-ওয়ালা const (`_ATT_MON/_ATT_DAY/_attMin`) যাতে classic-script global redeclare error না হয়।
+- 2026-11-14 Part 2: D-14 Node harness `app-main.js` থেকে ফাংশন নাম ধরে extract করে (regex-এ quote থাকলে scanner ভাঙে — `cleanPunchValue` harness-এ হাতে লেখা)।
+- 2026-11-14 Stage 0: রেপো পড়া শেষ, D-1…D-8 লিপিবদ্ধ, প্ল্যান তৈরি।
+- 2026-11-14 Part 1: D-9 desktop topnav-এ VS (1v1) বাটন রাখা হয়েছে (`#page-more` desktop-এ `display:none` তাই More-এ VS নেই; spec-এর "move to More" শুধু mobile bottom-nav-এর জন্য)। My Profile বসেছে Report-এর পরে।
+- 2026-11-14 Part 1: D-10 `vs` PERMANENT_PAGES-এই থাকল; bottom-nav highlight ম্যাপে `vs→more`; topnav highlight অপরিবর্তিত (VS বাটন নিজেই active)।
+- 2026-11-14 Part 1: D-11 নতুন ইউজারে প্রথমবার খোলায় অ্যাপের "RPPF — User Login" মোডাল স্বয়ংক্রিয় খোলে (বিদ্যমান আচরণ, অপরিবর্তিত); ✕ চাপলে Me-তে empty state দেখা যায়।
+- 2026-11-14 Part 1: D-12 `sw.js` precache-এ নতুন CSS/JS এখনই যোগ ও CACHE_NAME বাম্প করা হয়েছে (পরিকল্পনায় 3.4 ছিল) যাতে অফলাইনে 404 না হয়; 3.4-এ আবার বাম্প হবে।
+- Smoke ফলাফল (Playwright 390×844): ৫ ট্যাব সঠিক order; Me→`#/profile`, aria-current ঠিক; Me→Report→Back আবার Me; More→VS→`#/vs` ও More highlighted; `#/profile` cold deep-link কাজ করে; desktop topnav-এ My Profile। Console-এ শুধু sandbox-এ নেটওয়ার্ক-অনুপস্থিত বহিঃসম্পদ ও টেস্টে SW ব্লক — আমাদের কোডের কোনো error নেই।

@@ -537,13 +537,8 @@ setPreferredId(raw); setAppMode('employee'); updateModeUI(); closeModeSetupModal
 showToast(`Your permanent ID (${raw}) has been saved`, 'success');
 const empInput = document.getElementById('employeeId');
 if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
-if (currentPermanentPage === 'profile' && typeof initProfilePage === 'function') {
-  switchPage('profile');
-  findReport();
-} else {
-  switchPage('search');
-  findReport();
-}
+switchPage('search');
+findReport();
 }
 function loginFailureMessage(res) {
 if (!res) return 'Login failed';
@@ -1538,10 +1533,12 @@ if (window.Router && typeof window.Router.onSideDrawerClosed === 'function') win
 function updateNavHighlights() {
 const activeKey = currentSideDrawerPage
 ? (MORE_PAGES.includes(currentSideDrawerPage) ? 'more' : currentSideDrawerPage)
-: (currentPermanentPage === 'vs' ? 'more' : currentPermanentPage);
+: currentPermanentPage;
+/* VS (1v1) has no bottom-nav slot; it lives in More, so highlight More while VS is active */
+const bnKey = (!currentSideDrawerPage && activeKey === 'vs') ? 'more' : activeKey;
 document.querySelectorAll('.bn-item').forEach(item => {
 const nav = item.getAttribute('data-nav');
-const on = (nav === activeKey);
+const on = (nav === bnKey);
 item.classList.toggle('active', on);
 if (on) item.setAttribute('aria-current', 'page'); else item.removeAttribute('aria-current');
 });
@@ -1549,7 +1546,6 @@ document.querySelectorAll('.topnav-item').forEach(item => {
 const nav = item.getAttribute('data-nav');
 const on = currentSideDrawerPage ? (nav === currentSideDrawerPage) : (nav === currentPermanentPage);
 item.classList.toggle('active', on);
-if (on) item.setAttribute('aria-current', 'page'); else item.removeAttribute('aria-current');
 });
 }
 function switchPage(pageName, forceOpen = false, fromRouter = false) {
@@ -1570,8 +1566,8 @@ if (el) el.classList.toggle('active', p === pageName);
 document.body.dataset.page = pageName;
 updateNavHighlights();
 if (pageName === 'report') initReportPage();
-if (pageName === 'profile' && typeof initProfilePage === 'function') initProfilePage();
 if (pageName === 'vs') initVsPage();
+if (pageName === 'profile' && typeof initProfilePage === 'function') initProfilePage();
 window.scrollTo(0, 0);
 return;
 }
@@ -3455,13 +3451,8 @@ closeModeSetupModal();
 showToast(`Saved ID: ${raw}`, 'success');
 const empInput = document.getElementById('employeeId');
 if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
-if (currentPermanentPage === 'profile' && typeof initProfilePage === 'function') {
-  switchPage('profile');
-  findReport();
-} else {
-  switchPage('search');
-  findReport();
-}
+switchPage('search');
+findReport();
 }
 // Override openModeSetupModal, saveEmployeeModeSetup, savePermanentIdFromSettings, deletePermanentIdFromSettings, and updateModeUI
 const _origUpdateModeUI = updateModeUI;
@@ -3511,13 +3502,8 @@ closeModeSetupModal();
 showToast(`Saved ID (${raw}) [${detectedDept}]`, 'success');
 const empInput = document.getElementById('employeeId');
 if (empInput) { empInput.value = raw; toggleClearIdBtn(); }
-if (currentPermanentPage === 'profile' && typeof initProfilePage === 'function') {
-  switchPage('profile');
-  findReport();
-} else {
-  switchPage('search');
-  findReport();
-}
+switchPage('search');
+findReport();
 return;
 }
 // Special Role ID: Verify Password / PIN
