@@ -252,9 +252,10 @@
     });
 
     // 1. Requisition Problems
-    const rawReq = Array.isArray(emp.requisitionProblems)
+    const rawReq = (Array.isArray(emp.requisitionProblems)
       ? emp.requisitionProblems
-      : (root && typeof root.computeEmpRequisitionProblems === 'function' ? root.computeEmpRequisitionProblems(emp) : []);
+      : (root && typeof root.computeEmpRequisitionProblems === 'function' ? root.computeEmpRequisitionProblems(emp) : []))
+      .filter(p => !(p && p.isNightIssue)); // night issues are listed separately as nightSuspects here
 
     const requisitionIssues = rawReq.map(p => ({
       type: 'requisition',

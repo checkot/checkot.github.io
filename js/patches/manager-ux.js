@@ -125,6 +125,7 @@
           <li><b>Thu/Fri:</b> worked as Regular Duty instead of Day-Off duty</li>
           <li><b>Govt holiday:</b> worked as Regular Duty instead of Holiday duty</li>
         </ul>
+        <p><b>🌙 Night Issue</b> (shown in the same list, labelled separately): the shift is <b>DN</b> (or a night punch / very long duty is seen) but Empress <b>Night is not YES</b>. Night-duty staff must punch Out and In once between <b>09:30 – 10:15 PM</b>; if that punch exists but Night ≠ YES, the night-end Out punch is missing, the requisition is missing or Empress is not synced. It is judged only after the day closes (next day 09:00) and it is <u>never counted as a night</u> until ERP marks Night = YES.</p>
         <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and the expected OT, then use <i>Forward Requisitions to ERP</i>.</p>
         <p class="mgr-note">A flag means “please verify”, not a final verdict.</p>`
     },

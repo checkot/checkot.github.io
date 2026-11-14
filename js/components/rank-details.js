@@ -141,8 +141,8 @@
     } catch (e) { A.absent = Array.isArray(rec.generalAbsentDays) ? rec.generalAbsentDays.slice() : []; }
     // requisition
     try {
-      A.req = (Array.isArray(rec.requisitionProblems) && rec.requisitionProblems.length) ? rec.requisitionProblems
-        : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(rec) : []);
+      A.req = (typeof computeEmpRequisitionProblems === 'function' && !rec.isMultiMonth) ? computeEmpRequisitionProblems(rec)
+        : (Array.isArray(rec.requisitionProblems) ? rec.requisitionProblems : []);
     } catch (e) { A.req = []; }
     // early exit / gate pass (In-Charge & Admin only; rules come from shift-rules.json)
     try { A.early = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(rec) : []; } catch (e) { A.early = []; }
@@ -208,15 +208,15 @@
       listTitle: function (A) { return 'Missing punch records (' + A.punchRows.length + ' days)'; }
     },
     requisition: {
-      icon: '📋', cls: 'req', color: 'var(--warning)', title: 'Pending OT Requisition', bannerSub: 'Worked beyond duty but the In-Charge requisition is still pending',
+      icon: '📋', cls: 'req', color: 'var(--warning)', title: 'OT Missing & Night Issue', bannerSub: 'OT: worked beyond duty, requisition pending. 🌙 Night Issue: DN / night punch found but Empress Night is not YES',
       metric: function (A) { return A.req.length; }, fmt: function (v) { return v + 'd'; },
       body: function (A) {
         return A.req.length ? table(['Date', 'In – Out', 'Duty', 'Expected OT', 'Reason'], A.req.map(function (p) {
-          return '<tr><td class="b">' + E(p.date) + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td class="warn b">' + E(p.expectedOt) + '</td><td class="m s">' + E(p.reason || 'Pending Requisition') + '</td></tr>';
+          return '<tr><td class="b">' + E(p.date) + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td class="warn b"' + (p.isNightIssue ? ' style="color:#4f46e5"' : '') + '>' + (p.isNightIssue ? '🌙 ' : '') + E(p.expectedOt) + '</td><td class="m s">' + (p.isNightIssue ? '<b style="color:#4f46e5">Night Issue:</b> ' : '') + E(p.reason || 'Pending Requisition') + (p.fix ? '<br><i>' + E(p.fix) + '</i>' : '') + '</td></tr>';
         })) : empty('✓ No pending OT requisition');
       },
       total: function (as) { return grid([kpi('Total Pending', sum(as, 'req', true) + 'd', 'var(--warning)', true), kpi('Months Affected', as.filter(function (a) { return a.req.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.req.length; }, 'd'))]); },
-      single: function (A) { return grid([kpi('Pending Days', A.req.length + 'd', 'var(--warning)', true), kpi('Overtime (paid)', r1(A.ot) + 'h'), kpi('Duty', r1(A.duty) + 'h')]); },
+      single: function (A) { return grid([kpi('Pending Days', A.req.length + 'd', 'var(--warning)', true), kpi('🌙 Night Issue', A.req.filter(function (p) { return p.isNightIssue; }).length + 'd', '#4f46e5'), kpi('Overtime (paid)', r1(A.ot) + 'h'), kpi('Duty', r1(A.duty) + 'h')]); },
       listTitle: function (A) { return 'Pending requisition dates (' + A.req.length + ' days)'; }
     },
     earlyExit: {

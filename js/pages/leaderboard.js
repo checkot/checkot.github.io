@@ -769,9 +769,9 @@ function openIccContextModal(empId, optCrit, optMonth) {
       <div class="icc-ctx-banner req">
         <div>
           <div class="icc-ctx-banner-title">
-            <span>📋</span><span>Pending OT Requisitions: <b>${reqProbs.length} Days</b></span>
+            <span>📋</span><span>OT Missing: <b>${reqProbs.filter(p => !p.isNightIssue).length} Days</b>${reqProbs.some(p => p.isNightIssue) ? ` &nbsp;•&nbsp; 🌙 Night Issue: <b>${reqProbs.filter(p => p.isNightIssue).length} Days</b>` : ''}</span>
           </div>
-          <div class="icc-ctx-banner-sub">Employee worked overtime hours but In-Charge approval requisition is pending</div>
+          <div class="icc-ctx-banner-sub">OT Missing = worked overtime but requisition is pending. 🌙 Night Issue = DN shift / night punch found but Empress Night is not YES (not counted as a night until ERP fixes it)</div>
         </div>
         <div>
           <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
@@ -803,8 +803,8 @@ function openIccContextModal(empId, optCrit, optMonth) {
                   <td style="font-weight:700;">${esc(p.date)}</td>
                   <td style="color:var(--text-2);font-size:11.5px;">${esc(p.in)} - ${esc(p.out)}</td>
                   <td>${esc(p.duty || p.elapsed)}h</td>
-                  <td style="font-weight:800;color:#d97706;">${esc(p.expectedOt)}</td>
-                  <td style="font-size:11.5px;color:var(--muted);">${esc(p.reason || 'Pending Requisition')}</td>
+                  <td style="font-weight:800;color:${p.isNightIssue ? '#4f46e5' : '#d97706'};">${p.isNightIssue ? '🌙 ' : ''}${esc(p.expectedOt)}</td>
+                  <td style="font-size:11.5px;color:var(--muted);">${p.isNightIssue ? '<b style="color:#4f46e5;">Night Issue:</b> ' : ''}${esc(p.reason || 'Pending Requisition')}${p.fix ? `<br><i>${esc(p.fix)}</i>` : ''}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1149,7 +1149,7 @@ night: 'Most Night Duty RPPF',
 avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF',
-requisition: 'OT Requisition Missing RPPF',
+requisition: 'OT Missing & Night Issue RPPF',
 earlyExit: 'Gate Pass / Early Exit RPPF',
 absent: 'Highest Absent (General Days) RPPF'
 };
@@ -1166,7 +1166,7 @@ night: 'Night Shifts',
 avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In',
 punch: 'Missing',
-requisition: 'Missing OT',
+requisition: 'OT / Night Issue',
 earlyExit: 'Early Exits',
 absent: 'Absent Days'
 };

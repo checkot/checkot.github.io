@@ -526,7 +526,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   emp.generalAbsentDays = absRes.dates;
   emp.generalAbsentShortDates = absRes.shortDates;
   emp.generalAbsentCount = absRes.count;
-  emp.requisitionProblems = computeEmpRequisitionProblems(emp);
+  emp.requisitionProblems = computeEmpRequisitionProblems(emp).filter(p => !(p && p.isNightIssue)); // Report has its own night-suspect flag
   emp.requisitionProblemCount = emp.requisitionProblems.length;
   window._rptCtx = { emp, month, id: searchId, prevNight };
   if (window._rptReset) _rptReset();

@@ -119,9 +119,19 @@ if (typeof getGeneralAbsentCount !== 'function') {
 /* ==========================================================================
    REQUISITION & ABSENT METRICS COMPUTATION
    ========================================================================== */
+/* Public funnel used by Ranking: OT-missing items + Night Issues (DN without Night=YES).
+   Night issues are tagged isNightIssue:true so every screen can label them separately. */
 function computeEmpRequisitionProblems(e) {
   if (!e) return [];
-  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) return e.requisitionProblems;
+  if (e.isMultiMonth) return Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [];
+  const ot = _computeOtRequisitionProblems(e);
+  const nights = typeof computeEmpNightIssues === 'function' ? computeEmpNightIssues(e) : [];
+  return typeof mergeRequisitionAndNight === 'function' ? mergeRequisitionAndNight(ot, nights) : ot;
+}
+
+function _computeOtRequisitionProblems(e) {
+  if (!e) return [];
+  if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.some(p => p && !p.isNightIssue)) return e.requisitionProblems.filter(p => !p.isNightIssue);
   const daily = Array.isArray(e.daily) ? e.daily : [];
   const reqProbs = [];
 

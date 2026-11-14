@@ -1068,9 +1068,11 @@ return null;
 }
 function getRequisitionProblemCount(emp) {
   if (!emp) return 0;
-  if (Array.isArray(emp.requisitionProblems)) return emp.requisitionProblems.length;
-  if (emp.requisitionProblemCount != null) return Number(emp.requisitionProblemCount) || 0;
-  const probs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : [];
+  if (emp.isMultiMonth) {
+    if (Array.isArray(emp.requisitionProblems)) return emp.requisitionProblems.length;
+    return Number(emp.requisitionProblemCount) || 0;
+  }
+  const probs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (Array.isArray(emp.requisitionProblems) ? emp.requisitionProblems : []);
   emp.requisitionProblems = probs;
   emp.requisitionProblemCount = probs.length;
   return probs.length;
@@ -1798,7 +1800,7 @@ function buildSingleEmployeeReqErpMessage(empId, empName, reqProbs) {
 
 function showRemarks(punchProblems, detection) {
 const curEmp = typeof currentResult !== 'undefined' ? currentResult : {};
-const rawReqProbs = Array.isArray(curEmp.requisitionProblems) ? curEmp.requisitionProblems : [];
+const rawReqProbs = (Array.isArray(curEmp.requisitionProblems) ? curEmp.requisitionProblems : []).filter(p => !(p && p.isNightIssue));
 const box = document.getElementById('remarksBox');
 const pList = Array.isArray(punchProblems) ? punchProblems : [];
 const pCount = Array.isArray(punchProblems) ? punchProblems.length : (Number(punchProblems) || 0);
@@ -2191,9 +2193,9 @@ const absObj = typeof computeEmpGeneralAbsents === 'function'
   : { dates: (e.generalAbsentDays || []), shortDates: (e.generalAbsentShortDates || []), count: (e.generalAbsentCount || 0) };
 const absArr = absObj.dates || [];
 const absShortArr = absObj.shortDates || [];
-const reqArr = Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0
-  ? e.requisitionProblems
-  : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
+const reqArr = typeof computeEmpRequisitionProblems === 'function'
+  ? computeEmpRequisitionProblems(e)
+  : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
 const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
 const eeArr = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(e) : [];
 
@@ -2757,13 +2759,17 @@ function openBulkRequisitionErpForward() {
   const areaLabel = describeLbFilter();
   const monthStr = currentLeaderboardResult.month || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
   const lines = list.map((e, i) => {
-    let rDetails = `${getRequisitionProblemCount(e)} days`;
-    if (Array.isArray(e.requisitionProblems) && e.requisitionProblems.length > 0) {
-      rDetails = e.requisitionProblems.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; ');
-    }
+    const probs = (typeof computeEmpRequisitionProblems === 'function' && !e.isMultiMonth) ? computeEmpRequisitionProblems(e) : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
+    const otP = probs.filter(p => !p.isNightIssue), nP = probs.filter(p => p.isNightIssue);
+    const parts = [];
+    if (otP.length) parts.push('OT Missing: ' + otP.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; '));
+    if (nP.length) parts.push('Night Issue: ' + nP.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'})`).join('; '));
+    const rDetails = parts.length ? parts.join('\n   └ ') : `${getRequisitionProblemCount(e)} days`;
     return `${i + 1}. ${e.name || '—'} (${e.id}) [${e.sub || 'General'}]:\n   └ ${rDetails}`;
   });
-  const msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition Pending Report:\nThe following employees physically worked overtime (9.2h - 13.5h), but Empress shows 0 OT (Requisition Missing):\n\n${lines.join('\n\n')}\n\nPlease allocate and approve their OT requisitions before payroll cutoff. Thank you!`;
+  const hasNightIssue = list.some(e => ((typeof computeEmpRequisitionProblems === 'function' && !e.isMultiMonth) ? computeEmpRequisitionProblems(e) : []).some(p => p.isNightIssue));
+  const nightNote = hasNightIssue ? `\n\nNight Issue = DN shift / 09:30-10:15 PM night punch found, but Empress Night is not YES. Please check the night-end Out punch, Empress sync and requisition, then mark Night = YES if the night duty is genuine.` : '';
+  const msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition / Night Issue Report:\nOT Missing = employees physically worked overtime (9.2h - 13.5h), but Empress shows 0 OT (Requisition Missing).${nightNote}\n\n${lines.join('\n\n')}\n\nPlease allocate/approve the requisitions and fix the night flags before payroll cutoff. Thank you!`;
   const areaOnly = document.getElementById('areaFilter')?.value || 'All';
   if (typeof openErpSupportModal === 'function') {
     openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
@@ -3184,8 +3190,11 @@ let reqMetaUnderName = '';
 if (isReqCrit) {
   const probs = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
   if (probs.length > 0) {
-    const pDates = probs.map(p => `${p.date}`).join(', ');
-    reqMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(pDates)}</div>`;
+    const shortD = p => String(p.date).replace(/-20\d\d$/, '');
+    const otD = probs.filter(p => !p.isNightIssue).map(shortD).join(', ');
+    const nightD = probs.filter(p => p.isNightIssue).map(shortD).join(', ');
+    if (otD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(otD)}</div>`;
+    if (nightD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#4f46e5;margin-top:2px;">🌙 Night Issue (DN, Night≠YES): ${esc(nightD)}</div>`;
   }
 }
 let earlyMetaUnderName = '';
