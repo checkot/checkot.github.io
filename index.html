@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/manager-ux.css?v=20261113ee3">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
-  <link rel="stylesheet" href="css/fit.css?v=20261114n2">
+  <link rel="stylesheet" href="css/fit.css?v=20261114h1">
   <link rel="stylesheet" href="css/modern-top.css?v=20261112mt4">
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261114p1">
@@ -1187,6 +1187,11 @@ document.documentElement.setAttribute('data-theme', t);
 <span class="lb-issue-txt"><span class="lb-issue-title">Night Requisition</span><span class="lb-issue-sub" id="hubSubNightIssue">DN / night punch, Night not YES</span></span>
 <span class="lb-issue-val" id="hubValNightIssue">—</span>
 </button>
+<button type="button" class="lb-issue-tile holiday-hub" onclick="openRankDrillDown('holidayReq')">
+<span class="lb-issue-ico">🏖️</span>
+<span class="lb-issue-txt"><span class="lb-issue-title">Holiday Requisition</span><span class="lb-issue-sub" id="hubSubHolidayReq">Worked on holiday / off day, not booked</span></span>
+<span class="lb-issue-val" id="hubValHolidayReq">—</span>
+</button>
 <button type="button" class="lb-issue-tile req-hub" onclick="openRankDrillDown('requisition')">
 <span class="lb-issue-ico">⚠️</span>
 <span class="lb-issue-txt"><span class="lb-issue-title">OT Requisition</span><span class="lb-issue-sub" id="hubSubReq">Worked but 0 OT</span></span>
@@ -1392,6 +1397,7 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">AVG IN</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="nightIssue" onclick="openRankDrillDown('nightIssue')">Night Requisition</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="holidayReq" onclick="openRankDrillDown('holidayReq')">Holiday Requisition</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">OT Requisition</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Problem</button>
 </div>
@@ -1957,8 +1963,8 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/core/access-control.js?v=20261111ac"></script>
   <script src="js/calculations/rates.js?v=20261106b"></script>
   <script src="js/calculations/early-exit.js?v=20261113ee4"></script>
-  <script src="js/calculations/night-issues.js?v=20261114n1"></script>
-  <script src="js/calculations/ranking.js?v=20261114n2"></script>
+  <script src="js/calculations/night-issues.js?v=20261114h1"></script>
+  <script src="js/calculations/ranking.js?v=20261114h1"></script>
   <script src="js/calculations/attendance.js?v=20261114p1"></script>
   <script src="js/calculations/profile.js?v=20261114n1"></script>
   <script src="js/components/router.js"></script>
@@ -1974,10 +1980,10 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
-  <script src="js/pages/leaderboard.js?v=20261114n2"></script>
-  <script src="js/app-main.js?v=20261114n2"></script>
-  <script src="js/components/rank-details.js?v=20261114n2"></script>
-  <script src="js/patches/manager-ux.js?v=20261114n2"></script>
+  <script src="js/pages/leaderboard.js?v=20261114h1"></script>
+  <script src="js/app-main.js?v=20261114h1"></script>
+  <script src="js/components/rank-details.js?v=20261114h1"></script>
+  <script src="js/patches/manager-ux.js?v=20261114h1"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>

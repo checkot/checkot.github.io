@@ -7,7 +7,7 @@
    openIccContextModal(empId, crit, month)
      crit  : ranking criterion the user was looking at
              duty | ot | earned | plain | lessDuty | lessOt | punch | absent |
-             requisition | nightIssue | earlyExit | avgDuty | avgInOut | night | otDays | holiday
+             requisition | nightIssue | holidayReq | earlyExit | avgDuty | avgInOut | night | otDays | holiday
      month : optional 'YYYY-MM' (single-month ranking). Ignored in multi-month
              modes, where the loaded months of the ranking are used.
 
@@ -21,7 +21,7 @@
   'use strict';
 
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var CRIT_ALIAS = { lessOT: 'lessOt', less_ot: 'lessOt', less_duty: 'lessDuty', avgInTime: 'avgInOut', req: 'requisition', night_issue: 'nightIssue', nightReq: 'nightIssue', punchFix: 'punch', best_duty: 'duty', best_ot: 'ot' };
+  var CRIT_ALIAS = { lessOT: 'lessOt', less_ot: 'lessOt', less_duty: 'lessDuty', avgInTime: 'avgInOut', req: 'requisition', night_issue: 'nightIssue', nightReq: 'nightIssue', holiday_req: 'holidayReq', holidayReq: 'holidayReq', punchFix: 'punch', best_duty: 'duty', best_ot: 'ot' };
   var _ctx = null; // last opened context (used by month "View" buttons)
 
   /* ---------- tiny safe helpers ---------- */
@@ -110,7 +110,7 @@
 
   function analyzeMonth(mStr, rec) {
     var A = { month: mStr, label: monthLabel(mStr), has: !!rec, rec: rec || null,
-      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [], night: [], early: [],
+      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [], night: [], holiday: [], early: [],
       duty: 0, ot: 0, earned: 0, otAmt: 0, holAmt: 0, nightAmt: 0, avgIn: null, earliestIn: null, latestIn: null, avgPerDay: 0 };
     if (!rec) return A;
     var days = parseDaily(rec);
@@ -144,9 +144,13 @@
       A.req = (typeof computeEmpRequisitionProblems === 'function' && !rec.isMultiMonth) ? computeEmpRequisitionProblems(rec)
         : (Array.isArray(rec.requisitionProblems) ? rec.requisitionProblems : []);
     } catch (e) { A.req = []; }
-    // OT Requisition = items without isNightIssue; Night Requisition = isNightIssue items
-    A.night = A.req.filter(function (p) { return p && p.isNightIssue; });
-    A.req = A.req.filter(function (p) { return !(p && p.isNightIssue); });
+    // Night Requisition = isNightIssue items; Holiday Requisition = isHolidayReq items; OT Requisition = the rest
+    var _sp = (typeof splitRequisitionIssues === 'function') ? splitRequisitionIssues(A.req) : {
+      night: A.req.filter(function (p) { return p && p.isNightIssue; }),
+      holiday: A.req.filter(function (p) { return p && !p.isNightIssue && p.isHolidayReq; }),
+      ot: A.req.filter(function (p) { return !(p && (p.isNightIssue || p.isHolidayReq)); })
+    };
+    A.night = _sp.night; A.holiday = _sp.holiday; A.req = _sp.ot;
     // early exit / gate pass (In-Charge & Admin only; rules come from shift-rules.json)
     try { A.early = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(rec) : []; } catch (e) { A.early = []; }
     // in / out averages
@@ -233,6 +237,19 @@
       total: function (as) { return grid([kpi('Total Night Issues', sum(as, 'night', true) + 'd', '#4f46e5', true), kpi('Months Affected', as.filter(function (a) { return a.night.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.night.length; }, 'd'))]); },
       single: function (A) { return grid([kpi('🌙 Night Issue', A.night.length + 'd', '#4f46e5', true), kpi('Nights (paid)', num(A.nightCount) + 'n'), kpi('Duty', r1(A.duty) + 'h')]); },
       listTitle: function (A) { return 'Night issue dates (' + A.night.length + ' days)'; }
+    },
+    holidayReq: {
+      icon: '🏖️', cls: 'req', color: '#0f766e', title: 'Holiday Requisition', bannerSub: 'Worked on a Govt holiday or weekly off (Thu / Fri) but Empress booked it as Regular duty — holiday allowance / Day-Off duty missing',
+      metric: function (A) { return A.holiday.length; }, fmt: function (v) { return v + 'd'; },
+      body: function (A) {
+        return A.holiday.length ? table(['Date', 'Day', 'In – Out', 'Duty', 'Type', 'Reason'], A.holiday.map(function (p) {
+          var typ = p.kind === 'weekend-do' ? 'Weekend DO' : 'Govt holiday';
+          return '<tr><td class="b">' + E(p.date) + '</td><td class="m">' + E(p.day || '') + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td><span class="icc-ctx-tag t-bad">' + E(typ) + '</span></td><td class="m s">' + E(p.reason || 'Holiday requisition missing') + '</td></tr>';
+        })) : empty('✓ No holiday requisition problem');
+      },
+      total: function (as) { return grid([kpi('Total Holiday Issues', sum(as, 'holiday', true) + 'd', '#0f766e', true), kpi('Months Affected', as.filter(function (a) { return a.holiday.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.holiday.length; }, 'd'))]); },
+      single: function (A) { return grid([kpi('🏖️ Holiday Issue', A.holiday.length + 'd', '#0f766e', true), kpi('Govt holiday', A.holiday.filter(function (p) { return p.kind !== 'weekend-do'; }).length + 'd'), kpi('Weekend DO', A.holiday.filter(function (p) { return p.kind === 'weekend-do'; }).length + 'd'), kpi('Duty', r1(A.duty) + 'h')]); },
+      listTitle: function (A) { return 'Holiday requisition dates (' + A.holiday.length + ' days)'; }
     },
     earlyExit: {
       icon: '🚪', cls: 'req', color: 'var(--warning)', title: 'Gate Pass / Early Exit', bannerSub: 'Regular days when the Out punch is before the shift end (Admin → Shift Hours decides the shift end for each date)',

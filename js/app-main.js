@@ -1078,11 +1078,12 @@ function getRequisitionProblemCount(emp) {
   return probs.length;
 }
 /* Requisition criterion split (Issues card):
-   - 'requisition' = OT Requisition  -> items WITHOUT isNightIssue
+   - 'requisition' = OT Requisition  -> items WITHOUT isNightIssue / isHolidayReq
    - 'nightIssue'  = Night Requisition -> items WITH isNightIssue
+   - 'holidayReq'  = Holiday Requisition -> items WITH isHolidayReq (Govt holiday / Thu-Fri booked as Regular)
    getRequisitionProblemCount() above stays the OT+Night TOTAL (kept for legacy callers). */
 function _splitReqIssues(emp) {
-  if (!emp) return { ot: [], night: [] };
+  if (!emp) return { ot: [], night: [], holiday: [] };
   let list;
   if (emp.isMultiMonth) list = Array.isArray(emp.requisitionProblems) ? emp.requisitionProblems : [];
   else {
@@ -1091,10 +1092,11 @@ function _splitReqIssues(emp) {
     emp.requisitionProblemCount = list.length;
   }
   if (typeof splitRequisitionIssues === 'function') return splitRequisitionIssues(list);
-  return { ot: list.filter(p => !(p && p.isNightIssue)), night: list.filter(p => p && p.isNightIssue) };
+  return { ot: list.filter(p => !(p && (p.isNightIssue || p.isHolidayReq))), night: list.filter(p => p && p.isNightIssue), holiday: list.filter(p => p && !p.isNightIssue && p.isHolidayReq) };
 }
 function getOtRequisitionCount(emp) { return _splitReqIssues(emp).ot.length; }
 function getNightIssueCount(emp) { return _splitReqIssues(emp).night.length; }
+function getHolidayReqCount(emp) { return _splitReqIssues(emp).holiday.length; }
 function getPunchProblemCount(emp) {
 if (!emp) return 0;
 if (Array.isArray(emp.punchProblems)) return emp.punchProblems.length;
@@ -2769,11 +2771,12 @@ function openBulkRequisitionErpForward() {
     return;
   }
   const isNightCrit = activeIccCriterion === 'nightIssue';
+  const isHolCrit = activeIccCriterion === 'holidayReq';
   const f = currentLeaderboardResult.filtered;
-  const key = isNightCrit ? 'sortedByNightIssue' : 'sortedByRequisition';
+  const key = isNightCrit ? 'sortedByNightIssue' : (isHolCrit ? 'sortedByHolidayReq' : 'sortedByRequisition');
   const list = f ? (f[key] || []) : (currentLeaderboardResult[key] || []);
   if (!list || list.length === 0) {
-    showToast(isNightIssue_toastEmpty(isNightCrit), 'info');
+    showToast(isHolCrit ? 'No employees with holiday requisition problems in this section' : isNightIssue_toastEmpty(isNightCrit), 'info');
     return;
   }
   const areaLabel = describeLbFilter();
@@ -2783,6 +2786,8 @@ function openBulkRequisitionErpForward() {
     let rDetails;
     if (isNightCrit) {
       rDetails = 'Night Issue: ' + sp.night.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'})`).join('; ');
+    } else if (isHolCrit) {
+      rDetails = 'Holiday Requisition: ' + sp.holiday.map(p => `${p.date} ${p.kind === 'weekend-do' ? '(Weekly off' + (p.day ? ' ' + p.day : '') + ')' : '(Govt holiday)'} (In: ${p.in || '—'}, Out: ${p.out || '—'})`).join('; ');
     } else {
       rDetails = 'OT Missing: ' + sp.ot.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; ');
     }
@@ -2791,6 +2796,8 @@ function openBulkRequisitionErpForward() {
   let msg;
   if (isNightCrit) {
     msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Night Requisition Report:\nDN shift / 09:30-10:15 PM night punch found, but Empress Night is not YES. Please check night-end Out punch, Empress sync and requisition, then mark Night = YES if genuine.\n\n${lines.join('\n\n')}\n\nPlease fix the night flags before payroll cutoff. Thank you!`;
+  } else if (isHolCrit) {
+    msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Holiday Requisition Report:\nEmployee worked on the dates below (Govt holiday / weekly off) but Empress booked it as Regular duty. Please create the Holiday / Day-Off requisition so holiday allowance and DO duty are counted.\n\n${lines.join('\n\n')}\n\nPlease fix before payroll cutoff. Thank you!`;
   } else {
     msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition Report:\nOT Missing = employees worked overtime but Empress shows 0 OT (Requisition Missing).\n\n${lines.join('\n\n')}\n\nPlease allocate/approve the requisitions before payroll cutoff. Thank you!`;
   }
@@ -2799,7 +2806,7 @@ function openBulkRequisitionErpForward() {
     openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
   } else if (typeof fallbackCopyText === 'function') {
     fallbackCopyText(msg);
-    showToast(isNightCrit ? 'Copied ERP night requisition message to clipboard!' : 'Copied ERP requisition message to clipboard!', 'success');
+    showToast(isNightCrit ? 'Copied ERP night requisition message to clipboard!' : (isHolCrit ? 'Copied ERP holiday requisition message to clipboard!' : 'Copied ERP requisition message to clipboard!'), 'success');
   }
 }
 function isNightIssue_toastEmpty(isNight) {
@@ -3130,6 +3137,11 @@ if (crit === 'nightIssue') {
   const base = f._rawFiltered || f.allEmployees || [];
   return [...base].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
 }
+if (crit === 'holidayReq') {
+  if (Array.isArray(f.sortedByHolidayReq)) return f.sortedByHolidayReq;
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => getHolidayReqCount(e) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || (b.totalDuty - a.totalDuty));
+}
 if (crit === 'otDays' || crit === 'holiday' || crit === 'night') {
   const cntOf = crit === 'otDays' ? (e => getEmpOtDays(e)) : crit === 'holiday' ? (e => Number(e.holidayCount || 0)) : (e => Number(e.nightCount || 0));
   const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
@@ -3157,6 +3169,10 @@ if (crit === 'requisition') {
 if (crit === 'nightIssue') {
   const c = typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0;
   return `${c}d night`;
+}
+if (crit === 'holidayReq') {
+  const c = typeof getHolidayReqCount === 'function' ? getHolidayReqCount(e) : 0;
+  return `${c}d holiday`;
 }
 if (crit === 'absent') {
   const c = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0;
@@ -3192,7 +3208,8 @@ const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
 const isNightIssueCrit = activeIccCriterion === 'nightIssue';
-const isReqCrit = activeIccCriterion === 'requisition' || isNightIssueCrit;
+const isHolidayReqCrit = activeIccCriterion === 'holidayReq';
+const isReqCrit = activeIccCriterion === 'requisition' || isNightIssueCrit || isHolidayReqCrit;
 const isAbsCrit = activeIccCriterion === 'absent';
 const isEarlyCrit = activeIccCriterion === 'earlyExit';
 const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (isEarlyCrit ? 'icc-early-row' : (rk <= 3 ? `icc-rank-${rk}` : ''))));
@@ -3227,7 +3244,12 @@ let reqMetaUnderName = '';
 if (isReqCrit) {
   const sp = _splitReqIssues(e);
   const shortD = p => String(p.date).replace(/-20\d\d$/, '');
-  if (isNightIssueCrit) {
+  if (isHolidayReqCrit) {
+    const holG = sp.holiday.filter(p => p.kind !== 'weekend-do').map(shortD);
+    const holW = sp.holiday.filter(p => p.kind === 'weekend-do').map(shortD);
+    if (holG.length) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#0f766e;margin-top:2px;">🏖️ Govt holiday: ${esc(holG.join(', '))}</div>`;
+    if (holW.length) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#0f766e;margin-top:2px;">🏖️ Weekly off (Thu/Fri): ${esc(holW.join(', '))}</div>`;
+  } else if (isNightIssueCrit) {
     const nightD = sp.night.map(shortD).join(', ');
     if (nightD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#4f46e5;margin-top:2px;">🌙 Night Issue (DN, Night≠YES): ${esc(nightD)}</div>`;
   } else {
@@ -3251,6 +3273,7 @@ if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
 else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
 else if (activeIccCriterion === 'requisition') detailsBtnText = 'OT Req Details →';
 else if (activeIccCriterion === 'nightIssue') detailsBtnText = 'Night Details →';
+else if (activeIccCriterion === 'holidayReq') detailsBtnText = 'Holiday Req Details →';
 else if (activeIccCriterion === 'earlyExit') detailsBtnText = 'Exit Details →';
 else if (activeIccCriterion === 'ot' || activeIccCriterion === 'lessOt') detailsBtnText = isMultiTime ? 'OT by Month →' : 'OT Details →';
 else if (activeIccCriterion === 'duty' || activeIccCriterion === 'lessDuty' || activeIccCriterion === 'avgDuty') detailsBtnText = isMultiTime ? 'Duty by Month →' : 'Duty Details →';

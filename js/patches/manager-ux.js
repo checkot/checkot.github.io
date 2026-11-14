@@ -122,11 +122,23 @@
           <li><b>Evening 5h:</b> punch-out 20:16 – 22:30 → expected 5.0h OT (4:30 – 9:30 PM)</li>
           <li><b>Morning:</b> punch-in by 07:15 and 9.5h+ on site → 1.0h OT (in by 06:30 → 2.5h)</li>
           <li><b>Night shift:</b> 11h+ with 0 OT → 4–7h OT expected</li>
-          <li><b>Thu/Fri:</b> worked as Regular Duty instead of Day-Off duty</li>
-          <li><b>Govt holiday:</b> worked as Regular Duty instead of Holiday duty</li>
         </ul>
+        <p><i>Holiday / Thu-Fri problems now have their own list: see “Holiday Requisition”.</i></p>
         <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and the expected OT, then use <i>Forward OT Requisitions to ERP</i>.</p>
         <p class="mgr-note">A flag means “please verify”, not a final verdict.</p>`
+    },
+    holiday_req: {
+      title: 'Holiday Requisition',
+      html: `
+        <p><b>What it means:</b> the person <u>physically worked</u> on a holiday or weekly off day, but Empress booked the hours as <b>Regular duty</b> – so the <u>holiday allowance / Day-Off (DO) duty is missing</u>.</p>
+        <p><b>The 2 rules:</b></p>
+        <ul>
+          <li><b>Govt / plant holiday:</b> worked on a Govt holiday, but hours went to Regular duty / OT instead of Holiday duty.</li>
+          <li><b>Weekly off (Thu / Fri):</b> worked on Thursday or Friday, but hours went to Regular duty instead of Day-Off (DO) duty.</li>
+        </ul>
+        <p>Admin holiday settings are respected: a date the admin <b>cancelled</b> is treated as a normal working day (not flagged); a date the admin added counts as a holiday. A day is judged only after it closes (next day 09:00). If one date is flagged by several rules, only one list shows it (Night &gt; Holiday &gt; OT).</p>
+        <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and type (Govt holiday / Weekend DO), then use <i>Forward Holiday Requisitions to ERP</i>.</p>
+        <p class="mgr-note">A flag means “please verify”, not a final verdict. Payroll numbers are not changed by this list.</p>`
     },
     night_issue: {
       title: 'Night Requisition (Night Issue)',
@@ -220,7 +232,7 @@
   }
 
   function critToInfo(c) {
-    return c === 'requisition' ? 'ot_missing' : c === 'nightIssue' ? 'night_issue' : c === 'punch' ? 'punch' : c === 'absent' ? 'absent' : c === 'plain' ? 'plain' : 'ranking';
+    return c === 'requisition' ? 'ot_missing' : c === 'nightIssue' ? 'night_issue' : c === 'holidayReq' ? 'holiday_req' : c === 'punch' ? 'punch' : c === 'absent' ? 'absent' : c === 'plain' ? 'plain' : 'ranking';
   }
 
   function injectInfoBadges() {
@@ -228,7 +240,7 @@
     document.querySelectorAll('.rank-hub-item .rank-hub-title').forEach((t) => {
       if (t.querySelector('.mgr-q')) return;
       const x = t.textContent.trim().toLowerCase();
-      const type = x.includes('punch') ? 'punch' : x.includes('night req') ? 'night_issue' : x.includes('requisition') ? 'ot_missing' : x.includes('absent') ? 'absent' : x.includes('4:30') ? 'plain' : '';
+      const type = x.includes('punch') ? 'punch' : x.includes('night req') ? 'night_issue' : x.includes('holiday req') ? 'holiday_req' : x.includes('requisition') ? 'ot_missing' : x.includes('absent') ? 'absent' : x.includes('4:30') ? 'plain' : '';
       if (type) t.appendChild(makeQ(type));
     });
     // Report label

@@ -130,7 +130,7 @@
 .lb-issues-title { font-size: 14px; font-weight: 800; color: var(--text); }
 .lb-issues-title small { font-weight: 600; color: var(--muted); font-size: 12px; }
 .lb-issues-note { font-size: 11px; font-weight: 600; color: var(--muted); }
-.lb-issues-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.lb-issues-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .lb-issue-tile {
   display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
   min-width: 0; min-height: 84px; padding: 9px 10px;
@@ -142,6 +142,7 @@
 .lb-issue-tile.absent-hub { border-left-color: #dc2626; }
 .lb-issue-tile.req-hub    { border-left-color: #f59e0b; }
 .lb-issue-tile.night-hub  { border-left-color: #4f46e5; }
+.lb-issue-tile.holiday-hub { border-left-color: #0d9488; }
 .lb-issue-tile:active { transform: scale(0.98); }
 .lb-issue-ico { font-size: 14px; line-height: 1; }
 .lb-issue-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; width: 100%; }
@@ -152,6 +153,7 @@
 .lb-issue-tile.req-hub .lb-issue-val { color: #d97706; }
 .lb-issue-tile.punch-hub .lb-issue-val { color: #2563eb; }
 .lb-issue-tile.night-hub .lb-issue-val { color: #4f46e5; }
+.lb-issue-tile.holiday-hub .lb-issue-val { color: #0f766e; }
 @media (max-width: 340px) { .lb-issues-grid { grid-template-columns: 1fr; } .lb-issue-tile { min-height: 0; flex-direction: row; align-items: center; } .lb-issue-val { margin: 0 0 0 auto; } }
 .rank-hub-menu .rank-hub-section-divider { margin: 6px 2px 0; }
 

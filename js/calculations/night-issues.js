@@ -14,6 +14,9 @@
    4. A day is judged only after it is CLOSED (next day 09:00 Bangladesh time),
       because the night-end Out punch arrives next morning.
 
+   5. (Nov 2026) Holiday Requisition (Govt holiday / Thu-Fri worked as Regular duty) is
+      a SEPARATE list: see tagHolidayIssues() / splitIssues() below.
+
    Pure functions, no DOM -> unit-testable from Node (tests/test_night_issues.js).
    ========================================================================== */
 (function (root) {
@@ -151,12 +154,95 @@
     return kept.concat(nightList);
   }
 
+  /* ======================================================================
+     HOLIDAY REQUISITION (own problem, separate from OT Requisition)
+     ----------------------------------------------------------------------
+     Two rules already exist in the pipeline (scripts/to_json.py) and in the
+     client fallback (ranking.js). They arrive MIXED into the OT-missing list,
+     untagged, so we classify them here by their text - no data rebuild:
+       'govt-holiday' : worked on a Govt/plant holiday, booked as Regular duty
+       'weekend-do'   : worked on Thu/Fri, booked as Regular duty (not Day-Off)
+     Priority when one date is flagged by several rules:
+       Night issue  >  Holiday requisition  >  OT missing
+     ====================================================================== */
+  function _up(s) { return String(s == null ? '' : s).trim().toUpperCase(); }
+
+  /* Returns 'govt-holiday' | 'weekend-do' | null for ONE item (never for night issues). */
+  function classifyHolidayItem(p) {
+    if (!p || p.isNightIssue) return null;
+    if (p.kind === 'govt-holiday' || p.kind === 'weekend-do') return p.kind;
+    var t = String(p.expectedOt || '') + ' | ' + String(p.reason || '');
+    if (/govt\s*holiday/i.test(t)) return 'govt-holiday';
+    if (/weekend|\bDO\s*Req/i.test(t)) return 'weekend-do';
+    return p.isHolidayReq ? 'govt-holiday' : null;
+  }
+  function isHolidayItem(p) { return !!p && !p.isNightIssue && (p.isHolidayReq === true || classifyHolidayItem(p) !== null); }
+
+  /* 'DD-MON-YYYY' -> 'Mon'..'Sun' (empty when unknown) */
+  function weekdayOf(dateStr) {
+    var m = _up(dateStr).match(/^(\d{1,2})-([A-Z]{3})-(\d{4})/);
+    if (!m || !MONTHS[m[2]]) return '';
+    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(Date.UTC(+m[3], MONTHS[m[2]] - 1, +m[1])).getUTCDay()];
+  }
+
+  /* Tag holiday items, apply admin overrides + day-closed rule, one row per date.
+     opts.cancelled : array of 'DD-MON-YYYY' dates the admin cancelled (= normal working day)
+     opts.nowMs     : clock for tests
+     Never mutates the input items (copies are returned for tagged ones). */
+  function tagHolidayIssues(list, opts) {
+    opts = opts || {};
+    var cancelled = {};
+    (opts.cancelled || []).forEach(function (d) { cancelled[_up(d)] = true; });
+    var arr = Array.isArray(list) ? list : [];
+    var holByDate = {};
+    arr.forEach(function (p) {
+      var kind = classifyHolidayItem(p);
+      if (!kind) return;
+      var d = _up(p.date);
+      if (cancelled[d] || !isDayClosed(d, opts.nowMs)) return;
+      if (holByDate[d]) return; // already have a holiday item for this date
+      var q = {};
+      Object.keys(p).forEach(function (k) { q[k] = p[k]; });
+      q.isHolidayReq = true;
+      q.isNightIssue = false;
+      q.kind = kind;
+      q.day = p.day || weekdayOf(p.date);
+      holByDate[d] = q;
+    });
+    var out = [], used = {};
+    arr.forEach(function (p) {
+      if (!p) return;
+      if (p.isNightIssue) { out.push(p); return; }
+      var d = _up(p.date);
+      var kind = classifyHolidayItem(p);
+      if (kind) {
+        // keep only the first holiday item per date; cancelled / not-yet-closed ones vanish
+        if (holByDate[d] && !used[d]) { used[d] = true; out.push(holByDate[d]); }
+        return;
+      }
+      if (holByDate[d]) {
+        // same date also flagged as OT missing: holiday wins, keep the OT hint in the text
+        var h = holByDate[d];
+        var hint = p.reason || p.expectedOt || 'OT missing';
+        if (String(h.reason || '').indexOf(hint) < 0) h.reason = (h.reason || '') + ' (also: ' + hint + ')';
+        return;
+      }
+      out.push(p);
+    });
+    return out;
+  }
+
+  /* One merged tagged list -> { ot, night, holiday } (no recomputation). */
   function splitIssues(list) {
     var arr = Array.isArray(list) ? list : [];
-    return {
-      ot: arr.filter(function (p) { return !(p && p.isNightIssue); }),
-      night: arr.filter(function (p) { return p && p.isNightIssue; })
-    };
+    var res = { ot: [], night: [], holiday: [] };
+    arr.forEach(function (p) {
+      if (!p) return;
+      if (p.isNightIssue) res.night.push(p);
+      else if (isHolidayItem(p)) res.holiday.push(p);
+      else res.ot.push(p);
+    });
+    return res;
   }
 
   var api = {
@@ -164,6 +250,8 @@
     toMins: toMins, isDayClosed: isDayClosed, classifyDay: classifyDay,
     computeEmpNightIssues: computeEmpNightIssues,
     mergeRequisitionAndNight: mergeRequisitionAndNight,
+    classifyHolidayItem: classifyHolidayItem, isHolidayItem: isHolidayItem, weekdayOf: weekdayOf,
+    tagHolidayIssues: tagHolidayIssues,
     splitIssues: splitIssues
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
@@ -171,6 +259,8 @@
     root.computeEmpNightIssues = computeEmpNightIssues;
     root.mergeRequisitionAndNight = mergeRequisitionAndNight;
     root.splitRequisitionIssues = splitIssues;
+    root.tagHolidayIssues = tagHolidayIssues;
+    root.classifyHolidayItem = classifyHolidayItem;
     root.NightIssues = api;
   }
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));

@@ -79,6 +79,7 @@ function buildLeaderboardPayloadFromList(month, allList) {
   const sortedByPunch = [...normalized].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
   const sortedByRequisition = [...normalized].filter(e => (typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
   const sortedByNightIssue = [...normalized].filter(e => (typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+  const sortedByHolidayReq = [...normalized].filter(e => (typeof getHolidayReqCount === 'function' ? getHolidayReqCount(e) : 0) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
   const sortedByAbsent = [...normalized].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, month) - getGeneralAbsentCount(a, month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
   return {
     month,
@@ -94,6 +95,7 @@ function buildLeaderboardPayloadFromList(month, allList) {
     sortedByPunch,
     sortedByRequisition,
     sortedByNightIssue,
+    sortedByHolidayReq,
     sortedByAbsent
   };
 }
@@ -121,12 +123,23 @@ if (typeof getGeneralAbsentCount !== 'function') {
 /* ==========================================================================
    REQUISITION & ABSENT METRICS COMPUTATION
    ========================================================================== */
-/* Public funnel used by Ranking: OT-missing items + Night Issues (DN without Night=YES).
-   Night issues are tagged isNightIssue:true so every screen can label them separately. */
+/* Admin holiday overrides (localStorage PLANT_HOLIDAYS_KEY): cancelled date = normal working day. */
+function _readCancelledHolidays() {
+  try {
+    const raw = localStorage.getItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1');
+    if (raw) return (JSON.parse(raw).cancelled || []).map(x => String(x).toUpperCase());
+  } catch (err) {}
+  return [];
+}
+
+/* Public funnel used by Ranking: OT-missing items + Holiday Requisition items + Night Issues.
+   Every item is tagged: isNightIssue:true (Night), isHolidayReq:true (Holiday), neither (OT).
+   One row per date, priority Night > Holiday > OT. */
 function computeEmpRequisitionProblems(e) {
   if (!e) return [];
   if (e.isMultiMonth) return Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [];
-  const ot = _computeOtRequisitionProblems(e);
+  let ot = _computeOtRequisitionProblems(e);
+  if (typeof tagHolidayIssues === 'function') ot = tagHolidayIssues(ot, { cancelled: _readCancelledHolidays() });
   const nights = typeof computeEmpNightIssues === 'function' ? computeEmpNightIssues(e) : [];
   return typeof mergeRequisitionAndNight === 'function' ? mergeRequisitionAndNight(ot, nights) : ot;
 }
