@@ -268,3 +268,11 @@ git push origin main
 ১. ফোনের ব্রাউজারে গিটহাব রিপোজিটরির পেজে গিয়ে **"Commits"** লিস্টে যান।
 ২. আপনার দেওয়া শেষ কমিটের ডানপাশে থ্রি-ডট (⋯) চিহ্নে চাপ দিয়ে **"Revert this commit"** চাপুন।
 ৩. **"Create pull request"** এবং **"Merge pull request"** চাপলেই সাইট আগের সফল অবস্থায় ফিরে যাবে।
+
+---
+
+## 🔔 ডিপ্লয় ট্র্যাকার (Admin > Server & Deploy): একবারের সেটআপ
+
+1. GitHub → Settings → Developer settings → আপনার **Server Access Key** (fine-grained token) → Repository permissions-এ **Actions: Read-only** এবং **Pages: Read-only** যোগ করুন (Contents: Read and write আগের মতোই থাকবে)।
+2. `deploy-zip.yml` ফাইলটি **একবার হাতে** GitHub ওয়েবসাইটে `.github/workflows/deploy-zip.yml` খুলে Edit করে পুরোটা পেস্ট করে Commit করুন (zip দিয়ে এই ফাইল আপডেট হয় না)।
+3. এরপর থেকে zip সিলেক্ট করলে ধাপে ধাপে অবস্থা + টাইমার দেখাবে; সাইট সত্যিই চালু হলে ভাইব্রেশন ও শব্দ হবে। পেজ খোলা রাখুন।

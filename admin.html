@@ -864,13 +864,42 @@ document.documentElement.setAttribute('data-theme', t);
         </div>
 
         <div class="ax-sub" id="admSubSetupDeploy" style="display:none !important;">
-          <div class="ax-card">
-            <h3 class="ax-card-title">One-click site update</h3>
-            <p class="ax-muted">Upload <code>deploy.zip</code> from your phone to update the live site without opening GitHub.</p>
-            <input type="file" id="adminZipFileInput" accept=".zip" style="display:none;" onchange="adminHandleZipUpload(this.files)">
+          <div class="ax-card" id="dplBox">
+            <style>
+              #dplBox .dpl-steps{list-style:none;margin:10px 0 6px;padding:0;display:flex;flex-direction:column;gap:6px}
+              #dplBox .dpl-step{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border-radius:10px;background:var(--brand-soft);font-size:13px;opacity:.65}
+              #dplBox .dpl-step small{font-weight:600;opacity:.8}
+              #dplBox .dpl-s1,#dplBox .dpl-s2{opacity:1}
+              #dplBox .dpl-s2{background:var(--success-bg);color:var(--success)}
+              #dplBox .dpl-s3{opacity:1;background:var(--danger-bg);color:var(--danger)}
+              #dplBox .dpl-ic{font-size:18px;width:24px;text-align:center}
+              #dplBox .dpl-timer{font-size:15px;font-weight:800;margin:4px 0 8px;min-height:20px}
+              #dplBox .dpl-q{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid rgba(128,128,128,.2)}
+              #dplBox .dpl-qn{display:flex;flex-direction:column;min-width:0;word-break:break-all;font-size:13px}
+              #dplBox .dpl-qn small{opacity:.75}
+              #dplBox .dpl-rm{min-height:44px;min-width:76px}
+              #dplBox .dpl-msg{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:700;line-height:1.4}
+              #dplBox .dpl-msg.err{background:var(--danger-bg);color:var(--danger)}
+              #dplBox .dpl-msg.warn{background:#fff7ed;color:#9a3412}
+              #dplBox .dpl-pause{display:none;gap:8px;margin-top:8px;flex-wrap:wrap}
+              #dplBox .dpl-pause .ax-btn{min-height:44px;flex:1 1 140px}
+            </style>
+            <h3 class="ax-card-title">One-click site update <small style="font-weight:600;opacity:.7">· সাইট আপডেট</small></h3>
+            <p class="ax-muted">Select <code>deploy.zip</code> files. They are uploaded one by one; the next starts only after the previous one is really <b>live</b>.</p>
+            <input type="file" id="adminZipFileInput" accept=".zip" multiple style="display:none;" onchange="adminHandleZipUpload(this.files)">
             <div class="ax-actions ax-actions--start">
-              <button type="button" class="ax-btn ax-btn--primary" onclick="document.getElementById('adminZipFileInput').click()">Select deploy.zip &amp; update site</button>
+              <button type="button" class="ax-btn ax-btn--primary" style="min-height:44px" onclick="document.getElementById('adminZipFileInput').click()">Select deploy.zip &amp; update site</button>
+              <button type="button" class="ax-btn" id="dplOpen" style="display:none;min-height:44px">Open site · সাইট খুলুন</button>
             </div>
+            <ol class="dpl-steps" id="dplSteps"></ol>
+            <div class="dpl-timer" id="dplTimer"></div>
+            <div id="dplMsg" class="dpl-msg" style="display:none;"></div>
+            <div class="dpl-pause" id="dplPause">
+              <button type="button" class="ax-btn ax-btn--primary" id="dplSkip">Skip this one and continue</button>
+              <button type="button" class="ax-btn" id="dplStop">Stop queue</button>
+            </div>
+            <div id="dplQueue" style="margin-top:10px;"></div>
+            <p class="ax-muted" style="font-size:11.5px;margin-top:8px;">Keep this page open: the queue moves forward only while it is open (it resumes when you reopen it). · পেজ খোলা রাখুন।</p>
             <div id="adminZipUploadStatus" style="margin-top:10px;font-size:12.5px;font-weight:700;line-height:1.4;display:none;padding:8px 10px;border-radius:8px;"></div>
           </div>
         </div>
@@ -970,7 +999,8 @@ document.documentElement.setAttribute('data-theme', t);
 <script src="js/calculations/early-exit.js?v=20261113ee3"></script>
 <script src="js/admin/admin-compat.js?v=20261110em"></script>
 
-<script src="js/admin/admin-github.js?v=20261112a1"></script>
+<script src="js/admin/admin-github.js?v=20261114d1"></script>
+<script src="js/admin/admin-deploy.js?v=20261114d1"></script>
 <script src="js/admin/admin-core.js?v=20261113ee3"></script>
 <script src="js/admin/admin-tools.js?v=20261111ac"></script>
 <script src="js/admin/admin-sync-bar.js?v=20261111ac"></script>
