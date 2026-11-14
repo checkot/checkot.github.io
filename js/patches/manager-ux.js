@@ -113,7 +113,7 @@
   /* ----------------------------------------------------- 4. "?" info buttons */
   const INFO = {
     ot_missing: {
-      title: 'OT Missing (Requisition Problem)',
+      title: 'OT Requisition (OT Missing)',
       html: `
         <p><b>What it means:</b> the person's <u>physical punches</u> show overtime-length duty, but <u>Empress shows 0 OT</u> for that day (no approved OT requisition).</p>
         <p><b>How it is detected</b> (day-by-day, only when recorded OT = 0 and both punches are valid):</p>
@@ -125,9 +125,16 @@
           <li><b>Thu/Fri:</b> worked as Regular Duty instead of Day-Off duty</li>
           <li><b>Govt holiday:</b> worked as Regular Duty instead of Holiday duty</li>
         </ul>
-        <p><b>🌙 Night Issue</b> (shown in the same list, labelled separately): the shift is <b>DN</b> (or a night punch / very long duty is seen) but Empress <b>Night is not YES</b>. Night-duty staff must punch Out and In once between <b>09:30 – 10:15 PM</b>; if that punch exists but Night ≠ YES, the night-end Out punch is missing, the requisition is missing or Empress is not synced. It is judged only after the day closes (next day 09:00) and it is <u>never counted as a night</u> until ERP marks Night = YES.</p>
-        <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and the expected OT, then use <i>Forward Requisitions to ERP</i>.</p>
+        <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and the expected OT, then use <i>Forward OT Requisitions to ERP</i>.</p>
         <p class="mgr-note">A flag means “please verify”, not a final verdict.</p>`
+    },
+    night_issue: {
+      title: 'Night Requisition (Night Issue)',
+      html: `
+        <p><b>What it means:</b> the shift is <b>DN</b> (or a night punch / very long duty is seen) but Empress <b>Night is not YES</b>.</p>
+        <p>Night-duty staff must punch Out and In once between <b>09:30 – 10:15 PM</b>. If that punch exists but Night ≠ YES, the night-end Out punch is missing, the requisition is missing or Empress is not synced. It is judged only after the day closes (next day 09:00) and it is <u>never counted as a night</u> until ERP marks Night = YES.</p>
+        <p><b>Ranking:</b> highest number of flagged days first. Tap a name to see each date, in/out time and the fix, then use <i>Forward Night Requisitions to ERP</i>.</p>
+        <p class="mgr-note">A flag means “please verify”, not a final verdict. Payroll numbers are not changed by this list.</p>`
     },
     punch: {
       title: 'Punch Problem',
@@ -213,7 +220,7 @@
   }
 
   function critToInfo(c) {
-    return c === 'requisition' ? 'ot_missing' : c === 'punch' ? 'punch' : c === 'absent' ? 'absent' : c === 'plain' ? 'plain' : 'ranking';
+    return c === 'requisition' ? 'ot_missing' : c === 'nightIssue' ? 'night_issue' : c === 'punch' ? 'punch' : c === 'absent' ? 'absent' : c === 'plain' ? 'plain' : 'ranking';
   }
 
   function injectInfoBadges() {
@@ -221,7 +228,7 @@
     document.querySelectorAll('.rank-hub-item .rank-hub-title').forEach((t) => {
       if (t.querySelector('.mgr-q')) return;
       const x = t.textContent.trim().toLowerCase();
-      const type = x.includes('punch') ? 'punch' : x.includes('requisition') ? 'ot_missing' : x.includes('absent') ? 'absent' : x.includes('4:30') ? 'plain' : '';
+      const type = x.includes('punch') ? 'punch' : x.includes('night req') ? 'night_issue' : x.includes('requisition') ? 'ot_missing' : x.includes('absent') ? 'absent' : x.includes('4:30') ? 'plain' : '';
       if (type) t.appendChild(makeQ(type));
     });
     // Report label

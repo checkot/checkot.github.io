@@ -277,7 +277,8 @@ currentLeaderboardResult = result;
 const allEmpsGlobal = (result.allEmployees || []).filter(e => isRankableEmployee(e));
 result.allEmployees = allEmpsGlobal;
 result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-result.sortedByRequisition = [...allEmpsGlobal].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+result.sortedByRequisition = [...allEmpsGlobal].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
+result.sortedByNightIssue = [...allEmpsGlobal].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
 result.sortedByAbsent = [...allEmpsGlobal].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, result.month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, result.month) - getGeneralAbsentCount(a, result.month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
@@ -328,9 +329,12 @@ setTxt('hubSubLessOt', 'Lowest Overtime Hours');
 setTxt('hubSubPunch', 'Missing In/Out');
 const pCount = (filteredList || []).filter(e => (typeof getPunchProblemCount === 'function' ? getPunchProblemCount(e) : 0) > 0).length;
 setTxt('hubValPunch', pCount > 0 ? `${pCount} pers` : 'None');
-const rCount = (filteredList || []).filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).length;
+const rCount = (filteredList || []).filter(e => (typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0) > 0).length;
 setTxt('hubValReq', rCount > 0 ? `${rCount} pers` : 'None');
 setTxt('hubSubReq', rCount > 0 ? 'Worked, 0 OT' : 'All OK');
+const nCount = (filteredList || []).filter(e => (typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0) > 0).length;
+setTxt('hubValNightIssue', nCount > 0 ? `${nCount} pers` : 'None');
+setTxt('hubSubNightIssue', nCount > 0 ? 'DN / night punch, Night not YES' : 'All OK');
 const absCount = (filteredList || []).filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).length;
 setTxt('hubValAbsent', absCount > 0 ? `${absCount} pers` : 'None');
 setTxt('hubSubAbsent', absCount > 0 ? '≥1 absent day' : 'No absents');
@@ -387,9 +391,10 @@ const sortedByLessOT = [...filtered].sort((a,b) => (a.otHours - b.otHours) || (a
 const sortedByAvgDuty = [...filtered].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
 const sortedByAvgInOut = [...filtered].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
 const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-const sortedByRequisition = [...filtered].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+const sortedByRequisition = [...filtered].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
+const sortedByNightIssue = [...filtered].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
 const sortedByAbsent = [...filtered].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, curMonth) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, curMonth) - getGeneralAbsentCount(a, curMonth)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
-currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, sortedByAbsent, area };
+currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, sortedByNightIssue, sortedByAbsent, area };
 updateLbSummaryMetrics(filtered);
 renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
 renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
@@ -763,28 +768,33 @@ function openIccContextModal(empId, optCrit, optMonth) {
   // -------------------------------------------------------------
   // CONTEXT 3: REQUISITION CRITERION
   // -------------------------------------------------------------
-  else if (crit === 'requisition') {
-    const reqProbs = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (emp.requisitionProblems || []);
+  else if (crit === 'requisition' || crit === 'nightIssue') {
+    const isNightView = crit === 'nightIssue';
+    const allReq = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (emp.requisitionProblems || []);
+    const reqProbs = allReq.filter(p => !!(p && p.isNightIssue) === isNightView);
+    const accent = isNightView ? '#4f46e5' : '#d97706';
     bodyHtml += `
       <div class="icc-ctx-banner req">
         <div>
           <div class="icc-ctx-banner-title">
-            <span>📋</span><span>OT Missing: <b>${reqProbs.filter(p => !p.isNightIssue).length} Days</b>${reqProbs.some(p => p.isNightIssue) ? ` &nbsp;•&nbsp; 🌙 Night Issue: <b>${reqProbs.filter(p => p.isNightIssue).length} Days</b>` : ''}</span>
+            <span>${isNightView ? '🌙' : '📋'}</span><span>${isNightView ? 'Night Issue' : 'OT Missing'}: <b>${reqProbs.length} Days</b></span>
           </div>
-          <div class="icc-ctx-banner-sub">OT Missing = worked overtime but requisition is pending. 🌙 Night Issue = DN shift / night punch found but Empress Night is not YES (not counted as a night until ERP fixes it)</div>
+          <div class="icc-ctx-banner-sub">${isNightView
+            ? 'Night Requisition = DN shift / night punch found but Empress Night is not YES (not counted as a night until ERP fixes it)'
+            : 'OT Requisition = worked overtime but Empress shows 0 OT (requisition pending)'}</div>
         </div>
         <div>
-          <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
+          <span class="badge" style="background:${isNightView ? '#e0e7ff' : '#fef3c7'};color:${isNightView ? '#3730a3' : '#92400e'};font-weight:700;padding:4px 8px;border-radius:6px;font-size:11px;">${esc(periodLabel)}</span>
         </div>
       </div>
     `;
 
     if (!reqProbs.length) {
-      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">✓ আলহামদুলিল্লাহ, কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).</div>`;
+      bodyHtml += `<div class="empty-msg" style="padding:20px;text-align:center;color:#059669;font-weight:700;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);">${isNightView ? '✓ আলহামদুলিল্লাহ, কারো নাইট রিকুইজিশন সমস্যা নেই (All Night Requisitions OK).' : '✓ আলহামদুলিল্লাহ, কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).'}</div>`;
     } else {
       bodyHtml += `
         <div style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">
-          Pending Requisition Dates (${reqProbs.length} Days)
+          ${isNightView ? 'Night Issue Dates' : 'Pending Requisition Dates'} (${reqProbs.length} Days)
         </div>
         <div class="icc-ctx-table-wrap">
           <table class="icc-ctx-table">
@@ -793,7 +803,7 @@ function openIccContextModal(empId, optCrit, optMonth) {
                 <th>Date</th>
                 <th>Punch In/Out</th>
                 <th>Duty</th>
-                <th>Expected OT</th>
+                ${isNightView ? '' : '<th>Expected OT</th>'}
                 <th>Reason</th>
               </tr>
             </thead>
@@ -803,8 +813,8 @@ function openIccContextModal(empId, optCrit, optMonth) {
                   <td style="font-weight:700;">${esc(p.date)}</td>
                   <td style="color:var(--text-2);font-size:11.5px;">${esc(p.in)} - ${esc(p.out)}</td>
                   <td>${esc(p.duty || p.elapsed)}h</td>
-                  <td style="font-weight:800;color:${p.isNightIssue ? '#4f46e5' : '#d97706'};">${p.isNightIssue ? '🌙 ' : ''}${esc(p.expectedOt)}</td>
-                  <td style="font-size:11.5px;color:var(--muted);">${p.isNightIssue ? '<b style="color:#4f46e5;">Night Issue:</b> ' : ''}${esc(p.reason || 'Pending Requisition')}${p.fix ? `<br><i>${esc(p.fix)}</i>` : ''}</td>
+                  ${isNightView ? '' : `<td style="font-weight:800;color:${accent};">${esc(p.expectedOt)}</td>`}
+                  <td style="font-size:11.5px;color:var(--muted);">${isNightView ? '<b style="color:#4f46e5;">Night Issue:</b> ' : ''}${esc(p.reason || 'Pending Requisition')}${p.fix ? `<br><i>${esc(p.fix)}</i>` : ''}</td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1149,7 +1159,8 @@ night: 'Most Night Duty RPPF',
 avgDuty: 'Average Duty Hour RPPF',
 avgInOut: 'Avg In Time RPPF',
 punch: 'Punch Problem RPPF',
-requisition: 'OT Missing & Night Issue RPPF',
+requisition: 'OT Requisition RPPF',
+nightIssue: 'Night Requisition (DN, Night not YES) RPPF',
 earlyExit: 'Gate Pass / Early Exit RPPF',
 absent: 'Highest Absent (General Days) RPPF'
 };
@@ -1166,7 +1177,8 @@ night: 'Night Shifts',
 avgDuty: 'Avg Duty/Day',
 avgInOut: 'Avg In',
 punch: 'Missing',
-requisition: 'OT / Night Issue',
+requisition: 'OT Missing',
+nightIssue: 'Night Issues',
 earlyExit: 'Early Exits',
 absent: 'Absent Days'
 };
@@ -1187,8 +1199,12 @@ const reqBtn = document.getElementById('iccReqErpBtn');
 const sRow = document.getElementById('iccSearchRowWrap');
 if (waBtn) waBtn.style.display = activeIccCriterion === 'punch' ? 'inline-flex' : 'none';
 if (absBtn) absBtn.style.display = activeIccCriterion === 'absent' ? 'inline-flex' : 'none';
-if (reqBtn) reqBtn.style.display = activeIccCriterion === 'requisition' ? 'inline-flex' : 'none';
-if (sRow && (activeIccCriterion === 'punch' || activeIccCriterion === 'absent' || activeIccCriterion === 'requisition' || activeIccCriterion === 'earlyExit')) sRow.style.display = 'flex';
+if (reqBtn) {
+  reqBtn.style.display = (activeIccCriterion === 'requisition' || activeIccCriterion === 'nightIssue') ? 'inline-flex' : 'none';
+  reqBtn.textContent = activeIccCriterion === 'nightIssue' ? 'Forward Night Requisitions to ERP' : 'Forward OT Requisitions to ERP';
+  reqBtn.style.background = reqBtn.style.borderColor = activeIccCriterion === 'nightIssue' ? '#4f46e5' : '#d97706';
+}
+if (sRow && (activeIccCriterion === 'punch' || activeIccCriterion === 'absent' || activeIccCriterion === 'requisition' || activeIccCriterion === 'nightIssue' || activeIccCriterion === 'earlyExit')) sRow.style.display = 'flex';
 const curArea = document.getElementById('areaFilter')?.value || 'all';
 document.querySelectorAll('.icc-area-btn').forEach(btn => {
 btn.classList.toggle('active', btn.getAttribute('data-icc-area') === curArea);
@@ -1259,8 +1275,9 @@ const filtered = q ? indexed.filter(e => String(e.id || '').toUpperCase().includ
 if (!filtered.length) {
 _iccCurrentFilteredList = [];
 _iccRenderedCount = 0;
-const emptyTxt = activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : (activeIccCriterion === 'requisition' ? '✓ আলহামদুলিল্লাহ, এই সেকশনে কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).' : 'No matching employees found.');
-body.innerHTML = `<div class="empty-msg" style="padding:16px;text-align:center;font-weight:700;color:${activeIccCriterion === 'requisition' ? '#059669' : '#64748b'};">${emptyTxt}</div>`;
+const _okCrit = activeIccCriterion === 'requisition' || activeIccCriterion === 'nightIssue';
+const emptyTxt = activeIccCriterion === 'punch' ? 'No missing In/Out punches in this selection.' : (activeIccCriterion === 'requisition' ? '✓ আলহামদুলিল্লাহ, এই সেকশনে কারো ওটি রিকুইজিশন পেন্ডিং নেই (All OT Requisitions OK).' : (activeIccCriterion === 'nightIssue' ? '✓ আলহামদুলিল্লাহ, এই সেকশনে কারো নাইট রিকুইজিশন সমস্যা নেই (All Night Requisitions OK).' : 'No matching employees found.'));
+body.innerHTML = `<div class="empty-msg" style="padding:16px;text-align:center;font-weight:700;color:${_okCrit ? '#059669' : '#64748b'};">${emptyTxt}</div>`;
 return;
 }
 const adminActive = isIccAdminCatModeActive();
@@ -1305,7 +1322,8 @@ applyAreaFilter = function() {
     currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
     currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
+currentLeaderboardResult.filtered.sortedByNightIssue = [...base].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
 currentLeaderboardResult.filtered.sortedByAbsent = [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b) - getGeneralAbsentCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
     updateLbSummaryMetrics(base);
   }

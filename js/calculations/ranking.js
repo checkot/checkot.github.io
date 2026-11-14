@@ -77,7 +77,8 @@ function buildLeaderboardPayloadFromList(month, allList) {
   const sortedByAvgDuty = [...normalized].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
   const sortedByAvgInOut = [...normalized].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
   const sortedByPunch = [...normalized].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-  const sortedByRequisition = [...normalized].filter(e => (typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+  const sortedByRequisition = [...normalized].filter(e => (typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+  const sortedByNightIssue = [...normalized].filter(e => (typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
   const sortedByAbsent = [...normalized].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, month) - getGeneralAbsentCount(a, month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
   return {
     month,
@@ -92,6 +93,7 @@ function buildLeaderboardPayloadFromList(month, allList) {
     sortedByAvgInOut,
     sortedByPunch,
     sortedByRequisition,
+    sortedByNightIssue,
     sortedByAbsent
   };
 }

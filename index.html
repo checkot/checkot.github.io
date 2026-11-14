@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/manager-ux.css?v=20261113ee3">
   <link rel="stylesheet" href="css/rank-details.css?v=20261105nt">
   <link rel="stylesheet" href="css/assessment.css?v=20261107a">
-  <link rel="stylesheet" href="css/fit.css?v=20261112o2">
+  <link rel="stylesheet" href="css/fit.css?v=20261114n2">
   <link rel="stylesheet" href="css/modern-top.css?v=20261112mt4">
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261114p1">
@@ -1182,20 +1182,20 @@ document.documentElement.setAttribute('data-theme', t);
 <section class="lb-issues-card" id="lbIssuesCard" aria-label="Issues / সমস্যা">
 <div class="lb-issues-head"><span class="lb-issues-title">⚠ Issues <small>/ সমস্যা</small></span><span class="lb-issues-note">Needs action, not a ranking</span></div>
 <div class="lb-issues-grid">
+<button type="button" class="lb-issue-tile night-hub" onclick="openRankDrillDown('nightIssue')">
+<span class="lb-issue-ico">🌙</span>
+<span class="lb-issue-txt"><span class="lb-issue-title">Night Requisition</span><span class="lb-issue-sub" id="hubSubNightIssue">DN / night punch, Night not YES</span></span>
+<span class="lb-issue-val" id="hubValNightIssue">—</span>
+</button>
+<button type="button" class="lb-issue-tile req-hub" onclick="openRankDrillDown('requisition')">
+<span class="lb-issue-ico">⚠️</span>
+<span class="lb-issue-txt"><span class="lb-issue-title">OT Requisition</span><span class="lb-issue-sub" id="hubSubReq">Worked but 0 OT</span></span>
+<span class="lb-issue-val" id="hubValReq">—</span>
+</button>
 <button type="button" class="lb-issue-tile punch-hub" onclick="openRankDrillDown('punch')">
 <span class="lb-issue-ico">!</span>
 <span class="lb-issue-txt"><span class="lb-issue-title">Punch Problem</span><span class="lb-issue-sub" id="hubSubPunch">Missing In/Out</span></span>
 <span class="lb-issue-val" id="hubValPunch">—</span>
-</button>
-<button type="button" class="lb-issue-tile absent-hub" onclick="openRankDrillDown('absent')">
-<span class="lb-issue-ico">🔴</span>
-<span class="lb-issue-txt"><span class="lb-issue-title">Highest Absent</span><span class="lb-issue-sub" id="hubSubAbsent">Working-day absents</span></span>
-<span class="lb-issue-val" id="hubValAbsent">—</span>
-</button>
-<button type="button" class="lb-issue-tile req-hub" onclick="openRankDrillDown('requisition')">
-<span class="lb-issue-ico">⚠️</span>
-<span class="lb-issue-txt"><span class="lb-issue-title">Requisition Problem</span><span class="lb-issue-sub" id="hubSubReq">Worked but 0 OT</span></span>
-<span class="lb-issue-val" id="hubValReq">—</span>
 </button>
 </div>
 </section>
@@ -1281,6 +1281,19 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="rank-hub-title">Night Duty</div>
 <div class="rank-hub-sub" id="hubSubNight">Most night shifts</div>
 </div>
+</div>
+<span class="rank-hub-chev">›</span>
+</button>
+<button type="button" class="rank-hub-item" onclick="openRankDrillDown('absent')">
+<div class="rank-hub-left">
+<span class="rank-hub-icon">🔴</span>
+<div>
+<div class="rank-hub-title">Highest Absent</div>
+<div class="rank-hub-sub" id="hubSubAbsent">Working-day absents</div>
+</div>
+</div>
+<div class="rank-hub-right">
+<span class="rank-hub-val" id="hubValAbsent">—</span>
 </div>
 <span class="rank-hub-chev">›</span>
 </button>
@@ -1372,14 +1385,15 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="icc-crit-tab" data-icc-crit="otDays" onclick="openRankDrillDown('otDays')">OT Days</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="holiday" onclick="openRankDrillDown('holiday')">Holiday Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="night" onclick="openRankDrillDown('night')">Night Duty</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="absent" onclick="openRankDrillDown('absent')">Absent</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessDuty" onclick="openRankDrillDown('lessDuty')">Less Duty</button>
 <button type="button" class="icc-crit-tab" data-icc-crit="lessOt" onclick="openRankDrillDown('lessOt')">Less OT</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Fix</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="absent" onclick="openRankDrillDown('absent')">Absent</button>
-<button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">Req Fix</button>
 <button type="button" class="icc-crit-tab" id="iccCritTabEarlyExit" data-icc-crit="earlyExit" onclick="openRankDrillDown('earlyExit')">Gate Pass / Early Exit</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgDuty" data-icc-crit="avgDuty" style="display:none;" onclick="openRankDrillDown('avgDuty')">Avg Duty Hr</button>
 <button type="button" class="icc-crit-tab incharge-crit-tab" id="iccCritTabAvgInOut" data-icc-crit="avgInOut" style="display:none;" onclick="openRankDrillDown('avgInOut')">AVG IN</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="nightIssue" onclick="openRankDrillDown('nightIssue')">Night Requisition</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="requisition" onclick="openRankDrillDown('requisition')">OT Requisition</button>
+<button type="button" class="icc-crit-tab" data-icc-crit="punch" onclick="openRankDrillDown('punch')">Punch Problem</button>
 </div>
 </div>
 <div class="icc-collapsible-filters" id="iccCollapsibleFilters">
@@ -1408,7 +1422,7 @@ document.documentElement.setAttribute('data-theme', t);
 <input type="text" id="iccSearchInput" placeholder="Search employee name or ID..." oninput="renderIccDrillList()">
 <button type="button" class="calc-mini-btn btn-wa-solid" id="iccPunchWaBtn" style="display:none;" onclick="openBulkPunchErpForward()">Forward to ERP</button>
 <button type="button" class="calc-mini-btn btn-wa-solid" id="iccAbsentErpBtn" style="display:none;background:#dc2626;border-color:#dc2626;" onclick="openBulkAbsentForward()">Forward Absentees to In-Charge / HR</button>
-<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward Requisitions to ERP</button>
+<button type="button" class="calc-mini-btn btn-wa-solid" id="iccReqErpBtn"  style="display:none;background:#d97706;border-color:#d97706;" onclick="openBulkRequisitionErpForward()">Forward OT Requisitions to ERP</button>
 </div>
 </div>
 <div class="icc-mypos-banner" id="iccMyPosBanner" style="display:none;"></div>
@@ -1944,7 +1958,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/calculations/rates.js?v=20261106b"></script>
   <script src="js/calculations/early-exit.js?v=20261113ee4"></script>
   <script src="js/calculations/night-issues.js?v=20261114n1"></script>
-  <script src="js/calculations/ranking.js?v=20261114n1"></script>
+  <script src="js/calculations/ranking.js?v=20261114n2"></script>
   <script src="js/calculations/attendance.js?v=20261114p1"></script>
   <script src="js/calculations/profile.js?v=20261114n1"></script>
   <script src="js/components/router.js"></script>
@@ -1960,10 +1974,10 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
-  <script src="js/pages/leaderboard.js?v=20261114n1"></script>
-  <script src="js/app-main.js?v=20261114n1"></script>
-  <script src="js/components/rank-details.js?v=20261114n1"></script>
-  <script src="js/patches/manager-ux.js?v=20261114n1"></script>
+  <script src="js/pages/leaderboard.js?v=20261114n2"></script>
+  <script src="js/app-main.js?v=20261114n2"></script>
+  <script src="js/components/rank-details.js?v=20261114n2"></script>
+  <script src="js/patches/manager-ux.js?v=20261114n2"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>

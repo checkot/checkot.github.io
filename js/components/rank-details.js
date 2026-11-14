@@ -7,7 +7,7 @@
    openIccContextModal(empId, crit, month)
      crit  : ranking criterion the user was looking at
              duty | ot | earned | plain | lessDuty | lessOt | punch | absent |
-             requisition | earlyExit | avgDuty | avgInOut | night | otDays | holiday
+             requisition | nightIssue | earlyExit | avgDuty | avgInOut | night | otDays | holiday
      month : optional 'YYYY-MM' (single-month ranking). Ignored in multi-month
              modes, where the loaded months of the ranking are used.
 
@@ -21,7 +21,7 @@
   'use strict';
 
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var CRIT_ALIAS = { lessOT: 'lessOt', less_ot: 'lessOt', less_duty: 'lessDuty', avgInTime: 'avgInOut', req: 'requisition', punchFix: 'punch', best_duty: 'duty', best_ot: 'ot' };
+  var CRIT_ALIAS = { lessOT: 'lessOt', less_ot: 'lessOt', less_duty: 'lessDuty', avgInTime: 'avgInOut', req: 'requisition', night_issue: 'nightIssue', nightReq: 'nightIssue', punchFix: 'punch', best_duty: 'duty', best_ot: 'ot' };
   var _ctx = null; // last opened context (used by month "View" buttons)
 
   /* ---------- tiny safe helpers ---------- */
@@ -110,7 +110,7 @@
 
   function analyzeMonth(mStr, rec) {
     var A = { month: mStr, label: monthLabel(mStr), has: !!rec, rec: rec || null,
-      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [], early: [],
+      days: [], worked: [], otDays: [], otDayList: [], plainDays: [], nightDays: [], holDays: [], punchRows: [], absent: [], req: [], night: [], early: [],
       duty: 0, ot: 0, earned: 0, otAmt: 0, holAmt: 0, nightAmt: 0, avgIn: null, earliestIn: null, latestIn: null, avgPerDay: 0 };
     if (!rec) return A;
     var days = parseDaily(rec);
@@ -144,6 +144,9 @@
       A.req = (typeof computeEmpRequisitionProblems === 'function' && !rec.isMultiMonth) ? computeEmpRequisitionProblems(rec)
         : (Array.isArray(rec.requisitionProblems) ? rec.requisitionProblems : []);
     } catch (e) { A.req = []; }
+    // OT Requisition = items without isNightIssue; Night Requisition = isNightIssue items
+    A.night = A.req.filter(function (p) { return p && p.isNightIssue; });
+    A.req = A.req.filter(function (p) { return !(p && p.isNightIssue); });
     // early exit / gate pass (In-Charge & Admin only; rules come from shift-rules.json)
     try { A.early = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(rec) : []; } catch (e) { A.early = []; }
     // in / out averages
@@ -208,16 +211,28 @@
       listTitle: function (A) { return 'Missing punch records (' + A.punchRows.length + ' days)'; }
     },
     requisition: {
-      icon: '📋', cls: 'req', color: 'var(--warning)', title: 'OT Missing & Night Issue', bannerSub: 'OT: worked beyond duty, requisition pending. 🌙 Night Issue: DN / night punch found but Empress Night is not YES',
+      icon: '📋', cls: 'req', color: 'var(--warning)', title: 'OT Requisition', bannerSub: 'Worked beyond duty hours but Empress shows 0 OT — requisition pending',
       metric: function (A) { return A.req.length; }, fmt: function (v) { return v + 'd'; },
       body: function (A) {
         return A.req.length ? table(['Date', 'In – Out', 'Duty', 'Expected OT', 'Reason'], A.req.map(function (p) {
-          return '<tr><td class="b">' + E(p.date) + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td class="warn b"' + (p.isNightIssue ? ' style="color:#4f46e5"' : '') + '>' + (p.isNightIssue ? '🌙 ' : '') + E(p.expectedOt) + '</td><td class="m s">' + (p.isNightIssue ? '<b style="color:#4f46e5">Night Issue:</b> ' : '') + E(p.reason || 'Pending Requisition') + (p.fix ? '<br><i>' + E(p.fix) + '</i>' : '') + '</td></tr>';
+          return '<tr><td class="b">' + E(p.date) + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td class="warn b">' + E(p.expectedOt) + '</td><td class="m s">' + E(p.reason || 'Pending Requisition') + (p.fix ? '<br><i>' + E(p.fix) + '</i>' : '') + '</td></tr>';
         })) : empty('✓ No pending OT requisition');
       },
       total: function (as) { return grid([kpi('Total Pending', sum(as, 'req', true) + 'd', 'var(--warning)', true), kpi('Months Affected', as.filter(function (a) { return a.req.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.req.length; }, 'd'))]); },
-      single: function (A) { return grid([kpi('Pending Days', A.req.length + 'd', 'var(--warning)', true), kpi('🌙 Night Issue', A.req.filter(function (p) { return p.isNightIssue; }).length + 'd', '#4f46e5'), kpi('Overtime (paid)', r1(A.ot) + 'h'), kpi('Duty', r1(A.duty) + 'h')]); },
+      single: function (A) { return grid([kpi('Pending Days', A.req.length + 'd', 'var(--warning)', true), kpi('Overtime (paid)', r1(A.ot) + 'h'), kpi('Duty', r1(A.duty) + 'h')]); },
       listTitle: function (A) { return 'Pending requisition dates (' + A.req.length + ' days)'; }
+    },
+    nightIssue: {
+      icon: '🌙', cls: 'req', color: '#4f46e5', title: 'Night Requisition', bannerSub: 'DN shift / night punch (09:30–10:15 PM) found but Empress Night is not YES — never counted as a night until ERP marks Night = YES',
+      metric: function (A) { return A.night.length; }, fmt: function (v) { return v + 'd'; },
+      body: function (A) {
+        return A.night.length ? table(['Date', 'In – Out', 'Duty', 'Reason', 'Fix'], A.night.map(function (p) {
+          return '<tr><td class="b">' + E(p.date) + '</td><td>' + E(p.in) + ' – ' + E(p.out) + '</td><td>' + E(p.duty != null ? p.duty : p.elapsed) + 'h</td><td class="m s"><b style="color:#4f46e5">🌙 Night Issue:</b> ' + E(p.reason || 'Night not YES') + '</td><td class="m s">' + (p.fix ? '<i>' + E(p.fix) + '</i>' : '—') + '</td></tr>';
+        })) : empty('✓ No night requisition problem');
+      },
+      total: function (as) { return grid([kpi('Total Night Issues', sum(as, 'night', true) + 'd', '#4f46e5', true), kpi('Months Affected', as.filter(function (a) { return a.night.length; }).length + ' / ' + as.length), kpi('Worst Month', worst(as, function (a) { return a.night.length; }, 'd'))]); },
+      single: function (A) { return grid([kpi('🌙 Night Issue', A.night.length + 'd', '#4f46e5', true), kpi('Nights (paid)', num(A.nightCount) + 'n'), kpi('Duty', r1(A.duty) + 'h')]); },
+      listTitle: function (A) { return 'Night issue dates (' + A.night.length + ' days)'; }
     },
     earlyExit: {
       icon: '🚪', cls: 'req', color: 'var(--warning)', title: 'Gate Pass / Early Exit', bannerSub: 'Regular days when the Out punch is before the shift end (Admin → Shift Hours decides the shift end for each date)',

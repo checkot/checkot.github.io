@@ -1077,6 +1077,24 @@ function getRequisitionProblemCount(emp) {
   emp.requisitionProblemCount = probs.length;
   return probs.length;
 }
+/* Requisition criterion split (Issues card):
+   - 'requisition' = OT Requisition  -> items WITHOUT isNightIssue
+   - 'nightIssue'  = Night Requisition -> items WITH isNightIssue
+   getRequisitionProblemCount() above stays the OT+Night TOTAL (kept for legacy callers). */
+function _splitReqIssues(emp) {
+  if (!emp) return { ot: [], night: [] };
+  let list;
+  if (emp.isMultiMonth) list = Array.isArray(emp.requisitionProblems) ? emp.requisitionProblems : [];
+  else {
+    list = typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(emp) : (Array.isArray(emp.requisitionProblems) ? emp.requisitionProblems : []);
+    emp.requisitionProblems = list;
+    emp.requisitionProblemCount = list.length;
+  }
+  if (typeof splitRequisitionIssues === 'function') return splitRequisitionIssues(list);
+  return { ot: list.filter(p => !(p && p.isNightIssue)), night: list.filter(p => p && p.isNightIssue) };
+}
+function getOtRequisitionCount(emp) { return _splitReqIssues(emp).ot.length; }
+function getNightIssueCount(emp) { return _splitReqIssues(emp).night.length; }
 function getPunchProblemCount(emp) {
 if (!emp) return 0;
 if (Array.isArray(emp.punchProblems)) return emp.punchProblems.length;
@@ -2750,33 +2768,42 @@ function openBulkRequisitionErpForward() {
     showToast('First load the leaderboard list', 'warn');
     return;
   }
+  const isNightCrit = activeIccCriterion === 'nightIssue';
   const f = currentLeaderboardResult.filtered;
-  const list = f ? (f.sortedByRequisition || []) : (currentLeaderboardResult.sortedByRequisition || []);
+  const key = isNightCrit ? 'sortedByNightIssue' : 'sortedByRequisition';
+  const list = f ? (f[key] || []) : (currentLeaderboardResult[key] || []);
   if (!list || list.length === 0) {
-    showToast('No employees with OT requisition problems in this section', 'info');
+    showToast(isNightIssue_toastEmpty(isNightCrit), 'info');
     return;
   }
   const areaLabel = describeLbFilter();
   const monthStr = currentLeaderboardResult.month || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
   const lines = list.map((e, i) => {
-    const probs = (typeof computeEmpRequisitionProblems === 'function' && !e.isMultiMonth) ? computeEmpRequisitionProblems(e) : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
-    const otP = probs.filter(p => !p.isNightIssue), nP = probs.filter(p => p.isNightIssue);
-    const parts = [];
-    if (otP.length) parts.push('OT Missing: ' + otP.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; '));
-    if (nP.length) parts.push('Night Issue: ' + nP.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'})`).join('; '));
-    const rDetails = parts.length ? parts.join('\n   └ ') : `${getRequisitionProblemCount(e)} days`;
+    const sp = _splitReqIssues(e);
+    let rDetails;
+    if (isNightCrit) {
+      rDetails = 'Night Issue: ' + sp.night.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'})`).join('; ');
+    } else {
+      rDetails = 'OT Missing: ' + sp.ot.map(p => `${p.date} (In: ${p.in || '—'}, Out: ${p.out || '—'}, Expected: ${p.expectedOt || 'OT'})`).join('; ');
+    }
     return `${i + 1}. ${e.name || '—'} (${e.id}) [${e.sub || 'General'}]:\n   └ ${rDetails}`;
   });
-  const hasNightIssue = list.some(e => ((typeof computeEmpRequisitionProblems === 'function' && !e.isMultiMonth) ? computeEmpRequisitionProblems(e) : []).some(p => p.isNightIssue));
-  const nightNote = hasNightIssue ? `\n\nNight Issue = DN shift / 09:30-10:15 PM night punch found, but Empress Night is not YES. Please check the night-end Out punch, Empress sync and requisition, then mark Night = YES if the night duty is genuine.` : '';
-  const msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition / Night Issue Report:\nOT Missing = employees physically worked overtime (9.2h - 13.5h), but Empress shows 0 OT (Requisition Missing).${nightNote}\n\n${lines.join('\n\n')}\n\nPlease allocate/approve the requisitions and fix the night flags before payroll cutoff. Thank you!`;
+  let msg;
+  if (isNightCrit) {
+    msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Night Requisition Report:\nDN shift / 09:30-10:15 PM night punch found, but Empress Night is not YES. Please check night-end Out punch, Empress sync and requisition, then mark Night = YES if genuine.\n\n${lines.join('\n\n')}\n\nPlease fix the night flags before payroll cutoff. Thank you!`;
+  } else {
+    msg = `Dear ERP Team,\n${areaLabel} section, ${monthStr} Overtime Requisition Report:\nOT Missing = employees worked overtime but Empress shows 0 OT (Requisition Missing).\n\n${lines.join('\n\n')}\n\nPlease allocate/approve the requisitions before payroll cutoff. Thank you!`;
+  }
   const areaOnly = document.getElementById('areaFilter')?.value || 'All';
   if (typeof openErpSupportModal === 'function') {
     openErpSupportModal(msg, areaOnly === 'all' ? 'All' : areaOnly);
   } else if (typeof fallbackCopyText === 'function') {
     fallbackCopyText(msg);
-    showToast('Copied ERP requisition message to clipboard!', 'success');
+    showToast(isNightCrit ? 'Copied ERP night requisition message to clipboard!' : 'Copied ERP requisition message to clipboard!', 'success');
   }
+}
+function isNightIssue_toastEmpty(isNight) {
+  return isNight ? 'No employees with night requisition problems in this section' : 'No employees with OT requisition problems in this section';
 }
 
 function openBulkPunchErpForward() {
@@ -3096,7 +3123,12 @@ if (crit === 'absent') {
 if (crit === 'requisition') {
   if (Array.isArray(f.sortedByRequisition)) return f.sortedByRequisition;
   const base = f._rawFiltered || f.allEmployees || [];
-  return [...base].filter(e => getRequisitionProblemCount(e) > 0).sort((a,b) => (getRequisitionProblemCount(b) - getRequisitionProblemCount(a)) || (b.totalDuty - a.totalDuty));
+  return [...base].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
+}
+if (crit === 'nightIssue') {
+  if (Array.isArray(f.sortedByNightIssue)) return f.sortedByNightIssue;
+  const base = f._rawFiltered || f.allEmployees || [];
+  return [...base].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
 }
 if (crit === 'otDays' || crit === 'holiday' || crit === 'night') {
   const cntOf = crit === 'otDays' ? (e => getEmpOtDays(e)) : crit === 'holiday' ? (e => Number(e.holidayCount || 0)) : (e => Number(e.nightCount || 0));
@@ -3119,8 +3151,12 @@ return `${adj} h/d`;
 }
 if (crit === 'avgInOut') return `${e.avgInTimeStr || '08:00'}`;
 if (crit === 'requisition') {
-  const c = typeof getRequisitionProblemCount === 'function' ? getRequisitionProblemCount(e) : 0;
+  const c = typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0;
   return `${c}d req`;
+}
+if (crit === 'nightIssue') {
+  const c = typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0;
+  return `${c}d night`;
 }
 if (crit === 'absent') {
   const c = typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0;
@@ -3155,7 +3191,8 @@ const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
 const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
-const isReqCrit = activeIccCriterion === 'requisition';
+const isNightIssueCrit = activeIccCriterion === 'nightIssue';
+const isReqCrit = activeIccCriterion === 'requisition' || isNightIssueCrit;
 const isAbsCrit = activeIccCriterion === 'absent';
 const isEarlyCrit = activeIccCriterion === 'earlyExit';
 const rkClass = activeIccCriterion === 'punch' ? 'icc-punch-row' : (isReqCrit ? 'icc-req-row' : (isAbsCrit ? 'icc-absent-row' : (isEarlyCrit ? 'icc-early-row' : (rk <= 3 ? `icc-rank-${rk}` : ''))));
@@ -3188,13 +3225,14 @@ if (isAbsCrit) {
 }
 let reqMetaUnderName = '';
 if (isReqCrit) {
-  const probs = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : (typeof computeEmpRequisitionProblems === 'function' ? computeEmpRequisitionProblems(e) : []);
-  if (probs.length > 0) {
-    const shortD = p => String(p.date).replace(/-20\d\d$/, '');
-    const otD = probs.filter(p => !p.isNightIssue).map(shortD).join(', ');
-    const nightD = probs.filter(p => p.isNightIssue).map(shortD).join(', ');
-    if (otD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(otD)}</div>`;
+  const sp = _splitReqIssues(e);
+  const shortD = p => String(p.date).replace(/-20\d\d$/, '');
+  if (isNightIssueCrit) {
+    const nightD = sp.night.map(shortD).join(', ');
     if (nightD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#4f46e5;margin-top:2px;">🌙 Night Issue (DN, Night≠YES): ${esc(nightD)}</div>`;
+  } else {
+    const otD = sp.ot.map(shortD).join(', ');
+    if (otD) reqMetaUnderName += `<div style="font-size:11px;font-weight:700;color:#d97706;margin-top:2px;">⚠️ Pending OT: ${esc(otD)}</div>`;
   }
 }
 let earlyMetaUnderName = '';
@@ -3211,7 +3249,8 @@ const catBadgesHtml = empCats.map(c => `<span class="icc-cat-badge">${esc(c)}</s
 let detailsBtnText = 'Show Details →';
 if (activeIccCriterion === 'absent') detailsBtnText = 'Absent Details →';
 else if (activeIccCriterion === 'punch') detailsBtnText = 'Punch Details →';
-else if (activeIccCriterion === 'requisition') detailsBtnText = 'Req Details →';
+else if (activeIccCriterion === 'requisition') detailsBtnText = 'OT Req Details →';
+else if (activeIccCriterion === 'nightIssue') detailsBtnText = 'Night Details →';
 else if (activeIccCriterion === 'earlyExit') detailsBtnText = 'Exit Details →';
 else if (activeIccCriterion === 'ot' || activeIccCriterion === 'lessOt') detailsBtnText = isMultiTime ? 'OT by Month →' : 'OT Details →';
 else if (activeIccCriterion === 'duty' || activeIccCriterion === 'lessDuty' || activeIccCriterion === 'avgDuty') detailsBtnText = isMultiTime ? 'Duty by Month →' : 'Duty Details →';
@@ -4773,7 +4812,7 @@ function renderInchargeWatchlist() {
   } else if (_incWatchlistTab === 'req') {
     items = [...rppfActive]
       .map(e => {
-        const cnt = Number(e.requisitionProblemCount || (Array.isArray(e.requisitionProblems) ? e.requisitionProblems.length : 0)) || (e.unreqOtHours || 0);
+        const cnt = Number(typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : (e.requisitionProblemCount || (Array.isArray(e.requisitionProblems) ? e.requisitionProblems.length : 0))) || (e.unreqOtHours || 0);
         return { emp: e, count: cnt };
       })
       .filter(x => x.count > 0)
@@ -5079,7 +5118,7 @@ async function renderInchargeHomeOverview() {
     const _fmt = n => (n > 0 ? `${n} pers` : 'None');
     setT('incIssPunch', _fmt(_cnt(getPunchProblemCount)));
     setT('incIssAbsent', _fmt(_cnt(typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount : null)));
-    setT('incIssReq', _fmt(_cnt(getRequisitionProblemCount)));
+    setT('incIssReq', _fmt(_cnt(getOtRequisitionCount)));
     setT('incIssEarly', _fmt(_cnt(typeof getEarlyExitCount === 'function' ? getEarlyExitCount : null)));
   } catch (_e) { /* Action Center counts are best-effort */ }
 

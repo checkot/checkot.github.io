@@ -141,6 +141,7 @@
 .lb-issue-tile.punch-hub  { border-left-color: #2563eb; }
 .lb-issue-tile.absent-hub { border-left-color: #dc2626; }
 .lb-issue-tile.req-hub    { border-left-color: #f59e0b; }
+.lb-issue-tile.night-hub  { border-left-color: #4f46e5; }
 .lb-issue-tile:active { transform: scale(0.98); }
 .lb-issue-ico { font-size: 14px; line-height: 1; }
 .lb-issue-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; width: 100%; }
@@ -150,6 +151,7 @@
 .lb-issue-tile.absent-hub .lb-issue-val { color: #dc2626; }
 .lb-issue-tile.req-hub .lb-issue-val { color: #d97706; }
 .lb-issue-tile.punch-hub .lb-issue-val { color: #2563eb; }
+.lb-issue-tile.night-hub .lb-issue-val { color: #4f46e5; }
 @media (max-width: 340px) { .lb-issues-grid { grid-template-columns: 1fr; } .lb-issue-tile { min-height: 0; flex-direction: row; align-items: center; } .lb-issue-val { margin: 0 0 0 auto; } }
 .rank-hub-menu .rank-hub-section-divider { margin: 6px 2px 0; }
 
