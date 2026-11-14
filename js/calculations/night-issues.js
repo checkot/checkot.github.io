@@ -192,7 +192,7 @@
   function tagHolidayIssues(list, opts) {
     opts = opts || {};
     var cancelled = {};
-    (opts.cancelled || []).forEach(function (d) { cancelled[_up(d)] = true; });
+    (opts.cancelled || []).concat(opts.cancelledHolidays || []).forEach(function (d) { cancelled[_up(d)] = true; });
     var arr = Array.isArray(list) ? list : [];
     var holByDate = {};
     arr.forEach(function (p) {

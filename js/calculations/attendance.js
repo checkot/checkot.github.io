@@ -118,7 +118,7 @@
         activeDays++;
         if (k >= 1) {
           activeNums.push(k);
-          byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, shift: r[11] || '', rec: true };
+          byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, nightYes: !!r[10], shift: r[11] || '', rec: true };
         }
       }
     });
@@ -213,6 +213,54 @@
       return root.isEmployeeOnApprovedLeave(empId, targetDateStr);
     }
     return null;
+  }
+
+
+  /* ---- Report flags: SAME helpers as Ranking (night-issues.js), no copy of rules ---- */
+  function _getNI() {
+    if (root && root.NightIssues) return root.NightIssues;
+    try { if (typeof require === 'function') return require('./night-issues.js'); } catch (_e) {}
+    return null;
+  }
+  function _issueDayNo(item, y, m) {
+    const mm = String(item && item.date || '').trim().toUpperCase().match(/^(\d{1,2})-([A-Z]{3})-(\d{4})/);
+    if (!mm) return 0;
+    if (+mm[3] !== y || _RMON_UPPER.indexOf(mm[2]) + 1 !== m) return 0;
+    return +mm[1];
+  }
+  /* -> { holiday: {day: item}, night: {day: item} } (items already closed-day / cancelled filtered) */
+  function _collectFlagItems(e, y, m, options, nowMs) {
+    const res = { holiday: {}, night: {} };
+    const NI = _getNI();
+    if (!NI || !e || e.isMultiMonth) return res;
+    let merged;
+    if (Array.isArray(options.cancelledHolidays)) {
+      // explicit override (tests / callers that know the admin list)
+      const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: options.cancelledHolidays, nowMs });
+      const nights = (options.computeEmpNightIssues || NI.computeEmpNightIssues)(e, nowMs);
+      merged = NI.mergeRequisitionAndNight(tagged, nights);
+    } else {
+      const fn = options.computeEmpRequisitionProblems || (typeof root.computeEmpRequisitionProblems === 'function' ? root.computeEmpRequisitionProblems : null);
+      if (fn) {
+        merged = fn(e) || [];
+      } else {
+        const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: [], nowMs });
+        const nightFn = options.computeEmpNightIssues || (typeof root.computeEmpNightIssues === 'function' ? root.computeEmpNightIssues : NI.computeEmpNightIssues);
+        merged = NI.mergeRequisitionAndNight(tagged, nightFn(e, nowMs));
+      }
+    }
+    const sp = NI.splitIssues(merged);
+    sp.holiday.forEach(it => { const d = _issueDayNo(it, y, m); if (d && !res.holiday[d]) res.holiday[d] = it; });
+    // Night items: computeEmpNightIssues is the same helper Ranking merges in
+    const nightFn2 = options.computeEmpNightIssues || (typeof root.computeEmpNightIssues === 'function' ? root.computeEmpNightIssues : NI.computeEmpNightIssues);
+    (nightFn2(e, nowMs) || []).forEach(it => { const d = _issueDayNo(it, y, m); if (d && !res.night[d]) res.night[d] = it; });
+    return res;
+  }
+  function _to12h(t) {
+    const q = String(t || '').match(/^(\d{1,2}):(\d{2})/);
+    if (!q) return String(t || '');
+    const h = +q[1], ap = h >= 12 ? 'PM' : 'AM';
+    return String(((h + 11) % 12) + 1).padStart(2, '0') + ':' + q[2] + ' ' + ap;
   }
 
   function computeDatasetMetaFromEmployees(list) {
@@ -397,6 +445,7 @@
       prevMonthNight = root.hasPrevMonthLastNight(e.id, resolvedYm, e);
     }
 
+    const flagItems = _collectFlagItems(e, y, m, options, nowMs);
     const rows = [];
     const last = new Date(y, m, 0).getDate();
 
@@ -410,6 +459,9 @@
     let punchIssues = 0;
     let reqIssues = 0;
     let nightSuspectsCount = 0;
+    let nightYesCount = 0;
+    let holidayReqCount = 0;
+    let nightIssueCount = 0;
     let earlyExitsCount = 0;
     let hasPendingOrUpcomingDay = !rptIsDayClosed(y, m, last, nowMs);
 
@@ -495,7 +547,7 @@
           absentShortDates.push(`${dStr}-${mNumStr}`);
         }
       } else {
-        Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night });
+        Object.assign(row, { v: [0, 1, 2, 3, 4, 5].map(i => Number(o.v[i]) || 0), night: o.night, nightYes: (o.nightYes !== undefined ? !!o.nightYes : !!o.night) });
         const _mi0 = o.forceMiss || (daily.length && _isPunchMissing(o.inn));
         const _mo0 = o.forceMiss || (daily.length && _isPunchMissing(o.out));
         const _fpPend = !o.forceMiss && !isDayClosed && !!(_mi0 || _mo0);
@@ -510,6 +562,7 @@
           totalPresentDays++;
         }
         if (o.night) nightsCount++;
+        if (row.nightYes) nightYesCount++;
         if (row.v[2] || row.v[3] || row.v[4] || row.v[5]) holidayWorkedCount++;
 
         // If this is a closed general working day (not weekend/govt holiday), working on it counts towards scheduledWorkingDays and presentOnScheduledDays
@@ -542,7 +595,7 @@
           } else if (row.v[1]) {
             row.note = 'Overtime';
           }
-          if (o.night) row.note += (row.note ? ' + ' : '') + 'Night';
+          if (row.nightYes) row.note += (row.note ? ' + ' : '') + 'Night';
 
           // REQUISITION PROBLEM DETECTION & HIGHLIGHT
           const parseM = (t) => {
@@ -585,7 +638,10 @@
         }
       }
 
-      // NIGHT SUSPECT FLAG (never declares a night; Night is ONLY when Empress says YES)
+      const baseTone = row.tone; // tone BEFORE report flags (punch / OT counters must not change)
+
+      // LEGACY night-suspect test (kept for Profile + counters: results unchanged)
+      let legacySuspect = false;
       if (o && !o.night) {
         const _m = (t) => {
           const mm = String(t || '').replace(/[^0-9:]/g, '').match(/^(\d{1,2}):(\d{2})/);
@@ -596,19 +652,49 @@
         if (_ti !== null && _to !== null) _el = ((_to < _ti ? (1440 - _ti) + _to : _to - _ti) / 60);
         const _tot = o.v.reduce((a, x) => a + (Number(x) || 0), 0);
         const _sh = String(o.shift || '').toUpperCase();
-        let _why = '';
-        if (_sh.indexOf('NIGHT') >= 0 || _sh === 'DN' || _sh === 'C') _why = 'Shift shows night';
-        else if (_to !== null && _ti === null && _to >= 240 && _to <= 435) _why = 'Morning out, no In';
-        else if (_el >= 15 || _tot >= 15) _why = 'Very long duty';
-        if (_why) {
-          row.nightSuspect = true;
-          if (!row.tone || row.tone === 'hol' || row.tone === 'do') row.tone = 'req';
-          row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected (' + _why + ') but not marked in Empress — contact ERP team';
+        if (_sh.indexOf('NIGHT') >= 0 || _sh === 'DN' || _sh === 'C') legacySuspect = true;
+        else if (_to !== null && _ti === null && _to >= 240 && _to <= 435) legacySuspect = true;
+        else if (_el >= 15 || _tot >= 15) legacySuspect = true;
+        if (legacySuspect) row.nightSuspect = true;
+      }
+
+      // REPORT FLAGS (flags only, never payroll): one primary per date
+      // Night issue > Holiday requisition > OT missing > Gate pass
+      const alsoParts = [];
+      if (o && !row.fpPending && isDayClosed) {
+        const nItem = flagItems.night[d] || null;
+        const hItem = flagItems.holiday[d] || null;
+        if (nItem) {
+          row.nightIssue = { kind: nItem.kind, reason: nItem.reason };
+          const sh = String(o.shift || '').trim();
+          const isDn = /^(dn|dn-)/i.test(nItem.kind || '');
+          const det = isDn
+            ? ('Shift ' + (sh || 'DN') + (nItem.kind === 'dn-window' && nItem.out ? ', punch ' + _to12h(nItem.out) : (nItem.kind === 'dn-punch' ? ', In/Out punch missing' : '')))
+            : String(nItem.reason || '').replace(/,?\s*Night is not (marked )?YES.*$/i, '');
+          row.nightFlagNote = '⚠️ Night Missing';
+          if (hItem || /\(also:/.test(String(nItem.reason || ''))) alsoParts.push('🏖️ Holiday duty not booked');
+        } else if (hItem) {
+          row.holidayReq = { kind: hItem.kind, reason: hItem.reason };
+          row.holidayFlagNote = '🏖️ Holiday Req Missing';
         }
+      }
+      if (row.nightIssue || row.holidayReq) {
+        const primary = row.nightIssue ? row.nightFlagNote : row.holidayFlagNote;
+        const prior = row.note;
+        if (baseTone === 'req' && row.reqProblem && prior) alsoParts.push(prior.replace(/\s*\[[^\]]*\]\s*$/, ''));
+        else if (baseTone === 'bad' && prior) alsoParts.push(prior);
+        row.note = primary;
+        row.primaryFlag = row.nightIssue ? 'night' : 'holiday';
+        if (baseTone !== 'bad') row.tone = row.nightIssue ? 'req' : 'holreq';
+        if (row.nightIssue) { row.nightSuspect = true; nightIssueCount++; } else holidayReqCount++;
+      } else if (legacySuspect && isDayClosed && !row.nightIssue) {
+        // legacy suspect not backed by the shared helper: keep old wording + look
+        if (!row.tone || row.tone === 'hol' || row.tone === 'do') row.tone = 'req';
+        row.note = (row.note ? row.note + ' ' : '') + '⚠️ Night suspected but not marked in Empress — contact ERP team';
       }
 
       // GATE PASS / EARLY EXIT REMARK
-      if (o && !row.missIn && !row.missOut && !row.reqProblem && !row.nightSuspect) {
+      if (o && !row.missIn && !row.missOut && !row.reqProblem && !row.nightSuspect && !row.holidayReq) {
         const ex = earlyExitMap.get(d);
         if (ex) {
           row.earlyExit = ex;
@@ -620,9 +706,8 @@
         }
       }
 
-      if (row.tone === 'bad') punchIssues++;
-      if (row.tone === 'req' && !row.nightSuspect) reqIssues++;
-      if (row.nightSuspect) nightSuspectsCount++;
+      if (baseTone === 'bad') punchIssues++;
+      if (baseTone === 'req' && !legacySuspect) reqIssues++;
       if (row.earlyExit) earlyExitsCount++;
 
       rows.push(row);
@@ -656,7 +741,10 @@
       nightCount: nightsCount,
       punchIssueCount: punchIssues,
       reqIssueCount: reqIssues,
-      nightSuspectCount: nightSuspectsCount,
+      nightSuspectCount: nightIssueCount,
+      nightYesCount,
+      holidayReqCount,
+      nightIssueCount,
       earlyExitCount: earlyExitsCount
     };
   }

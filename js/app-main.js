@@ -257,7 +257,7 @@ if (dHrs > 0 || inStr || outStr || isNight) {
 activeDays++;
 if (k >= 1) {
   activeNums.push(k);
-  byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, rec: true };
+  byDay[k] = { inn: r[2], out: r[3], v: [r[4], r[5], r[6], r[7], r[8], r[9]], night: isNight, nightYes: !!r[10], shift: r[11] || '', rec: true };
 }
 }
 });

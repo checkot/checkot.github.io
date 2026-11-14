@@ -272,7 +272,7 @@
     host.querySelectorAll('span').forEach((sp) => {
       if (sp.dataset.mgrqDone || sp.children.length) return;
       const t = sp.textContent.trim();
-      const type = /^Req (Missing|Problem)/.test(t) ? 'ot_missing' : /^Punch (Fix|Problem|Missing)/.test(t) ? 'punch' : /^General Absent/.test(t) ? 'absent' : '';
+      const type = /^Req (Missing|Problem)/.test(t) ? 'ot_missing' : /^Punch (Fix|Problem|Missing)/.test(t) ? 'punch' : /^General Absent/.test(t) ? 'absent' : /^Holiday Req/.test(t) ? 'holiday_req' : /^Night Check/.test(t) ? 'night_issue' : '';
       if (type) { sp.dataset.mgrqDone = '1'; sp.appendChild(makeQ(type)); }
     });
   }

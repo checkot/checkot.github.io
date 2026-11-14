@@ -228,21 +228,26 @@ return { rows, y, m };
 function _rptHtml(ctx, forExport) {
   const e = ctx.emp, { rows, y, m } = _rptRows(ctx);
   const sum = [0, 0, 0, 0, 0, 0];
-  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0, nightSus = 0, earlyExits = 0;
+  let present = 0, nights = 0, issues = 0, offAfterNight = 0, reqIssues = 0, nightSus = 0, holReq = 0, earlyExits = 0;
+  // Night is shown/counted ONLY when Empress says YES (r.nightYes); older fallback rows only have r.night.
+  const isNightYes = r => (r.nightYes !== undefined ? !!r.nightYes : !!r.night);
+  const nightRows = [], holRows = [], reqRows = [];
   rows.forEach(r => {
     r.v.forEach((x, i) => sum[i] += x);
     if (r.inn || r.out) present++;
-    if (r.night) nights++;
+    if (isNightYes(r)) nights++;
     if (r.afterNight) offAfterNight++;
     if (r.tone === 'bad') issues++;
-    if (r.tone === 'req' && !r.nightSuspect) reqIssues++;
-    if (r.nightSuspect) nightSus++;
+    // one primary flag per date: Night issue > Holiday requisition > OT missing
+    if (r.nightIssue || r.nightSuspect) { nightSus++; nightRows.push(r); }
+    else if (r.holidayReq) { holReq++; holRows.push(r); }
+    else if (r.tone === 'req') { reqIssues++; reqRows.push(r); }
     if (r.earlyExit) earlyExits++;
   });
   const displayRows = (typeof _rptHideEmptyDays !== 'undefined' && _rptHideEmptyDays)
     ? rows.filter(r => r.inn || r.out || r.tone === 'bad' || r.v.some(x => x > 0) || r.night)
     : rows;
-  const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', ee: '#ffedd5', absent: '#fee2e2' };
+  const BG = { bad: '#fecaca', hol: '#fff6e6', do: '#f3effc', none: '#f8fafc', off: '#f1f5f9', offn: '#eef2ff', req: '#fef3c7', holreq: '#ccfbf1', ee: '#ffedd5', absent: '#fee2e2' };
   const fsCell = forExport ? '12.5px' : '11px';
   const fsSmall = forExport ? '11.5px' : '10.5px';
   const fsHead = forExport ? '11.5px' : '10px';
@@ -272,7 +277,7 @@ function _rptHtml(ctx, forExport) {
     return `<tr style="background:${BG[r.tone] || '#fff'};color:${col};">
 <td style="${tdBase}text-align:left;padding-left:4px;padding-right:3px;font-weight:800;font-size:${fsSmall};${bad ? 'color:#b91c1c;' : ''}"><div style="display:flex;justify-content:space-between;align-items:center;gap:2px;"><span>${r.date}</span><span style="font-size:10px;font-weight:700;color:${bad ? '#b91c1c' : dayBadgeColor};">${r.day}</span></div></td>
 ${pc(r.inn, r.missIn)}${pc(r.out, r.missOut)}${r.v.map(x => cell(x)).join('')}
-<td style="${tdBase}text-align:center;font-weight:800;font-size:${fsSmall};color:#6d28d9;">${r.night ? 'Yes' : ''}</td>
+<td style="${tdBase}text-align:center;font-weight:800;font-size:${fsSmall};color:#6d28d9;">${isNightYes(r) ? 'Yes' : ''}</td>
 <td style="${tdBase}white-space:normal;padding-left:4px;padding-right:3px;font-size:${fsSmall};line-height:1.15;${bad ? 'color:#b91c1c;font-weight:800;' : 'font-weight:600;'}">${_rE(r.note)}</td></tr>`;
   }).join('');
   const containerStyle = forExport
@@ -285,6 +290,7 @@ ${pc(r.inn, r.missIn)}${pc(r.out, r.missOut)}${r.v.map(x => cell(x)).join('')}
 <div style="margin-bottom:6px;">${chip('Present: ' + present + 'd', '#1d4ed8', '#dbeafe')}${chip('Total OT: ' + (Math.round((sum[1] + sum[3] + sum[5]) * 100) / 100) + 'h', '#15803d', '#dcfce7')}${chip('Night: ' + nights, '#6d28d9', '#ede9fe')}${offAfterNight ? chip('Day off after night: ' + offAfterNight, '#4338ca', '#e0e7ff') : ''}
 ${chip(issues ? 'Punch Fix: ' + issues + 'd' : 'Punch OK', issues ? '#b91c1c' : '#15803d', issues ? '#fee2e2' : '#dcfce7')}
 ${nightSus ? chip('Night Check: ' + nightSus + 'd', '#9a3412', '#ffedd5') : ''}
+${holReq ? chip('Holiday Req: ' + holReq + 'd', '#115e59', '#ccfbf1') : ''}
 ${chip(reqIssues ? 'Req Missing: ' + reqIssues + 'd' : 'Req OK', reqIssues ? '#b45309' : '#15803d', reqIssues ? '#fef3c7' : '#dcfce7')}
 ${earlyExits ? chip('Gate Pass: ' + earlyExits + 'd', '#b45309', '#ffedd5') : ''}
 ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + rows.filter(r => r.isGeneralAbsent).length + 'd', '#b91c1c', '#fee2e2') : chip('Attendance: Full', '#15803d', '#dcfce7')}</div>
@@ -305,8 +311,7 @@ ${rows.filter(r => r.isGeneralAbsent).length > 0 ? chip('General Absent: ' + row
 <td style="${tdBase}background:#0f172a;color:#fff;font-size:10.5px;">OT: ${_rN(sum[1] + sum[3] + sum[5])}h</td>
 </tr></tfoot></table>
 <div style="margin-top:6px;font-size:10.5px;color:#64748b;line-height:1.25;">${issues ? `• Punch correction needed on ${issues} day(s): ${rows.filter(r => r.tone === 'bad').map(r => r.date).join(', ')}<br>` : ''}
-${nightSus ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#9a3412;background:#ffedd5;padding:4px 8px;border-radius:4px;border:1px solid #fb923c;">⚠️ আপনার নাইট ডিউটির সমস্যা আছে / Night duty issue on ${nightSus} day(s): ${rows.filter(r => r.nightSuspect).map(r => r.date).join(', ')} — আপনি হয়তো নাইট করেছেন কিন্তু Empress-এ নাইট ওঠেনি। ERP টিমের সাথে যোগাযোগ করুন। (Night is counted only when Empress shows YES)</div>` : ''}
-${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${rows.filter(r => r.tone === 'req').map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
+${reqIssues ? `<div style="margin-top:4px;font-size:12px;font-weight:800;color:#b45309;background:#fef3c7;padding:4px 8px;border-radius:4px;border:1px solid #f59e0b;">⚠️ Overtime Requisition Pending on ${reqIssues} day(s): ${reqRows.map(r => r.date).join(', ')} (Worked OT but Empress shows 0 OT)</div>` : ''}
 <div style="margin-top:2px;font-size:10.5px;font-weight:600;color:#64748b;">Generated from RPPF Overtime Report App</div></div>`;
 }
 
