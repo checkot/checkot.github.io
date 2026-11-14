@@ -169,8 +169,11 @@ button {
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
 }
 
-button:hover {
-  background: var(--brand-strong);
+@media (hover: hover) and (pointer: fine) {
+  button:not([class]):hover,
+  button.btn-primary:hover {
+    background: var(--brand-strong);
+  }
 }
 
 button:active {

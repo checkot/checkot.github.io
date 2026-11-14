@@ -473,14 +473,80 @@
     initProfilePage(true);
   }
 
-  function switchProfileScope(newScope) {
-    if (!newScope) return;
-    _profileActiveScope = newScope;
+  let _profileLastHistPayload = null;
+  root._profileSelectedCalDate = '';
+  root._profileOpenDrawers = { att: '', ot: '', night: '', hol: '' };
+
+  function formatDecimalHoursHHMM(decHrs) {
+    const val = Number(decHrs) || 0;
+    if (val <= 0) return '0:00';
+    const totalMins = Math.round(val * 60);
+    const hh = Math.floor(totalMins / 60);
+    const mm = String(totalMins % 60).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  function toggleProfileMonthDrawer(secKey, ym) {
+    if (!secKey || !ym) return;
+    if (!root._profileOpenDrawers) root._profileOpenDrawers = { att: '', ot: '', night: '', hol: '' };
+    root._profileOpenDrawers[secKey] = (root._profileOpenDrawers[secKey] === ym) ? '' : ym;
     if (_profileLastData) {
       renderProfileContent(_profileLastData);
-    } else {
-      initProfilePage(false);
     }
+  }
+
+  function recomputeAndRenderProfile() {
+    if (!_profileLastHistPayload) {
+      initProfilePage(false);
+      return;
+    }
+    const leaves = (typeof getActiveLongTermLeaves === 'function') ? getActiveLongTermLeaves() : [];
+    const agg = window.ProfileCalc.aggregateProfileData(_profileLastHistPayload.monthRecordsMap, {
+      targetYear: 2026,
+      latestMonth: _profileLastHistPayload.latestMonth || '2026-11',
+      selectedScope: _profileActiveScope,
+      datasetMetaByMonth: _profileLastHistPayload.datasetMetaByMonth,
+      sectionStatsByMonth: _profileLastHistPayload.sectionStatsByMonth,
+      longTermLeaves: leaves,
+      computeEmpEarlyExits: typeof computeEmpEarlyExits === 'function' ? computeEmpEarlyExits : null
+    });
+    renderProfileContent(agg);
+  }
+
+  function toggleProfileCalDay(dateStr) {
+    if (!dateStr) return;
+    root._profileSelectedCalDate = (root._profileSelectedCalDate === dateStr) ? '' : dateStr;
+    if (_profileLastData) {
+      renderProfileContent(_profileLastData);
+    }
+  }
+
+  function switchProfileScope(newScope, fromGridToggle) {
+    if (!newScope) return;
+    const curAgg = _profileLastData;
+    if (fromGridToggle && curAgg) {
+      if (curAgg.scopeType !== 'year' && curAgg.activeSingleYm === newScope) {
+        _profileActiveScope = 'year';
+        root._profileSelectedCalDate = '';
+        recomputeAndRenderProfile();
+        return;
+      }
+      if (newScope === curAgg.thisMonthYm) {
+        _profileActiveScope = 'this_month';
+      } else if (newScope === curAgg.lastMonthYm) {
+        _profileActiveScope = 'last_month';
+      } else {
+        _profileActiveScope = newScope;
+      }
+    } else {
+      if (newScope !== 'year' && _profileActiveScope === newScope) {
+        _profileActiveScope = 'year';
+      } else {
+        _profileActiveScope = newScope;
+      }
+    }
+    root._profileSelectedCalDate = '';
+    recomputeAndRenderProfile();
   }
 
   function renderSectionA_Hero(agg, emp, isYearScope) {
@@ -550,38 +616,64 @@
 
   function renderSectionB_Attendance(agg) {
     const sc = agg.scopeSummary;
-    const rowsHtml = agg.yearMonthSummaries.map(ms => {
-      const isSelected = (agg.scopeType !== 'year' && agg.activeSingleYm === ms.ym);
-      if (!ms.exists) {
-        return `
-          <div class="prof-heat-row" style="opacity:0.62;" onclick="switchProfileScope('${esc(ms.ym)}')">
-            <div class="prof-heat-month">${esc(ms.monthName)}</div>
-            <div class="prof-heat-bar-track"><div class="prof-heat-bar-fill" style="width:0%;"></div></div>
-            <div class="prof-heat-pct">—</div>
-            <div class="prof-heat-meta">Not in file</div>
-          </div>
-        `;
-      }
-      const pct = ms.presentPct != null ? ms.presentPct : 0;
-      const barColor = pct >= 95 ? 'var(--success)' : pct >= 85 ? 'var(--brand)' : pct >= 70 ? 'var(--warning)' : 'var(--danger)';
-      const metaParts = [];
-      if (ms.approvedLeaveCount > 0) metaParts.push(`Lv ${ms.approvedLeaveCount}d`);
-      metaParts.push(`Abs ${ms.generalAbsentCount}d`);
+    const punchMap = {};
+    if (agg.punchOverview && Array.isArray(agg.punchOverview.monthWise)) {
+      agg.punchOverview.monthWise.forEach(pm => { punchMap[pm.ym] = pm; });
+    }
+    const openAttYm = (root._profileOpenDrawers && root._profileOpenDrawers.att) || '';
+
+    const ssCardsHtml = agg.yearMonthSummaries.map(ms => {
+      const isSelected = (openAttYm === ms.ym) || (!openAttYm && agg.scopeType !== 'year' && agg.activeSingleYm === ms.ym);
+      const pm = punchMap[ms.ym];
+      const avgDutyHrs = pm && pm.exists ? pm.avgDutyPerDay : 0;
+      const hhmm = (ms.exists && avgDutyHrs > 0) ? `${formatDecimalHoursHHMM(avgDutyHrs)} h` : '— h';
+      const pctNum = (ms.exists && ms.presentPct != null) ? Math.round(ms.presentPct) : null;
+      const pctTxt = pctNum != null ? `${pctNum}%` : '—';
+      const barW = pctNum != null ? Math.min(100, Math.max(6, pctNum)) : 0;
 
       return `
-        <div class="prof-heat-row ${isSelected ? 'active-row' : ''}" onclick="switchProfileScope('${esc(ms.ym)}')" title="Tap to view ${esc(ms.fullLabel)}">
-          <div class="prof-heat-month">
-            ${esc(ms.monthName)}
-            ${ms.isSoFar ? '<small>so far</small>' : ''}
+        <div class="prof-ss-tile ${isSelected ? 'active-cell' : ''} ${!ms.exists ? 'is-missing' : ''}" role="button" tabindex="0" aria-pressed="${isSelected ? 'true' : 'false'}" onclick="toggleProfileMonthDrawer('att', '${esc(ms.ym)}')" title="Tap to inspect ${esc(ms.fullLabel)}">
+          <div class="prof-ss-mon">${esc(ms.shortLabel.toUpperCase())}</div>
+          <div class="prof-ss-pct">${pctTxt}</div>
+          <div class="prof-ss-bar-track" aria-hidden="true">
+            <div class="prof-ss-bar-fill" style="width:${barW}%;"></div>
           </div>
-          <div class="prof-heat-bar-track" aria-hidden="true">
-            <div class="prof-heat-bar-fill" style="width:${Math.min(100, Math.max(0, pct))}%;background:${barColor};"></div>
-          </div>
-          <div class="prof-heat-pct">${ms.presentPct != null ? ms.presentPct + '%' : '—'}</div>
-          <div class="prof-heat-meta" style="color:${ms.generalAbsentCount > 0 ? 'var(--danger)' : 'var(--muted)'};">${esc(metaParts.join(' · '))}</div>
+          <div class="prof-ss-avg-h">${esc(hhmm)}</div>
+          <div class="prof-ss-avg-lbl">avg</div>
         </div>
       `;
     }).join('');
+
+    const inspectedMs = openAttYm ? agg.yearMonthSummaries.find(x => x.ym === openAttYm) : null;
+    let openAttDetailHtml = '';
+    if (inspectedMs) {
+      if (!inspectedMs.exists) {
+        openAttDetailHtml = `
+          <div class="prof-touch-drawer">
+            <div class="prof-touch-drawer-head">
+              <span>📅 <b>${esc(inspectedMs.fullLabel)}</b> — Not in payroll file</span>
+              <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileMonthDrawer('att', '${esc(inspectedMs.ym)}')">✕ Close</button>
+            </div>
+          </div>
+        `;
+      } else {
+        const absList = Array.isArray(inspectedMs.absentDays) ? inspectedMs.absentDays.map(x => x.date || x).join(', ') : '';
+        openAttDetailHtml = `
+          <div class="prof-touch-drawer">
+            <div class="prof-touch-drawer-head">
+              <span>📅 <b>${esc(inspectedMs.fullLabel)}</b>${inspectedMs.isSoFar ? ' (so far)' : ''} • <b>${inspectedMs.presentPct != null ? inspectedMs.presentPct + '%' : '—'} Present</b></span>
+              <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileMonthDrawer('att', '${esc(inspectedMs.ym)}')">✕ Close</button>
+            </div>
+            <div class="prof-touch-drawer-body">
+              <span>✅ Present: <b>${inspectedMs.presentOnScheduledDays}/${inspectedMs.scheduledWorkingDays}d</b></span>
+              <span>🔴 Absent: <b style="color:${inspectedMs.generalAbsentCount > 0 ? 'var(--danger)' : 'var(--success)'};">${inspectedMs.generalAbsentCount}d</b></span>
+              ${inspectedMs.approvedLeaveCount > 0 ? `<span>🏥 Approved Leave: <b>${inspectedMs.approvedLeaveCount}d</b></span>` : ''}
+            </div>
+            ${absList ? `<div style="margin-top:6px;font-size:11px;color:var(--danger);font-weight:700;">Absent dates: ${esc(absList)}</div>` : ''}
+          </div>
+        `;
+      }
+    }
 
     const approvedLeaveBanner = sc.totalLeaveDays > 0
       ? `<div style="margin-bottom:10px;padding:9px 12px;border-radius:10px;background:var(--brand-soft);border:1px solid var(--brand-soft-border);font-size:12px;color:var(--brand-text);font-weight:700;">
@@ -599,8 +691,8 @@
       <section class="prof-card" id="profSecB" aria-label="Attendance — Leave and Absent">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">B. Attendance — Leave / Absent (উপস্থিতি)</h3>
-            <p class="prof-card-sub">Same calculation as Daily Report • Tap any month to inspect</p>
+            <h3 class="prof-card-title">Attendance — Leave / Absent (উপস্থিতি)</h3>
+            <p class="prof-card-sub">Monthly Present % &amp; avg duty hours • Tap any month card for details</p>
           </div>
           <span class="prof-tag ${sc.totalAbsentDays === 0 ? 'success' : ''}">${sc.avgPresentPct != null ? sc.avgPresentPct + '% Present' : '—'}</span>
         </div>
@@ -623,7 +715,16 @@
         ${approvedLeaveBanner}
         ${absentDatesNote}
 
-        <details class="prof-tooltip-details">
+        <!-- Screenshot-styled Deep Navy Monthly Present % & Avg Hours Strip -->
+        <div class="prof-ss-navy-box">
+          <div class="prof-ss-strip" role="list" aria-label="Monthly present percentage and average duty hours">
+            ${ssCardsHtml}
+          </div>
+        </div>
+
+        ${openAttDetailHtml}
+
+        <details class="prof-tooltip-details" style="margin-top:10px;margin-bottom:0;">
           <summary>ℹ️ How is Present % calculated? (কীভাবে হিসাব হয়?)</summary>
           <div class="prof-tooltip-body">
             <b>Formula:</b> <code>present days on scheduled working days ÷ scheduled working days</code>.<br>
@@ -632,10 +733,6 @@
             • Any working day without a punch (and not on approved long leave) is counted as <b>Absent</b>. Months before joining show <b>"—"</b>, never 0%.
           </div>
         </details>
-
-        <div class="prof-heat-list">
-          ${rowsHtml}
-        </div>
       </section>
     `;
   }
@@ -654,9 +751,10 @@
     }
 
     const barsHtml = inc.bars.map(b => {
+      const isSelected = (agg.scopeType !== 'year' && agg.activeSingleYm === b.ym);
       if (!b.exists) {
         return `
-          <div class="prof-bar-row" style="opacity:0.55;">
+          <div class="prof-bar-row ${isSelected ? 'active-row' : ''}" style="opacity:0.55;cursor:pointer;" onclick="switchProfileScope('${esc(b.ym)}', true)">
             <div class="prof-bar-lbl">${esc(b.shortLabel)}</div>
             <div class="prof-bar-track"></div>
             <div class="prof-bar-val">—</div>
@@ -665,7 +763,7 @@
       }
       const w = Math.max(b.totalEarned > 0 ? 4 : 0, b.heightPct);
       return `
-        <div class="prof-bar-row" onclick="switchProfileScope('${esc(b.ym)}')" style="cursor:pointer;" title="${esc(b.monthName)}: OT ৳${b.otAmount}, Hol ৳${b.holidayAmount}, Night ৳${b.nightAmount}">
+        <div class="prof-bar-row ${isSelected ? 'active-row' : ''}" onclick="switchProfileScope('${esc(b.ym)}', true)" style="cursor:pointer;" title="${esc(b.monthName)}: OT ৳${b.otAmount}, Hol ৳${b.holidayAmount}, Night ৳${b.nightAmount}">
           <div class="prof-bar-lbl">${esc(b.shortLabel)}${b.isSoFar ? '*' : ''}</div>
           <div class="prof-bar-track" aria-label="${esc(b.monthName)} earnings bar">
             <div style="width:${w}%;display:flex;height:100%;">
@@ -685,7 +783,7 @@
       <section class="prof-card" id="profSecC" aria-label="Monthly OT income status">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">C. Monthly OT Income Status (মাসিক আয়)</h3>
+            <h3 class="prof-card-title">Monthly OT Income Status (মাসিক আয়)</h3>
             <p class="prof-card-sub">Stacked OT + Holiday + Night allowance (${agg.targetYear})</p>
           </div>
           <button type="button" class="prof-hide-btn surface" onclick="toggleProfileHideAmounts()" aria-label="Hide or show amounts">
@@ -897,6 +995,7 @@
     }
 
     const buildAndRender = (histPayload) => {
+      _profileLastHistPayload = histPayload;
       const leaves = (typeof getActiveLongTermLeaves === 'function') ? getActiveLongTermLeaves() : [];
       const agg = window.ProfileCalc.aggregateProfileData(histPayload.monthRecordsMap, {
         targetYear: 2026,
@@ -958,6 +1057,9 @@
 
   root.initProfilePage = initProfilePage;
   root.switchProfileScope = switchProfileScope;
+  root.toggleProfileCalDay = toggleProfileCalDay;
+  root.toggleProfileMonthDrawer = toggleProfileMonthDrawer;
+  root._formatDecimalHoursHHMM = formatDecimalHoursHHMM;
   root.toggleProfileHideAmounts = toggleProfileHideAmounts;
   root.saveProfileEmptyStateId = saveProfileEmptyStateId;
   root.toggleProfileColleagueBar = toggleProfileColleagueBar;
@@ -974,7 +1076,7 @@
   const H = root._profileHelpers || {};
   const fmtHrs = H.fmtHrs || (n => String(Math.round((Number(n) || 0) * 100) / 100));
 
-  function buildOtSparklineSvg(points) {
+  function buildOtSparklineSvg(points, agg) {
     const validPts = Array.isArray(points) ? points : [];
     const n = validPts.length || 11;
     const width = 320;
@@ -984,6 +1086,7 @@
     const usableW = width - padX * 2;
     const usableH = height - padY * 2;
     const maxVal = Math.max(1, ...validPts.map(p => (p.exists ? p.otHours : 0)));
+    const openOtYm = (root._profileOpenDrawers && root._profileOpenDrawers.ot) || '';
 
     const coords = validPts.map((p, i) => {
       const x = Number((padX + (n > 1 ? (i / (n - 1)) * usableW : usableW / 2)).toFixed(1));
@@ -1009,18 +1112,21 @@
       `;
     }).join('');
 
-    const labelsHtml = validPts.map(p => `
-      <div onclick="switchProfileScope('${esc(p.ym)}')" style="cursor:pointer;" title="${esc(p.monthName)}: ${p.exists ? p.otHours + 'h' : '—'}">
-        <div>${esc(p.shortLabel)}</div>
-        <div style="font-size:9.5px;color:${p.exists ? 'var(--text)' : 'var(--muted)'};font-weight:800;">${p.exists ? fmtHrs(p.otHours) + 'h' : '—'}</div>
-      </div>
-    `).join('');
+    const labelsHtml = validPts.map(p => {
+      const isSelected = Boolean((openOtYm && openOtYm === p.ym) || (!openOtYm && agg && agg.scopeType !== 'year' && agg.activeSingleYm === p.ym));
+      return `
+        <div class="prof-spark-cell ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('ot', '${esc(p.ym)}')" title="Tap to view ${esc(p.monthName)} OT dates">
+          <div>${esc(p.shortLabel)}</div>
+          <div class="prof-spark-val">${p.exists ? fmtHrs(p.otHours) + 'h' : '—'}</div>
+        </div>
+      `;
+    }).join('');
 
     return `
       <div class="prof-spark-box">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">
           <span>Month-wise OT Sparkline (hrs)</span>
-          <span>Tap month to filter</span>
+          <span>👆 Tap a month to view dates</span>
         </div>
         <svg class="prof-spark-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Monthly overtime hours sparkline">
           <defs>
@@ -1042,21 +1148,34 @@
 
   function renderSectionD_OT(agg) {
     const ot = agg.otOverview;
-    const act = agg.activeMonthSummary;
-    const otDates = (act && Array.isArray(act.otDates)) ? act.otDates : [];
+    const openOtYm = (root._profileOpenDrawers && root._profileOpenDrawers.ot) || '';
+    const targetMs = openOtYm ? agg.yearMonthSummaries.find(s => s.ym === openOtYm) : null;
 
-    const chipsHtml = otDates.length > 0
-      ? `<div class="prof-chips-wrap">
-           ${otDates.map(d => `<span class="prof-date-chip ot">${esc(d.date.slice(0, 6))}${d.day ? ' (' + esc(d.day) + ')' : ''} • <b>+${fmtHrs(d.otHours)}h</b>${d.isNight ? ' 🌙' : ''}</span>`).join('')}
-         </div>`
-      : `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-weight:600;">No overtime shifts recorded in ${esc(act?.fullLabel || 'selected month')}.</div>`;
+    let otDrawerHtml = `<div class="prof-touch-hint">👆 মাসের ঘরে ট্যাপ করে ওই মাসের OT তারিখগুলো দেখুন (Tap any month above to view OT dates)</div>`;
+    if (targetMs) {
+      const otDates = Array.isArray(targetMs.otDates) ? targetMs.otDates : [];
+      const chipsInner = otDates.length > 0
+        ? `<div class="prof-chips-wrap">
+             ${otDates.map(d => `<span class="prof-date-chip ot">${esc(d.date.slice(0, 6))}${d.day ? ' (' + esc(d.day) + ')' : ''} • <b>+${fmtHrs(d.otHours)}h</b>${d.isNight ? ' 🌙' : ''}</span>`).join('')}
+           </div>`
+        : `<div style="font-size:12px;color:var(--muted);font-weight:600;">No overtime shifts recorded in ${esc(targetMs.fullLabel)}.</div>`;
+      otDrawerHtml = `
+        <div class="prof-touch-drawer">
+          <div class="prof-touch-drawer-head">
+            <span>⏱ <b>${esc(targetMs.fullLabel)}</b> — ${otDates.length} OT day${otDates.length === 1 ? '' : 's'} (${fmtHrs(targetMs.otHours)}h)</span>
+            <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileMonthDrawer('ot', '${esc(targetMs.ym)}')">✕ Close</button>
+          </div>
+          ${chipsInner}
+        </div>
+      `;
+    }
 
     return `
       <section class="prof-card" id="profSecD" aria-label="Total Overtime">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">D. Total OT (ওভারটাইম ঘণ্টা)</h3>
-            <p class="prof-card-sub">Monthly &amp; yearly overtime hours + sparkline</p>
+            <h3 class="prof-card-title">Total OT (ওভারটাইম ঘণ্টা)</h3>
+            <p class="prof-card-sub">Monthly &amp; yearly overtime hours + interactive sparkline</p>
           </div>
           <span class="prof-tag brand">${fmtHrs(agg.scopeSummary.totalOtHours)} hrs (${esc(agg.scopeLabel)})</span>
         </div>
@@ -1076,12 +1195,8 @@
           </div>
         </div>
 
-        ${buildOtSparklineSvg(ot.sparkline)}
-
-        <div style="margin-top:10px;font-size:12px;font-weight:800;color:var(--text);">
-          Overtime Dates in ${esc(act?.fullLabel || agg.scopeLabel)} (${otDates.length} days):
-        </div>
-        ${chipsHtml}
+        ${buildOtSparklineSvg(ot.sparkline, agg)}
+        ${otDrawerHtml}
       </section>
     `;
   }
@@ -1090,52 +1205,48 @@
     const thisMonthN = agg.thisMonthSummary.exists ? agg.thisMonthSummary.nightCount : 0;
     const thisYearN = agg.yearSummary.totalNightDuties;
     const scopeN = agg.scopeSummary.totalNightDuties;
+    const openNightYm = (root._profileOpenDrawers && root._profileOpenDrawers.night) || '';
 
-    const mwGridHtml = agg.yearMonthSummaries.map(s => `
-      <div class="prof-mw-mini-cell" onclick="switchProfileScope('${esc(s.ym)}')" style="cursor:pointer;${s.nightCount > 0 ? 'border-color:var(--indigo-border);background:var(--indigo-soft);' : ''}">
-        <span>${esc(s.shortLabel)}</span>
-        <b style="color:${s.nightCount > 0 ? 'var(--indigo)' : 'var(--muted)'};">${s.exists ? s.nightCount + 'n' : '—'}</b>
-      </div>
-    `).join('');
+    const mwGridHtml = agg.yearMonthSummaries.map(s => {
+      const isSelected = Boolean((openNightYm && openNightYm === s.ym) || (!openNightYm && agg.scopeType !== 'year' && agg.activeSingleYm === s.ym));
+      const toneCls = s.nightCount > 0 ? 'has-night' : '';
+      return `
+        <div class="prof-mw-mini-cell ${toneCls} ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('night', '${esc(s.ym)}')" title="Tap to view ${esc(s.fullLabel)} night dates">
+          <span>${esc(s.shortLabel)}</span>
+          <b>${s.exists ? s.nightCount + 'n' : '—'}</b>
+        </div>
+      `;
+    }).join('');
 
-    let dateChipsHtml = '';
-    if (agg.scopeType === 'year') {
-      const monthsWithNights = agg.yearMonthSummaries.filter(s => s.exists && s.nightDays && s.nightDays.length > 0).slice().reverse();
-      if (monthsWithNights.length === 0) {
-        dateChipsHtml = `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-weight:600;">No night duty shifts recorded in ${agg.targetYear}.</div>`;
-      } else {
-        dateChipsHtml = monthsWithNights.map(s => `
-          <div style="margin-top:8px;">
-            <div style="font-size:11.5px;font-weight:800;color:var(--text-2);">${esc(s.fullLabel)} (${s.nightDays.length} nights):</div>
-            <div class="prof-chips-wrap">
-              ${s.nightDays.map((d, i) => {
-                const ds = typeof d === 'string' ? d : (d?.date || '');
-                return `<span class="prof-date-chip night">#${i + 1} • 🌙 ${esc(ds)}</span>`;
-              }).join('')}
-            </div>
-          </div>
-        `).join('');
-      }
-    } else {
-      const act = agg.activeMonthSummary;
-      const nDays = (act && Array.isArray(act.nightDays)) ? act.nightDays : [];
-      dateChipsHtml = nDays.length > 0
-        ? `<div style="margin-top:8px;font-size:12px;font-weight:800;color:var(--text);">Night Dates in ${esc(act.fullLabel)} (${nDays.length}):</div>
-           <div class="prof-chips-wrap">
+    const targetMs = openNightYm ? agg.yearMonthSummaries.find(s => s.ym === openNightYm) : null;
+    let dateChipsHtml = `<div class="prof-touch-hint">👆 মাসের ঘরে ট্যাপ করে নাইট ডিউটির তারিখ দেখুন (Tap any month above to view night dates)</div>`;
+    if (targetMs) {
+      const nDays = Array.isArray(targetMs.nightDays) ? targetMs.nightDays : [];
+      const chipsInner = nDays.length > 0
+        ? `<div class="prof-chips-wrap">
              ${nDays.map((d, i) => {
                const ds = typeof d === 'string' ? d : (d?.date || '');
                return `<span class="prof-date-chip night">#${i + 1} • 🌙 ${esc(ds)}</span>`;
              }).join('')}
            </div>`
-        : `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-weight:600;">No night duties recorded in ${esc(act?.fullLabel || agg.scopeLabel)}.</div>`;
+        : `<div style="font-size:12px;color:var(--muted);font-weight:600;">No night duties recorded in ${esc(targetMs.fullLabel)}.</div>`;
+      dateChipsHtml = `
+        <div class="prof-touch-drawer">
+          <div class="prof-touch-drawer-head">
+            <span>🌙 <b>${esc(targetMs.fullLabel)}</b> — ${nDays.length} night${nDays.length === 1 ? '' : 's'}</span>
+            <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileMonthDrawer('night', '${esc(targetMs.ym)}')">✕ Close</button>
+          </div>
+          ${chipsInner}
+        </div>
+      `;
     }
 
     return `
       <section class="prof-card" id="profSecE" aria-label="Total Night Duties">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">E. Total Night Duty (নাইট ডিউটি)</h3>
-            <p class="prof-card-sub">Empress confirmed night shifts &amp; date chips</p>
+            <h3 class="prof-card-title">Total Night Duty (নাইট ডিউটি)</h3>
+            <p class="prof-card-sub">Tap any month in the grid below to view night shift dates</p>
           </div>
           <span class="prof-tag">${scopeN} nights (${esc(agg.scopeLabel)})</span>
         </div>
@@ -1168,13 +1279,18 @@
     const thisMonthH = agg.thisMonthSummary.exists ? agg.thisMonthSummary.holidayCount : 0;
     const thisYearH = agg.yearSummary.totalHolidayDuties;
     const scopeH = agg.scopeSummary.totalHolidayDuties;
+    const openHolYm = (root._profileOpenDrawers && root._profileOpenDrawers.hol) || '';
 
-    const mwGridHtml = agg.yearMonthSummaries.map(s => `
-      <div class="prof-mw-mini-cell" onclick="switchProfileScope('${esc(s.ym)}')" style="cursor:pointer;${s.holidayCount > 0 ? 'border-color:var(--warning-border);background:var(--warning-bg);' : ''}">
-        <span>${esc(s.shortLabel)}</span>
-        <b style="color:${s.holidayCount > 0 ? 'var(--warning)' : 'var(--muted)'};">${s.exists ? s.holidayCount + 'd' : '—'}</b>
-      </div>
-    `).join('');
+    const mwGridHtml = agg.yearMonthSummaries.map(s => {
+      const isSelected = Boolean((openHolYm && openHolYm === s.ym) || (!openHolYm && agg.scopeType !== 'year' && agg.activeSingleYm === s.ym));
+      const toneCls = s.holidayCount > 0 ? 'has-hol' : '';
+      return `
+        <div class="prof-mw-mini-cell ${toneCls} ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('hol', '${esc(s.ym)}')" title="Tap to view ${esc(s.fullLabel)} holiday dates">
+          <span>${esc(s.shortLabel)}</span>
+          <b>${s.exists ? s.holidayCount + 'd' : '—'}</b>
+        </div>
+      `;
+    }).join('');
 
     const formatHolChip = (h, idx) => {
       if (typeof h === 'string') {
@@ -1189,38 +1305,32 @@
       return `<span class="prof-date-chip hol">#${idx + 1} • ${esc(h.date || '')}${esc(detail)}</span>`;
     };
 
-    let holChipsHtml = '';
-    if (agg.scopeType === 'year') {
-      const monthsWithHols = agg.yearMonthSummaries.filter(s => s.exists && s.holidayDays && s.holidayDays.length > 0).slice().reverse();
-      if (monthsWithHols.length === 0) {
-        holChipsHtml = `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-weight:600;">No holiday or day-off duties recorded in ${agg.targetYear}.</div>`;
-      } else {
-        holChipsHtml = monthsWithHols.map(s => `
-          <div style="margin-top:8px;">
-            <div style="font-size:11.5px;font-weight:800;color:var(--text-2);">${esc(s.fullLabel)} (${s.holidayDays.length} days):</div>
-            <div class="prof-chips-wrap">
-              ${s.holidayDays.map((h, i) => formatHolChip(h, i)).join('')}
-            </div>
-          </div>
-        `).join('');
-      }
-    } else {
-      const act = agg.activeMonthSummary;
-      const hDays = (act && Array.isArray(act.holidayDays)) ? act.holidayDays : [];
-      holChipsHtml = hDays.length > 0
-        ? `<div style="margin-top:8px;font-size:12px;font-weight:800;color:var(--text);">Holiday / DO Dates in ${esc(act.fullLabel)} (${hDays.length}):</div>
-           <div class="prof-chips-wrap">
+    const targetMs = openHolYm ? agg.yearMonthSummaries.find(s => s.ym === openHolYm) : null;
+    let holChipsHtml = `<div class="prof-touch-hint">👆 মাসের ঘরে ট্যাপ করে হলিডে ডিউটির তারিখ দেখুন (Tap any month above to view holiday dates)</div>`;
+    if (targetMs) {
+      const hDays = Array.isArray(targetMs.holidayDays) ? targetMs.holidayDays : [];
+      const chipsInner = hDays.length > 0
+        ? `<div class="prof-chips-wrap">
              ${hDays.map((h, i) => formatHolChip(h, i)).join('')}
            </div>`
-        : `<div style="margin-top:8px;font-size:12px;color:var(--muted);font-weight:600;">No holiday or day-off duties in ${esc(act?.fullLabel || agg.scopeLabel)}.</div>`;
+        : `<div style="font-size:12px;color:var(--muted);font-weight:600;">No holiday or day-off duties in ${esc(targetMs.fullLabel)}.</div>`;
+      holChipsHtml = `
+        <div class="prof-touch-drawer">
+          <div class="prof-touch-drawer-head">
+            <span>📅 <b>${esc(targetMs.fullLabel)}</b> — ${hDays.length} holiday/DO dut${hDays.length === 1 ? 'y' : 'ies'}</span>
+            <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileMonthDrawer('hol', '${esc(targetMs.ym)}')">✕ Close</button>
+          </div>
+          ${chipsInner}
+        </div>
+      `;
     }
 
     return `
       <section class="prof-card" id="profSecF" aria-label="Holiday Duty">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">F. Holiday &amp; Day-Off Duty (হলিডে ডিউটি)</h3>
-            <p class="prof-card-sub">Weekend (Thu/Fri) &amp; Govt/Plant holiday duty breakdown</p>
+            <h3 class="prof-card-title">Holiday &amp; Day-Off Duty (হলিডে ডিউটি)</h3>
+            <p class="prof-card-sub">Tap any month in the grid below to view Weekend/Holiday duty dates</p>
           </div>
           <span class="prof-tag">${scopeH} days (${esc(agg.scopeLabel)})</span>
         </div>
@@ -1255,9 +1365,10 @@
     const pScope = agg.punchOverview.scope;
 
     const rowsHtml = agg.punchOverview.monthWise.map(m => {
+      const isSelected = (agg.scopeType !== 'year' && agg.activeSingleYm === m.ym);
       if (!m.exists || m.workedDaysCount === 0) {
         return `
-          <tr style="opacity:0.55;">
+          <tr class="${isSelected ? 'active-row' : ''}" style="opacity:0.55;cursor:pointer;" onclick="switchProfileScope('${esc(m.ym)}', true)">
             <td>${esc(m.shortLabel)}</td>
             <td>—</td>
             <td>—</td>
@@ -1270,7 +1381,7 @@
         : m.dutyTrend === 'down' ? ' <span style="color:var(--danger);">▼</span>'
         : '';
       return `
-        <tr onclick="switchProfileScope('${esc(m.ym)}')" style="cursor:pointer;">
+        <tr class="${isSelected ? 'active-row' : ''}" onclick="switchProfileScope('${esc(m.ym)}', true)" style="cursor:pointer;">
           <td>${esc(m.shortLabel)} <small style="color:var(--muted);">(${m.workedDaysCount}d)</small></td>
           <td>${esc(m.avgIn12h)}</td>
           <td>${esc(m.avgDayOut12h)}</td>
@@ -1284,7 +1395,7 @@
       <section class="prof-card" id="profSecH" aria-label="My Average Punch">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">H. My Average Punch (গড় পাঞ্চ ইন/আউট)</h3>
+            <h3 class="prof-card-title">My Average Punch (গড় পাঞ্চ ইন/আউট)</h3>
             <p class="prof-card-sub">Day-shift &amp; Night-shift Out separated • Missing punches excluded</p>
           </div>
           <span class="prof-tag">${fmtHrs(pScope.avgDutyPerDay)}h / day</span>
@@ -1454,7 +1565,7 @@
       <section class="prof-card" id="profSecG" aria-label="My Requisition, OT, and Night Issues">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">G. Check Before Payroll (পে-রোল চেক)</h3>
+            <h3 class="prof-card-title">Check Before Payroll (পে-রোল চেক)</h3>
             <p class="prof-card-sub" style="color:var(--warning);font-weight:700;">Issue দেখালে requisition/OT ERP team-কে জানান</p>
           </div>
           <span class="prof-tag ${iss.isAllClear ? 'success' : ''}">${iss.isAllClear ? 'All Clear ✅' : c.total + ' Issues'}</span>
@@ -1497,13 +1608,24 @@
          </div>
          <div class="prof-cal-grid" role="list" aria-label="Days worked in ${esc(act.fullLabel)}">
            ${blankCellsHtml}
-           ${calDays.map(d => `
-             <div class="prof-cal-day ${esc(d.state)}" role="listitem" title="${esc(d.date)} (${esc(d.dayName)}): ${esc(d.note || d.state)}">
-               <div>${Number(d.dayNum || d.dayStr)}</div>
-               <small>${esc(stateLabels[d.state] || d.dayName)}</small>
-             </div>
-           `).join('')}
+           ${calDays.map(d => {
+             const isDaySel = (root._profileSelectedCalDate && root._profileSelectedCalDate === d.date);
+             return `
+               <div class="prof-cal-day ${esc(d.state)} ${isDaySel ? 'selected-day' : ''}" role="button" tabindex="0" aria-pressed="${isDaySel ? 'true' : 'false'}" onclick="toggleProfileCalDay('${esc(d.date)}')" title="${esc(d.date)} (${esc(d.dayName)}): ${esc(d.note || d.state)}">
+                 <div>${Number(d.dayNum || d.dayStr)}</div>
+                 <small>${esc(stateLabels[d.state] || d.dayName)}</small>
+               </div>
+             `;
+           }).join('')}
          </div>
+         ${(() => {
+           const selDayObj = root._profileSelectedCalDate ? calDays.find(x => x.date === root._profileSelectedCalDate) : null;
+           if (!selDayObj) return '';
+           return `<div class="prof-cal-sel-detail">
+             <span>📅 <b>${esc(selDayObj.date)} (${esc(selDayObj.dayName)})</b> — ${esc(selDayObj.note || selDayObj.state.toUpperCase())}</span>
+             <button type="button" class="prof-cal-unselect-btn" onclick="toggleProfileCalDay('${esc(selDayObj.date)}')">✕ Unselect</button>
+           </div>`;
+         })()}
          <div class="prof-cal-legend" aria-label="Calendar legend">
            <span><i class="prof-cal-dot present"></i><b>P</b> Present</span>
            <span><i class="prof-cal-dot absent"></i><b>A</b> Absent</span>
@@ -1517,12 +1639,16 @@
     // 2. Early-exit count per month
     const eeYearTotal = agg.yearSummary.totalEarlyExits;
     const eeScopeTotal = agg.scopeSummary.totalEarlyExits;
-    const eeMonthsHtml = agg.yearMonthSummaries.map(s => `
-      <div class="prof-mw-mini-cell" onclick="switchProfileScope('${esc(s.ym)}')" style="cursor:pointer;">
-        <span>${esc(s.shortLabel)}</span>
-        <b style="color:${s.earlyExitCount > 0 ? 'var(--warning)' : 'var(--success)'};">${s.exists ? s.earlyExitCount + 'd' : '—'}</b>
-      </div>
-    `).join('');
+    const eeMonthsHtml = agg.yearMonthSummaries.map(s => {
+      const isSelected = (agg.scopeType !== 'year' && agg.activeSingleYm === s.ym);
+      const toneCls = s.earlyExitCount > 0 ? 'has-hol' : (s.exists ? 'has-ok' : '');
+      return `
+        <div class="prof-mw-mini-cell ${toneCls} ${isSelected ? 'active-cell' : ''}" onclick="switchProfileScope('${esc(s.ym)}', true)">
+          <span>${esc(s.shortLabel)}</span>
+          <b>${s.exists ? s.earlyExitCount + 'd' : '—'}</b>
+        </div>
+      `;
+    }).join('');
 
     // 3 & 4. My rank in section (with 3-month trend) + OT vs anonymous section average
     const secStats = ex.activeSecStats;
@@ -1546,7 +1672,7 @@
       <section class="prof-card" id="profSecI1" aria-label="Attendance Streak and Mini Calendar">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">I1. Streak &amp; Month Calendar (${esc(act?.shortLabel || '')})</h3>
+            <h3 class="prof-card-title">Streak &amp; Month Calendar (${esc(act?.shortLabel || '')})</h3>
             <p class="prof-card-sub">Perfect-attendance streak &amp; daily status strip</p>
           </div>
           <span class="prof-tag success">🔥 ${ex.perfectMonthsCount} Perfect Month${ex.perfectMonthsCount === 1 ? '' : 's'}</span>
@@ -1581,7 +1707,7 @@
       <section class="prof-card" id="profSecI2" aria-label="Early Exits, Section Rank, and Section Average">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">I2–I4. Rank, Section Average &amp; Early Exits</h3>
+            <h3 class="prof-card-title">Rank, Section Average &amp; Early Exits</h3>
             <p class="prof-card-sub">Anonymous ${esc(areaLabel)} comparison &amp; Gate Pass / Early Exit count</p>
           </div>
           <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Open Rank ›</button>
@@ -1639,7 +1765,7 @@
       <section class="prof-card" id="profSecActions" aria-label="Quick Actions and Export">
         <div class="prof-card-head">
           <div>
-            <h3 class="prof-card-title">I5–I7. Quick Actions &amp; Share (শর্টকাট)</h3>
+            <h3 class="prof-card-title">Quick Actions &amp; Share (শর্টকাট)</h3>
             <p class="prof-card-sub">Open Daily Report, Payslip Estimator, 1v1 Compare, or Save Summary Image</p>
           </div>
         </div>

@@ -797,8 +797,8 @@ body:not(.incharge-mode-active) #inchargeEmpProfileCard {
 }
 
 .ds-cell.plain {
-  background: var(--brand-soft);
-  border-color: var(--brand-soft-border);
+  background: var(--surface-2);
+  border-color: var(--border);
 }
 
 .ds-label {
@@ -4330,10 +4330,19 @@ body.norate-view #compareMyAmount {
     gap: 5px;
     box-shadow: none;
   }
-  .emp-cat-chip.selected {
-    background: var(--brand);
-    color: #FFFFFF;
-    border-color: var(--brand);
+  .emp-cat-chip:not(.selected),
+  .emp-cat-chip:not(.selected):hover,
+  .emp-cat-chip:not(.selected):focus {
+    background: var(--surface-2) !important;
+    color: var(--text-2) !important;
+    border-color: var(--border-strong) !important;
+  }
+  .emp-cat-chip.selected,
+  .emp-cat-chip.selected:hover,
+  .emp-cat-chip.selected:focus {
+    background: var(--brand) !important;
+    color: #FFFFFF !important;
+    border-color: var(--brand) !important;
   }
 
   /* ==========================================================================
@@ -6849,13 +6858,25 @@ body.incharge-mode-active #vsExecShortcutSection {
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.clickable-drill:hover {
-  background: var(--surface-3);
+@media (hover: hover) and (pointer: fine) {
+  .clickable-drill:not(.drill-active):hover {
+    background: var(--surface-3);
+  }
+  .ds-cell.clickable-drill:not(.drill-active):hover {
+    border-color: var(--brand);
+  }
 }
 
+#step3 .bill-row.clickable-drill:not(.drill-active),
+.bill-row.clickable-drill:not(.drill-active) {
+  background: transparent;
+  border-left: 0 solid transparent;
+}
+
+#step3 .bill-row.clickable-drill.drill-active,
 .bill-row.clickable-drill.drill-active {
-  background: var(--brand-soft);
-  border-left: 4px solid var(--brand);
+  background: var(--brand-soft) !important;
+  border-left: 4px solid var(--brand) !important;
 }
 
 .bill-row.clickable-drill.drill-active .drill-indicator-icon {
@@ -6863,14 +6884,24 @@ body.incharge-mode-active #vsExecShortcutSection {
   color: var(--brand);
 }
 
-.ds-cell.clickable-drill:hover {
-  border-color: var(--brand);
+#daySummaryGrid .ds-cell.clickable-drill:not(.drill-active),
+.ds-cell.clickable-drill:not(.drill-active) {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
 }
 
+#daySummaryGrid .ds-cell.clickable-drill.drill-active,
 .ds-cell.clickable-drill.drill-active {
-  border-color: var(--brand);
-  background: var(--brand-soft);
-  box-shadow: 0 0 0 1px var(--brand);
+  border-color: var(--brand) !important;
+  background: var(--brand-soft) !important;
+  box-shadow: 0 0 0 1.5px var(--brand) !important;
+}
+
+#daySummaryGrid .ds-cell.clickable-drill.drill-active .ds-label,
+.ds-cell.clickable-drill.drill-active .ds-label {
+  color: var(--brand-text) !important;
+  font-weight: 700 !important;
 }
 
 .ds-value.amber {
