@@ -1038,10 +1038,17 @@ def main():
         print(f"[INFO] No .xlsx files found in '{RAW_DIR}', '{raw_qa_dir}', or '{raw_pr_dir}'. Nothing to process.")
         sys.exit(0)
 
-    # Auto-stage data/qa/ output and clean raw/qa, raw/pr for git commit in manual-excel workflow
+    # Rebuild per-employee multi-month history files (data/emp/<DEPT>/<ID>.json)
+    try:
+        import build_emp_history
+        build_emp_history.build_all_emp_histories()
+    except Exception as emp_err:
+        print(f"[WARN] Could not rebuild per-employee history files: {emp_err}")
+
+    # Auto-stage data/qa/ and data/emp/ output and clean raw/qa, raw/pr for git commit in manual-excel workflow
     try:
         import subprocess
-        subprocess.run("git add data/qa/*.json 2>/dev/null || true", shell=True, check=False)
+        subprocess.run("git add data/qa/*.json data/emp/ 2>/dev/null || true", shell=True, check=False)
         subprocess.run("git rm -f --ignore-unmatch raw/qa/*.xlsx raw/qa/*.XLSX raw/pr/*.xlsx raw/pr/*.XLSX 2>/dev/null || true", shell=True, check=False)
         for f in list(raw_qa_dir.glob("*.xlsx")) + list(raw_pr_dir.glob("*.xlsx")):
             try:
@@ -1050,13 +1057,6 @@ def main():
                 pass
     except Exception:
         pass
-
-    # Per-employee history files for the "Me" page (data/emp/<DEPT>/<ID>.json). Never fatal.
-    try:
-        import build_emp_history
-        build_emp_history.main([])
-    except Exception as err:
-        print(f"[WARN] per-employee history build skipped: {err}")
 
     print("[SUCCESS] All departmental conversions completed successfully.")
 

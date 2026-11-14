@@ -11,10 +11,9 @@
 | Feature | Description |
 |---|---|
 | **Overtime Search** | Employee ID দিয়ে যেকোনো মাসের overtime রিপোর্ট দেখুন |
-| **My Profile (Me)** | নিজের বছর/মাসভিত্তিক OT, আয়, রাত ও ছুটির ডিউটি, Absent/Long leave, গড় In/Out, "Check before payroll" (requisition/night/punch সমস্যা + ERP Team-কে WhatsApp), streak, section-average তুলনা ও শেয়ার ইমেজ — এক পেজে |
 | **Auto Calculation** | OT Allowance, Holiday Allowance, Night Allowance এবং Regular Duty — সব স্বয়ংক্রিয়ভাবে হিসাব হয় |
 | **Monthly Leaderboard** | Solid, Softgel ও Packing Hall — সেকশনওয়ারি র‌্যাংকিং ও Top Performers |
-| **VS (1v1) Compare** | দুইজন কর্মীর overtime পাশাপাশি তুলনা (মোবাইলে **More** মেনু থেকে, `#/vs`) |
+| **VS (1v1) Compare** | দুইজন কর্মীর overtime পাশাপাশি তুলনা |
 | **Payslip Generator** | মাসিক salary + overtime দিয়ে মোট প্রাপ্তি হিসাব ও JPG ডাউনলোড |
 | **Punch Problem Detection** | Missing In/Out punch স্বয়ংক্রিয়ভাবে শনাক্ত হয় |
 | **In-Charge Mode** | PIN-ভেরিফায়েড ড্যাশবোর্ড — section strength, absent list, action center, risk watchlist |
@@ -25,8 +24,6 @@
 | **PWA Install** | ফোনের হোমস্ক্রিনে অ্যাপের মতো ইনস্টল করা যায় |
 | **Firebase Realtime** | Live presence board, telemetry ও server sync |
 | **Maternity Leave Tracker** | অনুমোদিত ৬-মাসের ম্যাটার্নিটি লিভ ট্র্যাকিং |
-
-> **মোবাইল bottom nav:** `Home | Report | Me | Rank | More` (Me = `#/profile`)। ডেস্কটপ top-nav-এ "My Profile" Report-এর পরে।
 
 ---
 
@@ -58,7 +55,6 @@ checkot.github.io/
 │   ├── pages.css           # Page-specific layouts
 │   ├── manager-ux.css      # In-Charge / Manager mode styles
 │   ├── rank-details.css    # Rank detail modal styles
-│   ├── profile.css         # My Profile (Me) page styles
 │   ├── assessment.css      # Assessment page styles
 │   ├── fit.css             # Text auto-fit styles
 │   ├── modern-top.css      # Modern top bar redesign
@@ -75,10 +71,7 @@ checkot.github.io/
 │   │   └── access-control.js   # Role-based access control
 │   ├── calculations/
 │   │   ├── rates.js        # OT, Holiday, Night rate calculation engine
-│   │   ├── ranking.js      # Leaderboard ranking algorithm
-│   │   ├── early-exit.js   # Early-exit detection
-│   │   ├── attendance.js   # computeEmpMonthRows — shared Absent/Leave/Off logic (Report + Profile)
-│   │   └── profile.js      # Pure per-month/year aggregation for My Profile (no DOM, Node-testable)
+│   │   └── ranking.js      # Leaderboard ranking algorithm
 │   ├── components/
 │   │   ├── router.js       # SPA page routing
 │   │   ├── loader.js       # Loading animation (calculator UI)
@@ -92,8 +85,6 @@ checkot.github.io/
 │   │   ├── report.js       # Detailed report & payslip
 │   │   ├── leaderboard.js  # Monthly leaderboard & ranking
 │   │   ├── vs.js           # 1v1 comparison page
-│   │   ├── profile.js      # My Profile page (render)
-│   │   ├── profile-data.js # Profile data loader: per-employee file, else progressive month files
 │   │   ├── history.js      # Search history page
 │   │   ├── settings.js     # App settings page
 │   │   ├── notices.js      # Factory notices board
@@ -102,25 +93,8 @@ checkot.github.io/
 │   │   └── more.js         # More options page
 │   └── patches/
 │       └── manager-ux.js   # Manager/In-Charge UX enhancements
-├── data/
-│   ├── YYYY-MM.json        # Monthly dataset (PR); data/qa/ for QA
-│   └── emp/<PR|QA>/<ID>.json   # Per-employee history (all months) — generated, see below
-│
-├── scripts/
-│   ├── to_json.py          # Excel -> data/*.json (also refreshes data/emp)
-│   ├── build_emp_history.py    # (Re)build every data/emp file from data/*.json
-│   └── recompute_from_raw.py   # Recompute from raw archive (also refreshes data/emp)
-│
-├── tests/                  # Node + Playwright checks (see PROFILE_NOTES.md)
-├── docs/screens/           # Verification screenshots
-├── PROFILE_NOTES.md        # My Profile: decisions, formulas, data-size numbers, skipped items
 └── README.md
 ```
-
-### My Profile — data loading
-- **Option A (default):** one small file `data/emp/<DEPT>/<ID>.json` (avg ≈ 21 KB raw / ≈ 4 KB gzip) with that employee's records for all months.
-- **Option B (fallback if the file 404s):** progressive load of full month files, newest first, with a progress bar; only a compact per-employee extract is cached in `localStorage`.
-- Workflows (`empress.yml`, `recompute-from-raw.yml`, `manual-excel.yml`) regenerate `data/emp` and commit it with the monthly data. To rebuild everything by hand: `python3 scripts/build_emp_history.py`.
 
 ---
 

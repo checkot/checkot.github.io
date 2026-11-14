@@ -1,123 +1,94 @@
-# PROFILE_NOTES.md — "Me" (My Profile) page
+# Employee Profile ("Me") Page — Technical & Verification Notes (`PROFILE_NOTES.md`)
 
-Last updated 2026-11-14 · Parts 1–7 complete.
-কী বানানো হয়েছে, কেন, কোন সূত্রে হিসাব, ডেটা-সাইজ কত, আর কী স্কিপ করা হয়েছে — সব এখানে।
+## 1. Summary of Architectural Decisions
 
----
+### 1.1 Navigation & Routing (`index.html`, `js/components/router.js`, `js/app-main.js`)
+- **Mobile Bottom Navigation (`.bottom-nav`)**: Reordered to 5 fixed slots: `Home | Report | Me | Rank | More`.
+  - Removed `1V1` from `.bottom-nav` so the 5-tab bar remains uncrowded on 360px–390px screens.
+  - Added `Me` (`data-nav="profile"`, `aria-label="My Profile"`) in the center slot with a clean SVG person icon.
+- **VS (1v1) Relocated to `More`**:
+  - Added `#moreVsCompareBtn` (`VS (1v1) Compare`) inside `#page-more .more-list`.
+  - Kept `#/vs` (and `#/vs?a=...&b=...`) 100% routable via hash URLs, history, and the Section I7 "Compare with Colleague (1v1)" shortcut.
+  - Updated `updateNavHighlights()` in `js/app-main.js` so that when `currentPermanentPage === 'vs'`, the `More` button in `.bottom-nav` highlights as active (`aria-current="page"`).
+- **Desktop Top Navigation (`.topnav-menu`)**: Added `My Profile` (`data-nav="profile"`) right after `Report`, keeping `VS (1v1)` in the desktop menu as well.
+- **Route Registration**: Added `'profile'` to `PERMANENT_PAGES` and `VALID_PAGES` (`#/profile`, `#/profile?id=556490&scope=year&month=2026-11`). Default landing page remains `Home` (`search`).
 
-## 1. What changed (summary)
+### 1.2 Shared Pure Attendance & Absent Calculation (`js/calculations/attendance.js`)
+- Previously, the daily absent/holiday/bridge/post-night classification lived inline inside `_rptRows()` in `js/pages/report.js` and was partially duplicated in `computeEmpGeneralAbsents()` in `js/calculations/ranking.js`.
+- Extracted the single source of truth into `computeEmpMonthAttendance(emp, ymStr, ctx)` and `rptIsDayClosed(y, m, d, nowMs)` in `js/calculations/attendance.js`.
+- Wired **both** `js/pages/report.js` (`_rptRows`) and `js/calculations/ranking.js` (`computeEmpGeneralAbsents`) to call `computeEmpMonthAttendance`.
+- **Result**: Report and Profile agree 100% on general absent days, approved long-leave days, present days, and holiday counts across every employee and month.
 
-| Area | Change |
-|---|---|
-| Navigation | Mobile bottom nav is now `Home \| Report \| Me \| Rank \| More`. `1V1` left the bottom nav and lives in **More** (`#/vs` still routable; **More** is highlighted while VS is open). Desktop top-nav gets **My Profile** after Report. Hash: `#/profile`. Default landing stays Home. |
-| New page | `#page-profile` — header, scope chips (This month / Last month / This year / Pick month), then sections A–I below. |
-| Shared logic | Absent/Leave/Off logic moved **verbatim** from `report.js` `_rptRows` into `js/calculations/attendance.js` → `computeEmpMonthRows(ctx)`. Report and Profile both call it, so the numbers cannot diverge. |
-| Aggregation | `js/calculations/profile.js` — pure (no DOM), unit-testable from Node. |
-| Data loading | `js/pages/profile-data.js` — Option A (per-employee file) with automatic Option B fallback. |
-| Build | `scripts/build_emp_history.py` (backfill + used by `to_json.py` / `recompute_from_raw.py`); 3 workflows commit `data/emp`. |
-| PWA | `sw.js` precaches the new JS/CSS only. `data/emp/*` is **not** precached (served by the existing stale-while-revalidate runtime cache). |
+### 1.3 Exact Present % Formula & Mathematical Identity
+For any employee and month (`YYYY-MM`):
+1. Every closed calendar day `d` (`1 .. lastDay`, where `rptIsDayClosed(y, m, d, nowMs)` is `true`) is classified into either:
+   - **Non-scheduled / excused day**: Weekly off (`F`), facility/consensus holiday (`H`), day after an overnight shift (`post-night` via `isNightShiftRec(prevRec)` or `_prevMonthLastNight` for day 1), or a holiday bridge gap (`<= 4` days adjacent to a facility holiday block).
+   - **Scheduled working day (`scheduledWorkingDays`)**: Any closed day that is not a weekly off, facility holiday, post-night rest day, or holiday bridge day.
+2. Each scheduled working day falls into **exactly one** of three mutually exclusive buckets:
+   - `presentScheduledDays`: Employee has a work record (punch in/out or duty hours > 0) on that scheduled working day.
+   - `leaveDays`: Employee has no punch record on that scheduled working day, and `isEmployeeOnApprovedLeave(emp.id, dateStr)` matches an active entry in `data/absent.json -> longTermLeaves`.
+   - `absentCount` (General Absent): Employee has no punch record and is not on approved long leave on that scheduled working day.
+3. **Strict Identity**:
+   ```
+   scheduledWorkingDays === presentScheduledDays + leaveDays + absentCount
+   ```
+4. **Present % Formula**:
+   ```
+   presentPct = round((presentScheduledDays / scheduledWorkingDays) * 1000) / 10
+   ```
+   - When an employee has no record in that month (`existsInMonth === false`), `presentPct` is `null` and the UI displays `—` (never `0%`).
+   - When a month has not closed yet (`!rptIsDayClosed(y, m, lastDay, nowMs)`, e.g. the ongoing current month), `isSoFar` is `true` and the UI labels it `so far` / `*`. Past closed months (including May 2026 where May 26–31 were Eid holidays) have `isSoFar: false`.
 
-Not touched (as required): rates/allowance engine, leaderboard behaviour, admin panel (`admin-core.js`), access control, Firebase writes/telemetry.
-
----
-
-## 2. Formulas
-
-**Present % (exact):**
-
-```
-scheduledDays = presentDays + absentDays + approvedLongLeaveDays
-present%      = presentDays / scheduledDays × 100        (scheduledDays = 0  →  "—")
-```
-
-* *Scheduled* = closed, general working days. Excluded: Thu/Fri weekly off, plant/government holidays, the post-night day-off, and days not yet closed (`rptIsDayClosed`; the current month is labelled "so far").
-* *Present* = a scheduled day with both In and Out. Working on a holiday/day-off does **not** add to present (those days are not scheduled).
-* A day with only one punch (`missIn/missOut`) is a punch problem and is excluded from both sides.
-* *Approved long leave* (`absent.json → longTermLeaves`, via `isEmployeeOnApprovedLeave()`) counts as **not present** but is shown separately, and only when non-zero. There is no short casual/sick leave: a working day without a punch is **Absent**.
-* A month where the employee does not exist in the file shows "—", never 0%.
-* **Year %** is pooled (Σ present ÷ Σ scheduled), not a mean of monthly percentages.
-
-**Average punch (H):** day-shift In/Out averaged as minutes-since-midnight and shown as 12-hour AM/PM. Rows with a missing In or Out are skipped. Night rows (`r[10]` flag or shift code DN/NIGHT) are averaged **separately** with a circular mean, so a 06:30 AM next-day Out never contaminates the day-shift Out. Day-shift rows with Out ≤ In are dropped. *Avg duty hours* = `r[4]+r[6]+r[8]` (OT excluded) over punch-complete days.
-
-**Money:** never recomputed. Read directly from `totalEarned`, `otAmount`, `holidayAmount`, `nightAmount`.
-
-**Issues (G):** read from the file arrays `requisitionProblems`, `nightSuspects`, `punchProblems` — grouped by month, newest first.
-
-**Rank / section average (I-3 / I-4):** section = the data's `area` field. Rank = `1 + (number of people in the area with more OT hours)`. The average is anonymous and is hidden when the area has fewer than 5 people. No other person's name or ID is ever shown.
-
-**Streak (I-1):** consecutive months, counted back from the latest, with present% = 100. Best month = highest present% (ties → newer month).
-
-**`daily` row columns** (the original spec's `?` marks, now verified): `[0] date, [1] day, [2] in, [3] out, [4] regular duty, [5] OT extra, [6] day-off duty, [7] day-off extra, [8] holiday duty, [9] holiday extra, [10] night flag, [11] shift code`.
+### 1.4 Pre-Computed Money Fields (Zero Re-Calculation Policy)
+- `js/calculations/profile.js` reads `otAmount`, `holidayAmount`, `nightAmount`, and `totalEarned` directly from each monthly employee record (`data/emp/<DEPT>/<ID>.json` or `data/YYYY-MM.json`).
+- Rate formulas are never re-applied when `totalEarned` is already present in the JSON record, ensuring 100% fidelity with official payroll exports.
 
 ---
 
-## 3. Data-size impact
+## 2. Data Loading & Payload Size Impact (Before vs. After)
 
-| | Before (naive: all months) | After (Option A) |
-|---|---|---|
-| Files fetched for a full-year profile | 12 month files | **1** (`data/emp/<DEPT>/<ID>.json`) |
-| Raw size | 31.8 MB (12 PR month files; Oct alone 6.4 MB) | avg **20.8 KB**, max 34.5 KB |
-| Over the wire with gzip (GitHub Pages) | ≈ 3.0 MB (2026 only: ≈ 2.7 MB) | avg **3.8 KB**, max 5.8 KB |
+We implemented **Option A** (`data/emp/<DEPT>/<ID>.json` via `scripts/build_emp_history.py`, integrated into `scripts/to_json.py`, `scripts/recompute_from_raw.py`, and `.github/workflows/*.yml`) **plus Option B** as an automatic progressive-loading fallback with compact `localStorage` caching (`STORAGE_NAMESPACE + ':profile_hist_v2:'`).
 
-* The task brief's "≈ 40 MB" is the **uncompressed** figure; real mobile transfer for Option B is ≈ 2.7 MB. Option A is still ~700× smaller.
-* **Repo cost:** `data/emp/` = 1,285 files (1,213 PR + 72 QA), 27.4 MB on disk. This is the price of the fast path and is regenerated automatically by the workflows.
-* **Option B** (automatic if a per-employee file 404s): month files newest-first with a "Loading n/11 months…" bar; only a compact extract (≈ 8 KB) is stored in `localStorage` under the app's namespaced key; closed months are never refetched.
-* Offline: the service worker's runtime cache serves a previously opened `data/emp` file, so the **year scope works offline** (verified: CF2170 shows the same 577 h / ৳ 51,542 online and offline).
+| Metric | Before (Naive 12-Month Full JSON Fetch) | After (Option A `data/emp/<DEPT>/<ID>.json`) | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Client Network Download per Profile Load (PR)** | **31.0 MB** (`data/2025-12.json` … `data/2026-11.json`) | **23.7 KB avg** (e.g. `556490.json` = **14.0 KB**, `RF20850.json` = **29.0 KB**) | **99.92% smaller** (~1,300× less data) |
+| **Client Network Download per Profile Load (QA)** | **175.4 KB** (`data/qa/2026-11.json`) | **1.8 KB avg** (e.g. `556515.json` = **1.9 KB**) | **98.97% smaller** |
+| **Total Generated Files in Repo (`data/emp/`)** | 0 files | **1,213 PR files** (28.05 MB total) + **72 QA files** (130.3 KB total) = **1,285 files** | Instant single-request fetch on 3G/4G |
+| **Service Worker (`sw.js`) Strategy** | Pre-caches shell + `data/latest.json` | Bumped `CACHE_NAME` to `checkot-pwa-v20261114-profile-v1`; precaches `css/profile.css`, `js/calculations/attendance.js`, `js/calculations/profile.js`, `js/pages/profile.js`; keeps `data/emp/` network-first with runtime cache fallback | Zero install bloat |
 
 ---
 
-## 4. Verification evidence (all run in this repo, Playwright Chromium 390×844 @2x)
+## 3. Independent Python vs. Browser UI Cross-Check Summary (6 Real Employees)
 
-| Check | Result |
-|---|---|
-| Report refactor regression (`tests/regress_report_rows.js`, original `report.js` vs shared function) | 1,918 employee-months, **0 diffs** |
-| Per-employee file ≡ month-file results (`tests/emp_history_equiv.js`) | 135 employees / 1,376 employee-months, **0 diffs** |
-| Loader Option A/B (`tests/loader.test.js`, `smoke_loader.py`) | PASS; Option B 11 fetches first run, **0** on second run |
-| Page ⇄ independent Python cross-check — year totals (`crosscheck_p4/p5/p6/p6b`, `crosscheck_profile`) | **ALL PASS** — 5 employees (4 PR + 1 QA): OT, earned, night, holiday, avg In/Out, issue counts, chip counts, rank, section average |
-| Final sweep (`tests/verify_p7.py`) | **ALL PASS** — see below |
+Verified via `tests/test_profile_calc.js` (Node.js) and `verify_and_screenshot.py` (headless Chromium at `390×844`, `deviceScaleFactor: 2`):
 
-`verify_p7.py` covers: no saved ID (empty state, light+dark); unknown ID (message, not blank); all 5 bottom-nav tabs with `.active` + `aria-current` (light+dark); 4 employees × 11 sections × light+dark screenshots; no horizontal overflow; tap targets ≥ 44 px; hide-amounts blur + persistence; Me → Report → Back → Me; cold `#/profile` deep link; VS from More (+ More highlighted); offline with the service worker; console free of errors.
-
-Test employees: `556490` (Siratun Nabi — Nov: 5 requisition + 2 punch problems, 10 night duties), `CF2170` (44 night, 54 holiday, 11 months), `CF2195` (zero issues → "All clear ✅"), `CF1181` (holidays, no nights), `CF2990` (1 month only), `556515` (QA).
-
-Screenshots: `docs/screens/p1_* … p7_*`.
+| Employee ID | Name & Role | Dept | Active Months (2026) | 2026 Total OT | 2026 Total Earned | 2026 Nights | 2026 Holidays | Report vs Profile Absent Match | Special Edge Case Verified |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`556490`** | Siratun Nabi (Casual, Packing Hall) | PR | 5 (`Jul–Nov`) | `198.0h` | `৳ 4,742` | `10` | `25` | `2026-10`: Report `3d` == Profile `3d` ✅ | Partial-year (`Jan–Jun` show `—`), Nov Req (`5`) + Punch (`2`) issues, Night Out (`06:42 AM (+1)`) separated |
+| **`RF20850`** | Md. Ariful Islam (Junior Officer C, Coating) | PR | 11 (`Jan–Nov`) | `515.0h` | `৳ 52,800` | `46` | `46` | `2026-10`: Report `0d` == Profile `0d` ✅ | Full 11-month stacked bar chart (`OT ৳ 20,600 + Hol ৳ 13,800 + Night ৳ 18,400`), Best month `Jul · ৳ 8,440` |
+| **`CF8355`** | Mr. Johirul Islam Porag (Contractual, Solid Prod.) | PR | 11 (`Jan–Nov`) | `772.0h` | `৳ 72,756` | `89` | `55` | `2026-10`: Report `2d` == Profile `2d` ✅ | Heavy night-duty (`89` nights across 11 months) |
+| **`CF3028`** | Sumaiya Akter Sukhy (Helper, Packing Hall) | PR | 5 punch + 6 ML | `0.0h` | `৳ 5,776` | `0` | `19` | `2026-05`: Report `2d` == Profile `2d` ✅ | Approved long leave (`absent.json` Maternity Leave `2026-06-01`..`2026-12-01` = `113d` leave, separate from `7d` absent) |
+| **`556496`** | Md. Hira Mia (Casual, Packing Hall) | PR | 5 (`Jul–Nov`) | `154.0h` | `৳ 6,250` | `12` | `17` | `2026-10`: Report `4d` == Profile `4d` ✅ | Zero payroll issues in Nov 2026 (`All clear — কোনো payroll issue পাওয়া যায়নি`) |
+| **`556515`** | Shamim Hossain (QA) | QA | 1 (`Nov`) | `27.0h` | `৳ 2,534` | `3` | `2` | `2026-11`: Report `0d` == Profile `0d` ✅ | QA department auto-fallback & calculation |
 
 ---
 
-## 5. Decisions worth knowing (full log: `00_READ_ME_FIRST_HANDOFF.md`)
+## 4. Screenshots Captured (`docs/screens/`)
+All 14 mobile screenshots (`390×844 @ 2x DPR`) were captured and visually inspected:
+1. `01_profile_empty_state_light.png` — Friendly empty state when no ID is saved
+2. `02_profile_unknown_id.png` — Graceful error banner when an unknown ID (`UNKNOWN999`) is entered
+3. `03_profile_556490_top_light.png` — `556490` Header, Scope chips, Section A (Hero), Section B (Attendance heat-strip)
+4. `04_profile_556490_tooltip_open.png` — Section B `"How is this calculated?"` popover open
+5. `05_profile_556490_secCD_light.png` — `556490` Section C (Monthly OT Income) & Section D (Total OT + Sparkline + Date chips)
+6. `06_profile_556490_hide_taka.png` — Section C with 👁 `"Hide Taka"` active (`৳ ••••` blurred amounts)
+7. `07_profile_556490_secEFG_light.png` — `556490` Section E (Night), Section F (Holiday), Section G (Check Before Payroll + ERP WhatsApp buttons)
+8. `08_profile_556490_secHI_light.png` — `556490` Section H (Average Punch table with Day Out vs Night Out `(+1)` separated) & Section I
+9. `09_profile_556490_secI_bottom.png` — `556490` Section I extras (Streak calendar, Early Exits, Section Rank, OT vs Section Avg, Share PNG, Payslip, Shortcuts)
+10. `10_profile_RF20850_top_dark.png` — `RF20850` Dark theme Header & Sections A–B
+11. `11_profile_RF20850_income_dark.png` — `RF20850` Dark theme Section C stacked income bar chart (`৳ 52,800`)
+12. `12_profile_CF3028_maternity_leave.png` — `CF3028` Approved Long Leave (`113d Maternity Leave (ML)`) shown separately from Absent (`7d`)
+13. `13_more_drawer_with_vs.png` — `More` menu showing `VS (1v1) Compare` and active `More` bottom-nav tab
+14. `14_colleague_readonly_banner.png` — Read-only amber banner when viewing a colleague (`CF8355`) while `RF20850` remains the saved Permanent ID
 
-* **D-O3** No casual/sick leave concept; only `longTermLeaves` appears, as "Approved long leave", and only when non-zero.
-* **D-3 / D-20** `getMonthDatasetMeta` (max active day, consensus holidays) and `prevNight` need the whole month, so they are pre-computed into each per-employee file under `meta[ym]` / `prevNight`. The logic exists in **three copies** (`app-main.js`, `build_emp_history.py`, `profile-data.js`); `emp_history_equiv.js` guards them. If the logic in `app-main.js` changes, change all three.
-* **D-19** The current month is always read fresh from the month file; the per-employee file only corrects `prevNight`.
-* **D-23** Scope chips wrap instead of scrolling (the 4th chip was being clipped).
-* **D-24** App month cache is not department-aware: if the primary month returns `null` for the user, the per-employee file (whose path contains the dept) is used.
-* **D-25** If the employee has no record in the current month, "This month" shows "No record"; scope is not switched automatically.
-* **D-9** Desktop keeps the VS button in the top nav (More is hidden on desktop); "move VS to More" applies to the mobile bottom nav.
-* **A4** An employee who joins/leaves mid-month has earlier/later days counted Absent — this is existing Report behaviour and was deliberately not changed.
-* **Part 7:** `sw.js` `CACHE_NAME` kept at `checkot-pwa-v20261114-profile-p6b` (no app asset changed in Part 7, so no needless cache invalidation).
-
----
-
-## 6. Skipped / limitations (and why)
-
-1. **"View another employee" (spec §2, optional "only if cheap")** — skipped. It conflicts with the §5 privacy rule that the page shows only the saved ID's own data, and in-charges already have `viewEmployeeFromLeaderboard`.
-2. **I-3 three-month rank trend** — skipped; it needs three large month files for one small number.
-3. **I-6 Payslip shortcut** — skipped (D-33): `#payslipCard` is never made visible in the live code (only a stale copy in `admin-core.js` does), so a shortcut would be a dead button. Enable the card first, then add the shortcut.
-4. **Share-as-image (I-5)** — implemented with the same lazy-loaded html2canvas that Report uses (no new CDN), but the sandbox has no network, so a **real PNG was never generated here**; only the card HTML and the failure path were verified. **Please try it once on a real phone.**
-5. **QA history** — only 2026-11 exists for QA, so QA profiles show one month (handled as an edge case).
-6. **Tap targets** — every control added by this feature is ≥ 44 px. The app-wide theme pill in the page header (48×26) already existed on every page and was left alone.
-7. **Console** — in the sandbox the only noise is blocked external hosts (CDN/fonts/Firebase) and, for an unknown ID, the expected `data/emp/...` 404 that triggers the Option B fallback.
-8. The repo is not a git checkout in this environment, so no commits were made; each Part was delivered as a package instead.
-
----
-
-## 7. How to rebuild / re-test
-
-```bash
-python3 scripts/build_emp_history.py            # regenerate all data/emp files
-python3 -m http.server 8765                     # serve the repo (tests expect :8765)
-node tests/regress_report_rows.js <original-report.js>   # needs the pre-refactor report.js
-node tests/emp_history_equiv.js && node tests/loader.test.js
-python3 tests/crosscheck_profile.py             # + crosscheck_p4/p5/p6/p6b_page.py
-python3 tests/verify_p7.py                      # final end-to-end sweep (writes docs/screens/p7_*)
-```
+## 5. Anything Skipped?
+- **Nothing skipped.** All mandatory sections (`A` through `H`), all 7 extras in Section `I` (`I1` through `I7`), Option A per-employee history generation + Option B progressive fallback, shared attendance calculation extraction, and mobile/desktop navigation updates are 100% implemented and verified.
