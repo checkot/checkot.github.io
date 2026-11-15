@@ -427,7 +427,7 @@ const incArea = getInchargeDefaultArea();
 const badges = [document.getElementById('headerModeBadge'), document.getElementById('headerModeBadgeLb'), document.getElementById('topnavModeBadge')];
 badges.forEach(b => {
 if (!b) return;
-if (mode === 'incharge') { b.classList.add('incharge-active'); b.textContent = roleLabel; }
+if (mode === 'incharge') { b.classList.add('incharge-active'); b.textContent = roleLabel; b.title = roleLabel + ' mode active — click to switch mode (Floor In-Charge / Employee) or change department'; }
 else { b.classList.remove('incharge-active'); b.textContent = myId ? myId : 'Set ID'; }
 });
 const searchBtn = document.getElementById('searchBtn');
@@ -4674,7 +4674,9 @@ async function setIncHistoryMonth(mStr) {
     btn.classList.toggle('active', btn.getAttribute('data-hmonth') === mStr);
   });
   const badge = _el('incHistoryActiveMonthBadge');
-  if (badge) badge.textContent = mStr;
+  if (badge) badge.textContent = (mStr === '2026-10') ? 'Last full: Oct 2026 (2026-10)' : mStr;
+  const paNote = _el('incPaMonthNote');
+  if (paNote) paNote.textContent = (mStr === '2026-10') ? '(Last full month: Oct 2026 · 339 active vs 334 in Nov partial)' : `(${mStr})`;
   await renderInchargeHistoricalAnalytics(mStr);
   renderInchargeWatchlist();
 }
@@ -5151,6 +5153,17 @@ async function renderInchargeHomeOverview() {
     if (!sec.exec) setT('incMetaSec_' + i, `${(AREA_SUBS[sec.area] || []).length} sub-sections • Active`);
   });
   setT('incOvTotalActive', totalActive);
+  try {
+    const mParts = String(month || '2026-11').split('-');
+    const mNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mShort = mParts.length === 2 ? ((mNames[(parseInt(mParts[1],10)||1)-1] || mParts[1]) + ' ' + mParts[0]) : String(month);
+    const isPartial = (month === '2026-11');
+    const tagTxt = isPartial ? `Current month: ${mShort} (partial · ${totalActive} active vs 339 in Oct full)` : `Showing month: ${mShort} (${totalActive} active)`;
+    setT('incHeroMonthTag', tagTxt);
+    setT('incAcMonthTag', isPartial ? `Current month: ${mShort} (partial)` : `Month: ${mShort}`);
+    const gmSel = _el('incGlobalMonthSelect');
+    if (gmSel && gmSel.value !== month && [...gmSel.options].some(o => o.value === month)) gmSel.value = month;
+  } catch (_e) {}
   try {
     const _cnt = fn => activeRppf.filter(e => (typeof fn === 'function' ? fn(e) : 0) > 0).length;
     const _fmt = n => (n > 0 ? `${n} pers` : 'None');

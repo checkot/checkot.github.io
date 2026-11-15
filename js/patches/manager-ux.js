@@ -465,9 +465,11 @@
   function applyCollapse() {
     const f = $('mgrRf');
     if (!f) return;
-    f.classList.toggle('collapsed', RF.collapsed);
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 900;
+    const col = isDesktop ? false : RF.collapsed;
+    f.classList.toggle('collapsed', col);
     const h = $('mgrRfHead');
-    if (h) h.setAttribute('aria-expanded', RF.collapsed ? 'false' : 'true');
+    if (h) h.setAttribute('aria-expanded', col ? 'false' : 'true');
   }
   window.mgrRfOpen = function () {
     ensureFinder();
@@ -1193,10 +1195,70 @@
   });
 
   /* ------------------------------------------------------------------- init */
+
+  /* ------------------------------------------------ 6c. DESKTOP IN-CHARGE CONTROLS (F2, F4, F7, F9) */
+  window.onIncGlobalMonthChange = async function (ym) {
+    if (!ym || !/^\d{4}-\d{2}$/.test(ym)) return;
+    const parts = ym.split('-');
+    const ySel = $('yearSelect'), mSel = $('monthSelect');
+    if (ySel) {
+      if (![...ySel.options].some((o) => o.value === parts[0])) {
+        const o = document.createElement('option'); o.value = parts[0]; o.textContent = parts[0]; ySel.appendChild(o);
+      }
+      ySel.value = parts[0];
+    }
+    if (mSel) mSel.value = parts[1];
+    try { if (typeof currentMonth !== 'undefined') currentMonth = ym; } catch (e) {}
+    try { if (typeof renderInchargeHomeOverview === 'function') await renderInchargeHomeOverview(); } catch (e) {}
+    try { if (typeof setIncHistoryMonth === 'function') await setIncHistoryMonth(ym); } catch (e) {}
+    try { setFinderMonth(ym); } catch (e) {}
+  };
+
+  window.toggleIncPlantAnalytics = function (forceOpen) {
+    const card = $('incHomeHistoryCard');
+    const btn = $('incPlantAnalyticsToggle');
+    const txt = $('incPaToggleText');
+    if (!card) return;
+    const currentlyCollapsed = card.classList.contains('pa-collapsed');
+    const nextOpen = typeof forceOpen === 'boolean' ? forceOpen : currentlyCollapsed;
+    card.classList.toggle('pa-collapsed', !nextOpen);
+    if (btn) btn.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+    if (txt) txt.textContent = nextOpen ? 'Collapse' : 'Expand';
+    try { sessionStorage.setItem('rppf_inc_pa_open_v1', nextOpen ? '1' : '0'); } catch (e) {}
+  };
+
+  window.backToInchargeDashboard = function () {
+    document.body.classList.remove('has-result');
+    ['viewingContextBanner','monthNavBar','workerIdentityCard','inchargeEmpProfileCard','step3','step5','step7','payslipCard','rptStateCard','incBackToDashboardBar'].forEach((id) => {
+      const el = $(id);
+      if (el) { el.style.display = 'none'; el.classList.remove('show'); }
+    });
+    const ov = $('inchargeHomeOverview');
+    if (ov) ov.style.display = '';
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+  };
+
+  function initPlantAnalyticsCollapseDefault() {
+    if (typeof window === 'undefined' || window.innerWidth < 900 || !isInc()) return;
+    const card = $('incHomeHistoryCard');
+    if (!card || card.__paInit) return;
+    card.__paInit = true;
+    let saved = null;
+    try { saved = sessionStorage.getItem('rppf_inc_pa_open_v1'); } catch (e) {}
+    if (saved === '0') {
+      window.toggleIncPlantAnalytics(false);
+    } else if (saved === '1') {
+      window.toggleIncPlantAnalytics(true);
+    } else {
+      const tall = document.documentElement.scrollHeight > Math.round(window.innerHeight * 1.5);
+      window.toggleIncPlantAnalytics(!tall);
+    }
+  }
+
   function tick() {
     injectDrawerTopbars();
     injectInfoBadges();
-    if (isInc()) { setupOverview(); updateOvCounts(); if (!$('mgrRf') && (currentPermanentPageSafe() === 'search' || currentPermanentPageSafe() === 'report')) onReportShown(); }
+    if (isInc()) { setupOverview(); updateOvCounts(); initPlantAnalyticsCollapseDefault(); if (!$('mgrRf') && (currentPermanentPageSafe() === 'search' || currentPermanentPageSafe() === 'report')) onReportShown(); }
     ensureVsUi();
     const host = $('rptPreviewHost');
     if (host && !host.__mgrObs) {
