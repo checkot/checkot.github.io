@@ -632,6 +632,10 @@ async function runComparison(customIdsList, customHeaderNote) {
     if (!id1) { showToast("Enter 1st employee ID number", "warn"); inp1El?.focus(); return; }
     if (!id2) { showToast("Enter 2nd employee ID number", "warn"); document.getElementById('compareId')?.focus(); return; }
     
+    if (window.RppfIdGuard) {
+      const _g = [[id1, inp1El], [id2, document.getElementById('compareId')], [(document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, ''), document.getElementById('compareId3')]];
+      for (const [v, el] of _g) { if (v && el && RppfIdGuard.blocksSave(v, el)) return; }
+    }
     _cmpIds = [id1, id2];
     if (currentVsMode === 3) {
       const id3 = (document.getElementById('compareId3')?.value || '').trim().toUpperCase().replace(/\s+/g, '');

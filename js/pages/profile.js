@@ -431,6 +431,7 @@
       return;
     }
 
+    if (window.RppfIdGuard && RppfIdGuard.blocksSave(raw, inp)) return;
     _profileViewingOtherId = '';
     if (typeof setPreferredId === 'function') setPreferredId(raw);
     if (typeof setAppMode === 'function' && getAppMode() !== 'incharge') setAppMode('employee');

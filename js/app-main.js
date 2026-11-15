@@ -533,6 +533,7 @@ function saveEmployeeModeSetup() {
 const inp = document.getElementById('regEmpIdInput');
 const raw = (inp ? inp.value : '').trim().toUpperCase().replace(/\s+/g, '');
 if (!raw) { showToast('Please enter your own employee ID', 'warn'); if (inp) inp.focus(); return; }
+if (window.RppfIdGuard && RppfIdGuard.blocksSave(raw, inp)) return;
 setPreferredId(raw); setAppMode('employee'); updateModeUI(); closeModeSetupModal();
 showToast(`Your permanent ID (${raw}) has been saved`, 'success');
 const empInput = document.getElementById('employeeId');
@@ -636,12 +637,14 @@ const myId = getPreferredId();
 if (mode === 'employee' && myId) {
 const inp = document.getElementById('employeeId');
 if (inp) { inp.value = myId; toggleClearIdBtn(); }
-setTimeout(() => { findReport(); }, 100);
+if (window.RppfIdGuard) { RppfIdGuard.startupCheck().then(out => { if (!out) findReport(); }, () => findReport()); }
+else setTimeout(() => { findReport(); }, 100);
 } else if (mode === 'incharge') {
 switchPage('leaderboard');
 } else {
 setTimeout(() => { openModeSetupModal('employee'); }, 350);
 }
+if (window.RppfIdGuard && !(mode === 'employee' && myId)) { try { RppfIdGuard.startupCheck(); } catch (e) {} }
 }
 function checkAndShowWelcomeBack() {
 const savedId = getPreferredId();
@@ -3516,6 +3519,7 @@ function saveNormalEmployeeBypass() {
 const inp = document.getElementById('regEmpIdInput');
 const raw = String(inp?.value || '').trim().toUpperCase().replace(/\s+/g, '');
 if (!raw) return;
+if (window.RppfIdGuard && RppfIdGuard.blocksSave(raw, inp)) return;
 try { if (window.RppfAccess) RppfAccess.clearSession(); } catch (e) {}
 setAdminLoggedIn(false);
 setPreferredId(raw);
@@ -3569,6 +3573,7 @@ showToast('Please enter your ID number', 'warn');
 inp?.focus();
 return;
 }
+if (window.RppfIdGuard && RppfIdGuard.blocksSave(raw, inp)) return;
 const detectedDept = (typeof getDeptForEmployeeId === 'function') ? (getDeptForEmployeeId(raw) || getClientDepartment()) : 'PR';
 if (typeof setClientDepartment === 'function') setClientDepartment(detectedDept);
 const spec = getSpecialRoleSpec(raw);
@@ -5927,9 +5932,11 @@ initAppModeOnStartup = function() {
   } else if (mode === 'employee' && myId) {
     const inp = _el('employeeId');
     if (inp) { inp.value = myId; toggleClearIdBtn(); }
-    setTimeout(() => { findReport(); }, 100);
+    if (window.RppfIdGuard) { RppfIdGuard.startupCheck().then(out => { if (!out) findReport(); }, () => findReport()); }
+    else setTimeout(() => { findReport(); }, 100);
   } else {
     setTimeout(() => { openModeSetupModal('employee'); }, 350);
+    if (window.RppfIdGuard) { try { RppfIdGuard.startupCheck(); } catch (e) {} }
   }
 };
 

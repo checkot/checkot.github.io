@@ -10,6 +10,11 @@ function setPreferredId(id) {
   try {
     if (id) {
       const u = String(id).toUpperCase().trim();
+      /* backstop: never save a digits-only ID that is not listed (suggestion flow handles it) */
+      if (window.RppfIdGuard && window.RppfIdGuard.blocksSave && /^[0-9]+$/.test(u)) {
+        const _r = window.RppfIdGuard.resolve(u);
+        if (_r.status === 'suggest' || _r.status === 'too-short') return;
+      }
       localStorage.setItem(PREFERRED_ID_KEY, u);
       const d = (typeof getDeptForEmployeeId === 'function') ? getDeptForEmployeeId(u) : null;
       if (d) {

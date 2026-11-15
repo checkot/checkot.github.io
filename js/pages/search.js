@@ -181,6 +181,12 @@ async function findReport() {
 
   try {
     await loadAreaMap();
+    if (window.RppfIdGuard && await RppfIdGuard.gate(searchId, empInput)) {
+      if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') window.CheckotLoader.hide();
+      if (spinner) spinner.style.display = "none";
+      if (searchBtn) searchBtn.disabled = false;
+      return;
+    }
     if (!isListedEmployeeId(searchId)) {
       if (spinner) spinner.style.display = "none";
       if (searchBtn) searchBtn.disabled = false;

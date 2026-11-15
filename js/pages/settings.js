@@ -15,6 +15,7 @@ function savePermanentIdFromSettings() {
     inp?.focus();
     return;
   }
+  if (window.RppfIdGuard && RppfIdGuard.blocksSave(raw, inp)) return;
   const spec = typeof getSpecialRoleSpec === 'function' ? getSpecialRoleSpec(raw) : null;
   if (spec) {
     if (inp) inp.value = '';
