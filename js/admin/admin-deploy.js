@@ -126,18 +126,29 @@
       if (r.status === 403 || r.status === 404) {
         job.statusApi = false; job.notice = PERM_MSG; return stageDone(deps, job);
       }
-      if (r.ok) {
-        const run = r.json && r.json.workflow_runs && r.json.workflow_runs[0];
-        if (run) {
-          job.runUrl = run.html_url || job.runUrl;
-          if (run.status === 'completed') {
-            if (run.conclusion === 'success') return stageDone(deps, job);
-            const c = run.conclusion || 'unknown';
-            return fail(deps, job, 'Workflow ' + c + (c === 'skipped' ? ' (the upload was probably not made by the repository owner)' : ''));
-          }
-        } else if (deps.now() - job.extractStartedAt >= T.NO_RUN_MS) {
-          return fail(deps, job, 'Workflow did not start within 60 seconds');
+      let run = r.ok && r.json && r.json.workflow_runs && r.json.workflow_runs[0];
+      let seen = r.ok && r.json ? (r.json.total_count || 0) : -1;
+      if (!run && r.ok) {
+        // second way: recent runs of the workflow, matched on the commit id here (the head_sha filter can miss)
+        const r2 = await api(deps, 'actions/workflows/deploy-zip.yml/runs?per_page=10');
+        if (r2.ok && r2.json && Array.isArray(r2.json.workflow_runs)) {
+          run = r2.json.workflow_runs.find(x => x && x.head_sha === job.uploadSha) || null;
+          seen = r2.json.workflow_runs.length;
         }
+      }
+      if (run) {
+        job.runUrl = run.html_url || job.runUrl;
+        if (run.status === 'completed') {
+          if (run.conclusion === 'success') return stageDone(deps, job);
+          const c = run.conclusion || 'unknown';
+          return fail(deps, job, 'Workflow ' + c + (c === 'skipped' ? ' (the upload was probably not made by the repository owner)' : ''));
+        }
+      } else if (r.ok && deps.now() - job.extractStartedAt >= T.NO_RUN_MS) {
+        // Could not SEE the run (usually a missing Actions-read permission). That is not proof of a failed deploy:
+        // keep going and let the live stamp decide.
+        job.statusApi = false;
+        job.notice = 'Could not see the GitHub workflow run (HTTP ' + r.status + ', runs seen: ' + seen + '). ' + PERM_MSG + ' - waiting for the live stamp instead.';
+        return stageDone(deps, job);
       }
       if (deps.now() - job.startedAt >= T.SLOW_MS) return slow(deps, job);
       await deps.sleep(T.POLL_WF);

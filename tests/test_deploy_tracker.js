@@ -16,7 +16,7 @@ function makeSim(o) {
     const t = sim.c.t;
     if (o.serverFreeAt != null && t >= o.serverFreeAt) sim.serverZip = false;
     const j = sim.job; if (!j) return;
-    if (!o.noRun && t >= j.t0 + rd && !sim.run) sim.run = { status: 'in_progress', conclusion: null, html_url: 'https://x/run' };
+    if (!o.noRun && t >= j.t0 + rd && !sim.run) sim.run = { status: 'in_progress', conclusion: null, html_url: 'https://x/run', head_sha: j.sha };
     if (sim.run && sim.run.status !== 'completed' && t >= j.t0 + dur) {
       sim.run.status = 'completed'; sim.run.conclusion = o.conclusion || 'success';
       if (sim.run.conclusion === 'success') {
@@ -45,7 +45,9 @@ function makeSim(o) {
     if (/\/actions\/workflows/.test(url)) {
       if (o.noStatusPerm) return resp(403, {});
       const m = url.match(/head_sha=([^&]+)/);
-      return resp(200, { workflow_runs: (sim.job && sim.run && m && sim.job.sha === m[1]) ? [sim.run] : [] });
+      if (o.hideRuns) return resp(200, { total_count: 0, workflow_runs: [] });
+      if (m) return resp(200, { workflow_runs: (!o.headShaBroken && sim.job && sim.run && sim.job.sha === m[1]) ? [sim.run] : [] });
+      return resp(200, { workflow_runs: sim.run ? [sim.run] : [] });
     }
     if (/\/pages\/builds\/latest/.test(url)) return o.noStatusPerm ? resp(404, {}) : resp(200, sim.pages);
     if (/deploy-info\.json/.test(url)) return resp(200, { id: sim.stampId });
@@ -99,10 +101,17 @@ test('workflow skipped -> failed with owner hint', async () => {
   const sim = makeSim({ conclusion: 'skipped' }), j = await oneJob(sim, mkDeps(sim));
   assert.strictEqual(j.state, 'failed'); assert(/owner/.test(j.error));
 });
-test('workflow never starts -> failed at ~60 s', async () => {
+test('workflow never visible + no stamp -> NOT failed: stamp-only after 60 s, ends slow with notice', async () => {
   const sim = makeSim({ noRun: true }), j = await oneJob(sim, mkDeps(sim));
-  assert.strictEqual(j.state, 'failed'); assert(/did not start/.test(j.error));
-  const el = sim.c.t; assert(el >= 60000 && el <= 70000, 'elapsed ' + el);
+  assert.strictEqual(j.state, 'slow'); assert(/live stamp/.test(j.notice)); assert.strictEqual(j.statusApi, false);
+});
+test('workflow runs invisible (permission) but deploy works -> live via stamp, with notice', async () => {
+  const sim = makeSim({ hideRuns: true }), j = await oneJob(sim, mkDeps(sim));
+  assert.strictEqual(j.state, 'live'); assert(/Could not see the GitHub workflow run/.test(j.notice));
+});
+test('head_sha filter misses but recent-runs list has it -> detected normally', async () => {
+  const sim = makeSim({ headShaBroken: true }), j = await oneJob(sim, mkDeps(sim));
+  assert.strictEqual(j.state, 'live'); assert(!j.notice); assert(j.runUrl);
 });
 test('Pages build errored -> failed', async () => {
   const sim = makeSim({ pagesErrored: true }), j = await oneJob(sim, mkDeps(sim));
@@ -165,7 +174,7 @@ test('queue: failed job + "skip" continues with item 2', async () => {
   await D.enqueue(deps.store, { name: '1.zip', blob: 'a' }, sim.now(), 0.1);
   await D.enqueue(deps.store, { name: '2.zip', blob: 'b' }, sim.now() + 1, 0.2);
   const r = await D.runQueue(deps);
-  assert.deepStrictEqual(r.ran.map(x => x.state), ['failed', 'live']);
+  assert.deepStrictEqual(r.ran.map(x => x.state), ['slow', 'live']); // unseen workflow + no stamp pauses the queue like a failure
 });
 test('queue: Remove works only for waiting items', async () => {
   const sim = makeSim(), deps = mkDeps(sim);
