@@ -45,7 +45,7 @@ document.documentElement.setAttribute('data-theme', t);
 
   <link rel="stylesheet" href="css/tokens.css?v=20261108lv">
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/components.css?v=20261109compact">
+  <link rel="stylesheet" href="css/components.css?v=20261115pill2">
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/pages.css?v=20261109compact2">
   <link rel="stylesheet" href="css/manager-ux.css?v=20261113ee3">
@@ -1897,9 +1897,11 @@ document.documentElement.setAttribute('data-theme', t);
 <h3 id="modeModalTitle">RPPF — User Login</h3>
 <p id="modeModalSubtitle">Enter your Employee ID number to continue</p>
 </div>
-<div class="dept-pills-wrap" style="display:flex;gap:8px;padding:12px 16px 0;justify-content:center;">
+<div class="dept-pills-wrap">
+<div class="dept-seg" role="group" aria-label="Department">
 <button type="button" id="modalDeptPillPR" class="dept-pill-btn active" onclick="switchClientDepartment('PR')">Production</button>
-<button type="button" id="modalDeptPillQA" class="dept-pill-btn" onclick="switchClientDepartment('QA')">Quality Assurance (QA)</button>
+<button type="button" id="modalDeptPillQA" class="dept-pill-btn" onclick="switchClientDepartment('QA')" title="Quality Assurance" aria-label="Quality Assurance">QA</button>
+</div>
 </div>
 <div class="mode-switch-tabs" role="tablist">
 <button type="button" class="mode-tab-btn active-emp" id="tabBtnEmployee" onclick="selectSetupTab('employee')"><span>Employee</span></button>
