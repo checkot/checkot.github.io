@@ -398,7 +398,7 @@
             : 'Save your RPPF Employee ID once to see your yearly &amp; monthly overtime, attendance %, night/holiday duties, average punch times, and payroll requisition status.'}
         </p>
         <div class="prof-empty-form">
-          <input type="text" id="profileEmptyIdInput" class="prof-empty-input" value="${esc(attemptedId || '')}" placeholder="e.g. 556490, CF8355, RF20850" autocomplete="off" autocapitalize="characters" inputmode="text" onkeydown="if(event.key==='Enter')saveProfileEmptyStateId()">
+          <input type="text" id="profileEmptyIdInput" class="prof-empty-input" value="${esc(attemptedId || '')}" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text" onkeydown="if(event.key==='Enter')saveProfileEmptyStateId()">
           <button type="button" class="btn-primary" style="margin:0;min-height:46px;" onclick="saveProfileEmptyStateId()">Save &amp; open my profile</button>
           <button type="button" class="btn-secondary" style="margin:0;min-height:44px;" onclick="openModeSetupModal('employee')">Open Mode &amp; Department Setup</button>
         </div>
@@ -890,7 +890,7 @@
             🔍 View another employee's profile (আরেকজন কর্মীর প্রোফাইল দেখুন):
           </div>
           <div class="prof-colleague-row">
-            <input type="text" id="profileColleagueInput" placeholder="Enter ID (e.g. 556490, CF8355)" value="${esc(_profileViewingOtherId)}" autocomplete="off" autocapitalize="characters" onkeydown="if(event.key==='Enter')viewAnotherEmployeeProfile()">
+            <input type="text" id="profileColleagueInput" placeholder="Enter ID number" value="${esc(_profileViewingOtherId)}" autocomplete="off" autocapitalize="characters" onkeydown="if(event.key==='Enter')viewAnotherEmployeeProfile()">
             <button type="button" class="btn-primary" onclick="viewAnotherEmployeeProfile()">View</button>
             ${isViewingOther ? `<button type="button" class="btn-secondary" onclick="resetToMyOwnProfile()">My ID</button>` : ''}
           </div>

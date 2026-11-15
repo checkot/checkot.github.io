@@ -589,12 +589,12 @@ document.documentElement.setAttribute('data-theme', t);
       </div>
       <label style="margin-top:6px;font-size:12px;">Search Employee (Type ID, Name, Sub-section or Area):</label>
       <div class="incharge-search-row" style="margin-top:4px;">
-        <input type="text" id="qmAbsentEmpInput" placeholder="Type ID or name (e.g. CF8355 or Ariful)..." autocomplete="off">
+        <input type="text" id="qmAbsentEmpInput" placeholder="Type ID or name..." autocomplete="off">
         <button type="button" class="btn-primary" style="width:auto;min-height:38px;padding:0 14px;" onclick="addAbsentFromQuickModal()">+ Add</button>
       </div>
       <label style="margin-top:10px;font-size:12px;">Or Paste Multiple IDs (comma / space separated):</label>
       <div class="incharge-search-row" style="margin-top:4px;">
-        <input type="text" id="qmAbsentBulkInput" placeholder="e.g. CF8355, RF20850, CF5242..." autocomplete="off">
+        <input type="text" id="qmAbsentBulkInput" placeholder="Enter ID number" autocomplete="off">
         <button type="button" class="btn-secondary" style="width:auto;min-height:38px;padding:0 12px;" onclick="addBulkAbsentFromQuickModal()">Bulk Add</button>
       </div>
       <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border-strong);">
@@ -627,7 +627,7 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 <label for="employeeId">Your ID number</label>
 <div class="input-clear-wrap">
-<input type="text" id="employeeId" placeholder="e.g. CF8355, RF20850..." autocomplete="off" autocapitalize="characters" inputmode="text" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="toggleClearIdBtn()">
+<input type="text" id="employeeId" placeholder="Enter your ID number" autocomplete="off" autocapitalize="characters" inputmode="text" autocorrect="off" spellcheck="false" enterkeyhint="search" oninput="toggleClearIdBtn()">
 <button type="button" id="clearIdBtn" class="input-clear-btn" onclick="clearEmployeeInput()" aria-label="Clear ID">✕</button>
 </div>
 <div class="recent-chips-wrap" id="recentSearchChips"></div>
@@ -972,7 +972,7 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="card" id="reportEmptyCard">
 <div class="empty-msg" style="padding:10px 0;">Enter an employee ID to verify punches and view the full daily report.</div>
 <div class="incharge-search-row">
-<input type="text" id="reportQuickIdInput" placeholder="Enter ID (e.g. RF20850)" autocomplete="off" autocapitalize="characters">
+<input type="text" id="reportQuickIdInput" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters">
 <button type="button" class="btn-primary" onclick="searchFromReportPage()">Load Report</button>
 </div>
 </div>
@@ -1128,7 +1128,7 @@ document.documentElement.setAttribute('data-theme', t);
 <label for="compareId1" class="vs-slot-label"><span class="vs-slot-num-badge">1</span> 1st Colleague ID</label>
 <button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId1')" title="Clear" aria-label="Clear input">✕</button>
 </div>
-<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="e.g. CF8351" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(1, this.value)">
+<input type="text" id="compareId1" class="vs-emp-id-input" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(1, this.value)">
 <div class="vs-emp-preview-box" id="vsPreviewId1" style="display:none;"></div>
 </div>
 
@@ -1141,7 +1141,7 @@ document.documentElement.setAttribute('data-theme', t);
 <label for="compareId" class="vs-slot-label"><span class="vs-slot-num-badge">2</span> 2nd Colleague ID (VS)</label>
 <button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId')" title="Clear" aria-label="Clear input">✕</button>
 </div>
-<input type="text" id="compareId" class="vs-emp-id-input" placeholder="e.g. RF22034" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(2, this.value)">
+<input type="text" id="compareId" class="vs-emp-id-input" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(2, this.value)">
 <div class="vs-emp-preview-box" id="vsPreviewId2" style="display:none;"></div>
 </div>
 
@@ -1150,7 +1150,7 @@ document.documentElement.setAttribute('data-theme', t);
 <label for="compareId3" class="vs-slot-label"><span class="vs-slot-num-badge">3</span> 3rd Colleague ID (VS)</label>
 <button type="button" class="vs-slot-clear" onclick="clearVsSlot('compareId3')" title="Clear" aria-label="Clear input">✕</button>
 </div>
-<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="e.g. CF10278" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(3, this.value)">
+<input type="text" id="compareId3" class="vs-emp-id-input" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text" oninput="onVsIdInput(3, this.value)">
 <div class="vs-emp-preview-box" id="vsPreviewId3" style="display:none;"></div>
 </div>
 <div id="vsExtraSlotsContainer" style="display:contents;"></div>
@@ -1460,7 +1460,7 @@ document.documentElement.setAttribute('data-theme', t);
 </select>
 </div>
 <div class="incharge-search-row">
-<input type="text" id="lbQuickSearchInput" placeholder="Any employee ID (e.g. CF8355)" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="lbQuickSearchInput" placeholder="Any employee ID" autocomplete="off" autocapitalize="characters" inputmode="text">
 <button type="button" class="btn-primary" onclick="searchEmployeeFromLbBar()">View report</button>
 </div>
 </div>
@@ -1712,7 +1712,7 @@ document.documentElement.setAttribute('data-theme', t);
 <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-strong);">
 <label for="settingsNewIdInput" style="margin-top:0;">Enter or change your ID number:</label>
 <div class="incharge-search-row">
-<input type="text" id="settingsNewIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters">
+<input type="text" id="settingsNewIdInput" placeholder="Enter your ID number" autocomplete="off" autocapitalize="characters">
 <button type="button" class="btn-primary" onclick="savePermanentIdFromSettings()">Save</button>
 </div>
 </div>
@@ -1912,7 +1912,7 @@ document.documentElement.setAttribute('data-theme', t);
 <strong>One-time ID setup:</strong> Enter your ID once and your monthly overtime report will load automatically every time you open the app.
 </div>
 <label for="regEmpIdInput" style="margin-top:0;">Enter your ID number:</label>
-<input type="text" id="regEmpIdInput" placeholder="e.g. CF8355 or RF20850" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="onRegEmpIdInputChange()">
+<input type="text" id="regEmpIdInput" placeholder="Enter your ID number" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="onRegEmpIdInputChange()">
 <div id="regCurrentSavedHint" style="display:none;margin-top:8px;font-size:12.5px;color:var(--success);font-weight:700;"></div>
 <div id="specialRoleAuthBox" class="special-role-auth-box">
 <div class="special-role-badge" id="specialRoleBadgeText">Authorized Role</div>
@@ -1931,7 +1931,7 @@ document.documentElement.setAttribute('data-theme', t);
 <strong>Floor In-charge / Production In-charge mode:</strong> When you open the app in this mode, the <strong>monthly ranking and punch monitoring dashboard</strong> starts directly and you can view any employee report by searching their ID.
 </div>
 <label for="inchargeIdInput" style="margin-top:0;">Enter your ID number:</label>
-<input type="text" id="inchargeIdInput" placeholder="e.g. RF20716" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="clearInchargePinError()">
+<input type="text" id="inchargeIdInput" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text" style="font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;" oninput="clearInchargePinError()">
 <label for="inchargePinInput">Enter your PIN:</label>
 <div class="pin-input-wrap">
 <input type="password" id="inchargePinInput" placeholder="••••••" maxlength="12" inputmode="numeric" pattern="[0-9]*" autocomplete="off" oninput="clearInchargePinError()">
@@ -1979,14 +1979,14 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js?v=20261115ig1"></script>
   <script src="js/pages/report.js?v=20261114r3"></script>
-  <script src="js/pages/profile.js?v=20261115ig1"></script>
+  <script src="js/pages/profile.js?v=20261115ph2"></script>
   <script src="js/pages/vs.js?v=20261115ig1"></script>
   <script src="js/pages/notices.js?v=20261110qa"></script>
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
   <script src="js/pages/leaderboard.js?v=20261114h1"></script>
-  <script src="js/app-main.js?v=20261115ig1"></script>
+  <script src="js/app-main.js?v=20261115ph2"></script>
   <script src="js/components/rank-details.js?v=20261114h1"></script>
   <script src="js/patches/manager-ux.js?v=20261114r2"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>

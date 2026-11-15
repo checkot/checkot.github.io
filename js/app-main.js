@@ -609,7 +609,7 @@ const inp = document.getElementById('employeeId');
 if (inp) {
 inp.value = '';
 const myId = getPreferredId();
-inp.placeholder = myId ? `Enter another colleague ID (your ${myId} will stay saved)` : 'Enter employee ID (e.g. CF8355)';
+inp.placeholder = myId ? `Enter another colleague ID (your ${myId} will stay saved)` : 'Enter employee ID';
 toggleClearIdBtn();
 inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
 setTimeout(() => inp.focus(), 200);
@@ -1397,12 +1397,12 @@ function updateClientBranding(dept) {
 
   const empInp = document.getElementById('employeeId');
   if (empInp && !empInp.value) {
-    empInp.placeholder = isQA ? 'e.g. 556515, CF10284, RF20259...' : 'e.g. CF8355, RF8327, RF8941...';
+    empInp.placeholder = isQA ? 'Enter your ID number' : 'Enter your ID number';
   }
 
   const regInp = document.getElementById('regEmpIdInput');
   if (regInp && !regInp.value) {
-    regInp.placeholder = isQA ? 'e.g. 556515, CF10284...' : 'e.g. CF8355 or RF20850';
+    regInp.placeholder = isQA ? 'Enter your ID number' : 'Enter your ID number';
   }
 
   const pillPR = document.getElementById('modalDeptPillPR');
@@ -1899,7 +1899,7 @@ const val = existingVals[String(i)] || '';
 htmlStr += `<div class="vs-slot-box">
 <label for="compareId${i}">${ord} Employee ID (VS)</label>
 ${i > 4 ? `<button type="button" class="vs-slot-remove-btn" onclick="changeCustomVsSlots(-1)" title="Remove slot">✕</button>` : ''}
-<input type="text" id="compareId${i}" data-slot-idx="${i}" class="vs-emp-id-input" value="${esc(val)}" placeholder="e.g. CF83${50 + i}" autocomplete="off" autocapitalize="characters" inputmode="text">
+<input type="text" id="compareId${i}" data-slot-idx="${i}" class="vs-emp-id-input" value="${esc(val)}" placeholder="Enter ID number" autocomplete="off" autocapitalize="characters" inputmode="text">
 </div>`;
 }
 container.innerHTML = htmlStr;
