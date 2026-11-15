@@ -7,7 +7,7 @@ const NOW = Date.UTC(2026, 10, 14, 6);
 const leaves = (JSON.parse(fs.readFileSync(path.join(ROOT, 'absent.json'), 'utf8')).longTermLeaves) || [];
 const FIELDS = ['generalAbsentCount', 'offAfterNightCount', 'presentPct', 'punchIssueCount', 'reqIssueCount'];
 const out = {};
-for (const ym of ['2026-09', '2026-10', '2026-11']) {
+for (const ym of ['2026-07', '2026-09', '2026-10', '2026-11'].filter(y => fs.existsSync(path.join(ROOT, 'data', y + '.json')))) {
   const emps = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', ym + '.json'), 'utf8')).employees || [];
   const dsMeta = A.computeDatasetMetaFromEmployees(emps);
   out[ym] = {};

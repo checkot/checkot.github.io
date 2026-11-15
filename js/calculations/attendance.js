@@ -230,13 +230,28 @@
   }
   /* -> { holiday: {day: item}, night: {day: item} } (items already closed-day / cancelled filtered) */
   function _collectFlagItems(e, y, m, options, nowMs) {
-    const res = { holiday: {}, night: {} };
+    const res = { holiday: {}, night: {}, shortHol: {} };
     const NI = _getNI();
     if (!NI || !e || e.isMultiMonth) return res;
+    // Holiday / off-day items that were dropped because the person worked less than one full duty
+    // (gate pass / early exit): the row keeps Regular duty and shows the Gate Pass flag instead.
+    try {
+      const rawFn = options.rawRequisitionProblems || (typeof root._computeOtRequisitionProblems === 'function' ? root._computeOtRequisitionProblems : null);
+      const raw = rawFn ? (rawFn(e) || []) : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
+      let canc = Array.isArray(options.cancelledHolidays) ? options.cancelledHolidays : (typeof root._readCancelledHolidays === 'function' ? root._readCancelledHolidays() : []);
+      canc = (canc || []).map(x => String(x).toUpperCase());
+      raw.forEach(it => {
+        if (!it || !NI.classifyHolidayItem(it) || !NI.isDayClosed(it.date, nowMs)) return;
+        if (canc.indexOf(String(it.date || '').toUpperCase()) >= 0) return;
+        if (!NI.isShortHolidayDuty(e.daily, it.date, options.shiftRuleForDate)) return;
+        const dn = _issueDayNo(it, y, m);
+        if (dn) res.shortHol[dn] = true;
+      });
+    } catch (_e) {}
     let merged;
     if (Array.isArray(options.cancelledHolidays)) {
       // explicit override (tests / callers that know the admin list)
-      const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: options.cancelledHolidays, nowMs });
+      const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: options.cancelledHolidays, nowMs, emp: e, shiftRuleForDate: options.shiftRuleForDate });
       const nights = (options.computeEmpNightIssues || NI.computeEmpNightIssues)(e, nowMs);
       merged = NI.mergeRequisitionAndNight(tagged, nights);
     } else {
@@ -244,7 +259,7 @@
       if (fn) {
         merged = fn(e) || [];
       } else {
-        const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: [], nowMs });
+        const tagged = NI.tagHolidayIssues(Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [], { cancelledHolidays: [], nowMs, emp: e, shiftRuleForDate: options.shiftRuleForDate });
         const nightFn = options.computeEmpNightIssues || (typeof root.computeEmpNightIssues === 'function' ? root.computeEmpNightIssues : NI.computeEmpNightIssues);
         merged = NI.mergeRequisitionAndNight(tagged, nightFn(e, nowMs));
       }
@@ -701,7 +716,10 @@
           if (!row.tone) row.tone = 'ee';
           const sm = Math.max(0, Math.round(ex.shortMin || 0));
           const eeDur = sm >= 60 ? (Math.floor(sm / 60) + 'h ' + (sm % 60 ? (sm % 60) + 'm' : '')).trim() : (sm + 'm');
-          const eeNote = '🚪 Gate Pass / Early Exit (-' + eeDur + ')';
+          // Holiday / weekly-off / declared-holiday day booked as Regular duty (short duty): same flag, short label
+          const onOffDay = !!(holCheck.isOffOrHol || wk || flagItems.shortHol[d]);
+          if (onOffDay) row.earlyExitHoliday = true;
+          const eeNote = onOffDay ? '🚪 Gate Pass (holiday)' : '🚪 Gate Pass / Early Exit (-' + eeDur + ')';
           row.note = row.note ? (row.note + ' | ' + eeNote) : eeNote;
         }
       }

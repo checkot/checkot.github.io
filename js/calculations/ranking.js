@@ -139,7 +139,7 @@ function computeEmpRequisitionProblems(e) {
   if (!e) return [];
   if (e.isMultiMonth) return Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [];
   let ot = _computeOtRequisitionProblems(e);
-  if (typeof tagHolidayIssues === 'function') ot = tagHolidayIssues(ot, { cancelled: _readCancelledHolidays() });
+  if (typeof tagHolidayIssues === 'function') ot = tagHolidayIssues(ot, { cancelled: _readCancelledHolidays(), emp: e });
   const nights = typeof computeEmpNightIssues === 'function' ? computeEmpNightIssues(e) : [];
   return typeof mergeRequisitionAndNight === 'function' ? mergeRequisitionAndNight(ot, nights) : ot;
 }

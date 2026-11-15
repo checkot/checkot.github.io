@@ -58,8 +58,8 @@ assert.strictEqual(mg.length, 1); assert.ok(mg[0].isNightIssue && /also: Worked 
 console.log('unit rules OK');
 
 // ---------- 2. real data ----------
-const MONTHS = ['2026-09', '2026-10', '2026-11'];
-const perMonth = {};
+const MONTHS = ['2026-07', '2026-09', '2026-10', '2026-11'].filter(y => fs.existsSync(path.join(ROOT, 'data', y + '.json')));
+const perMonth = {}; let shortDropped = 0;
 MONTHS.forEach(ym => {
   lsStore = {};
   const d = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', ym + '.json'), 'utf8'));
@@ -84,6 +84,8 @@ MONTHS.forEach(ym => {
     const holDates = new Set(sp.holiday.map(p => String(p.date).toUpperCase()));
     stored.forEach(p => {
       if (!NI.classifyHolidayItem(p) || !NI.isDayClosed(p.date)) return;
+      // Nov 2026 rule: short duty (gate pass / early exit, Reg Duty < full duty) is NOT a holiday requisition any more
+      if (NI.isShortHolidayDuty(e.daily, p.date)) { assert.ok(!holDates.has(String(p.date).toUpperCase()), 'short-duty day still flagged: ' + e.id + ' ' + p.date); shortDropped++; return; }
       const D = String(p.date).toUpperCase();
       assert.ok(holDates.has(D) || nightDates.has(D), 'raw holiday item lost: ' + e.id + ' ' + D);
       if (!nightDates.has(D)) { expectHol++; const h = sp.holiday.find(x => String(x.date).toUpperCase() === D); assert.strictEqual(h.kind, NI.classifyHolidayItem(p)); }

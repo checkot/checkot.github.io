@@ -25,6 +25,12 @@
   var WINDOW_FROM = 21 * 60 + 30;   // 09:30 PM
   var WINDOW_TO = 22 * 60 + 15;     // 10:15 PM
   var LONG_DUTY_HOURS = 15;         // same threshold as scripts/to_json.py
+  /* A holiday / weekly-off day needs a requisition only when the person worked at least ONE FULL
+     duty (Reg Duty hours of that day, daily row index 4). Below this = gate pass / early exit / short
+     duty: the ERP keeps it as Regular duty, so it is NOT a missing holiday requisition (it falls
+     through to the Gate Pass flag). Measured Jul/Sep/Oct/Nov 2026: real full duty days 8.0-9.x h,
+     short days <= 3.9 h, nothing between 4.0 and 8.0 h. */
+  var HOLIDAY_FULL_DUTY_MIN_HOURS = 8;
   var MONTHS = { JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12 };
 
   function toMins(t) {
@@ -185,21 +191,59 @@
     return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(Date.UTC(+m[3], MONTHS[m[2]] - 1, +m[1])).getUTCDay()];
   }
 
+  /* Reg Duty hours of one date from the employee's daily rows, or null when it cannot be measured. */
+  function regDutyOnDate(daily, dateStr) {
+    if (!Array.isArray(daily)) return null;
+    var d = _up(dateStr);
+    for (var i = 0; i < daily.length; i++) {
+      var r = daily[i];
+      if (Array.isArray(r) && _up(r[0]) === d) return Number(r[4]) || 0;
+    }
+    return null;
+  }
+  /* Full-duty minimum for ONE date. Normal days: HOLIDAY_FULL_DUTY_MIN_HOURS (8 h = 08:00-16:30 minus 0.5 h).
+     A special shift period from shift-rules.json (e.g. Ramadan 08:00-14:15) shortens a full duty, so there the
+     minimum is (shift length - 0.5 h), never above the normal 8 h. ruleFn = shiftRuleForDate (early-exit.js). */
+  function fullDutyMinFor(dateStr, ruleFn) {
+    var fn = typeof ruleFn === 'function' ? ruleFn : (root && typeof root.shiftRuleForDate === 'function' ? root.shiftRuleForDate : null);
+    if (fn) {
+      try {
+        var r = fn(dateStr);
+        if (r && r.special) {
+          var a = toMins(r.start), b = toMins(r.end);
+          if (a != null && b != null && b > a) return Math.min(HOLIDAY_FULL_DUTY_MIN_HOURS, Math.round(((b - a) / 60 - 0.5) * 100) / 100);
+        }
+      } catch (e) { /* fall back to the normal threshold */ }
+    }
+    return HOLIDAY_FULL_DUTY_MIN_HOURS;
+  }
+  /* true = the day was worked but is shorter than one full duty (gate pass / early exit / short duty).
+     Unknown (no daily row, or Reg Duty 0) is NOT short: we never hide a flag we cannot measure. */
+  function isShortHolidayDuty(daily, dateStr, ruleFn) {
+    var h = regDutyOnDate(daily, dateStr);
+    return h != null && h > 0 && h < fullDutyMinFor(dateStr, ruleFn);
+  }
+
   /* Tag holiday items, apply admin overrides + day-closed rule, one row per date.
      opts.cancelled : array of 'DD-MON-YYYY' dates the admin cancelled (= normal working day)
      opts.nowMs     : clock for tests
+     opts.shiftRuleForDate : optional, defaults to the global from early-exit.js (Ramadan / special shift)
+     opts.daily / opts.emp : daily rows of the employee. Holiday items whose Reg Duty is below
+                      HOLIDAY_FULL_DUTY_MIN_HOURS are dropped (short duty = Gate Pass, not Holiday Req).
      Never mutates the input items (copies are returned for tagged ones). */
   function tagHolidayIssues(list, opts) {
     opts = opts || {};
     var cancelled = {};
     (opts.cancelled || []).concat(opts.cancelledHolidays || []).forEach(function (d) { cancelled[_up(d)] = true; });
     var arr = Array.isArray(list) ? list : [];
+    var daily = Array.isArray(opts.daily) ? opts.daily : (opts.emp && Array.isArray(opts.emp.daily) ? opts.emp.daily : null);
     var holByDate = {};
     arr.forEach(function (p) {
       var kind = classifyHolidayItem(p);
       if (!kind) return;
       var d = _up(p.date);
       if (cancelled[d] || !isDayClosed(d, opts.nowMs)) return;
+      if (daily && isShortHolidayDuty(daily, d, opts.shiftRuleForDate)) return; // short duty: stays Regular, no holiday flag
       if (holByDate[d]) return; // already have a holiday item for this date
       var q = {};
       Object.keys(p).forEach(function (k) { q[k] = p[k]; });
@@ -246,7 +290,8 @@
   }
 
   var api = {
-    WINDOW_FROM: WINDOW_FROM, WINDOW_TO: WINDOW_TO,
+    WINDOW_FROM: WINDOW_FROM, WINDOW_TO: WINDOW_TO, HOLIDAY_FULL_DUTY_MIN_HOURS: HOLIDAY_FULL_DUTY_MIN_HOURS,
+    regDutyOnDate: regDutyOnDate, fullDutyMinFor: fullDutyMinFor, isShortHolidayDuty: isShortHolidayDuty,
     toMins: toMins, isDayClosed: isDayClosed, classifyDay: classifyDay,
     computeEmpNightIssues: computeEmpNightIssues,
     mergeRequisitionAndNight: mergeRequisitionAndNight,
