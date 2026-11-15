@@ -703,8 +703,7 @@ schedulePayslipPrebuild();
 preview.style.display = 'block'; actions.style.display = 'grid';
 preview.innerHTML = `
 <div class="payslip-row"><span>Monthly salary (Regular Duty)</span><span>${money(t.salary)}</span></div>
-<div class="payslip-row"><span>Total allowances (OT + Holiday + Night)</span><span>${money(t.ot)}</span></div>
-<div class="payslip-row total"><span>Total take-home</span><span>${money(t.total)}</span></div>`;
+<div class="payslip-row total"><span>Total take-home (Salary + OT)</span><span>${money(t.total)}</span></div>`;
 }
 let _payFonts = null;
 function ensurePayslipFonts() {

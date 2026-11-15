@@ -787,9 +787,7 @@
             <h3 class="prof-card-title">Monthly OT Income Status (মাসিক আয়)</h3>
             <p class="prof-card-sub">Stacked OT + Holiday + Night allowance (${agg.targetYear})</p>
           </div>
-          <button type="button" class="prof-hide-btn surface" onclick="toggleProfileHideAmounts()" aria-label="Hide or show amounts">
-            <span class="prof-hide-toggle-lbl">${hideAmt ? '👁 Show Taka' : '🙈 Hide Taka'}</span>
-          </button>
+
         </div>
 
         <div class="prof-inc-summary-grid">
@@ -1534,9 +1532,6 @@
                 ${item.expectedOt ? ` • Expected: <b>${esc(item.expectedOt)}</b>` : ''}
               </div>
               <div class="prof-issue-reason">${esc(item.reason)}</div>
-              <button type="button" class="prof-wa-btn" onclick="reportProfileIssueToErp('${singleMsg}', '${esc(empMeta.area)}')">
-                <span>💬 Report to ERP Team (WhatsApp)</span>
-              </button>
             </div>
           `;
         }).join('');
@@ -1553,9 +1548,9 @@
       }).join('');
 
       bodyHtml = `
-        ${allScopeIssues.length > 1 ? `
-          <button type="button" class="prof-wa-btn" style="margin-top:0;margin-bottom:10px;background:var(--brand);" onclick="reportProfileIssueToErp('${bulkMsg}', '${esc(empMeta.area)}')">
-            <span>📤 Forward All ${allScopeIssues.length} Issues to ERP Team</span>
+        ${allScopeIssues.length >= 1 ? `
+          <button type="button" class="prof-wa-btn" style="margin-top:0;margin-bottom:8px;background:var(--brand);" onclick="reportProfileIssueToErp('${bulkMsg}', '${esc(empMeta.area)}')">
+            <span>📤 Forward All ${allScopeIssues.length} Issue${allScopeIssues.length > 1 ? 's' : ''} to ERP Team</span>
           </button>
         ` : ''}
         ${groupsHtml}
