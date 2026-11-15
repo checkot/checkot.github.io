@@ -12,8 +12,9 @@
   }
 })(typeof window !== 'undefined' ? window : this, function () {
 
-  const VALID_PAGES = ['search', 'report', 'profile', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings', 'assessment'];
+  const VALID_PAGES = ['search', 'troubleshoot', 'report', 'profile', 'vs', 'leaderboard', 'notices', 'more', 'team', 'history', 'settings', 'assessment'];
   let _isNavigating = false;
+  let _isActivatingRoute = false;
   let _lastExitBackTs = 0;
   let _hasInitialized = false;
   let _lastHandledHash = null;
@@ -46,6 +47,28 @@
     const page = VALID_PAGES.includes(path) ? path : 'search';
     return { page, rawPath: path, params };
   }
+
+  function captureInitialDeepLink() {
+    if (typeof window === 'undefined' || !window.location) return null;
+    if (window.__deepLinkCaptured) return window.__deepLinkReport || null;
+    window.__deepLinkCaptured = true;
+    const parsed = parseHash(window.location.hash);
+    window.__initialRoute = parsed;
+    if ((parsed.page === 'report' || parsed.page === 'search') && parsed.params && parsed.params.id) {
+      const cleanId = String(parsed.params.id).toUpperCase().replace(/\s+/g, '');
+      if (cleanId) {
+        window.__deepLinkReport = {
+          id: cleanId,
+          month: parsed.params.month || ''
+        };
+        _isDeepLink = true;
+        return window.__deepLinkReport;
+      }
+    }
+    window.__deepLinkReport = null;
+    return null;
+  }
+  captureInitialDeepLink();
 
   function getHashForPage(pageName, params) {
     const p = VALID_PAGES.includes(pageName) ? pageName : 'search';
@@ -90,6 +113,15 @@
   }
 
   async function activateRoute(routeObj) {
+    _isActivatingRoute = true;
+    try {
+      return await _activateRouteInner(routeObj);
+    } finally {
+      _isActivatingRoute = false;
+    }
+  }
+
+  async function _activateRouteInner(routeObj) {
     const { page, params } = routeObj;
 
     // Handle modals / drill-downs if any were open
@@ -105,11 +137,21 @@
       return;
     }
 
-    if (page === 'report') {
+    if (page === 'troubleshoot') {
+      if (typeof switchPage === 'function') {
+        switchPage('troubleshoot', true, true);
+      }
+      return;
+    }
+
+    if (page === 'report' || (page === 'search' && params && params.id)) {
       if (params && params.id) { _isDeepLink = true; }
       if (params && params.id) {
         const targetId = params.id.toUpperCase().replace(/\s+/g, '');
         const targetMonth = params.month || '';
+        if (typeof window !== 'undefined' && targetId) {
+          window.__deepLinkReport = { id: targetId, month: targetMonth };
+        }
 
         const empInput = document.getElementById('employeeId');
         if (empInput) {
@@ -140,13 +182,13 @@
           try {
             await findReport();
           } catch (e) {
-            console.error('Router findReport error:', e);
+            console.warn('Router findReport error:', e);
           }
         }
 
         if (typeof currentResult !== 'undefined' && currentResult) {
           if (typeof switchPage === 'function') {
-            switchPage('report', true, true);
+            switchPage('search', true, true);
             setTimeout(closeAnyOpenModal, 400);
           }
         } else {
@@ -164,7 +206,7 @@
       }
 
       if (typeof switchPage === 'function') {
-        switchPage('report', true, true);
+        switchPage('search', true, true);
       }
       return;
     }
@@ -196,13 +238,13 @@
   }
 
   function onPageSwitched(pageName) {
-    if (_isNavigating || typeof window === 'undefined' || !window.location) return;
+    if (_isActivatingRoute || typeof window === 'undefined' || !window.location) return;
     const targetHash = getHashForPage(pageName);
     updateHashUrl(targetHash, false);
   }
 
   function onSideDrawerClosed() {
-    if (_isNavigating || typeof window === 'undefined' || !window.location) return;
+    if (_isActivatingRoute || typeof window === 'undefined' || !window.location) return;
     const permPage = typeof currentPermanentPage !== 'undefined' ? currentPermanentPage : 'search';
     const targetHash = getHashForPage(permPage);
     updateHashUrl(targetHash, false);
@@ -210,6 +252,9 @@
 
   function updateReportUrl(id, month) {
     if (typeof window === 'undefined' || !window.location) return;
+    const curPerm = typeof currentPermanentPage !== 'undefined' ? currentPermanentPage : 'search';
+    const curDrawer = typeof currentSideDrawerPage !== 'undefined' ? currentSideDrawerPage : null;
+    if (curDrawer || (curPerm && curPerm !== 'search' && curPerm !== 'report')) return;
     const targetHash = getHashForPage('report', { id, month });
     updateHashUrl(targetHash, true);
   }
@@ -227,9 +272,12 @@
     if (_hasInitialized || typeof window === 'undefined') return;
     _hasInitialized = true;
 
-    // Check if initial hash exists
+    // Check if initial hash exists (prefer captured initial route before any startup side-effects)
     const rawHash = window.location.hash;
-    const initialRoute = parseHash(rawHash);
+    const parsedNow = parseHash(rawHash);
+    const initialRoute = (typeof window !== 'undefined' && window.__initialRoute && window.__initialRoute.rawPath && (!rawHash || rawHash === '#/search'))
+      ? window.__initialRoute
+      : parsedNow;
     _lastHandledHash = getHashForPage(initialRoute.page, initialRoute.params);
 
     // Setup base sentinel for back button double-press exit guard
@@ -242,8 +290,9 @@
     window.addEventListener('hashchange', onLocationChange);
 
     window.addEventListener('popstate', (e) => {
+      if (_isNavigating) return;
       // If modal or drill down was open, close it
-      const openModalEl = document.querySelector('.modal.open, #iccRankDrillView.open');
+      const openModalEl = document.querySelector('.modal.open, #iccRankDrillView.open, #iccRankDrillView.active');
       if (openModalEl) {
         closeAnyOpenModal();
         try {

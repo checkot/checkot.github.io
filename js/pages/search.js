@@ -156,6 +156,7 @@ async function findReport() {
     const el = document.getElementById(id);
     if (el) { el.style.display = "none"; el.classList.remove('show'); }
   });
+  if (typeof _rptReset === 'function') _rptReset();
   const cmpRes = document.getElementById('compareResult');
   if (cmpRes) cmpRes.style.display = "none";
   const cmpInputArea = document.getElementById('compareInputArea');
@@ -258,7 +259,7 @@ async function findReport() {
     if (typeof updateMonthNavBar === 'function') updateMonthNavBar(month);
     showSearchError(`"${rawId}" ID not found in the ${month} report. Check that the ID and month are correct.`);
   } catch (err) {
-    console.error(err);
+    console.warn(err);
     if (spinner) spinner.style.display = "none";
     if (searchBtn) searchBtn.disabled = false;
     if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') {

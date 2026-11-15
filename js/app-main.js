@@ -634,15 +634,16 @@ try { if (window.RppfAccess) RppfAccess.load().then(() => RppfAccess.revalidate(
 updateModeUI();
 const mode = getAppMode();
 const myId = getPreferredId();
+const hasDl = () => Boolean((typeof window !== 'undefined' && window.__deepLinkReport && window.__deepLinkReport.id) || (typeof window !== 'undefined' && window.location && window.location.hash && window.location.hash.includes('id=')));
 if (mode === 'employee' && myId) {
 const inp = document.getElementById('employeeId');
-if (inp) { inp.value = myId; toggleClearIdBtn(); }
-if (window.RppfIdGuard) { RppfIdGuard.startupCheck().then(out => { if (!out) findReport(); }, () => findReport()); }
-else setTimeout(() => { findReport(); }, 100);
+if (inp && !hasDl()) { inp.value = myId; toggleClearIdBtn(); }
+if (window.RppfIdGuard) { RppfIdGuard.startupCheck().then(out => { if (!out && !hasDl()) findReport(); }, () => { if (!hasDl()) findReport(); }); }
+else setTimeout(() => { if (!hasDl()) findReport(); }, 100);
 } else if (mode === 'incharge') {
 switchPage('leaderboard');
 } else {
-setTimeout(() => { openModeSetupModal('employee'); }, 350);
+if (!hasDl()) setTimeout(() => { openModeSetupModal('employee'); }, 350);
 }
 if (window.RppfIdGuard && !(mode === 'employee' && myId)) { try { RppfIdGuard.startupCheck(); } catch (e) {} }
 }
@@ -1540,7 +1541,7 @@ renderRecentSearchChips();
 
 function openDrawer() {}
 function closeDrawer() {}
-const PERMANENT_PAGES = ['search', 'report', 'profile', 'vs'];
+const PERMANENT_PAGES = ['search', 'troubleshoot', 'profile', 'vs'];
 const MORE_PAGES = ['history', 'team', 'settings', 'notices', 'assessment'];
 /* let currentPermanentPage = 'search'; declared in js/core/state.js */
 /* let currentSideDrawerPage = null; declared in js/core/state.js */
@@ -1553,12 +1554,13 @@ if (el) el.classList.add('side-drawer-page', 'side-drawer-right');
 });
 }
 function closeSideDrawer() {
+const wasDrawerOpen = Boolean(currentSideDrawerPage);
 currentSideDrawerPage = null;
 document.body.classList.remove('drawer-open-left', 'drawer-open-right', 'drawer-fullscreen-active');
 document.querySelectorAll('.page.side-drawer-page').forEach(p => p.classList.remove('drawer-active', 'active', 'full-screen-drawer'));
 document.body.dataset.page = currentPermanentPage;
 updateNavHighlights();
-if (window.Router && typeof window.Router.onSideDrawerClosed === 'function') window.Router.onSideDrawerClosed();
+if (wasDrawerOpen && window.Router && typeof window.Router.onSideDrawerClosed === 'function') window.Router.onSideDrawerClosed();
 }
 function updateNavHighlights() {
 const activeKey = currentSideDrawerPage
@@ -1578,6 +1580,7 @@ if (on) item.setAttribute('aria-current', 'page'); else item.removeAttribute('ar
 });
 }
 function switchPage(pageName, forceOpen = false, fromRouter = false) {
+if (pageName === 'report') pageName = 'search';
 initSideDrawerClasses();
 if (pageName !== 'leaderboard' && typeof iccDrillOpen !== 'undefined') iccDrillOpen = false;
 if (typeof pushAppNavState === 'function') pushAppNavState(pageName);
@@ -1594,7 +1597,8 @@ if (el) el.classList.toggle('active', p === pageName);
 });
 document.body.dataset.page = pageName;
 updateNavHighlights();
-if (pageName === 'report') initReportPage();
+if (pageName === 'search' && typeof initReportPage === 'function') initReportPage();
+if (pageName === 'troubleshoot' && typeof initTroubleshootPage === 'function') initTroubleshootPage();
 if (pageName === 'profile' && typeof initProfilePage === 'function') initProfilePage();
 if (pageName === 'vs') initVsPage();
 window.scrollTo(0, 0);
@@ -1602,7 +1606,7 @@ return;
 }
 // Side drawer page ('leaderboard' on left, 'more' / MORE_PAGES on right)
 const isLeft = (pageName === 'leaderboard');
-const isSameToggle = !forceOpen && (
+const isSameToggle = !forceOpen && !(pageName === 'leaderboard' && typeof iccDrillOpen !== 'undefined' && iccDrillOpen && window._lastDrillOpenTs && (Date.now() - window._lastDrillOpenTs < 300)) && (
 currentSideDrawerPage === pageName ||
 (pageName === 'more' && MORE_PAGES.includes(currentSideDrawerPage))
 );
@@ -2908,7 +2912,9 @@ document.documentElement.setAttribute('lang', lang);
 
 document.querySelectorAll('.topnav-item[data-nav="search"], .bn-item[data-nav="search"] span').forEach(el => { el.textContent = 'Home'; });
 document.querySelectorAll('.topnav-item[data-nav="leaderboard"], .bn-item[data-nav="leaderboard"] span').forEach(el => { el.textContent = 'Rank'; });
-document.querySelectorAll('.topnav-item[data-nav="report"], .bn-item[data-nav="report"] span').forEach(el => { el.textContent = d.navSearch; });
+document.querySelectorAll('.topnav-item[data-nav="troubleshoot"], .bn-item[data-nav="troubleshoot"] span').forEach(el => { el.textContent = 'Troubleshoot'; });
+const _rptNavEls = document.querySelectorAll('.topnav-item[data-nav="report"], .bn-item[data-nav="report"] span');
+if (_rptNavEls && _rptNavEls.length) _rptNavEls.forEach(el => { if (el) el.textContent = d.navSearch; });
 document.querySelectorAll('.topnav-item[data-nav="history"]').forEach(el => { el.textContent = d.navHistory; });
 document.querySelectorAll('.topnav-item[data-nav="notices"], .bn-item[data-nav="notices"] span:first-of-type').forEach(el => { el.textContent = d.navNotices; });
 document.querySelectorAll('.topnav-item[data-nav="team"]').forEach(el => { el.textContent = d.navTeam; });
@@ -3853,6 +3859,9 @@ if (activePage === 'leaderboard') {
 await startLeaderboardScan(true);
 if (iccDrillOpen) renderIccDrillList();
 showToast('Ranking data refreshed', 'success');
+} else if (activePage === 'troubleshoot') {
+if (typeof refreshTroubleshootPage === 'function') await refreshTroubleshootPage();
+showToast('Troubleshoot data refreshed', 'success');
 } else if (activePage === 'report') {
 await findReport();
 initReportPage();
@@ -3970,6 +3979,7 @@ document.addEventListener('touchcancel', endPtr, { passive: true });
 
 // Miss-touch prevention: block accidental ghost clicks right after a touch drag/swipe
 let lastNavClickTs = 0;
+let lastNavBtnEl = null;
 document.addEventListener('click', e => {
 if (window._lastTouchMoveTs && (Date.now() - window._lastTouchMoveTs) < 210) {
 const isInteractiveRow = e.target.closest('.icc-row, .rank-hub-item, .more-item');
@@ -3982,11 +3992,12 @@ return;
 const navBtn = e.target.closest('.bn-item, .topnav-item');
 if (navBtn) {
 const now = Date.now();
-if (now - lastNavClickTs < 190) {
+if (lastNavBtnEl === navBtn && now - lastNavClickTs < 190) {
 e.stopPropagation();
 e.preventDefault();
 return;
 }
+lastNavBtnEl = navBtn;
 lastNavClickTs = now;
 }
 }, true);
@@ -5925,17 +5936,44 @@ initAppModeOnStartup = function() {
   });
   const mode = getAppMode();
   const myId = getPreferredId();
+  const initPage = (typeof window !== 'undefined' && window.__initialRoute && window.__initialRoute.page) ? window.__initialRoute.page : '';
+  const hasDeepLinkReport = () => Boolean(
+    (typeof window !== 'undefined' && window.__deepLinkReport && window.__deepLinkReport.id) ||
+    (typeof window !== 'undefined' && window.location && window.location.hash && window.location.hash.includes('id='))
+  );
   if (mode === 'incharge') {
-    switchPage('search');
+    if (!initPage || initPage === 'search' || initPage === 'report') {
+      switchPage('search');
+    }
     renderInchargeHomeOverview();
     startLeaderboardScan(false);
   } else if (mode === 'employee' && myId) {
     const inp = _el('employeeId');
-    if (inp) { inp.value = myId; toggleClearIdBtn(); }
-    if (window.RppfIdGuard) { RppfIdGuard.startupCheck().then(out => { if (!out) findReport(); }, () => findReport()); }
-    else setTimeout(() => { findReport(); }, 100);
+    if (inp) {
+      if (hasDeepLinkReport() && window.__deepLinkReport && window.__deepLinkReport.id) {
+        inp.value = window.__deepLinkReport.id;
+      } else if (!hasDeepLinkReport()) {
+        inp.value = myId;
+      }
+      toggleClearIdBtn();
+    }
+    window._startupHandledByGuard = true;
+    const waitAuto = () => (window._autoLoadPromise ? window._autoLoadPromise.catch(() => {}) : Promise.resolve());
+    if (window.RppfIdGuard) {
+      RppfIdGuard.startupCheck().then(async out => {
+        await waitAuto();
+        if (!out && !hasDeepLinkReport() && !document.body.classList.contains('has-result')) findReport();
+      }, async () => {
+        await waitAuto();
+        if (!hasDeepLinkReport() && !document.body.classList.contains('has-result')) findReport();
+      });
+    } else {
+      setTimeout(() => { if (!hasDeepLinkReport() && !document.body.classList.contains('has-result')) findReport(); }, 100);
+    }
   } else {
-    setTimeout(() => { openModeSetupModal('employee'); }, 350);
+    if (!hasDeepLinkReport()) {
+      setTimeout(() => { openModeSetupModal('employee'); }, 350);
+    }
     if (window.RppfIdGuard) { try { RppfIdGuard.startupCheck(); } catch (e) {} }
   }
 };
@@ -6033,7 +6071,10 @@ async function autoLoad() {
       }
 
       // Update dropdowns to the latest month if available (unless arriving on a deep-linked report)
-      const hasRouteReport = typeof window !== 'undefined' && window.location && window.location.hash && window.location.hash.includes('id=');
+      const hasRouteReport = Boolean(
+        (typeof window !== 'undefined' && window.__deepLinkReport && window.__deepLinkReport.id) ||
+        (typeof window !== 'undefined' && window.location && window.location.hash && window.location.hash.includes('id='))
+      );
       if (!hasRouteReport) {
         const [y, m] = j.month.split('-');
         const ySel = document.getElementById('yearSelect');
@@ -6080,14 +6121,14 @@ async function autoLoad() {
         if (typeof currentSideDrawerPage !== 'undefined' && currentSideDrawerPage === 'leaderboard') {
           startLeaderboardScan(false);
         }
-      } else if (!hasRouteReport && prefId && !document.body.classList.contains('has-result')) {
+      } else if (!hasRouteReport && prefId && !document.body.classList.contains('has-result') && !window._startupHandledByGuard) {
         const empInp = document.getElementById('employeeId');
         if (empInp && !empInp.value) {
           empInp.value = prefId;
           toggleClearIdBtn();
         }
         findReport();
-      } else if (!hasRouteReport && document.body.classList.contains('has-result') && currentSearchId) {
+      } else if (!hasRouteReport && document.body.classList.contains('has-result') && currentSearchId && currentMonth !== j.month) {
         findReport();
       }
     }
@@ -6096,7 +6137,7 @@ async function autoLoad() {
   }
 }
 
-autoLoad();
+window._autoLoadPromise = autoLoad();
 if (window.Router && typeof window.Router.init === "function") window.Router.init();
 
 

@@ -24,6 +24,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -40,6 +41,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -96,6 +98,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -121,6 +124,8 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   :is(
     #page-search,
     #page-report,
+    #page-troubleshoot,
+  #page-troubleshoot,
     #page-vs,
     #page-notices,
     #page-more,
@@ -136,6 +141,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -156,6 +162,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -175,6 +182,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -195,6 +203,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -218,6 +227,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -232,6 +242,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -258,7 +269,8 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 
 :is(
   #page-search,
-  #page-report
+  #page-report,
+  #page-troubleshoot
 ) > .app-header .mode-pill-btn::before {
   content: "";
   width: 7px;
@@ -369,6 +381,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -388,6 +401,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -405,6 +419,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -422,6 +437,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -449,6 +465,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :root[data-theme="dark"] :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -465,6 +482,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -481,6 +499,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -505,6 +524,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -520,6 +540,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -538,6 +559,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -565,6 +587,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -589,6 +612,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -605,6 +629,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -1109,6 +1134,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 /* --------------------------------------------------------------------------
    5. REPORT PAGE — EMPRESS HERO, FILTER CHIPS & DAILY LOG TABLE WITH TIME BARS
    -------------------------------------------------------------------------- */
+#page-search .report-emp-card,
 #page-report .report-emp-card {
   background: var(--ui-hero-grad) !important;
   color: #FFFFFF !important;
@@ -1119,6 +1145,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   box-shadow: 0 10px 26px rgba(15, 44, 94, 0.16) !important;
 }
 
+#page-search .subpage-emp-id,
 #page-report .subpage-emp-id {
   background: var(--ui-active-pill-bg) !important;
   color: var(--ui-active-pill-text) !important;
@@ -1133,6 +1160,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   gap: 6px;
 }
 
+#page-search .subpage-emp-id::before,
 #page-report .subpage-emp-id::before {
   content: "ACTIVE •";
   color: var(--ui-active-pill-text);
@@ -1141,6 +1169,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   letter-spacing: 0.06em;
 }
 
+#page-search .subpage-emp-name,
 #page-report .subpage-emp-name {
   color: #FFFFFF !important;
   font-size: 21px !important;
@@ -1148,12 +1177,14 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   letter-spacing: -0.02em;
 }
 
+#page-search .subpage-emp-sub,
 #page-report .subpage-emp-sub {
   color: var(--ui-hero-muted) !important;
   font-family: var(--ui-mono) !important;
   font-size: 12.5px !important;
 }
 
+#page-search .report-emp-card .calc-mini-btn,
 #page-report .report-emp-card .calc-mini-btn {
   background: rgba(255, 255, 255, 0.08) !important;
   border: 1px solid var(--ui-glass-btn-border) !important;
@@ -1162,12 +1193,14 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   border-radius: 12px !important;
 }
 
+#page-search .report-strip-nav,
 #page-report .report-strip-nav {
   margin-top: 14px !important;
   padding-top: 12px !important;
   border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
+#page-search .report-strip-month-lbl,
 #page-report .report-strip-month-lbl {
   color: #FFFFFF !important;
   font-size: 16px !important;
@@ -1175,6 +1208,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   font-family: var(--ui-mono);
 }
 
+#page-search .report-strip-nav .month-nav-btn,
 #page-report .report-strip-nav .month-nav-btn {
   min-height: 44px !important;
   height: 44px !important;
@@ -1834,6 +1868,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -1849,6 +1884,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -1864,6 +1900,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 }
 
 /* Stack ACTIVE pill above Employee Name on Report Hero (matches Screenshot 1) */
+#page-search .report-strip-top,
 #page-report .report-strip-top {
   display: flex !important;
   align-items: flex-start !important;
@@ -1871,6 +1908,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   gap: 10px !important;
 }
 
+#page-search .subpage-emp-meta,
 #page-report .subpage-emp-meta {
   display: flex !important;
   flex-direction: column !important;
@@ -1880,6 +1918,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   min-width: 0 !important;
 }
 
+#page-search .subpage-emp-name,
 #page-report .subpage-emp-name {
   font-size: 22px !important;
   line-height: 1.2 !important;
@@ -1887,6 +1926,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   overflow: visible !important;
 }
 
+#page-search .subpage-emp-sub,
 #page-report .subpage-emp-sub {
   white-space: normal !important;
   line-height: 1.4 !important;
@@ -1894,6 +1934,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 
 /* Prevent Month Label clipping in #monthNavBar and .report-strip-nav */
 #page-search .month-nav-bar .month-nav-center,
+#page-search .report-strip-month-lbl,
 #page-report .report-strip-month-lbl {
   flex: 1 !important;
   min-width: 0 !important;
@@ -1905,6 +1946,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 }
 
 #page-search .month-nav-bar .month-nav-btn,
+#page-search .report-strip-nav .month-nav-btn,
 #page-report .report-strip-nav .month-nav-btn {
   width: 44px !important;
   min-width: 44px !important;
@@ -1932,6 +1974,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 }
 
 /* Segmented Control Bar on Report Page (.rpt-zoom-bar slim, compact, font 10% smaller) */
+#page-search .rpt-zoom-bar,
 #page-report .rpt-zoom-bar,
 .rpt-zoom-bar {
   background: var(--ui-card-2) !important;
@@ -1944,6 +1987,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   justify-content: space-between !important;
 }
 
+#page-search .rpt-zoom-btns,
 #page-report .rpt-zoom-btns,
 .rpt-zoom-btns {
   background: rgba(15, 44, 94, 0.06) !important;
@@ -1954,6 +1998,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   align-items: center !important;
 }
 
+#page-search .rpt-zoom-btn,
 #page-report .rpt-zoom-btn,
 .rpt-zoom-btn {
   min-height: 25px !important;
@@ -1972,6 +2017,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   transition: all 0.12s ease !important;
 }
 
+#page-search .rpt-zoom-btn.active,
 #page-report .rpt-zoom-btn.active,
 .rpt-zoom-btn.active {
   background: #1D4ED8 !important;
@@ -1983,6 +2029,7 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 :is(
   #page-search,
   #page-report,
+  #page-troubleshoot,
   #page-vs,
   #page-notices,
   #page-more,
@@ -1995,7 +2042,9 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
   flex: 0 0 auto !important;
 }
 
-#page-report > .app-header .header h2 {
+#page-search > .app-header .header h2,
+#page-report > .app-header .header h2,
+#page-troubleshoot > .app-header .header h2 {
   font-size: clamp(17px, 4.4vw, 22px) !important;
   line-height: 1.2 !important;
 }
@@ -2498,4 +2547,9 @@ body:not([data-page="leaderboard"]):not(.drawer-open-left) {
 .idcard.compact .idmeta,
 .worker-identity-card.compact .idmeta {
   font-size: 11px !important;
+}
+
+#page-troubleshoot > .app-header .header h2 {
+  font-size: clamp(11.2px, 3.2vw, 14.5px) !important;
+  letter-spacing: -0.02em !important;
 }

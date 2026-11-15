@@ -162,6 +162,32 @@ body.incharge-mode-active .inc-count-grid { grid-template-columns: repeat(auto-f
 body.incharge-mode-active .inc-count-head { font-size: clamp(10px, 2.9vw, 11px) !important; }
 body.incharge-mode-active .inc-ov-title { font-size: clamp(14px, 4.4vw, 16px) !important; }
 body.incharge-mode-active .inc-action-center { margin-top: 0; }
+#page-search > #lbIssuesCard,
+#page-troubleshoot > #lbIssuesCard { order: 20; }
+body.incharge-mode-active #page-search #lbIssuesCard { display: none !important; }
+#page-troubleshoot #lbIssuesCard { display: block !important; }
+
+/* 5-tab bottom-nav fit at 360px / 390px / 412px (Home | Troubleshoot | Me | Rank | More) */
+@media (max-width: 480px) {
+  .bottom-nav {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    gap: 1px !important;
+  }
+  .bottom-nav .bn-item {
+    min-width: 0 !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    font-size: clamp(9.5px, 2.6vw, 11px) !important;
+    letter-spacing: -0.01em !important;
+  }
+  .bottom-nav .bn-item > span:not(.nav-badge) {
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    line-height: 1.15;
+  }
+}
 
 /* =========================================================
    Who's active board (presence-board.js)

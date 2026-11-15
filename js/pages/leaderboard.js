@@ -221,8 +221,12 @@ return;
 }
 throw new Error(`${month} data was not found on the server.`);
 } catch (e) {
-console.error(e);
-hint.innerText = e.message;
+console.warn(e);
+if (hint) hint.innerText = e.message;
+['hubValPunch', 'hubValReq', 'hubValNightIssue', 'hubValHolidayReq'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = '—';
+});
 // Drop the previous month's result right away. Otherwise the caller's renderIccDrillList() (which runs
 // as soon as this function returns) paints the OLD month's data under the newly selected month's label.
 currentLeaderboardResult = null;
@@ -1145,8 +1149,6 @@ view.classList.add('active');
 view.classList.remove('filters-scroll-hidden');
 }
 if (hub) hub.style.display = 'none';
-const _issCard = document.getElementById('lbIssuesCard');
-if (_issCard) _issCard.style.setProperty('display', 'none', 'important');   // Issues card belongs to the Rank hub only, not the full ranking view
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'none';
 if (appHdr) appHdr.style.display = 'none';
@@ -1241,11 +1243,14 @@ if (view) {
 view.classList.remove('active', 'filters-scroll-hidden');
 }
 if (hub) hub.style.display = 'flex';
-const _issCard2 = document.getElementById('lbIssuesCard');
-if (_issCard2) _issCard2.style.removeProperty('display');
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'block';
 if (appHdr) appHdr.style.display = 'flex';
+const originPage = window._drillDirectFromPermPage;
+window._drillDirectFromPermPage = null;
+if (originPage && typeof closeSideDrawer === 'function') {
+  closeSideDrawer();
+}
 }
 
 function renderIccDrillList() {
@@ -1315,31 +1320,76 @@ openRankDrillDown = function(criterion) {
   if (getAppMode() === 'incharge' && criterion === 'earned') {
     criterion = 'duty';
   }
-  return _prevOpenRankDrillDown(criterion);
+  if (!iccDrillOpen && currentSideDrawerPage !== 'leaderboard') {
+    window._drillDirectFromPermPage = (typeof currentPermanentPage !== 'undefined' && currentPermanentPage) ? currentPermanentPage : 'search';
+  } else if (!iccDrillOpen && currentSideDrawerPage === 'leaderboard') {
+    window._drillDirectFromPermPage = null;
+  }
+  window._lastDrillOpenTs = Date.now();
+  const res = _prevOpenRankDrillDown(criterion);
+  if (typeof updateNavHighlights === 'function') updateNavHighlights();
+  if (typeof initTroubleshootPage === 'function' && (!currentLeaderboardResult || currentLeaderboardResult.month !== (typeof getCurrentMonth === 'function' ? getCurrentMonth() : ''))) {
+    initTroubleshootPage(false);
+  }
+  return res;
+};
+if (typeof closeSideDrawer === 'function' && !closeSideDrawer.__drillGuarded) {
+  const _origCloseSideDrawer = closeSideDrawer;
+  closeSideDrawer = function() {
+    if (typeof iccDrillOpen !== 'undefined' && iccDrillOpen && window._lastDrillOpenTs && (Date.now() - window._lastDrillOpenTs < 250)) {
+      return;
+    }
+    return _origCloseSideDrawer.apply(this, arguments);
+  };
+  closeSideDrawer.__drillGuarded = true;
 }
+/* ===== Troubleshoot Page (#page-troubleshoot / #lbIssuesCard) Loader ===== */
+let _lbIssuesLazyDone = false;
+let _lbIssuesLazyInFlight = false;
+let _lbIssuesLazyMonth = '';
 
-const _prevApplyAreaFilter = applyAreaFilter;
-applyAreaFilter = function() {
-  if (!currentLeaderboardResult) return;
-  _prevApplyAreaFilter();
-  const st = getLbFilterState();
-  if (st.sub !== 'all' && st.area === 'all' && currentLeaderboardResult.filtered) {
-    const base = (currentLeaderboardResult.filtered._rawFiltered || []).filter(e => e.sub === st.sub);
-    ensureEmpAvgStats(base);
-    currentLeaderboardResult.filtered._rawFiltered = base;
-    currentLeaderboardResult.filtered.sortedByDuty = [...base].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
-    currentLeaderboardResult.filtered.sortedByOT = [...base].sort((a,b) => b.otHours - a.otHours);
-    currentLeaderboardResult.filtered.sortedByEarned = [...base].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
-    currentLeaderboardResult.filtered.sortedByPlain = [...base].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
-    currentLeaderboardResult.filtered.sortedByLessDuty = [...base].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
-    currentLeaderboardResult.filtered.sortedByLessOT = [...base].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
-    currentLeaderboardResult.filtered.sortedByAvgDuty = [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
-    currentLeaderboardResult.filtered.sortedByAvgInOut = [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-    currentLeaderboardResult.filtered.sortedByPunch = [...base].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-currentLeaderboardResult.filtered.sortedByRequisition = [...base].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
-currentLeaderboardResult.filtered.sortedByNightIssue = [...base].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
-currentLeaderboardResult.filtered.sortedByHolidayReq = [...base].filter(e => getHolidayReqCount(e) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || (b.totalDuty - a.totalDuty));
-currentLeaderboardResult.filtered.sortedByAbsent = [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b) - getGeneralAbsentCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-    updateLbSummaryMetrics(base);
+async function initTroubleshootPage(forceRefresh = false) {
+  if (_lbIssuesLazyInFlight) return;
+  if (typeof window !== 'undefined' && window._autoLoadPromise) {
+    try { await window._autoLoadPromise; } catch (_e) {}
+  }
+  if (_lbIssuesLazyInFlight || (typeof isScanning !== 'undefined' && isScanning)) return;
+  const curM = typeof getCurrentMonth === 'function' ? getCurrentMonth() : '';
+  if (!forceRefresh && _lbIssuesLazyDone && _lbIssuesLazyMonth === curM && currentLeaderboardResult && currentLeaderboardResult.month === curM) {
+    updateRankHubCards(currentLeaderboardResult.filtered ? currentLeaderboardResult.filtered.sortedByDuty : currentLeaderboardResult.allEmployees);
+    return;
+  }
+  if (forceRefresh || !currentLeaderboardResult || currentLeaderboardResult.month !== curM) {
+    ['hubValPunch', 'hubValReq', 'hubValNightIssue', 'hubValHolidayReq'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
+  }
+  _lbIssuesLazyDone = true;
+  _lbIssuesLazyInFlight = true;
+  _lbIssuesLazyMonth = curM;
+  try {
+    if (typeof syncLbMonthSelectors === 'function') syncLbMonthSelectors();
+    if (!forceRefresh && currentLeaderboardResult && currentLeaderboardResult.month === curM && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
+      updateRankHubCards(currentLeaderboardResult.filtered ? currentLeaderboardResult.filtered.sortedByDuty : currentLeaderboardResult.allEmployees);
+      if (typeof iccDrillOpen !== 'undefined' && iccDrillOpen) renderIccDrillList();
+      return;
+    }
+    await startLeaderboardScan(Boolean(forceRefresh));
+    if (typeof iccDrillOpen !== 'undefined' && iccDrillOpen) renderIccDrillList();
+  } catch (_err) {
+    ['hubValPunch', 'hubValReq', 'hubValNightIssue', 'hubValHolidayReq'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
+  } finally {
+    _lbIssuesLazyInFlight = false;
   }
 }
+
+function refreshTroubleshootPage() {
+  return initTroubleshootPage(true);
+}
+window.initTroubleshootPage = initTroubleshootPage;
+window.refreshTroubleshootPage = refreshTroubleshootPage;
+window.triggerTroubleshootLazyScan = initTroubleshootPage;

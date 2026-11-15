@@ -1224,9 +1224,10 @@ body.norate-view #compareMyAmount {
 #viewingContextBanner { order: 4; }
 #monthNavBar { order: 5; }
 #step3 { order: 10; }
-#step7 { order: 11; }
 #payslipCard { order: 12; }
-#step5 { order: 13; }
+#rptStateCard { order: 13; }
+#step7 { order: 13; }
+#step5 { order: 14; }
 #step4 { order: 14; }
 #quickActionsGrid { order: 30; }
 #welcomeBanner { order: 31; }
@@ -2627,7 +2628,7 @@ body.norate-view #compareMyAmount {
   /* Quick Overview Jump Row on Home */
   .home-jump-grid {
     display: none;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     gap: var(--space-2);
     margin: 0 0 var(--space-3) 0;
   }
@@ -4130,7 +4131,9 @@ body.norate-view #compareMyAmount {
   }
 
   /* Report Page Organized Header & Month Navigation Strip */
-  #page-report .app-header {
+  #page-search .app-header,
+  #page-report .app-header,
+  #page-troubleshoot .app-header {
     margin-bottom: 8px;
     padding: 8px 12px;
   }
@@ -7305,3 +7308,6 @@ html[data-theme="dark"] #ckLoader, html.dark #ckLoader{ --ck-bg:#0b1220; --ck-ca
   .ck-arm{ left:0; }
   .ck-key{ transition:none; }
 }
+
+/* Ensure #step7 and #lbIssuesCard do not tuck under sticky #workerIdentityCard when scrolled into view */
+#page-search #step7, #page-search #lbIssuesCard, #page-troubleshoot #lbIssuesCard { scroll-margin-top: 92px; }

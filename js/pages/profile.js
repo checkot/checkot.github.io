@@ -1806,7 +1806,7 @@
       await findReport();
     }
     if (typeof switchPage === 'function') {
-      switchPage('report');
+      switchPage('search');
     }
   }
 

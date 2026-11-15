@@ -452,12 +452,20 @@ function syncReportPageBanner() {
   const strip = document.getElementById('reportEmpStrip');
   const emptyCard = document.getElementById('reportEmptyCard');
   const step7 = document.getElementById('step7');
-  if (!strip || !emptyCard || !step7) return;
+  const rptTitle = document.getElementById('reportPageTitle');
+  const rptSub = document.getElementById('reportPageSub');
+  const rptWCard = document.getElementById('reportWorkerIdentityCard');
+  if (rptTitle && !rptTitle.textContent) rptTitle.textContent = 'Report & Punch Confirmation';
+  if (rptSub && !rptSub.textContent) rptSub.textContent = 'Daily work log and In/Out punch verification';
+  if (rptWCard) rptWCard.setAttribute('aria-label', 'Employee identity');
+  if (!step7 && !strip && !emptyCard) return;
   if (currentResult && currentSearchId) {
-    strip.style.display = 'flex';
-    emptyCard.style.display = 'none';
-    step7.classList.add('show');
-    step7.style.display = 'block';
+    if (strip) strip.style.display = 'flex';
+    if (emptyCard) emptyCard.style.display = 'none';
+    if (step7) {
+      step7.classList.add('show');
+      step7.style.display = 'block';
+    }
     const idBadge = document.getElementById('reportEmpIdBadge');
     const nameLbl = document.getElementById('reportEmpNameLbl');
     const subLbl = document.getElementById('reportEmpSubLbl');
@@ -477,19 +485,22 @@ function syncReportPageBanner() {
       setTimeout(fitAll, 100);
     }
     if (monthLbl) monthLbl.textContent = niceMonth;
-    if (currentPermanentPage === 'report' && window._rptCtx && window._rptCtx.emp) {
+    if (window._rptCtx && window._rptCtx.emp) {
       const h = document.getElementById('rptPreviewHost');
       if (h && h.style.display !== 'block') toggleReportPreview();
       else if (h && h.style.display === 'block') {
         const wrap = document.getElementById('rptInnerScaleWrap');
         if (wrap) wrap.innerHTML = _rptHtml(window._rptCtx, false);
+        if (typeof setReportZoom === 'function') setReportZoom(_rptZoomLevel || 'fit');
       }
     }
   } else {
-    strip.style.display = 'none';
-    emptyCard.style.display = 'block';
-    step7.classList.remove('show');
-    step7.style.display = 'none';
+    if (strip) strip.style.display = 'none';
+    if (emptyCard) emptyCard.style.display = 'block';
+    if (step7) {
+      step7.classList.remove('show');
+      step7.style.display = 'none';
+    }
   }
 }
 
@@ -521,7 +532,7 @@ async function searchFromReportPage() {
     if (typeof toggleClearIdBtn === 'function') toggleClearIdBtn();
   }
   if (typeof findReport === 'function') await findReport();
-  if (typeof switchPage === 'function') switchPage('report');
+  if (typeof switchPage === 'function') switchPage('search');
 }
 
 function renderInstantEmployeeRecord(emp, month, searchId) {
@@ -599,6 +610,13 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
     const el = document.getElementById(id);
     if (el) { el.classList.add('show'); el.style.display = 'block'; }
   });
+  if (typeof getAppMode !== 'function' || getAppMode() !== 'incharge') {
+    const payCard = document.getElementById('payslipCard');
+    if (payCard && !document.body.classList.contains('norate-view')) {
+      payCard.classList.add('show');
+      payCard.style.display = 'block';
+    }
+  }
   if (typeof applyReportViewContext === 'function') applyReportViewContext(parsedObj, detectObj);
   try { syncReportPageBanner(); } catch (e) {}
   try { if (typeof renderInchargeEmployeeProfile === 'function') renderInchargeEmployeeProfile(emp, month, searchId); } catch (e) { console.warn(e); }

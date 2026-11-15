@@ -335,14 +335,14 @@
   function ensureStateCard() {
     let card = $('rptStateCard');
     if (card) return card;
-    const page = $('page-report');
+    const anchor = $('step7');
+    const page = (anchor && anchor.parentNode) ? anchor.parentNode : ($('page-search') || $('page-report'));
     if (!page) return null;
     card = document.createElement('div');
     card.id = 'rptStateCard';
     card.className = 'rpt-state-card';
     card.style.display = 'none';
-    const anchor = $('step7');
-    if (anchor) page.insertBefore(card, anchor); else page.appendChild(card);
+    if (anchor && anchor.parentNode === page) page.insertBefore(card, anchor); else page.appendChild(card);
     return card;
   }
   wrap('findReport', (orig) => async function () {
@@ -399,7 +399,7 @@
   function ensureFinder() {
     let f = $('mgrRf');
     if (f) return f;
-    const page = $('page-report');
+    const page = $('page-search') || $('page-report');
     if (!page) return null;
     f = document.createElement('section');
     f.id = 'mgrRf';
@@ -426,8 +426,8 @@
         <div class="mgr-rf-status" id="mgrRfStatus"></div>
         <div class="mgr-rf-list" id="mgrRfList"></div>
       </div>`;
-    const anchor = $('reportEmpStrip');
-    if (anchor) page.insertBefore(f, anchor); else page.appendChild(f);
+    const anchor = $('workerIdentityCard') || $('step7') || $('reportEmpStrip');
+    if (anchor && anchor.parentNode === page) page.insertBefore(f, anchor); else page.appendChild(f);
 
     $('mgrRfArea').innerHTML = getAreas().map((a) => `<button type="button" class="mgr-chip" data-area="${esc(a[0])}">${a[1]}</button>`).join('');
     $('mgrRfIssue').innerHTML = ISSUES.map((a) => `<button type="button" class="mgr-chip" data-issue="${a[0]}">${a[1]}${a[0] === 'req' ? '<span class="mgr-q" data-q="ot_missing" role="button" tabindex="0" aria-label="Explain OT Missing">?</span>' : a[0] === 'punch' ? '<span class="mgr-q" data-q="punch" role="button" tabindex="0" aria-label="Explain punch problem">?</span>' : ''}</button>`).join('');
@@ -644,7 +644,7 @@
     applyCollapse();
     renderFinder();
     // "Change ID" opens the finder (manager) instead of jumping to Home
-    const btn = document.querySelector('#reportEmpStrip .calc-mini-btn');
+    const btn = document.querySelector('#workerIdentityCard .idblock, #reportEmpStrip .calc-mini-btn');
     if (btn && !btn.__mgrBound) {
       btn.__mgrBound = true;
       const old = btn.onclick;
@@ -1185,7 +1185,7 @@
       const res = await orig.apply(this, arguments);
       let has = false;
       try { has = !!(currentLeaderboardResult && currentLeaderboardResult.allEmployees && currentLeaderboardResult.allEmployees.length); } catch (e) { /* ignore */ }
-      if (!has) toast(`No data available for ${monLabel(curMonth())}`, 'info');
+      if (!has && !(typeof isScanning !== 'undefined' && isScanning)) toast(`No data available for ${monLabel(curMonth())}`, 'info');
       return res;
     } finally {
       setBusy(false);
@@ -1196,7 +1196,7 @@
   function tick() {
     injectDrawerTopbars();
     injectInfoBadges();
-    if (isInc()) { setupOverview(); updateOvCounts(); }
+    if (isInc()) { setupOverview(); updateOvCounts(); if (!$('mgrRf') && (currentPermanentPageSafe() === 'search' || currentPermanentPageSafe() === 'report')) onReportShown(); }
     ensureVsUi();
     const host = $('rptPreviewHost');
     if (host && !host.__mgrObs) {
@@ -1209,7 +1209,7 @@
     ensureInfoOverlay();
     ensureStateCard();
     tick();
-    if (isInc() && currentPermanentPageSafe() === 'report') onReportShown();
+    if (isInc() && (currentPermanentPageSafe() === 'search' || currentPermanentPageSafe() === 'report')) onReportShown();
   }
   function currentPermanentPageSafe() { try { return currentPermanentPage; } catch (e) { return ''; } }
 

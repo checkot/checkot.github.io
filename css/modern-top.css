@@ -21,7 +21,8 @@
 
 /* ---------- 1. APP HEADER BAR ---------- */
 #page-search > .app-header,
-#page-report > .app-header {
+#page-report > .app-header,
+#page-troubleshoot > .app-header {
   position: relative;
   display: flex;
   align-items: center;
@@ -38,7 +39,8 @@
 }
 
 #page-search > .app-header .logo,
-#page-report > .app-header .logo {
+#page-report > .app-header .logo,
+#page-troubleshoot > .app-header .logo {
   width: 38px;
   height: 38px;
   padding: 0;
@@ -49,12 +51,14 @@
 }
 
 #page-search > .app-header .header,
-#page-report > .app-header .header {
+#page-report > .app-header .header,
+#page-troubleshoot > .app-header .header {
   flex: 1 1 0 !important;
   min-width: 0 !important;
 }
 #page-search > .app-header .header h2,
-#page-report > .app-header .header h2 {
+#page-report > .app-header .header h2,
+#page-troubleshoot > .app-header .header h2 {
   font-size: 15px !important;
   line-height: 1.15;
   font-weight: 800;
@@ -88,7 +92,9 @@
   box-shadow: 0 0 0 3px rgba(34, 197, 94, .18);
 }
 /* Report subtitle: one tidy line */
-#page-report > .app-header #reportPageSub {
+#page-search > .app-header #reportPageSub,
+#page-report > .app-header #reportPageSub,
+#page-troubleshoot > .app-header #troubleshootPageSub {
   margin: 2px 0 0 0;
   font-size: 10.5px;
   line-height: 1.25;
@@ -135,7 +141,8 @@
 }
 
 /* Report "Home" pill -> round home icon button (frees room for the title) */
-#page-report > .app-header .mode-pill-btn {
+#page-report > .app-header .mode-pill-btn,
+#page-search > .app-header .mode-pill-btn.home-back-pill {
   flex: 0 0 auto !important;
   width: 34px;
   min-width: 34px !important;
@@ -150,7 +157,8 @@
   color: var(--brand-text) !important;
   justify-content: center;
 }
-#page-report > .app-header .mode-pill-btn::before {
+#page-report > .app-header .mode-pill-btn::before,
+#page-search > .app-header .mode-pill-btn.home-back-pill::before {
   content: "";
   width: 17px;
   height: 17px;
@@ -161,7 +169,8 @@
 
 /* Round icon buttons */
 #page-search > .app-header .icon-btn,
-#page-report > .app-header .icon-btn {
+#page-report > .app-header .icon-btn,
+#page-troubleshoot > .app-header .icon-btn {
   flex: 0 0 auto;
   width: 34px;
   min-width: 34px !important;
@@ -174,7 +183,8 @@
   box-shadow: none;
 }
 #page-search > .app-header .icon-btn svg,
-#page-report > .app-header .icon-btn svg {
+#page-report > .app-header .icon-btn svg,
+#page-troubleshoot > .app-header .icon-btn svg {
   width: 16px;
   height: 16px;
 }
@@ -186,12 +196,15 @@
 
 @media (max-width: 360px) {
   #page-search > .app-header,
-  #page-report > .app-header { gap: 6px !important; padding-right: 6px !important; }
+  #page-report > .app-header,
+  #page-troubleshoot > .app-header { gap: 6px !important; padding-right: 6px !important; }
   #page-search > .app-header .logo,
-  #page-report > .app-header .logo { width: 34px; height: 34px; border-radius: 10px; }
+  #page-report > .app-header .logo,
+  #page-troubleshoot > .app-header .logo { width: 34px; height: 34px; border-radius: 10px; }
   #page-search > .app-header #headerModeBadge { max-width: 92px !important; padding: 0 9px 0 8px !important; }
   #page-search > .app-header .icon-btn,
-  #page-report > .app-header .icon-btn { width: 32px; min-width: 32px !important; height: 32px; min-height: 32px !important; }
+  #page-report > .app-header .icon-btn,
+  #page-troubleshoot > .app-header .icon-btn { width: 32px; min-width: 32px !important; height: 32px; min-height: 32px !important; }
 }
 
 /* ---------- 2. IDENTITY + MONTH NAV = ONE STICKY BAR ---------- */
@@ -441,7 +454,8 @@
 /* ===== Theme switch: modern tech pill (sliding thumb, glow in dark) ===== */
 button.icon-btn.theme-toggle,
 #page-search > .app-header button.icon-btn.theme-toggle,
-#page-report > .app-header button.icon-btn.theme-toggle {
+#page-report > .app-header button.icon-btn.theme-toggle,
+#page-troubleshoot > .app-header button.icon-btn.theme-toggle {
   position: relative !important; overflow: hidden !important; flex: 0 0 auto !important;
   width: 48px !important; min-width: 48px !important; height: 26px !important; min-height: 26px !important;
   padding: 0 !important; border-radius: 999px !important;
@@ -491,10 +505,40 @@ button.icon-btn.theme-toggle:active::before { width: 24px; }
 @media (max-width: 360px) {
   button.icon-btn.theme-toggle,
   #page-search > .app-header button.icon-btn.theme-toggle,
-  #page-report > .app-header button.icon-btn.theme-toggle { width: 42px !important; min-width: 42px !important; height: 24px !important; min-height: 24px !important; }
+  #page-report > .app-header button.icon-btn.theme-toggle,
+  #page-troubleshoot > .app-header button.icon-btn.theme-toggle { width: 42px !important; min-width: 42px !important; height: 24px !important; min-height: 24px !important; }
   button.icon-btn.theme-toggle::before { width: 18px; height: 18px; }
   :root[data-theme="dark"] button.icon-btn.theme-toggle::before { transform: translateX(18px); }
   button.icon-btn.theme-toggle svg { width: 11px !important; height: 11px !important; margin-top: -5.5px !important; }
   button.icon-btn.theme-toggle svg.i-sun { left: 5px; }
   button.icon-btn.theme-toggle svg.i-moon { right: 5px; }
+}
+
+/* Compact Refresh pill & responsive title on #page-troubleshoot so full Bangla subtitle fits at 360px */
+#page-troubleshoot > .app-header .header h2 {
+  font-size: clamp(11px, 3.1vw, 14.5px) !important;
+  letter-spacing: -0.02em !important;
+}
+#page-troubleshoot > .app-header #troubleshootRefreshBtn {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 9px !important;
+  margin: 0 !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--brand-soft-border) !important;
+  background: var(--brand-soft) !important;
+  color: var(--brand-text) !important;
+}
+@media (max-width: 375px) {
+  #page-troubleshoot > .app-header #troubleshootRefreshBtn {
+    padding: 0 7px !important;
+    font-size: 10.5px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+  }
 }
