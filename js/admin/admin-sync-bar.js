@@ -184,7 +184,7 @@
       S.lastSaved = Date.now(); LSset(LAST_SAVED_KEY, S.lastSaved);
       const c = res && res.commit;
       addHist({ file: path, ok: true, msg: message || '', commit: c && c.sha ? c.sha.slice(0, 7) : '', url: c && c.html_url || '' });
-      if (path === 'areas.json') { const txt = b64ToText(b64); try { remoteStr = JSON.stringify(JSON.parse(txt)); remoteObj = JSON.parse(txt); } catch (e) {} baseline = cur(); lastSeen = null; LSdel(PENDING_KEY); }
+      if (path === 'areas.json') { const txt = b64ToText(b64); try { remoteStr = JSON.stringify(JSON.parse(txt)); remoteObj = JSON.parse(txt); baseHol = cloneJ(remoteObj.holidays); } catch (e) {} baseline = cur(); lastSeen = null; LSdel(PENDING_KEY); }
       try { broadcastAdminChange(path); } catch (e) {}
       S.saving--; settle(path.split('/').pop() + ' saved. Live site updates in 1-2 min.');
       return res;
@@ -215,6 +215,17 @@
 
   /* ---------- areas.json: dirty tracking, merge, save ---------- */
   let lastSeen = null, baseline = null, remoteStr = '', remoteObj = null, timer = null, loading = 0, saving = false;
+  let baseHol = {};   // holidays exactly as last read from the server (for the 3-way merge)
+  const cloneJ = o => JSON.parse(JSON.stringify(o || {}));
+  const curHol = () => (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : {};
+  function takeServerHolidays(h) { baseHol = cloneJ(h); if (typeof adminAdoptHolidays === 'function') { try { adminAdoptHolidays(cloneJ(h)); } catch (e) {} } }
+  // Latest holidays + departments straight from the repo, merged with ONLY this session's holiday edits. Throws if the server cannot be read (never push stale data).
+  window.adminFreshAreasExtras = async function () {
+    const t = await fetchRemoteRaw('areas.json');
+    const theirs = t ? JSON.parse(t) : {};
+    const hol = window.RppfHolidayMerge.merge(baseHol, cloneJ(curHol()), theirs.holidays || {});
+    return { holidays: hol, departments: theirs.departments || (typeof getDepartmentsConfig === 'function' ? getDepartmentsConfig() : undefined) };
+  };
   const payloadObj = () => ({
     departments: (typeof getDepartmentsConfig === 'function' ? getDepartmentsConfig() : ((typeof AREA_DEPARTMENTS !== 'undefined' && AREA_DEPARTMENTS) ? AREA_DEPARTMENTS : null)),
     areas: AREA_MAP,
@@ -233,7 +244,7 @@
       try { const t = await fetchRemoteRaw(filename); if (t != null) data = JSON.parse(t); } catch (e) {}
     }
     if (data == null) data = await _fjr.apply(this, arguments);
-    if (filename === 'areas.json') { try { remoteObj = JSON.parse(JSON.stringify(data)); remoteStr = JSON.stringify(data); } catch (e) {} }
+    if (filename === 'areas.json') { try { remoteObj = JSON.parse(JSON.stringify(data)); remoteStr = JSON.stringify(data); if (data && !S.saving && !saving) takeServerHolidays(data.holidays || {}); } catch (e) {} }
     return data;
   };
   const _lam = loadAreaMap;
@@ -245,7 +256,7 @@
   function finishInit() {
     baseline = cur();
     const p = LS(PENDING_KEY, null);
-    if (p && p.payload && JSON.stringify(p.payload) !== baseline) offerRestore(p); else LSdel(PENDING_KEY);
+    LSdel(PENDING_KEY);   // admin never restores unsaved copies from this device - the repo is the only source
     render();
   }
   function afterFirstLoad() { if (baseline == null) finishInit(); }
@@ -257,6 +268,7 @@
       const t = await fetchRemoteRaw('areas.json'); if (t == null) return;
       const o = JSON.parse(t); remoteObj = JSON.parse(t); remoteStr = JSON.stringify(o);
       if (baseline == null || cur() === baseline) {            // no unsaved edits -> take the fresh server copy
+        takeServerHolidays(o.holidays || {});
         applyPayload({ areas: o.areas || {}, details: o.details || {}, subsections: o.subsections || {}, designationRates: o.designationRates || {}, rateTable: o.rateTable });
         if (baseline == null) finishInit(); else baseline = cur();
       }
@@ -284,7 +296,6 @@
     const c = cur();
     if (c === baseline) { if (S.status === 'dirty') { LSdel(PENDING_KEY); setState('saved'); } return; }
     if (S.status !== 'dirty' && S.status !== 'error') setState('dirty'); else if (S.status === 'error' && !S.failed.size) { /* keep error visible */ }
-    try { LSset(PENDING_KEY, { ts: Date.now(), payload: JSON.parse(c) }); } catch (e) {}
     if (c !== lastSeen) { lastSeen = c; if (autosave && getGhToken() && S.status !== 'error') schedule(AUTOSAVE_DELAY); }   // debounce: restart the timer only when something really changed
   }
   function schedule(ms) { clearTimeout(timer); timer = setTimeout(() => saveAreasNow(true), ms); }
@@ -351,7 +362,7 @@
       subsections: resSubs,
       designationRates: mine.designationRates || theirs.designationRates,
       rateTable: mine.rateTable || theirs.rateTable,
-      holidays: mine.holidays || theirs.holidays
+      holidays: window.RppfHolidayMerge.merge(baseHol, mine.holidays, theirs.holidays)
     };
   }
 

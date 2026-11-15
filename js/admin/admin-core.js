@@ -313,8 +313,7 @@ let customHols = [];
 try {
   let cfg = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : (typeof window !== 'undefined' && window.PLANT_HOLIDAYS);
   if (!cfg) {
-    const raw = localStorage.getItem(typeof PLANT_HOLIDAYS_KEY !== 'undefined' ? PLANT_HOLIDAYS_KEY : 'rppf_plant_holidays_v1');
-    if (raw) cfg = JSON.parse(raw);
+    /* admin: holidays come ONLY from the server copy of areas.json, never from this device */
   }
   if (cfg) {
     cancelledHols = (cfg.cancelled || []).map(x => String(x).toUpperCase().trim());
@@ -1318,7 +1317,7 @@ return '';
 async function loadAreaMap() {
 if (AREA_MAP_LOADED && Object.keys(AREA_MAP).length > 0) return AREA_MAP;
 try {
-const cachedRaw = localStorage.getItem(AREA_MAP_CACHE_KEY);
+const cachedRaw = null; /* admin: never start from the local copy - always read the repo */
 if (cachedRaw) {
 const parsed = JSON.parse(cachedRaw);
 if (parsed && parsed.data && typeof parsed.data === 'object') {
@@ -7664,22 +7663,13 @@ async function loadAbsentStore(forceFresh = false) {
   if (_absentLoaded && !forceFresh) return ABSENT_STORE;
   if (!ABSENT_STORE.byDate || typeof ABSENT_STORE.byDate !== "object") ABSENT_STORE.byDate = {};
   if (!Array.isArray(ABSENT_STORE.longTermLeaves)) ABSENT_STORE.longTermLeaves = [];
-  try {
-    const raw = localStorage.getItem(ABSENT_CACHE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.store && typeof parsed.store === 'object') {
-        ABSENT_STORE = Object.assign({ activeDate: getTodayDateStr(), byDate: {} }, parsed.store);
-        if (!ABSENT_STORE.byDate || typeof ABSENT_STORE.byDate !== 'object') ABSENT_STORE.byDate = {};
-      }
-    }
-  } catch (e) {}
+  /* admin: absent data is never restored from this device; it is read from the repo below */
   try {
     const remote = await fetchJsonResource('absent.json', 5000);
     if (remote && typeof remote === 'object') {
       const rStore = remote.byDate ? remote : { activeDate: remote.date || getTodayDateStr(), updatedAt: remote.updatedAt, byDate: { [remote.date || getTodayDateStr()]: Array.isArray(remote.list) ? remote.list : [] } };
       Object.keys(rStore.byDate || {}).forEach(dt => {
-        if (!ABSENT_STORE.byDate[dt] || forceFresh) {
+        if (true) { /* admin: the repo copy always wins over anything held locally */
           ABSENT_STORE.byDate[dt] = rStore.byDate[dt];
         }
       });

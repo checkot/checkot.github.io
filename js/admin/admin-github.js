@@ -89,11 +89,12 @@ const statusEl = document.getElementById('adminAreaPushStatus');
 if (btn) btn.disabled = true;
 if (statusEl) { statusEl.style.color = 'var(--brand-text)'; statusEl.textContent = 'Saving areas.json to RPPF Cloud Server...'; }
 try {
-const hols = (typeof PLANT_HOLIDAYS !== 'undefined' && PLANT_HOLIDAYS) ? PLANT_HOLIDAYS : ((typeof getPlantHolidaysConfig === 'function' && getPlantHolidaysConfig()) || {});
-const jsonStr = JSON.stringify({ areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: hols }, null, 2);
+const _x = await window.adminFreshAreasExtras(); // latest holidays + departments read from the repo right now
+const jsonStr = JSON.stringify({ departments: _x.departments, areas: AREA_MAP, details: AREA_DETAILS, subsections: AREA_SUBS, designationRates: DESIG_RATES, rateTable: RATE_TABLE, holidays: _x.holidays }, null, 2);
 await githubPutFile('areas.json', utf8ToBase64(jsonStr), `Update areas.json via RPPF Admin Panel`);
+try { if (typeof adminAdoptHolidays === 'function') adminAdoptHolidays(_x.holidays); } catch (e) {}
 try { Object.keys(localStorage).forEach(k => { const _ns = (typeof STORAGE_NAMESPACE !== 'undefined' ? STORAGE_NAMESPACE : ''); if (k.startsWith(_ns + 'renata_lb_') || k.startsWith(_ns + 'renata_mdata_')) localStorage.removeItem(k); }); } catch (e) {}
-if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'areas.json was successfully updated on the RPPF Cloud Server.'; }
+if (statusEl) { statusEl.style.color = 'var(--success)'; statusEl.textContent = 'areas.json was successfully updated on the RPPF Cloud Server. Holidays now on server: ' + ((_x.holidays.custom || []).join(', ') || 'none') + (((_x.holidays.cancelled || []).length) ? ' | cancelled: ' + _x.holidays.cancelled.join(', ') : ''); }
 showToast('areas.json was successfully saved to the server', 'success');
 } catch (err) {
 if (statusEl) { statusEl.style.color = 'var(--danger)'; statusEl.textContent = `Problem: ${err.message}`; }
