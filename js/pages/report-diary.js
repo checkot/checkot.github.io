@@ -295,20 +295,63 @@
     sb.style.touchAction = scrollable ? 'pan-x pan-y' : 'pan-y pinch-zoom';
   }
 
+  function ensureIdentitySwapBtn() {
+    ['workerIdentityCard', 'reportWorkerIdentityCard'].forEach(cid => {
+      const card = document.getElementById(cid);
+      if (!card || card.querySelector('.diary-id-swap-btn')) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'diary-id-swap-btn';
+      btn.setAttribute('aria-label', 'Change employee ID');
+      btn.title = 'Change employee ID';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>';
+      btn.onclick = () => {
+        if (typeof expandSearchForm === 'function') expandSearchForm();
+      };
+      card.appendChild(btn);
+    });
+  }
+
+  function ensureGrandTotalHeader() {
+    const step3 = document.getElementById('step3');
+    if (!step3) return;
+    const gt = document.getElementById('gtLabelText');
+    if (gt && gt.textContent !== 'TOTAL PAYABLE') gt.textContent = 'TOTAL PAYABLE';
+    const cardHead = step3.querySelector('.card-head');
+    const gtBlock = step3.querySelector('.grand-total-block');
+    if (cardHead && gtBlock && !gtBlock.contains(cardHead)) {
+      gtBlock.insertBefore(cardHead, gtBlock.firstChild);
+    }
+  }
+
   function ensureReviewCard() {
     const step7 = document.getElementById('step7');
-    if (!step7 || step7.querySelector('.diary-review-card')) return;
-    const lbl = document.getElementById('step7LabelText');
-    const rem = document.getElementById('remarksBox');
-    const act = step7.querySelector('.rpt-actions');
-    if (!lbl && !rem && !act) return;
-    const card = document.createElement('div');
-    card.className = 'diary-review-card';
-    const first = lbl || rem || act;
-    step7.insertBefore(card, first);
-    [lbl, rem, act].forEach(el => {
-      if (el && el.parentNode === step7) card.appendChild(el);
-    });
+    if (!step7) return;
+    let card = step7.querySelector('.diary-review-card');
+    if (!card) {
+      const lbl = document.getElementById('step7LabelText');
+      const rem = document.getElementById('remarksBox');
+      const act = step7.querySelector('.rpt-actions');
+      if (!lbl && !rem && !act) return;
+      card = document.createElement('div');
+      card.className = 'diary-review-card';
+      const first = lbl || rem || act;
+      step7.insertBefore(card, first);
+      [lbl, rem, act].forEach(el => {
+        if (el && el.parentNode === step7) card.appendChild(el);
+      });
+    }
+    const act = card.querySelector('.rpt-actions');
+    const jumpGrid = document.getElementById('homeJumpGrid');
+    const cmpBtn = jumpGrid ? jumpGrid.querySelector('button[onclick*="vs"]') : null;
+    if (act && cmpBtn && !act.contains(cmpBtn)) {
+      cmpBtn.classList.remove('btn-secondary');
+      cmpBtn.classList.add('rpt-act-btn', 'rpt-act-compare');
+      act.insertBefore(cmpBtn, act.firstChild);
+      if (jumpGrid && !jumpGrid.children.length) {
+        jumpGrid.style.setProperty('display', 'none', 'important');
+      }
+    }
   }
 
   function ensureDiaryShell() {
@@ -384,6 +427,8 @@
       probeAdjacentMonths(curYm, empId);
     }
 
+    ensureIdentitySwapBtn();
+    ensureGrandTotalHeader();
     ensureReviewCard();
     syncScrollBoxTouchAction();
     updatePeekLabels();
