@@ -295,6 +295,22 @@
     sb.style.touchAction = scrollable ? 'pan-x pan-y' : 'pan-y pinch-zoom';
   }
 
+  function ensureReviewCard() {
+    const step7 = document.getElementById('step7');
+    if (!step7 || step7.querySelector('.diary-review-card')) return;
+    const lbl = document.getElementById('step7LabelText');
+    const rem = document.getElementById('remarksBox');
+    const act = step7.querySelector('.rpt-actions');
+    if (!lbl && !rem && !act) return;
+    const card = document.createElement('div');
+    card.className = 'diary-review-card';
+    const first = lbl || rem || act;
+    step7.insertBefore(card, first);
+    [lbl, rem, act].forEach(el => {
+      if (el && el.parentNode === step7) card.appendChild(el);
+    });
+  }
+
   function ensureDiaryShell() {
     const host = document.getElementById('rptPreviewHost');
     if (!host) return null;
@@ -368,6 +384,7 @@
       probeAdjacentMonths(curYm, empId);
     }
 
+    ensureReviewCard();
     syncScrollBoxTouchAction();
     updatePeekLabels();
     renderSpiralRings(false);
