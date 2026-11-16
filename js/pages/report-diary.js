@@ -287,6 +287,14 @@
       `<div class="diary-peek-sub" data-mgrq-done="1">${nextInfo.canNavigate ? nextInfo.year : 'No record'}</div>`;
   }
 
+  function syncScrollBoxTouchAction() {
+    const sb = document.querySelector('#rptDiaryStage > .rpt-scroll-box');
+    if (!sb) return;
+    const scrollable = (sb.scrollWidth - sb.clientWidth) > 4;
+    sb.classList.toggle('diary-h-scrollable', scrollable);
+    sb.style.touchAction = scrollable ? 'pan-x pan-y' : 'pan-y pinch-zoom';
+  }
+
   function ensureDiaryShell() {
     const host = document.getElementById('rptPreviewHost');
     if (!host) return null;
@@ -360,6 +368,7 @@
       probeAdjacentMonths(curYm, empId);
     }
 
+    syncScrollBoxTouchAction();
     updatePeekLabels();
     renderSpiralRings(false);
     return shell;
@@ -812,10 +821,10 @@
       ensureDiaryShell();
     });
     wrapFn('setReportZoom', () => {
-      setTimeout(() => renderSpiralRings(false), 30);
+      setTimeout(() => { syncScrollBoxTouchAction(); renderSpiralRings(false); }, 30);
     });
     wrapFn('toggleReportDutyFilter', () => {
-      setTimeout(() => renderSpiralRings(true), 30);
+      setTimeout(() => { syncScrollBoxTouchAction(); renderSpiralRings(true); }, 30);
     });
 
     const host = document.getElementById('rptPreviewHost');

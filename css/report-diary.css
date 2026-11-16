@@ -170,6 +170,16 @@
   cursor: grabbing;
 }
 
+.diary-page-stage .rpt-scroll-box,
+.diary-page-stage #rptInnerScaleWrap {
+  touch-action: pan-y pinch-zoom !important;
+}
+
+.diary-page-stage .rpt-scroll-box.diary-h-scrollable,
+.diary-page-stage .rpt-scroll-box.diary-h-scrollable #rptInnerScaleWrap {
+  touch-action: pan-x pan-y !important;
+}
+
 .diary-page-stage > .rpt-scroll-box {
   position: relative;
   box-shadow:
