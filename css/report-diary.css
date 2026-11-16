@@ -13,6 +13,35 @@
   overflow: visible;
 }
 
+/* Slimmer toolbar & remove 115% zoom button */
+#step7 .rpt-zoom-bar,
+#page-search #step7 .rpt-zoom-bar {
+  margin-bottom: 6px !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+
+#step7 .rpt-zoom-btns,
+#page-search #step7 .rpt-zoom-btns {
+  padding: 2px !important;
+  border-radius: 8px !important;
+}
+
+#step7 .rpt-zoom-btn,
+#page-search #step7 .rpt-zoom-btn {
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 0 9px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  border-radius: 6px !important;
+}
+
+#step7 .rpt-zoom-btn[data-zoom="1.15"],
+#page-search #step7 .rpt-zoom-btn[data-zoom="1.15"] {
+  display: none !important;
+}
+
 .diary-shell {
   position: relative;
   display: block;
@@ -27,41 +56,9 @@
   -webkit-user-select: none;
 }
 
-/* Stacked paper edges underneath the active diary sheet */
+/* Clean stacked paper edge via subtle bottom layers (no protruding corner artifacts) */
 .diary-stack-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.diary-stack-bg::before,
-.diary-stack-bg::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  pointer-events: none;
-}
-
-.diary-stack-bg::before {
-  top: 4px;
-  bottom: -4px;
-  box-shadow: var(--shadow-sm);
-  opacity: 0.9;
-}
-
-.diary-stack-bg::after {
-  left: 6px;
-  right: 6px;
-  top: 7px;
-  bottom: -7px;
-  background: var(--surface-2);
-  box-shadow: var(--shadow);
-  opacity: 0.76;
+  display: none;
 }
 
 /* Peek sheet underneath when dragging left/right */
@@ -70,7 +67,7 @@
   top: 2px;
   bottom: 2px;
   width: 112px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   background:
     repeating-linear-gradient(
       to bottom,
@@ -180,20 +177,24 @@
   touch-action: pan-x pan-y !important;
 }
 
+/* Crisp paper corners (4px) so corner text is never clipped + clean stacked paper bottom edge */
 .diary-page-stage > .rpt-scroll-box {
   position: relative;
-  box-shadow:
-    inset 5px 0 8px -6px color-mix(in srgb, var(--text) 18%, transparent),
-    inset -5px 0 8px -6px color-mix(in srgb, var(--text) 18%, transparent),
-    var(--shadow) !important;
+  border-radius: 4px !important;
   border-color: var(--border-strong) !important;
+  box-shadow:
+    0 2px 0 -1px var(--surface),
+    0 3px 0 -1px var(--border-strong),
+    0 5px 0 -2px var(--surface-2),
+    0 6px 0 -2px var(--border-strong),
+    var(--shadow) !important;
   transition: box-shadow 0.18s ease;
 }
 
 .diary-shell.is-dragging .diary-page-stage > .rpt-scroll-box {
   box-shadow:
-    inset 8px 0 12px -6px color-mix(in srgb, var(--text) 24%, transparent),
-    inset -8px 0 12px -6px color-mix(in srgb, var(--text) 24%, transparent),
+    0 2px 0 -1px var(--surface),
+    0 3px 0 -1px var(--border-strong),
     var(--shadow-lg) !important;
 }
 
@@ -201,7 +202,7 @@
 .diary-curl-overlay {
   position: absolute;
   inset: 0;
-  border-radius: 10px;
+  border-radius: 4px;
   pointer-events: none;
   opacity: 0;
   z-index: 4;
@@ -212,10 +213,10 @@
 .diary-shell.is-turning-next .diary-curl-overlay {
   background: linear-gradient(
     to left,
-    color-mix(in srgb, var(--text) 26%, transparent) 0%,
-    color-mix(in srgb, var(--surface) 72%, transparent) 6%,
-    color-mix(in srgb, var(--text) 12%, transparent) 16%,
-    transparent 45%
+    color-mix(in srgb, var(--text) 24%, transparent) 0%,
+    color-mix(in srgb, var(--surface) 70%, transparent) 6%,
+    color-mix(in srgb, var(--text) 10%, transparent) 16%,
+    transparent 44%
   );
 }
 
@@ -223,10 +224,10 @@
 .diary-shell.is-turning-prev .diary-curl-overlay {
   background: linear-gradient(
     to right,
-    color-mix(in srgb, var(--text) 26%, transparent) 0%,
-    color-mix(in srgb, var(--surface) 72%, transparent) 6%,
-    color-mix(in srgb, var(--text) 12%, transparent) 16%,
-    transparent 45%
+    color-mix(in srgb, var(--text) 24%, transparent) 0%,
+    color-mix(in srgb, var(--surface) 70%, transparent) 6%,
+    color-mix(in srgb, var(--text) 10%, transparent) 16%,
+    transparent 44%
   );
 }
 
@@ -234,7 +235,7 @@
 .diary-shimmer {
   position: absolute;
   inset: 0;
-  border-radius: 10px;
+  border-radius: 4px;
   pointer-events: none;
   opacity: 0;
   z-index: 5;
@@ -259,18 +260,16 @@
 }
 
 /* Spiral Wire-Loop / Binder-Ring Rails (Left & Right)
-   Positioned in the existing 21px side gutter with negative inset (-17px)
-   so they never overlap table text AND never cause viewport horizontal overflow */
+   Positioned in the outer gutter (-18.5px) so rings hug the paper edge without covering text */
 .diary-rings {
   position: absolute;
-  top: 6px;
-  bottom: 6px;
+  top: 8px;
+  bottom: 8px;
   width: 19px;
   pointer-events: none !important;
   user-select: none;
   z-index: 6;
   overflow: visible;
-  /* Theme-adaptive metallic tokens using css/tokens.css variables */
   --ring-metal-hi: var(--surface);
   --ring-metal-mid: var(--silver);
   --ring-metal-lo: var(--text-2);
@@ -291,11 +290,11 @@
 }
 
 .diary-rings-left {
-  left: -17px;
+  left: -18.5px;
 }
 
 .diary-rings-right {
-  right: -17px;
+  right: -18.5px;
 }
 
 .diary-rings svg {
@@ -306,7 +305,6 @@
   pointer-events: none !important;
 }
 
-/* Reduced motion support: simple crossfade without 3D curl or shimmer sweep */
 @media (prefers-reduced-motion: reduce) {
   .diary-page-stage {
     transition: opacity 0.18s linear !important;
@@ -320,7 +318,6 @@
   }
 }
 
-/* Hide spiral loops & diary chrome in Print / Export outputs */
 @media print {
   .diary-rings,
   .diary-peek,

@@ -511,6 +511,15 @@
         stage.style.opacity = '0.72';
       }
 
+      // Lock #rptPreviewHost height and preserve #step7 viewport position so page never jumps up to #payslipCard
+      const hostEl = document.getElementById('rptPreviewHost');
+      const step7El = document.getElementById('step7');
+      const prevHostHeight = hostEl ? Math.max(240, hostEl.offsetHeight) : 0;
+      const prevStep7Top = step7El ? step7El.getBoundingClientRect().top : null;
+      if (hostEl && prevHostHeight) {
+        hostEl.style.minHeight = prevHostHeight + 'px';
+      }
+
       try {
         if (typeof navigateReportMonth === 'function') {
           navigateReportMonth(delta);
@@ -518,6 +527,17 @@
       } catch (_e) {}
 
       await waitForReportSettled(3200);
+
+      if (hostEl) {
+        hostEl.style.minHeight = '';
+      }
+      if (step7El && prevStep7Top !== null) {
+        const newTop = step7El.getBoundingClientRect().top;
+        const drift = newTop - prevStep7Top;
+        if (Math.abs(drift) > 24) {
+          window.scrollBy({ top: drift, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' });
+        }
+      }
 
       const hasData = !!(typeof currentResult !== 'undefined' && currentResult);
       if (!hasData && empId) {
