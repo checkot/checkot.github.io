@@ -756,11 +756,11 @@ html body #step7 .diary-review-card .rpt-act-btn.diary-min-icon-btn.is-primary {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -10px;
-  right: -10px;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
   background: #ffffff !important;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(11, 27, 51, 0.10);
+  border-radius: 0;
+  box-shadow: 0 2px 8px rgba(11, 27, 51, 0.08);
   pointer-events: none;
   z-index: 0;
 }
