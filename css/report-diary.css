@@ -395,16 +395,16 @@ html body #reportWorkerIdentityCard {
   grid-template-columns: auto minmax(0, 1fr) auto !important;
   grid-template-rows: 46px 34px !important;
   align-items: center !important;
-  column-gap: 10px !important;
+  column-gap: 8px !important;
   row-gap: 0 !important;
   height: 80px !important;
   min-height: 80px !important;
   max-height: none !important;
-  padding: 0 12px !important;
+  padding: 0 10px !important;
   margin: 0 0 8px 0 !important;
   border-radius: 16px !important;
   border: 1px solid var(--border) !important;
-  background: linear-gradient(180deg, var(--brand) 0px, var(--brand) 46px, var(--surface) 46px, var(--surface) 100%) !important;
+  background: linear-gradient(0deg, var(--surface) 0px, var(--surface) 34px, var(--brand) 34px, var(--brand) 100%) !important;
   overflow: hidden !important;
 }
 
@@ -459,21 +459,24 @@ html body #reportWorkerIdentityCard .idinfo {
 
 html body #workerIdentityCard .idname,
 html body #reportWorkerIdentityCard .idname {
-  grid-column: 2 !important;
+  grid-column: 2 / 4 !important;
   grid-row: 1 !important;
   color: #ffffff !important;
-  font-size: 15.5px !important;
+  font-size: 15px !important;
   font-weight: 800 !important;
   line-height: 1.2 !important;
+  padding: 0 2px 0 0 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  text-overflow: clip !important;
   min-width: 0 !important;
   align-self: center !important;
+  z-index: 1 !important;
 }
 
 html body #workerIdentityCard .diary-id-swap-btn,
 html body #reportWorkerIdentityCard .diary-id-swap-btn {
+  z-index: 2 !important;
   grid-column: 3 !important;
   grid-row: 1 !important;
   justify-self: end !important;
@@ -485,13 +488,16 @@ html body #reportWorkerIdentityCard .diary-id-swap-btn {
   padding: 0 !important;
   border: 0 !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.88) !important;
-  color: var(--brand-strong) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
+  color: #ffffff !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  box-shadow: 0 1px 3px rgba(11, 27, 51, 0.16) !important;
+  box-shadow: 0 1px 4px rgba(11, 27, 51, 0.14) !important;
 }
 
 html body #workerIdentityCard .diary-id-swap-btn svg,
@@ -661,4 +667,237 @@ html body #step3 .grand-total-block #lblGrandTotal {
   line-height: 1 !important;
   color: #ffffff !important;
   text-align: center !important;
+}
+
+/* Permanently remove "See how much it will be if hours change" section while preserving hidden DOM inputs for JS */
+#step3 details.adjust,
+#page-search #step3 details.adjust {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Collapsible #payslipCard Dropdown + Minimal Icon-Only Download/Share Buttons
+   ========================================================================== */
+html body #page-search #payslipCard {
+  padding: 8px 12px !important;
+}
+
+html body #page-search #payslipCard > h3.card-h.diary-payslip-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 2px 0 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+html body #page-search #payslipCard .diary-payslip-chev {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--muted) !important;
+  transition: transform 0.2s ease !important;
+  flex: none !important;
+}
+
+html body #page-search #payslipCard.is-open .diary-payslip-chev {
+  transform: rotate(180deg) !important;
+}
+
+html body #page-search #payslipCard:not(.is-open) .diary-payslip-body {
+  display: none !important;
+}
+
+html body #page-search #payslipCard.is-open .diary-payslip-body {
+  display: block !important;
+  margin-top: 8px !important;
+}
+
+html body #page-search #payslipActions:not([style*="display: none"]):not([style*="display:none"]) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+}
+
+html body #page-search #payslipActions .diary-min-icon-btn,
+html body #step7 .diary-review-card .rpt-act-btn.diary-min-icon-btn {
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 34px !important;
+  background: var(--surface-2) !important;
+  color: var(--text-2) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: none !important;
+}
+
+html body #page-search #payslipActions .diary-min-icon-btn.is-primary,
+html body #step7 .diary-review-card .rpt-act-btn.diary-min-icon-btn.is-primary {
+  background: var(--brand) !important;
+  color: #ffffff !important;
+  border-color: var(--brand) !important;
+}
+
+/* Extend report sheet white (#ffffff) seamlessly across left/right gutters behind spiral rings in BOTH Light & Dark mode */
+.diary-shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -10px;
+  right: -10px;
+  background: #ffffff !important;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(11, 27, 51, 0.10);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.diary-page-stage > .rpt-scroll-box {
+  background: #ffffff !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.diary-rings {
+  --ring-hole-bg: #1e293b !important;
+  --ring-hole-rim: #cbd5e1 !important;
+  --ring-shadow: rgba(15, 23, 42, 0.28) !important;
+}
+
+/* ==========================================================================
+   One-Time Visual Swipe Tutorial Overlay
+   ========================================================================== */
+.diary-tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 58px 16px 16px;
+  background: rgba(11, 27, 51, 0.44);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border-radius: 6px;
+  transition: opacity 0.22s ease;
+}
+
+.diary-tutorial-overlay.is-hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.diary-tut-card {
+  width: 100%;
+  max-width: 270px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 16px 16px 14px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.diary-tut-stage {
+  position: relative;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.diary-tut-track {
+  width: 112px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-soft-border);
+}
+
+.diary-tut-chev {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--brand);
+  line-height: 1;
+  margin: 0 8px;
+  opacity: 0.7;
+}
+
+.diary-tut-hand {
+  position: absolute;
+  top: 8px;
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgba(11, 27, 51, 0.25));
+  animation: diarySwipeHint 1.9s ease-in-out infinite;
+}
+
+@keyframes diarySwipeHint {
+  0%   { transform: translateX(0px) scale(1); }
+  25%  { transform: translateX(-34px) rotate(-8deg) scale(0.96); }
+  50%  { transform: translateX(0px) scale(1); }
+  75%  { transform: translateX(34px) rotate(8deg) scale(0.96); }
+  100% { transform: translateX(0px) scale(1); }
+}
+
+.diary-tut-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.diary-tut-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.diary-tut-ok {
+  margin-top: 12px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.55);
+}
+
+.diary-tut-ok:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diary-tut-hand {
+    animation: none !important;
+  }
+}
+
+@media print {
+  .diary-tutorial-overlay {
+    display: none !important;
+  }
 }

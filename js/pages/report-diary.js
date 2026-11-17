@@ -295,6 +295,137 @@
     sb.style.touchAction = scrollable ? 'pan-x pan-y' : 'pan-y pinch-zoom';
   }
 
+  const TUT_KEY = 'rppf_diary_swipe_tut_v1';
+
+  function hasSeenDiaryTutorial() {
+    try { return localStorage.getItem(TUT_KEY) === '1'; } catch (_e) { return false; }
+  }
+
+  function markDiaryTutorialSeen() {
+    try { localStorage.setItem(TUT_KEY, '1'); } catch (_e) {}
+    const el = document.getElementById('rptDiaryTutorial');
+    if (el) {
+      el.classList.add('is-hiding');
+      setTimeout(() => { if (el.parentNode) el.remove(); }, 220);
+    }
+  }
+
+  function ensureDiaryTutorial(shell) {
+    if (!shell || hasSeenDiaryTutorial()) return;
+    if (document.getElementById('rptDiaryTutorial')) return;
+    const tut = document.createElement('div');
+    tut.id = 'rptDiaryTutorial';
+    tut.className = 'diary-tutorial-overlay';
+    tut.setAttribute('role', 'dialog');
+    tut.setAttribute('aria-label', 'Diary swipe tutorial');
+    tut.innerHTML =
+      '<div class="diary-tut-card">' +
+        '<div class="diary-tut-stage" aria-hidden="true">' +
+          '<span class="diary-tut-chev is-l">‹</span>' +
+          '<span class="diary-tut-track"></span>' +
+          '<span class="diary-tut-hand">👆</span>' +
+          '<span class="diary-tut-chev is-r">›</span>' +
+        '</div>' +
+        '<div class="diary-tut-title">মাস পরিবর্তন করতে ডানে-বামে সোয়াইপ করুন</div>' +
+        '<div class="diary-tut-sub">Swipe left or right on the diary page to flip months</div>' +
+        '<button type="button" class="diary-tut-ok" id="rptDiaryTutOkBtn">OK, বুঝেছি</button>' +
+      '</div>';
+    shell.appendChild(tut);
+    const okBtn = tut.querySelector('#rptDiaryTutOkBtn');
+    if (okBtn) {
+      okBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        markDiaryTutorialSeen();
+      });
+    }
+  }
+
+  function ensurePayslipAccordionAndMinimalBtns() {
+    const card = document.getElementById('payslipCard');
+    if (card && !card.dataset.diaryAccordion) {
+      card.dataset.diaryAccordion = '1';
+      const head = card.querySelector('h3.card-h');
+      if (head) {
+        head.classList.add('diary-payslip-toggle');
+        head.setAttribute('role', 'button');
+        head.setAttribute('tabindex', '0');
+        head.setAttribute('aria-expanded', 'false');
+        if (!head.querySelector('.diary-payslip-chev')) {
+          const chev = document.createElement('span');
+          chev.className = 'diary-payslip-chev';
+          chev.setAttribute('aria-hidden', 'true');
+          chev.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+          head.appendChild(chev);
+        }
+        const body = document.createElement('div');
+        body.className = 'diary-payslip-body';
+        let next = head.nextSibling;
+        while (next) {
+          const cur = next;
+          next = next.nextSibling;
+          body.appendChild(cur);
+        }
+        card.appendChild(body);
+        const toggle = () => {
+          const open = card.classList.toggle('is-open');
+          head.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      }
+    }
+
+    // Minimal icon-only Download & Share buttons inside #payslipActions
+    const payActs = document.getElementById('payslipActions');
+    if (payActs && !payActs.dataset.diaryMinimal) {
+      payActs.dataset.diaryMinimal = '1';
+      const dl = payActs.querySelector('button[onclick*="downloadPayslipJPG"]');
+      const sh = payActs.querySelector('button[onclick*="sharePayslip"]');
+      if (dl) {
+        dl.className = 'diary-min-icon-btn is-primary';
+        dl.setAttribute('aria-label', 'Download payslip');
+        dl.title = 'Download';
+        dl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>';
+      }
+      if (sh) {
+        sh.className = 'diary-min-icon-btn';
+        sh.setAttribute('aria-label', 'Share payslip');
+        sh.title = 'Share';
+        sh.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/></svg>';
+      }
+    }
+
+    // Minimal icon-only Save & Share buttons inside #step7 .rpt-actions
+    const dlBtn = document.getElementById('pngDlBtn');
+    if (dlBtn && !dlBtn.dataset.diaryMinimal) {
+      dlBtn.dataset.diaryMinimal = '1';
+      dlBtn.classList.add('diary-min-icon-btn', 'is-primary');
+      dlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>';
+    }
+    const shBtn = document.getElementById('pngShareBtn');
+    if (shBtn && !shBtn.dataset.diaryMinimal) {
+      shBtn.dataset.diaryMinimal = '1';
+      shBtn.classList.add('diary-min-icon-btn');
+      shBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="19" r="3" fill="currentColor"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/></svg>';
+    }
+  }
+
+  function fitFullEmployeeName() {
+    ['workerNameLine', 'reportEmpNameLbl'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.clientWidth) return;
+      el.style.fontSize = '';
+      let fs = 15;
+      el.style.setProperty('font-size', fs + 'px', 'important');
+      while (el.scrollWidth > el.clientWidth + 1 && fs > 11) {
+        fs -= 0.5;
+        el.style.setProperty('font-size', fs + 'px', 'important');
+      }
+    });
+  }
+
   function ensureIdentitySwapBtn() {
     ['workerIdentityCard', 'reportWorkerIdentityCard'].forEach(cid => {
       const card = document.getElementById(cid);
@@ -427,12 +558,15 @@
       probeAdjacentMonths(curYm, empId);
     }
 
+    ensurePayslipAccordionAndMinimalBtns();
     ensureIdentitySwapBtn();
+    fitFullEmployeeName();
     ensureGrandTotalHeader();
     ensureReviewCard();
     syncScrollBoxTouchAction();
     updatePeekLabels();
     renderSpiralRings(false);
+    ensureDiaryTutorial(shell);
     return shell;
   }
 
@@ -835,6 +969,7 @@
       const fastFlick = Math.abs(vx) > COMMIT_VELOCITY_PX_MS && Math.abs(dx) > 22 && Math.sign(vx) === Math.sign(dx);
 
       if (distRatio > COMMIT_RATIO || fastFlick) {
+        markDiaryTutorialSeen();
         commitMonthTurn(delta, true);
       } else {
         resetStageSpring(stage, shell, curl, 260);
