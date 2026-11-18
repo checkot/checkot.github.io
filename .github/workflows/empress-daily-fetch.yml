@@ -1,0 +1,80 @@
+name: Empress daily fetch
+
+on:
+  schedule:
+    # বাংলাদেশ সময় সকাল ৯টা (UTC 3:00 AM)
+    - cron: "0 3 * * *"
+    # বাংলাদেশ সময় বিকেল সাড়ে ৫টা (UTC 11:30 AM)
+    - cron: "30 11 * * *"
+    # বাংলাদেশ সময় রাত ৮টা (UTC 2:00 PM)
+    - cron: "0 14 * * *"
+    # বাংলাদেশ সময় রাত ১১টা (UTC 5:00 PM)
+    - cron: "0 17 * * *"
+  workflow_dispatch: # ম্যানুয়ালি রান করার জন্য
+
+permissions:
+  contents: write
+
+# একটা রান চলতে থাকলে আরেকটা শুরু হবে না (দুটো একসাথে git push করলে ঝামেলা হয়)
+concurrency:
+  group: empress-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install playwright openpyxl requests
+          playwright install --with-deps chromium
+
+      - name: Fetch Excel from Empress
+        run: python scripts/fetch_empress.py
+        timeout-minutes: 12
+        env:
+          EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_ACCOUNTS }}
+
+      # ফেল হলে স্ক্রিনশট/HTML ডাউনলোড করে দেখা যাবে কোথায় আটকাল
+      - name: Upload debug files on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-raw
+          path: raw/
+          retention-days: 3
+
+      - name: Convert Excel to JSON
+        run: python scripts/to_json.py
+
+      - name: Analyze Punch & Send WhatsApp Alerts
+        env:
+          WA_RECIPIENTS: ${{ secrets.WA_RECIPIENTS }}
+          GREEN_ID_INSTANCE: ${{ secrets.GREEN_ID_INSTANCE }}
+          GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
+        run: python scripts/analyze_punch.py
+
+      - name: Commit JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          # data/emp শুধু শেষ রানে (রাত ১১টা) আর ম্যানুয়াল রানে কমিট হবে
+          SCHED="${{ github.event.schedule }}"
+          if [ -z "$SCHED" ] || [ "$SCHED" = "0 17 * * *" ]; then
+            git add -A data/emp 2>/dev/null || true
+          fi
+          if ! git diff --cached --quiet; then
+            git commit -m "Daily automated data update [$(date +'%Y-%m-%d')]"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
