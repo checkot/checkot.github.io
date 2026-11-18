@@ -2,6 +2,7 @@
    PROFILE.JS (PAGE) - Employee Profile ("Me") Controller & Renderer
    Implements Option A (per-employee JSON) + Option B (progressive month fallback),
    Scope Switcher, Amount Masking, and Sections A, B, C, D, E, F, G, H, I.
+   Polished with modern-ux-polisher & mukhon-frontend-design principles.
    ========================================================================== */
 
 (function (root) {
@@ -630,14 +631,15 @@
       const hhmm = (ms.exists && avgDutyHrs > 0) ? `${formatDecimalHoursHHMM(avgDutyHrs)} h` : '— h';
       const pctNum = (ms.exists && ms.presentPct != null) ? Math.round(ms.presentPct) : null;
       const pctTxt = pctNum != null ? `${pctNum}%` : '—';
-      const barW = pctNum != null ? Math.min(100, Math.max(6, pctNum)) : 0;
+      const barW = pctNum != null ? Math.min(100, Math.max(8, pctNum)) : 0;
+      const barColor = pctNum == null ? '#64A0FF' : pctNum >= 96 ? '#34D399' : pctNum >= 85 ? '#60A5FA' : '#FBBF24';
 
       return `
         <div class="prof-ss-tile ${isSelected ? 'active-cell' : ''} ${!ms.exists ? 'is-missing' : ''}" role="button" tabindex="0" aria-pressed="${isSelected ? 'true' : 'false'}" onclick="toggleProfileMonthDrawer('att', '${esc(ms.ym)}')" title="Tap to inspect ${esc(ms.fullLabel)}">
-          <div class="prof-ss-mon">${esc(ms.shortLabel.toUpperCase())}</div>
+          <div class="prof-ss-mon">${esc(ms.shortLabel.toUpperCase())}${ms.isSoFar ? '*' : ''}</div>
           <div class="prof-ss-pct">${pctTxt}</div>
           <div class="prof-ss-bar-track" aria-hidden="true">
-            <div class="prof-ss-bar-fill" style="width:${barW}%;"></div>
+            <div class="prof-ss-bar-fill" style="width:${barW}%;background:${barColor};"></div>
           </div>
           <div class="prof-ss-avg-h">${esc(hhmm)}</div>
           <div class="prof-ss-avg-lbl">avg</div>
@@ -670,20 +672,20 @@
               <span>🔴 Absent: <b style="color:${inspectedMs.generalAbsentCount > 0 ? 'var(--danger)' : 'var(--success)'};">${inspectedMs.generalAbsentCount}d</b></span>
               ${inspectedMs.approvedLeaveCount > 0 ? `<span>🏥 Approved Leave: <b>${inspectedMs.approvedLeaveCount}d</b></span>` : ''}
             </div>
-            ${absList ? `<div style="margin-top:6px;font-size:11px;color:var(--danger);font-weight:700;">Absent dates: ${esc(absList)}</div>` : ''}
+            ${absList ? `<div style="margin-top:6px;font-size:12px;color:var(--danger);font-weight:700;">Absent dates: ${esc(absList)}</div>` : ''}
           </div>
         `;
       }
     }
 
     const approvedLeaveBanner = sc.totalLeaveDays > 0
-      ? `<div style="margin-bottom:10px;padding:9px 12px;border-radius:10px;background:var(--brand-soft);border:1px solid var(--brand-soft-border);font-size:12px;color:var(--brand-text);font-weight:700;">
+      ? `<div class="prof-info-banner">
            🏥 Approved long leave (${esc(sc.leaveCategory || 'Long-Term Leave')}): <b>${sc.totalLeaveDays} working days</b> in selected scope (shown separately from Absent).
          </div>`
       : '';
 
     const absentDatesNote = (agg.scopeType !== 'year' && sc.absentDaysList.length > 0)
-      ? `<div style="margin-bottom:10px;padding:8px 10px;border-radius:8px;background:var(--danger-bg);border:1px solid var(--danger-border);color:var(--danger);font-size:11.5px;font-weight:700;">
+      ? `<div class="prof-danger-banner">
            🔴 Absent dates (${sc.absentDaysList.length}d): ${esc(sc.absentDaysList.map(x => x.date).join(', '))}
          </div>`
       : '';
@@ -691,23 +693,26 @@
     return `
       <section class="prof-card" id="profSecB" aria-label="Attendance — Leave and Absent">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Attendance — Leave / Absent (উপস্থিতি)</h3>
-            <p class="prof-card-sub">Monthly Present % &amp; avg duty hours • Tap any month card for details</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico emerald" aria-hidden="true">✓</span>
+            <div>
+              <h3 class="prof-card-title">Attendance — Leave / Absent (উপস্থিতি)</h3>
+              <p class="prof-card-sub">Monthly Present % &amp; avg duty hours • Tap any month card for details</p>
+            </div>
           </div>
           <span class="prof-tag ${sc.totalAbsentDays === 0 ? 'success' : ''}">${sc.avgPresentPct != null ? sc.avgPresentPct + '% Present' : '—'}</span>
         </div>
 
         <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-emerald">
             <div class="prof-kpi-v" style="color:var(--success);">${sc.avgPresentPct != null ? sc.avgPresentPct + '%' : '—'}</div>
             <div class="prof-kpi-l">Present % (${sc.presentOnScheduledDays}/${sc.scheduledWorkingDays}d)</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box ${sc.totalAbsentDays > 0 ? 'accent-rose' : 'accent-emerald'}">
             <div class="prof-kpi-v" style="color:${sc.totalAbsentDays > 0 ? 'var(--danger)' : 'var(--success)'};">${sc.totalAbsentDays}d</div>
             <div class="prof-kpi-l">General Absent</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-blue">
             <div class="prof-kpi-v" style="color:${sc.totalLeaveDays > 0 ? 'var(--brand-text)' : 'var(--muted)'};">${sc.totalLeaveDays > 0 ? sc.totalLeaveDays + 'd' : '0d'}</div>
             <div class="prof-kpi-l">Approved Long Leave</div>
           </div>
@@ -716,8 +721,12 @@
         ${approvedLeaveBanner}
         ${absentDatesNote}
 
-        <!-- Screenshot-styled Deep Navy Monthly Present % & Avg Hours Strip -->
+        <!-- Deep Navy Monthly Present % & Avg Hours Strip -->
         <div class="prof-ss-navy-box">
+          <div class="prof-ss-navy-head">
+            <span>MONTHLY ATTENDANCE &amp; AVG DUTY HOURS</span>
+            <span>👆 Tap any month</span>
+          </div>
           <div class="prof-ss-strip" role="list" aria-label="Monthly present percentage and average duty hours">
             ${ssCardsHtml}
           </div>
@@ -740,7 +749,6 @@
 
   function renderSectionC_Income(agg) {
     const inc = agg.monthlyIncome;
-    const hideAmt = isProfileAmountsHidden();
     const mom = inc.changeVsLastMonth;
     let momHtml = '—';
     if (mom && mom.diff != null) {
@@ -751,8 +759,15 @@
       momHtml = `<span style="color:${color};font-weight:800;">${arrow} ${moneySpan(Math.abs(mom.diff))}${esc(pctStr)}</span>`;
     }
 
+    const s = agg.scopeSummary;
+    const totScopeAmt = Math.max(1, (Number(s.totalOtAmount) || 0) + (Number(s.totalHolidayAmount) || 0) + (Number(s.totalNightAmount) || 0));
+    const otPctShare = s.totalEarned > 0 ? Math.round(((Number(s.totalOtAmount) || 0) / totScopeAmt) * 100) : 0;
+    const holPctShare = s.totalEarned > 0 ? Math.round(((Number(s.totalHolidayAmount) || 0) / totScopeAmt) * 100) : 0;
+    const nightPctShare = s.totalEarned > 0 ? Math.max(0, 100 - otPctShare - holPctShare) : 0;
+
     const barsHtml = inc.bars.map(b => {
       const isSelected = (agg.scopeType !== 'year' && agg.activeSingleYm === b.ym);
+      const isPeak = Boolean(inc.bestMonth && inc.bestMonth.ym === b.ym && b.totalEarned > 0);
       if (!b.exists) {
         return `
           <div class="prof-bar-row ${isSelected ? 'active-row' : ''}" style="opacity:0.55;cursor:pointer;" onclick="switchProfileScope('${esc(b.ym)}', true)">
@@ -762,12 +777,12 @@
           </div>
         `;
       }
-      const w = Math.max(b.totalEarned > 0 ? 4 : 0, b.heightPct);
+      const w = Math.max(b.totalEarned > 0 ? 6 : 0, b.heightPct);
       return `
-        <div class="prof-bar-row ${isSelected ? 'active-row' : ''}" onclick="switchProfileScope('${esc(b.ym)}', true)" style="cursor:pointer;" title="${esc(b.monthName)}: OT ৳${b.otAmount}, Hol ৳${b.holidayAmount}, Night ৳${b.nightAmount}">
+        <div class="prof-bar-row ${isSelected ? 'active-row' : ''} ${isPeak ? 'peak-row' : ''}" onclick="switchProfileScope('${esc(b.ym)}', true)" style="cursor:pointer;" title="${esc(b.monthName)}: OT ৳${b.otAmount}, Hol ৳${b.holidayAmount}, Night ৳${b.nightAmount}">
           <div class="prof-bar-lbl">${esc(b.shortLabel)}${b.isSoFar ? '*' : ''}</div>
           <div class="prof-bar-track" aria-label="${esc(b.monthName)} earnings bar">
-            <div style="width:${w}%;display:flex;height:100%;">
+            <div class="prof-bar-fill-group" style="width:${w}%;">
               <div class="prof-bar-seg-ot" style="width:${b.otShare}%;" title="OT Allowance"></div>
               <div class="prof-bar-seg-hol" style="width:${b.holShare}%;" title="Holiday Allowance"></div>
               <div class="prof-bar-seg-night" style="width:${b.nightShare}%;" title="Night Allowance"></div>
@@ -778,20 +793,21 @@
       `;
     }).join('');
 
-    const s = agg.scopeSummary;
-
     return `
       <section class="prof-card" id="profSecC" aria-label="Monthly OT income status">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Monthly OT Income Status (মাসিক আয়)</h3>
-            <p class="prof-card-sub">Stacked OT + Holiday + Night allowance (${agg.targetYear})</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico blue" aria-hidden="true">৳</span>
+            <div>
+              <h3 class="prof-card-title">Monthly OT Income Status (মাসিক আয়)</h3>
+              <p class="prof-card-sub">Stacked OT + Holiday + Night allowance (${agg.targetYear})</p>
+            </div>
           </div>
-
+          ${inc.bestMonth ? `<span class="prof-tag brand">🏆 Best: ${esc(inc.bestMonth.shortLabel)}</span>` : ''}
         </div>
 
         <div class="prof-inc-summary-grid">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-blue">
             <div class="prof-kpi-v">${moneySpan(inc.yearTotal)}</div>
             <div class="prof-kpi-l">${agg.targetYear} Total OT Income</div>
           </div>
@@ -799,7 +815,7 @@
             <div class="prof-kpi-v">${moneySpan(inc.avgMonthly)}</div>
             <div class="prof-kpi-l">Average / Month</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-amber">
             <div class="prof-kpi-v">${inc.bestMonth ? `${esc(inc.bestMonth.shortLabel)} · ${moneySpan(inc.bestMonth.totalEarned)}` : '—'}</div>
             <div class="prof-kpi-l">Best Month (${agg.targetYear})</div>
           </div>
@@ -809,18 +825,30 @@
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">
-          <div class="prof-mw-mini-cell">
-            <span style="color:#2563EB;font-weight:800;">● OT Allow.</span>
-            <b>${moneySpan(s.totalOtAmount)}</b>
+        <div class="prof-allow-split-grid">
+          <div class="prof-allow-card ot">
+            <div class="prof-allow-top">
+              <span class="prof-allow-lbl"><i class="prof-leg-dot" style="background:#2563EB;"></i>OT Allow.</span>
+              <span class="prof-allow-pct">${otPctShare}%</span>
+            </div>
+            <b class="prof-allow-val">${moneySpan(s.totalOtAmount)}</b>
+            <div class="prof-allow-mini-bar"><div style="width:${otPctShare}%;background:#2563EB;"></div></div>
           </div>
-          <div class="prof-mw-mini-cell">
-            <span style="color:#D97706;font-weight:800;">● Holiday</span>
-            <b>${moneySpan(s.totalHolidayAmount)}</b>
+          <div class="prof-allow-card hol">
+            <div class="prof-allow-top">
+              <span class="prof-allow-lbl"><i class="prof-leg-dot" style="background:#F59E0B;"></i>Holiday</span>
+              <span class="prof-allow-pct">${holPctShare}%</span>
+            </div>
+            <b class="prof-allow-val">${moneySpan(s.totalHolidayAmount)}</b>
+            <div class="prof-allow-mini-bar"><div style="width:${holPctShare}%;background:#F59E0B;"></div></div>
           </div>
-          <div class="prof-mw-mini-cell">
-            <span style="color:#7C3AED;font-weight:800;">● Night</span>
-            <b>${moneySpan(s.totalNightAmount)}</b>
+          <div class="prof-allow-card night">
+            <div class="prof-allow-top">
+              <span class="prof-allow-lbl"><i class="prof-leg-dot" style="background:#7C3AED;"></i>Night</span>
+              <span class="prof-allow-pct">${nightPctShare}%</span>
+            </div>
+            <b class="prof-allow-val">${moneySpan(s.totalNightAmount)}</b>
+            <div class="prof-allow-mini-bar"><div style="width:${nightPctShare}%;background:#7C3AED;"></div></div>
           </div>
         </div>
 
@@ -894,14 +922,16 @@
           </div>
         </div>
 
-        <!-- Identity Header Card -->
+        <!-- Identity Header Card (Design 1: Compact Badge + Single-Row Segmented Scope Bar) -->
         <section class="prof-id-card" aria-label="Employee Identity">
           <div class="prof-id-top">
-            <div class="prof-avatar" aria-hidden="true">${esc(initials)}</div>
+            <div class="prof-avatar-badge" aria-label="Employee ID ${esc(emp.id)}">
+              <span class="prof-av-init">${esc(initials)}</span>
+              <span class="prof-av-id">${esc(emp.id)}</span>
+            </div>
             <div class="prof-id-meta">
               <div class="prof-name-row">
                 <h3 class="prof-name">${esc(emp.name || emp.id)}</h3>
-                <span class="prof-id-pill">${esc(emp.id)}</span>
               </div>
               <div class="prof-subline">
                 ${esc(emp.grade || 'Employee')} • ${esc(areaName)}${subName ? ' (' + esc(subName) + ')' : ''}
@@ -909,28 +939,33 @@
               <div class="prof-tags-row">
                 <span class="prof-tag brand">${esc(deptLabel)}</span>
                 <span class="prof-tag">${esc(String(catLabel).replace(/\s*\(.*?\)/g, ''))}</span>
-                <button type="button" class="prof-tag" style="cursor:pointer;" onclick="openModeSetupModal('employee')" title="Change saved ID">⚙ Change Saved ID</button>
               </div>
             </div>
+            <button type="button" class="prof-id-gear-btn" onclick="openModeSetupModal('employee')" title="Change Saved ID" aria-label="Change Saved ID">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+              </svg>
+            </button>
           </div>
 
-          <!-- Scope Switcher Chips: This month | Last month | This year (2026) | [month picker] -->
-          <div class="prof-scope-bar" role="tablist" aria-label="Profile Time Scope">
+          <!-- Single-Row Segmented Scope Switcher -->
+          <div class="prof-scope-bar prof-scope-segmented" role="tablist" aria-label="Profile Time Scope">
             <button type="button" class="prof-scope-chip ${agg.selectedScope === 'this_month' ? 'active' : ''}" onclick="switchProfileScope('this_month')">
               <span>This Month</span>
-              <small>${esc(agg.thisMonthSummary.shortLabel)} ${agg.targetYear}</small>
+              <small>(${esc(agg.thisMonthSummary.shortLabel)})</small>
             </button>
             <button type="button" class="prof-scope-chip ${agg.selectedScope === 'last_month' ? 'active' : ''}" onclick="switchProfileScope('last_month')">
               <span>Last Month</span>
-              <small>${esc(agg.lastMonthSummary.shortLabel)} ${agg.lastMonthSummary.year}</small>
+              <small>(${esc(agg.lastMonthSummary.shortLabel)})</small>
             </button>
             <button type="button" class="prof-scope-chip ${agg.selectedScope === 'year' ? 'active' : ''}" onclick="switchProfileScope('year')">
               <span>This Year</span>
-              <small>${agg.targetYear} (${agg.yearSummary.activeMonthsCount}M)</small>
+              <small>(${agg.targetYear})</small>
             </button>
             <div class="prof-month-picker-wrap">
               <select id="profileMonthPickerSelect" class="prof-month-picker-select ${isCustomMonth ? 'active' : ''}" aria-label="Pick Month" onchange="if(this.value)switchProfileScope(this.value)">
-                <option value="" ${!isCustomMonth ? 'selected' : ''}>📅 Pick Month</option>
+                <option value="" ${!isCustomMonth ? 'selected' : ''}>Pick Month</option>
                 ${pickerMonths.map(ym => `<option value="${esc(ym)}" ${isCustomMonth && agg.selectedScope === ym ? 'selected' : ''}>${esc(ym)}</option>`).join('')}
               </select>
               <span class="prof-month-picker-chev">▾</span>
@@ -1075,71 +1110,125 @@
   const H = root._profileHelpers || {};
   const fmtHrs = H.fmtHrs || (n => String(Math.round((Number(n) || 0) * 100) / 100));
 
+  /**
+   * Column-Locked Responsive Sparkline (Mobile & Desktop):
+   * - Uses a 0..1000 x 0..100 SVG coordinate space with preserveAspectRatio="none" for the
+   *   area fill, non-scaling stroke line, horizontal reference lines, and vertical column guides.
+   * - Places each data point's x coordinate at ((i + 0.5) / n) * 1000 — the EXACT horizontal center
+   *   of column i in the n-column CSS grid (.prof-spark-cols).
+   * - Renders circular data nodes, floating value badges, month names, and hour totals inside the
+   *   same n-column CSS grid so dots, numbers, and month labels stay 100% collinear at every screen width.
+   */
   function buildOtSparklineSvg(points, agg) {
     const validPts = Array.isArray(points) ? points : [];
     const n = validPts.length || 11;
-    const width = 320;
-    const height = 64;
-    const padX = 14;
-    const padY = 12;
-    const usableW = width - padX * 2;
-    const usableH = height - padY * 2;
-    const maxVal = Math.max(1, ...validPts.map(p => (p.exists ? p.otHours : 0)));
+    const svgW = 1000;
+    const svgH = 100;
+    const topPad = 24;
+    const bottomPad = 10;
+    const plotH = svgH - topPad - bottomPad; // 66 units in 0..100 vertical space
+    const maxVal = Math.max(1, ...validPts.map(p => (p.exists ? Number(p.otHours) || 0 : 0)));
     const openOtYm = (root._profileOpenDrawers && root._profileOpenDrawers.ot) || '';
 
+    // Identify peak month for visual highlight
+    let peakYm = '';
+    let peakVal = 0;
+    validPts.forEach(p => {
+      const v = p.exists ? (Number(p.otHours) || 0) : 0;
+      if (v > peakVal) {
+        peakVal = v;
+        peakYm = p.ym;
+      }
+    });
+    const peakPt = validPts.find(p => p.ym === peakYm);
+
     const coords = validPts.map((p, i) => {
-      const x = Number((padX + (n > 1 ? (i / (n - 1)) * usableW : usableW / 2)).toFixed(1));
-      const val = p.exists ? p.otHours : 0;
-      const y = Number((padY + usableH - (val / maxVal) * usableH).toFixed(1));
-      return { x, y, val, exists: p.exists, shortLabel: p.shortLabel, ym: p.ym };
+      const xPct = ((i + 0.5) / n) * 100;
+      const xSvg = Number((((i + 0.5) / n) * svgW).toFixed(2));
+      const val = p.exists ? (Number(p.otHours) || 0) : 0;
+      const ySvg = p.exists
+        ? Number((topPad + plotH - (val / maxVal) * plotH).toFixed(2))
+        : (svgH - bottomPad);
+      return {
+        i,
+        xPct,
+        xSvg,
+        yPct: ySvg,
+        ySvg,
+        val,
+        exists: p.exists,
+        shortLabel: p.shortLabel,
+        monthName: p.monthName,
+        ym: p.ym,
+        isPeak: Boolean(peakVal > 0 && p.ym === peakYm)
+      };
     });
 
-    const polyPoints = coords.map(c => `${c.x},${c.y}`).join(' ');
-    const areaPoints = `${coords[0]?.x || padX},${height - 4} ${polyPoints} ${coords[coords.length - 1]?.x || (width - padX)},${height - 4}`;
+    const polyPoints = coords.map(c => `${c.xSvg},${c.ySvg}`).join(' ');
+    const firstX = coords[0] ? coords[0].xSvg : 0;
+    const lastX = coords[coords.length - 1] ? coords[coords.length - 1].xSvg : svgW;
+    const baseLineY = svgH - bottomPad;
+    const areaPoints = `${firstX},${baseLineY} ${polyPoints} ${lastX},${baseLineY}`;
 
-    const dotsHtml = coords.map(c => {
-      if (!c.exists) {
-        return `<circle cx="${c.x}" cy="${height - 6}" r="2.2" fill="var(--muted)" opacity="0.4"><title>${esc(c.shortLabel)}: —</title></circle>`;
-      }
-      return `
-        <g>
-          <circle cx="${c.x}" cy="${c.y}" r="3.5" fill="var(--brand)" stroke="var(--surface)" stroke-width="1.5">
-            <title>${esc(c.shortLabel)}: ${c.val}h OT</title>
-          </circle>
-          <text x="${c.x}" y="${Math.max(9, c.y - 5)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="var(--text-2)">${c.val > 0 ? Math.round(c.val) : '0'}</text>
-        </g>
-      `;
-    }).join('');
+    const midLineY = Number((topPad + plotH * 0.5).toFixed(1));
+    const vGuidesSvg = coords.map(c =>
+      `<line x1="${c.xSvg}" y1="${topPad - 4}" x2="${c.xSvg}" y2="${baseLineY}" class="prof-spark-vguide ${c.isPeak ? 'is-peak' : ''}" vector-effect="non-scaling-stroke"/>`
+    ).join('');
 
-    const labelsHtml = validPts.map(p => {
-      const isSelected = Boolean((openOtYm && openOtYm === p.ym) || (!openOtYm && agg && agg.scopeType !== 'year' && agg.activeSingleYm === p.ym));
+    const colsHtml = coords.map(c => {
+      const isSelected = Boolean((openOtYm && openOtYm === c.ym) || (!openOtYm && agg && agg.scopeType !== 'year' && agg.activeSingleYm === c.ym));
+      const dispNum = c.exists ? (c.val > 0 ? Math.round(c.val) : '0') : '—';
+      const dispFootVal = c.exists ? `${fmtHrs(c.val)}h` : '—';
+
       return `
-        <div class="prof-spark-cell ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('ot', '${esc(p.ym)}')" title="Tap to view ${esc(p.monthName)} OT dates">
-          <div>${esc(p.shortLabel)}</div>
-          <div class="prof-spark-val">${p.exists ? fmtHrs(p.otHours) + 'h' : '—'}</div>
+        <div class="prof-spark-col prof-spark-cell ${isSelected ? 'active-cell' : ''} ${c.isPeak ? 'is-peak-col' : ''} ${!c.exists ? 'is-missing-col' : ''}" role="button" tabindex="0" aria-pressed="${isSelected ? 'true' : 'false'}" onclick="toggleProfileMonthDrawer('ot', '${esc(c.ym)}')" title="Tap to view ${esc(c.monthName)} OT dates (${dispFootVal})">
+          <div class="prof-spark-col-plot" aria-hidden="true">
+            <span class="prof-spark-col-line"></span>
+            ${c.exists ? `
+              <span class="prof-spark-val-badge ${c.isPeak ? 'peak' : ''} ${isSelected ? 'selected' : ''}" style="top:${c.yPct}%;">${dispNum}</span>
+              <span class="prof-spark-dot ${c.isPeak ? 'peak' : ''} ${isSelected ? 'selected' : ''}" style="top:${c.yPct}%;"></span>
+            ` : `
+              <span class="prof-spark-dot missing" style="top:${baseLineY}%;"></span>
+            `}
+          </div>
+          <div class="prof-spark-col-foot">
+            <span class="prof-spark-mon">${esc(c.shortLabel)}</span>
+            <span class="prof-spark-val">${dispFootVal}</span>
+          </div>
         </div>
       `;
     }).join('');
 
     return `
       <div class="prof-spark-box">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">
-          <span>Month-wise OT Sparkline (hrs)</span>
-          <span>👆 Tap a month to view dates</span>
+        <div class="prof-spark-head">
+          <div class="prof-spark-head-left">
+            <span class="prof-spark-title">Month-wise OT Sparkline (hrs)</span>
+            ${peakPt && peakVal > 0 ? `<span class="prof-spark-peak-pill">🔥 Peak: ${esc(peakPt.shortLabel)} (${fmtHrs(peakVal)}h)</span>` : ''}
+          </div>
+          <span class="prof-spark-hint">👆 Tap a month to view dates</span>
         </div>
-        <svg class="prof-spark-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Monthly overtime hours sparkline">
-          <defs>
-            <linearGradient id="profOtGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#2563EB" stop-opacity="0.28"/>
-              <stop offset="100%" stop-color="#2563EB" stop-opacity="0.02"/>
-            </linearGradient>
-          </defs>
-          <polygon points="${areaPoints}" fill="url(#profOtGrad)"></polygon>
-          <polyline points="${polyPoints}" fill="none" stroke="var(--brand)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
-          ${dotsHtml}
-        </svg>
-        <div class="prof-spark-labels" style="grid-template-columns:repeat(${n}, 1fr);">
-          ${labelsHtml}
+
+        <div class="prof-spark-chart-wrap" style="--spark-cols:${n};">
+          <svg class="prof-spark-svg" viewBox="0 0 ${svgW} ${svgH}" preserveAspectRatio="none" role="img" aria-label="Monthly overtime hours sparkline">
+            <defs>
+              <linearGradient id="profOtGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.34"/>
+                <stop offset="65%" stop-color="#3B82F6" stop-opacity="0.10"/>
+                <stop offset="100%" stop-color="#2563EB" stop-opacity="0.01"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="${topPad}" x2="${svgW}" y2="${topPad}" class="prof-spark-hgrid" vector-effect="non-scaling-stroke"/>
+            <line x1="0" y1="${midLineY}" x2="${svgW}" y2="${midLineY}" class="prof-spark-hgrid" vector-effect="non-scaling-stroke"/>
+            <line x1="0" y1="${baseLineY}" x2="${svgW}" y2="${baseLineY}" class="prof-spark-hbase" vector-effect="non-scaling-stroke"/>
+            ${vGuidesSvg}
+            <polygon points="${areaPoints}" fill="url(#profOtGrad)"></polygon>
+            <polyline points="${polyPoints}" fill="none" stroke="var(--brand)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+          </svg>
+
+          <div class="prof-spark-labels" style="grid-template-columns:repeat(${n}, minmax(0, 1fr));">
+            ${colsHtml}
+          </div>
         </div>
       </div>
     `;
@@ -1172,15 +1261,18 @@
     return `
       <section class="prof-card" id="profSecD" aria-label="Total Overtime">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Total OT (ওভারটাইম ঘণ্টা)</h3>
-            <p class="prof-card-sub">Monthly &amp; yearly overtime hours + interactive sparkline</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico blue" aria-hidden="true">⏱</span>
+            <div>
+              <h3 class="prof-card-title">Total OT (ওভারটাইম ঘণ্টা)</h3>
+              <p class="prof-card-sub">Monthly &amp; yearly overtime hours + interactive sparkline</p>
+            </div>
           </div>
           <span class="prof-tag brand">${fmtHrs(agg.scopeSummary.totalOtHours)} hrs (${esc(agg.scopeLabel)})</span>
         </div>
 
         <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-blue">
             <div class="prof-kpi-v" style="color:var(--brand-text);">${fmtHrs(ot.thisMonthOt)}h</div>
             <div class="prof-kpi-l">This Month (${esc(agg.thisMonthSummary.shortLabel)})</div>
           </div>
@@ -1205,14 +1297,17 @@
     const thisYearN = agg.yearSummary.totalNightDuties;
     const scopeN = agg.scopeSummary.totalNightDuties;
     const openNightYm = (root._profileOpenDrawers && root._profileOpenDrawers.night) || '';
+    const maxN = Math.max(1, ...agg.yearMonthSummaries.map(s => (s.exists ? s.nightCount : 0)));
 
     const mwGridHtml = agg.yearMonthSummaries.map(s => {
       const isSelected = Boolean((openNightYm && openNightYm === s.ym) || (!openNightYm && agg.scopeType !== 'year' && agg.activeSingleYm === s.ym));
       const toneCls = s.nightCount > 0 ? 'has-night' : '';
+      const barPct = s.exists && s.nightCount > 0 ? Math.max(14, Math.round((s.nightCount / maxN) * 100)) : 0;
       return `
         <div class="prof-mw-mini-cell ${toneCls} ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('night', '${esc(s.ym)}')" title="Tap to view ${esc(s.fullLabel)} night dates">
           <span>${esc(s.shortLabel)}</span>
           <b>${s.exists ? s.nightCount + 'n' : '—'}</b>
+          <i class="prof-mw-cell-bar"><em style="width:${barPct}%;"></em></i>
         </div>
       `;
     }).join('');
@@ -1243,15 +1338,18 @@
     return `
       <section class="prof-card" id="profSecE" aria-label="Total Night Duties">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Total Night Duty (নাইট ডিউটি)</h3>
-            <p class="prof-card-sub">Tap any month in the grid below to view night shift dates</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico violet" aria-hidden="true">🌙</span>
+            <div>
+              <h3 class="prof-card-title">Total Night Duty (নাইট ডিউটি)</h3>
+              <p class="prof-card-sub">Tap any month in the grid below to view night shift dates</p>
+            </div>
           </div>
           <span class="prof-tag">${scopeN} nights (${esc(agg.scopeLabel)})</span>
         </div>
 
         <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-violet">
             <div class="prof-kpi-v" style="color:var(--indigo);">${thisMonthN}</div>
             <div class="prof-kpi-l">This Month (${esc(agg.thisMonthSummary.shortLabel)})</div>
           </div>
@@ -1279,14 +1377,17 @@
     const thisYearH = agg.yearSummary.totalHolidayDuties;
     const scopeH = agg.scopeSummary.totalHolidayDuties;
     const openHolYm = (root._profileOpenDrawers && root._profileOpenDrawers.hol) || '';
+    const maxH = Math.max(1, ...agg.yearMonthSummaries.map(s => (s.exists ? s.holidayCount : 0)));
 
     const mwGridHtml = agg.yearMonthSummaries.map(s => {
       const isSelected = Boolean((openHolYm && openHolYm === s.ym) || (!openHolYm && agg.scopeType !== 'year' && agg.activeSingleYm === s.ym));
       const toneCls = s.holidayCount > 0 ? 'has-hol' : '';
+      const barPct = s.exists && s.holidayCount > 0 ? Math.max(14, Math.round((s.holidayCount / maxH) * 100)) : 0;
       return `
         <div class="prof-mw-mini-cell ${toneCls} ${isSelected ? 'active-cell' : ''}" onclick="toggleProfileMonthDrawer('hol', '${esc(s.ym)}')" title="Tap to view ${esc(s.fullLabel)} holiday dates">
           <span>${esc(s.shortLabel)}</span>
           <b>${s.exists ? s.holidayCount + 'd' : '—'}</b>
+          <i class="prof-mw-cell-bar"><em style="width:${barPct}%;"></em></i>
         </div>
       `;
     }).join('');
@@ -1327,15 +1428,18 @@
     return `
       <section class="prof-card" id="profSecF" aria-label="Holiday Duty">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Holiday &amp; Day-Off Duty (হলিডে ডিউটি)</h3>
-            <p class="prof-card-sub">Tap any month in the grid below to view Weekend/Holiday duty dates</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico amber" aria-hidden="true">📅</span>
+            <div>
+              <h3 class="prof-card-title">Holiday &amp; Day-Off Duty (হলিডে ডিউটি)</h3>
+              <p class="prof-card-sub">Tap any month in the grid below to view Weekend/Holiday duty dates</p>
+            </div>
           </div>
           <span class="prof-tag">${scopeH} days (${esc(agg.scopeLabel)})</span>
         </div>
 
         <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-amber">
             <div class="prof-kpi-v" style="color:var(--warning);">${thisMonthH}d</div>
             <div class="prof-kpi-l">This Month (${esc(agg.thisMonthSummary.shortLabel)})</div>
           </div>
@@ -1385,7 +1489,7 @@
           <td>${esc(m.avgIn12h)}</td>
           <td>${esc(m.avgDayOut12h)}</td>
           <td style="color:var(--indigo);font-weight:700;">${esc(m.avgNightOut12h)}</td>
-          <td><b>${fmtHrs(m.avgDutyPerDay)}h</b>${arrow}</td>
+          <td><b>${Number(m.avgDutyPerDay || 0).toFixed(1).replace(/\.0$/, '')}h</b>${arrow}</td>
         </tr>
       `;
     }).join('');
@@ -1393,29 +1497,32 @@
     return `
       <section class="prof-card" id="profSecH" aria-label="My Average Punch">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">My Average Punch (গড় পাঞ্চ ইন/আউট)</h3>
-            <p class="prof-card-sub">Day-shift &amp; Night-shift Out separated • Missing punches excluded</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico blue" aria-hidden="true">🕒</span>
+            <div>
+              <h3 class="prof-card-title">My Average Punch (গড় পাঞ্চ ইন/আউট)</h3>
+              <p class="prof-card-sub">Day-shift &amp; Night-shift Out separated • Missing punches excluded</p>
+            </div>
           </div>
-          <span class="prof-tag">${fmtHrs(pScope.avgDutyPerDay)}h / day</span>
+          <span class="prof-tag brand">${fmtHrs(pScope.avgDutyPerDay)}h / day</span>
         </div>
 
         <div class="prof-inc-summary-grid">
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-emerald">
             <div class="prof-kpi-v">${esc(pScope.avgIn12h)}</div>
-            <div class="prof-kpi-l">Avg In (${esc(agg.scopeLabel)})</div>
+            <div class="prof-kpi-l">☀️ Avg In (${esc(agg.scopeLabel)})</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-blue">
             <div class="prof-kpi-v">${esc(pScope.avgDayOut12h)}</div>
-            <div class="prof-kpi-l">Avg Day Out (${pScope.dayShiftCount}d)</div>
+            <div class="prof-kpi-l">🌤️ Avg Day Out (${pScope.dayShiftCount}d)</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-violet">
             <div class="prof-kpi-v" style="color:var(--indigo);">${esc(pScope.avgNightOut12h)}</div>
-            <div class="prof-kpi-l">Avg Night Out (${pScope.nightShiftCount}n)</div>
+            <div class="prof-kpi-l">🌙 Avg Night Out (${pScope.nightShiftCount}n)</div>
           </div>
-          <div class="prof-kpi-box">
+          <div class="prof-kpi-box accent-amber">
             <div class="prof-kpi-v" style="color:var(--brand-text);">${fmtHrs(pScope.avgDutyPerDay)} hrs/d</div>
-            <div class="prof-kpi-l">Avg Duty / Worked Day</div>
+            <div class="prof-kpi-l">⏱️ Avg Duty / Worked Day</div>
           </div>
         </div>
 
@@ -1438,7 +1545,7 @@
                 <th>Avg In</th>
                 <th>Day Out</th>
                 <th>Night Out</th>
-                <th>Avg Duty/d</th>
+                <th>Duty/d</th>
               </tr>
             </thead>
             <tbody>
@@ -1454,8 +1561,10 @@
   root._setProfileSectionRenderers(function (agg, emp) {
     return (
       renderSectionD_OT(agg) +
+      `<div class="prof-pair-grid">` +
       renderSectionE_Night(agg) +
-      renderSectionF_Holiday(agg)
+      renderSectionF_Holiday(agg) +
+      `</div>`
     );
   }, null);
 })(typeof window !== 'undefined' ? window : this);
@@ -1491,16 +1600,16 @@
 
     const topChipsHtml = `
       <div class="prof-issue-chips-bar">
-        <span class="prof-iss-pill ${c.requisition > 0 ? 'req' : ''}">Requisition issues ${c.requisition}</span>
-        <span class="prof-iss-pill ${c.nightSuspect > 0 ? 'req' : ''}">Night suspects ${c.nightSuspect}</span>
-        <span class="prof-iss-pill ${c.punch > 0 ? 'punch' : ''}">Punch problems ${c.punch}</span>
+        <span class="prof-iss-pill ${c.requisition > 0 ? 'req' : ''}">⚠️ Requisition issues <b>${c.requisition}</b></span>
+        <span class="prof-iss-pill ${c.nightSuspect > 0 ? 'req' : ''}">🌙 Night suspects <b>${c.nightSuspect}</b></span>
+        <span class="prof-iss-pill ${c.punch > 0 ? 'punch' : ''}">🔴 Punch problems <b>${c.punch}</b></span>
       </div>
     `;
 
     let bodyHtml = '';
     if (iss.isAllClear) {
       const otherMonthsNote = (agg.scopeType !== 'year' && iss.yearTotalIssuesCount > 0)
-        ? `<div style="margin-top:6px;font-size:11.5px;font-weight:700;color:var(--text-2);">
+        ? `<div style="margin-top:6px;font-size:12px;font-weight:700;color:var(--text-2);">
              (${iss.yearTotalIssuesCount} issue(s) found in other ${agg.targetYear} months — <span style="text-decoration:underline;cursor:pointer;color:var(--brand-text);" onclick="switchProfileScope('year')">tap to view full year</span>)
            </div>`
         : '';
@@ -1517,7 +1626,6 @@
 
       const groupsHtml = iss.byMonth.map(mg => {
         const itemsHtml = mg.items.map(item => {
-          const singleMsg = encodeURIComponent(window.ProfileCalc.buildErpWhatsAppIssueMessage(empMeta, item));
           const badgeTxt = item.type === 'requisition' ? '⚠️ Requisition Missing'
             : item.type === 'nightSuspect' ? '🌙 Night Suspect'
             : '🔴 Punch Problem';
@@ -1560,9 +1668,12 @@
     return `
       <section class="prof-card" id="profSecG" aria-label="My Requisition, OT, and Night Issues">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Check Before Payroll (পে-রোল চেক)</h3>
-            <p class="prof-card-sub" style="color:var(--warning);font-weight:700;">Issue দেখালে requisition/OT ERP team-কে জানান</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico ${iss.isAllClear ? 'emerald' : 'amber'}" aria-hidden="true">${iss.isAllClear ? '🛡️' : '⚠️'}</span>
+            <div>
+              <h3 class="prof-card-title">Check Before Payroll (পে-রোল চেক)</h3>
+              <p class="prof-card-sub" style="color:var(--warning);font-weight:700;">Issue দেখালে requisition/OT ERP team-কে জানান</p>
+            </div>
           </div>
           <span class="prof-tag ${iss.isAllClear ? 'success' : ''}">${iss.isAllClear ? 'All Clear ✅' : c.total + ' Issues'}</span>
         </div>
@@ -1660,109 +1771,120 @@
       <div class="prof-mw-mini-cell">
         <span>${esc(t.shortLabel)}</span>
         <b>${t.otRank ? '#' + t.otRank : '—'}</b>
-        <small style="color:var(--muted);font-size:9.5px;">${t.headcount ? 'of ' + t.headcount : ''}</small>
+        <small style="color:var(--muted);font-size:10px;">${t.headcount ? 'of ' + t.headcount : ''}</small>
       </div>
     `).join('');
 
     return `
-      <section class="prof-card" id="profSecI1" aria-label="Attendance Streak and Mini Calendar">
-        <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Streak &amp; Month Calendar (${esc(act?.shortLabel || '')})</h3>
-            <p class="prof-card-sub">Perfect-attendance streak &amp; daily status strip</p>
+      <div class="prof-pair-grid">
+        <section class="prof-card" id="profSecI1" aria-label="Attendance Streak and Mini Calendar">
+          <div class="prof-card-head">
+            <div class="prof-head-left">
+              <span class="prof-sec-ico emerald" aria-hidden="true">🔥</span>
+              <div>
+                <h3 class="prof-card-title">Streak &amp; Month Calendar (${esc(act?.shortLabel || '')})</h3>
+                <p class="prof-card-sub">Perfect-attendance streak &amp; daily status strip</p>
+              </div>
+            </div>
+            <span class="prof-tag success">🔥 ${ex.perfectMonthsCount} Perfect Month${ex.perfectMonthsCount === 1 ? '' : 's'}</span>
           </div>
-          <span class="prof-tag success">🔥 ${ex.perfectMonthsCount} Perfect Month${ex.perfectMonthsCount === 1 ? '' : 's'}</span>
-        </div>
 
-        <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v" style="color:var(--success);">${ex.currentPerfectStreak}M</div>
-            <div class="prof-kpi-l">Current 100% Streak</div>
+          <div class="prof-att-kpis">
+            <div class="prof-kpi-box accent-emerald">
+              <div class="prof-kpi-v" style="color:var(--success);">${ex.currentPerfectStreak}M</div>
+              <div class="prof-kpi-l">Current 100% Streak</div>
+            </div>
+            <div class="prof-kpi-box">
+              <div class="prof-kpi-v">${ex.maxPerfectStreak}M</div>
+              <div class="prof-kpi-l">Best 100% Streak</div>
+            </div>
+            <div class="prof-kpi-box accent-blue">
+              <div class="prof-kpi-v" style="color:var(--brand-text);">${ex.bestOtMonth ? `${esc(ex.bestOtMonth.label)} (${fmtHrs(ex.bestOtMonth.otHours)}h)` : '—'}</div>
+              <div class="prof-kpi-l">Best OT Month</div>
+            </div>
           </div>
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v">${ex.maxPerfectStreak}M</div>
-            <div class="prof-kpi-l">Best 100% Streak</div>
-          </div>
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v" style="color:var(--brand-text);">${ex.bestOtMonth ? `${esc(ex.bestOtMonth.label)} (${fmtHrs(ex.bestOtMonth.otHours)}h)` : '—'}</div>
-            <div class="prof-kpi-l">Best OT Month</div>
-          </div>
-        </div>
 
-        <div class="prof-inc-legend" style="margin-top:4px;margin-bottom:4px;">
-          <span><i class="prof-leg-dot" style="background:var(--success);"></i>Present (OK)</span>
-          <span><i class="prof-leg-dot" style="background:var(--indigo);"></i>Night (NGT)</span>
-          <span><i class="prof-leg-dot" style="background:var(--warning);"></i>Holiday (HOL)</span>
-          <span><i class="prof-leg-dot" style="background:var(--danger);"></i>Absent/Fix</span>
-          <span><i class="prof-leg-dot" style="background:var(--brand);"></i>Leave (LV)</span>
-        </div>
+          <div class="prof-inc-legend" style="margin-top:4px;margin-bottom:4px;">
+            <span><i class="prof-leg-dot" style="background:var(--success);"></i>Present (OK)</span>
+            <span><i class="prof-leg-dot" style="background:var(--indigo);"></i>Night (NGT)</span>
+            <span><i class="prof-leg-dot" style="background:var(--warning);"></i>Holiday (HOL)</span>
+            <span><i class="prof-leg-dot" style="background:var(--danger);"></i>Absent/Fix</span>
+            <span><i class="prof-leg-dot" style="background:var(--brand);"></i>Leave (LV)</span>
+          </div>
 
-        ${calHtml}
-      </section>
+          ${calHtml}
+        </section>
 
-      <section class="prof-card" id="profSecI2" aria-label="Early Exits, Section Rank, and Section Average">
-        <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Rank, Section Average &amp; Early Exits</h3>
-            <p class="prof-card-sub">Anonymous ${esc(areaLabel)} comparison &amp; Gate Pass / Early Exit count</p>
+        <section class="prof-card" id="profSecI2" aria-label="Early Exits, Section Rank, and Section Average">
+          <div class="prof-card-head">
+            <div class="prof-head-left">
+              <span class="prof-sec-ico amber" aria-hidden="true">🏆</span>
+              <div>
+                <h3 class="prof-card-title">Rank, Section Average &amp; Early Exits</h3>
+                <p class="prof-card-sub">Anonymous ${esc(areaLabel)} comparison &amp; Gate Pass / Early Exit count</p>
+              </div>
+            </div>
+            <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Open Rank ›</button>
           </div>
-          <button type="button" class="calc-mini-btn" onclick="switchPage('leaderboard')">Open Rank ›</button>
-        </div>
 
-        <!-- I3: Section Rank & 3-Month Trend -->
-        <div class="prof-att-kpis">
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v" style="color:var(--brand-text);">${secStats && secStats.otRank ? '#' + secStats.otRank : '—'}</div>
-            <div class="prof-kpi-l">OT Rank (${secStats?.headcount || '—'} in ${esc(areaLabel)})</div>
+          <!-- I3: Section Rank & 3-Month Trend -->
+          <div class="prof-att-kpis">
+            <div class="prof-kpi-box accent-blue">
+              <div class="prof-kpi-v" style="color:var(--brand-text);">${secStats && secStats.otRank ? '#' + secStats.otRank : '—'}</div>
+              <div class="prof-kpi-l">OT Rank (${secStats?.headcount || '—'} in ${esc(areaLabel)})</div>
+            </div>
+            <div class="prof-kpi-box">
+              <div class="prof-kpi-v">${secStats && secStats.dutyRank ? '#' + secStats.dutyRank : '—'}</div>
+              <div class="prof-kpi-l">Duty Rank (${esc(act?.shortLabel || '')})</div>
+            </div>
+            <div class="prof-kpi-box">
+              <div class="prof-kpi-v">${eeScopeTotal}d <small style="font-size:11px;color:var(--muted);">(${eeYearTotal}d yr)</small></div>
+              <div class="prof-kpi-l">Early Exits / Gate Pass</div>
+            </div>
           </div>
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v">${secStats && secStats.dutyRank ? '#' + secStats.dutyRank : '—'}</div>
-            <div class="prof-kpi-l">Duty Rank (${esc(act?.shortLabel || '')})</div>
-          </div>
-          <div class="prof-kpi-box">
-            <div class="prof-kpi-v">${eeScopeTotal}d <small style="font-size:11px;color:var(--muted);">(${eeYearTotal}d yr)</small></div>
-            <div class="prof-kpi-l">Early Exits / Gate Pass</div>
-          </div>
-        </div>
 
-        <div style="font-size:11.5px;font-weight:800;color:var(--text-2);margin-bottom:4px;">3-Month OT Rank Trend in ${esc(areaLabel)}:</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;">
-          ${trend3mHtml}
-        </div>
+          <div style="font-size:12px;font-weight:800;color:var(--text-2);margin-bottom:4px;">3-Month OT Rank Trend in ${esc(areaLabel)}:</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">
+            ${trend3mHtml}
+          </div>
 
-        <!-- I4: Anonymous OT vs Section Average -->
-        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:var(--text);margin-bottom:6px;">
-            <span>OT vs ${esc(areaLabel)} Average (${esc(act?.shortLabel || '')})</span>
-            <span style="color:${otDiff != null && otDiff >= 0 ? 'var(--success)' : 'var(--muted)'};">
-              ${otDiff != null ? (otDiff >= 0 ? '+' + otDiff + 'h above avg' : otDiff + 'h vs avg') : '—'}
-            </span>
+          <!-- I4: Anonymous OT vs Section Average -->
+          <div class="prof-compare-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:var(--text);margin-bottom:6px;">
+              <span>OT vs ${esc(areaLabel)} Average (${esc(act?.shortLabel || '')})</span>
+              <span style="color:${otDiff != null && otDiff >= 0 ? 'var(--success)' : 'var(--muted)'};">
+                ${otDiff != null ? (otDiff >= 0 ? '+' + otDiff + 'h above avg' : otDiff + 'h vs avg') : '—'}
+              </span>
+            </div>
+            <div class="prof-bar-row" style="grid-template-columns:82px 1fr 56px;min-height:28px;">
+              <div class="prof-bar-lbl">My OT</div>
+              <div class="prof-bar-track"><div class="prof-bar-seg-ot" style="width:${myBarW}%;"></div></div>
+              <div class="prof-bar-val">${fmtHrs(myOt)}h</div>
+            </div>
+            <div class="prof-bar-row" style="grid-template-columns:82px 1fr 56px;min-height:28px;">
+              <div class="prof-bar-lbl" style="color:var(--muted);">Section Avg</div>
+              <div class="prof-bar-track"><div style="width:${avgBarW}%;height:100%;background:var(--silver);"></div></div>
+              <div class="prof-bar-val" style="color:var(--muted);">${secAvgOt != null ? fmtHrs(secAvgOt) + 'h' : '—'}</div>
+            </div>
           </div>
-          <div class="prof-bar-row" style="grid-template-columns:82px 1fr 56px;min-height:24px;">
-            <div class="prof-bar-lbl">My OT</div>
-            <div class="prof-bar-track"><div class="prof-bar-seg-ot" style="width:${myBarW}%;"></div></div>
-            <div class="prof-bar-val">${fmtHrs(myOt)}h</div>
-          </div>
-          <div class="prof-bar-row" style="grid-template-columns:82px 1fr 56px;min-height:24px;">
-            <div class="prof-bar-lbl" style="color:var(--muted);">Section Avg</div>
-            <div class="prof-bar-track"><div style="width:${avgBarW}%;height:100%;background:var(--silver);"></div></div>
-            <div class="prof-bar-val" style="color:var(--muted);">${secAvgOt != null ? fmtHrs(secAvgOt) + 'h' : '—'}</div>
-          </div>
-        </div>
 
-        <!-- I2: Month-wise Early Exit counts -->
-        <div style="font-size:11.5px;font-weight:800;color:var(--text-2);margin-bottom:4px;">Early Exit / Gate Pass per Month (${agg.targetYear}):</div>
-        <div class="prof-mw-mini-grid">
-          ${eeMonthsHtml}
-        </div>
-      </section>
+          <!-- I2: Month-wise Early Exit counts -->
+          <div style="font-size:12px;font-weight:800;color:var(--text-2);margin-bottom:4px;">Early Exit / Gate Pass per Month (${agg.targetYear}):</div>
+          <div class="prof-mw-mini-grid">
+            ${eeMonthsHtml}
+          </div>
+        </section>
+      </div>
 
       <!-- I5, I6, I7 + VS Compare Shortcuts -->
       <section class="prof-card" id="profSecActions" aria-label="Quick Actions and Export">
         <div class="prof-card-head">
-          <div>
-            <h3 class="prof-card-title">Quick Actions &amp; Share (শর্টকাট)</h3>
-            <p class="prof-card-sub">Open Daily Report, Payslip Estimator, 1v1 Compare, or Save Summary Image</p>
+          <div class="prof-head-left">
+            <span class="prof-sec-ico blue" aria-hidden="true">⚡</span>
+            <div>
+              <h3 class="prof-card-title">Quick Actions &amp; Share (শর্টকাট)</h3>
+              <p class="prof-card-sub">Open Daily Report, Payslip Estimator, 1v1 Compare, or Save Summary Image</p>
+            </div>
           </div>
         </div>
         <div class="prof-actions-grid">
@@ -1873,7 +1995,7 @@
 
       // Header text
       const nameTxt = document.querySelector('#profileRoot .prof-name')?.textContent || 'Employee';
-      const idTxt = document.querySelector('#profileRoot .prof-id-pill')?.textContent || '';
+      const idTxt = (document.querySelector('#profileRoot .prof-av-id') || document.querySelector('#profileRoot .prof-id-pill'))?.textContent || '';
       const subTxt = document.querySelector('#profileRoot .prof-subline')?.textContent || '';
       const scopeTxt = document.querySelector('#profSecA .prof-hero-badge')?.textContent || 'RPPF Profile Summary';
 
