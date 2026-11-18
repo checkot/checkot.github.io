@@ -82,6 +82,12 @@ def export_excel(page):
 
 def validate_xlsx(path):
     """ফাইল ফাঁকা বা নষ্ট কি না দেখে নেয়।"""
+    if path.suffix.lower() not in (".xlsx", ".xlsm"):
+        # .xls ইত্যাদি হলে openpyxl পারে না; অন্তত ফাইল ফাঁকা নয় সেটুকু দেখি
+        size = path.stat().st_size
+        if size < 1024:
+            raise RuntimeError(f"ফাইল খুব ছোট ({size} bytes)")
+        return -1
     from openpyxl import load_workbook
     wb = load_workbook(path, read_only=True)
     ws = wb.worksheets[0]
@@ -121,7 +127,7 @@ def fetch_account(browser, acc):
         t0 = time.time()
         d = export_excel(page)
         suffix = pathlib.Path(d.suggested_filename).suffix or ".xlsx"
-        tmp = OUT / f"{name}{suffix}.part"
+        tmp = OUT / f"{name}.tmp{suffix}"  # এক্সটেনশন আসল ফাইলেরই থাকবে, নইলে openpyxl খুলতে চায় না
         d.save_as(tmp)
         rows = validate_xlsx(tmp)
         final = OUT / f"{name}{suffix}"
