@@ -670,9 +670,15 @@ function renderMissedPotentialCard(parsed, detection) {
       <span class="${holItems.length > 0 ? 'is-warn' : ''}">Missed Hol: <b>${holItems.length}</b></span>
       <span class="${nightItems.length > 0 ? 'is-vio' : ''}">Missed Night: <b>${nightItems.length}</b></span>
     </div>
-    <div class="missed-pot-bot">
-      <div class="missed-pot-lbl">Potential Grand Total<small>Confirmed + Unconfirmed</small></div>
-      <div class="missed-pot-val"><strong>${fmtAmt(potentialAmt)}</strong><small>+${fmtAmt(pendingAmt)} pending</small></div>
+    <div class="missed-pot-bot is-stacked">
+      <div class="missed-pot-row is-due">
+        <div class="missed-pot-lbl">Due Amount<small>Unconfirmed pending</small></div>
+        <div class="missed-pot-val is-due-val"><strong>+${fmtAmt(pendingAmt)}</strong></div>
+      </div>
+      <div class="missed-pot-row is-grand">
+        <div class="missed-pot-lbl">Potential Grand Total<small>Confirmed + Due</small></div>
+        <div class="missed-pot-val is-grand-val"><strong>${fmtAmt(potentialAmt)}</strong></div>
+      </div>
     </div>
   `;
   card.style.display = 'block';

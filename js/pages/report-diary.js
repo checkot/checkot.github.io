@@ -254,18 +254,11 @@
   }
 
   function renderSpiralRings(force) {
-    const stage = document.getElementById('rptDiaryStage');
+    // Modern Statement Sheet model: metal spiral wire loops & punch-holes retired.
     const leftRail = document.getElementById('rptDiaryRingsLeft');
     const rightRail = document.getElementById('rptDiaryRingsRight');
-    if (!stage || !leftRail || !rightRail) return;
-
-    const rect = stage.getBoundingClientRect();
-    const h = Math.max(180, Math.round((rect && rect.height ? rect.height : stage.offsetHeight) - 12));
-    if (!force && Math.abs(h - _lastRenderedHeight) < 8 && leftRail.firstElementChild) return;
-    _lastRenderedHeight = h;
-
-    leftRail.innerHTML = buildRingsSvg(h, 'left');
-    rightRail.innerHTML = buildRingsSvg(h, 'right');
+    if (leftRail) leftRail.innerHTML = '';
+    if (rightRail) rightRail.innerHTML = '';
   }
 
   function updatePeekLabels() {

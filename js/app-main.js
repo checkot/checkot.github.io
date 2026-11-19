@@ -1933,14 +1933,44 @@ renderExtraVsSlots();
 
 function showComparison(mine, other, otherId, third, allRecords) {
 const div = document.getElementById('compareResult');
-const list = (Array.isArray(allRecords) && allRecords.length >= 2) ? allRecords : (third ? [mine, other, third] : [mine, other]);
+const rawList = (Array.isArray(allRecords) && allRecords.length >= 2) ? allRecords : (third ? [mine, other, third] : [mine, other]);
 const myPref = getPreferredId();
 const isInc = (typeof getAppMode === 'function' && getAppMode() === 'incharge') || document.body.classList.contains('incharge-mode-active');
+
+// Preserve previous period/subsection banner if re-rendering on criterion switch
+const existingTarget = document.getElementById('vsExportTarget');
+const prevPeriodNote = existingTarget?.querySelector('.vs-period-note')?.textContent || (window._vsPeriodLabel ? 'Period: ' + window._vsPeriodLabel : '');
+const prevSubHeaderHtml = existingTarget?.querySelector('.vs-subsection-header-badge')?.outerHTML || '';
+
+window._vsLastArgs = { mine, other, otherId, third, allRecords: rawList, periodNote: prevPeriodNote, subHeaderHtml: prevSubHeaderHtml };
+
+let activeCrit = window._vsActiveCriterion || 'all';
+if (isInc && activeCrit === 'earned') activeCrit = 'all';
+
+// For >3 colleagues (subsection bulk compare), sort columns by the active criterion for immediate clarity
+let list = [...rawList];
+if (list.length > 3 && activeCrit !== 'all') {
+  const sortFns = {
+    holiday: (a, b) => (Number(b.holiday || 0) - Number(a.holiday || 0)) || (Number(b.otHours || 0) - Number(a.otHours || 0)),
+    ot: (a, b) => (Number(b.otHours || 0) - Number(a.otHours || 0)) || (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)),
+    duty: (a, b) => (Number(b.totalDuty || 0) - Number(a.totalDuty || 0)),
+    night: (a, b) => (Number(b.night || 0) - Number(a.night || 0)) || (Number(b.otHours || 0) - Number(a.otHours || 0)),
+    earned: (a, b) => (Number(b.totalEarned || 0) - Number(a.totalEarned || 0)),
+    absent: (a, b) => (Number(a.absentCount || 0) - Number(b.absentCount || 0))
+  };
+  if (sortFns[activeCrit]) list.sort(sortFns[activeCrit]);
+}
+
 const labelFor = (r) => {
-const base = (!isInc && r.id === myPref) ? `You (${esc(r.id)})` : esc(r.id);
-const nm = r.name && r.name !== r.id ? `<div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;margin-left:auto;">${esc(r.name)}</div>` : '';
-return `<div>${base}</div>${nm}`;
+  const base = (!isInc && r.id === myPref) ? `You (${esc(r.id)})` : esc(r.id);
+  const nm = r.name && r.name !== r.id ? `<div style="font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;margin-left:auto;">${esc(r.name)}</div>` : '';
+  return `<div>${base}</div>${nm}`;
 };
+const shortName = (r) => {
+  if (!isInc && r.id === myPref) return `You (${esc(r.id)})`;
+  return r.name && r.name !== r.id ? `${esc(r.name)} (${esc(r.id)})` : esc(r.id);
+};
+
 const maxVal = (fn) => Math.max(...list.map(fn));
 const maxDuty = maxVal(r => r.totalDuty || 0);
 const maxOt = maxVal(r => r.otHours || 0);
@@ -1956,10 +1986,43 @@ const tdCellAbsent = (valStr, numVal) => {
   return `<td class="${isBest ? 'win-cell' : ''}">${valStr}</td>`;
 };
 
+// Compute criterion-aware summary verdict
 let diffText = '';
-if (isInc) {
-  // Manager View: compare OT hours and duty hours (strictly no money/taka)
-  if (!third) {
+let heroBadge = 'Comparison Summary';
+const computeLeader = (fn, unit, lowerIsBetter, label) => {
+  const sorted = [...list].sort((a, b) => lowerIsBetter ? (fn(a) - fn(b)) : (fn(b) - fn(a)));
+  const top = sorted[0];
+  const sec = sorted[1];
+  const topV = fn(top);
+  const secV = fn(sec);
+  const gap = Math.abs(Number((topV - secV).toFixed(2)));
+  heroBadge = label;
+  if (gap === 0) {
+    return `Tied in ${label} at ${unit === '৳' ? '৳ ' + topV.toFixed(2) : topV + ' ' + unit}`;
+  }
+  const fmtV = (v) => unit === '৳' ? `৳ ${v.toFixed(2)}` : `${Number.isInteger(v) ? v : v.toFixed(1)} ${unit}`;
+  const fmtGap = unit === '৳' ? `৳ ${gap.toFixed(2)}` : `${Number.isInteger(gap) ? gap : gap.toFixed(1)} ${unit}`;
+  if (lowerIsBetter) {
+    return `${shortName(top)} has the fewest ${label.toLowerCase()} with ${fmtV(topV)} (${fmtGap} fewer than #2)`;
+  }
+  return `${shortName(top)} leads in ${label} with ${fmtV(topV)} (+${fmtGap} ahead of #2)`;
+};
+
+if (activeCrit === 'holiday') {
+  diffText = computeLeader(r => Number(r.holiday || 0), 'holiday(s)', false, 'Holidays Worked');
+} else if (activeCrit === 'ot') {
+  diffText = computeLeader(r => Number(r.otHours || 0), 'hrs OT', false, 'OT Hours');
+} else if (activeCrit === 'duty') {
+  diffText = computeLeader(r => Number(r.totalDuty || 0), 'hrs', false, 'Total Duty');
+} else if (activeCrit === 'night') {
+  diffText = computeLeader(r => Number(r.night || 0), 'night(s)', false, 'Night Shifts');
+} else if (activeCrit === 'absent') {
+  diffText = computeLeader(r => Number(r.absentCount || 0), 'day(s)', true, 'Absent Days');
+} else if (activeCrit === 'earned' && !isInc) {
+  diffText = computeLeader(r => Number(r.totalEarned || 0), '৳', false, 'Total Earned');
+} else if (isInc) {
+  heroBadge = 'OT & Duty Leader';
+  if (!third && list.length === 2) {
     const otDiff = Number(((mine.otHours || 0) - (other.otHours || 0)).toFixed(2));
     const l1 = esc(mine.name ? `${mine.name} (${mine.id})` : mine.id);
     const l2 = esc(other.name ? `${other.name} (${other.id})` : other.id);
@@ -1990,8 +2053,8 @@ if (isInc) {
     }
   }
 } else {
-  // Normal Employee View: show taka/earnings comparison
-  if (!third) {
+  heroBadge = 'Overall Leader';
+  if (!third && list.length === 2) {
     const diff = mine.totalEarned - other.totalEarned;
     const l1 = mine.id === myPref ? `You (${esc(mine.id)})` : esc(mine.id);
     const l2 = other.id === myPref ? `You (${esc(other.id)})` : esc(other.id);
@@ -2005,8 +2068,75 @@ if (isInc) {
   }
 }
 
+// Holiday quick callout chip for the hero card
+const holSorted = [...list].sort((a, b) => (b.holiday || 0) - (a.holiday || 0));
+const holTop = holSorted[0];
+const holTie = holSorted.length > 1 && (holSorted[0].holiday || 0) === (holSorted[1].holiday || 0);
+const holSummaryChip = maxHol > 0
+  ? (holTie ? `Holidays: Tied at ${maxHol}d` : `Most Holidays: ${esc(holTop.id)} (${holTop.holiday}d)`)
+  : `Holidays: 0d`;
+
+// Visual Head-to-Head Metric Bars for 2-3 colleagues
+let visualBarsHtml = '';
+if (list.length <= 3) {
+  const barMetrics = [
+    { key: 'holiday', label: 'Holidays Worked', unit: 'd', fn: r => Number(r.holiday || 0), fmt: v => `${v} ${v === 1 ? 'day' : 'days'}`, accent: 'is-hol' },
+    { key: 'ot', label: 'OT Hours', unit: 'h', fn: r => Number(r.otHours || 0), fmt: v => `${v} hrs`, accent: 'is-ot' },
+    { key: 'night', label: 'Night Shifts', unit: 'n', fn: r => Number(r.night || 0), fmt: v => `${v} ${v === 1 ? 'night' : 'nights'}`, accent: 'is-night' },
+    { key: 'duty', label: 'Total Duty', unit: 'h', fn: r => Number(r.totalDuty || 0), fmt: v => `${v} hrs`, accent: 'is-duty' }
+  ];
+  if (!isInc) {
+    barMetrics.push({ key: 'earned', label: 'Total Earned', unit: '৳', fn: r => Number(r.totalEarned || 0), fmt: v => `৳ ${v.toFixed(0)}`, accent: 'is-earned' });
+  }
+  const metricsToShow = activeCrit === 'all' ? barMetrics : barMetrics.filter(m => m.key === activeCrit || m.key === 'holiday');
+  const barsInner = metricsToShow.map(m => {
+    const mx = Math.max(1, ...list.map(m.fn));
+    const best = Math.max(...list.map(m.fn));
+    const rows = list.map((r, idx) => {
+      const val = m.fn(r);
+      const pct = val > 0 ? Math.max(8, Math.round((val / mx) * 100)) : 0;
+      const isWin = val > 0 && val === best;
+      const tag = (!isInc && r.id === myPref) ? 'You' : esc(r.id);
+      return `<div class="vs-hbar-row ${isWin ? 'is-win' : ''}">
+        <span class="vs-hbar-id">${tag}</span>
+        <div class="vs-hbar-track"><div class="vs-hbar-fill ${m.accent} is-c${idx}" style="width:${pct}%"></div></div>
+        <span class="vs-hbar-val">${m.fmt(val)}</span>
+      </div>`;
+    }).join('');
+    return `<div class="vs-hbar-group ${activeCrit === m.key ? 'is-focused' : ''}">
+      <div class="vs-hbar-title">${m.label}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+  visualBarsHtml = `<div class="vs-bars-card">${barsInner}</div>`;
+}
+
+const critPills = [
+  { id: 'all', lbl: 'All' },
+  { id: 'holiday', lbl: 'Holidays (Days)' },
+  { id: 'ot', lbl: 'OT Hours' },
+  { id: 'duty', lbl: 'Total Duty' },
+  { id: 'night', lbl: 'Nights' },
+  ...(!isInc ? [{ id: 'earned', lbl: 'Earned' }] : []),
+  { id: 'absent', lbl: 'Absent' }
+];
+const critBarHtml = `<div class="vs-result-crit-bar" id="vsResultCritPills" role="radiogroup" aria-label="Filter Comparison Criteria">
+  ${critPills.map(p => `<button type="button" class="vs-crit-pill ${activeCrit === p.id ? 'active' : ''}" data-crit="${p.id}" onclick="setVsCriterion('${p.id}', true)">${p.lbl}</button>`).join('')}
+</div>`;
+
+const rowCls = (critKey) => activeCrit === critKey ? ' class="vs-focus-row"' : '';
+
 div.innerHTML = `
+${critBarHtml}
 <div id="vsExportTarget">
+<div class="vs-winner-hero">
+  <div class="vs-winner-top">
+    <span class="vs-winner-badge">${heroBadge}</span>
+    <span class="vs-winner-hol-chip">${holSummaryChip}</span>
+  </div>
+  <div class="compare-diff"><strong>${diffText}</strong></div>
+</div>
+${visualBarsHtml}
 <div class="compare-table-wrap">
 <table class="compare-table">
 <tr><th>Details</th>${list.map(r => `<th>${labelFor(r)}</th>`).join('')}</tr>
@@ -2028,28 +2158,27 @@ div.innerHTML = `
   const name = (typeof RATE_TABLE !== 'undefined' && RATE_TABLE[cat]?.name) || cat;
   return `<td>${esc(String(name).replace(/\s*\(.*?\)/g, ''))}</td>`;
 }).join('')}</tr>
-<tr><td>Total duty (hrs)</td>${list.map(r => tdCell(r.totalDuty || 0, r.totalDuty || 0, maxDuty)).join('')}</tr>
-<tr><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
+<tr${rowCls('duty')}><td>Total duty (hrs)</td>${list.map(r => tdCell(r.totalDuty || 0, r.totalDuty || 0, maxDuty)).join('')}</tr>
+<tr${rowCls('ot')}><td>OT hours</td>${list.map(r => tdCell(r.otHours, r.otHours, maxOt)).join('')}</tr>
 <tr><td>OT days (days)</td>${list.map(r => r.otDays == null ? '<td>—</td>' : tdCell(r.otDays, r.otDays, maxOtDays)).join('')}</tr>
-<tr><td>Holiday duty (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
-<tr><td>${isInc ? 'Night duty (nights)' : 'Night Allowance (nights)'}</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
+<tr${rowCls('holiday')}><td>Holiday duty (days)</td>${list.map(r => tdCell(r.holiday, r.holiday, maxHol)).join('')}</tr>
+<tr${rowCls('night')}><td>${isInc ? 'Night duty (nights)' : 'Night Allowance (nights)'}</td>${list.map(r => tdCell(r.night, r.night, maxNight)).join('')}</tr>
 <tr><td>4:30 pm (days)</td>${list.map(r => tdCell(r.plainDays || 0, r.plainDays || 0, maxPlain)).join('')}</tr>
-<tr><td>Total Absent (days)</td>${list.map(r => tdCellAbsent(r.absentCount != null ? r.absentCount : 0, Number(r.absentCount != null ? r.absentCount : 0))).join('')}</tr>
+<tr${rowCls('absent')}><td>Total Absent (days)</td>${list.map(r => tdCellAbsent(r.absentCount != null ? r.absentCount : 0, Number(r.absentCount != null ? r.absentCount : 0))).join('')}</tr>
 ${!isInc ? `
 <tr class="vs-money-row"><td>OT Allowance</td>${list.map(r => `<td>৳ ${r.otAmount.toFixed(2)}</td>`).join('')}</tr>
-<tr class="vs-money-row"><td>Holiday Allowance</td>${list.map(r => `<td>৳ ${r.holidayAmount.toFixed(2)}</td>`).join('')}</tr>
+<tr class="vs-money-row${activeCrit === 'holiday' ? ' vs-focus-row' : ''}"><td>Holiday Allowance</td>${list.map(r => `<td>৳ ${r.holidayAmount.toFixed(2)}</td>`).join('')}</tr>
 <tr class="vs-money-row"><td>Night Allowance</td>${list.map(r => `<td>৳ ${r.nightAmount.toFixed(2)}</td>`).join('')}</tr>
-<tr class="total-row vs-money-row"><td>Total</td>${list.map(r => tdCell('৳ ' + r.totalEarned.toFixed(2), r.totalEarned, maxTotal)).join('')}</tr>
+<tr class="total-row vs-money-row${activeCrit === 'earned' ? ' vs-focus-row' : ''}"><td>Total</td>${list.map(r => tdCell('৳ ' + r.totalEarned.toFixed(2), r.totalEarned, maxTotal)).join('')}</tr>
 ` : ''}
 </table>
 </div>
-<div class="compare-diff"><strong>${diffText}</strong></div>
 </div>
-<div class="btn-grid-2" style="margin-top:10px;">
-<button type="button" class="btn-primary" onclick="downloadVsComparisonPNG(false)">⬇ Download</button>
+<div class="btn-grid-2 vs-result-actions" style="margin-top:12px;">
+<button type="button" class="btn-primary" onclick="downloadVsComparisonPNG(false)">⬇ Save Image</button>
 <button type="button" class="btn-secondary" onclick="downloadVsComparisonPNG(true)">Share</button>
 </div>
-<button type="button" onclick="resetComparison()" class="reset-btn" style="margin-top:8px;">Compare Other IDs</button>`;
+<button type="button" onclick="resetComparison()" class="reset-btn vs-reset-btn" style="margin-top:8px;">Compare Other IDs</button>`;
 div.style.display = "block";
 document.getElementById('compareInputArea').style.display = "none";
 }

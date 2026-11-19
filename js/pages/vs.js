@@ -186,6 +186,7 @@ async function updateVsSlotPreview(slotNum, rawId) {
     const sub = found.sub || found.subsection || d.s || '';
     const area = found.area || (typeof getAreaForId === 'function' ? getAreaForId(u, true) : '');
     const ot = Number(found.otHours || 0);
+    const hol = Number(found.holidayCount != null ? found.holidayCount : found.holiday || 0);
     const badgeTxt = sub ? sub : (area ? area : (found.grade || ''));
     el.innerHTML = `
       <span class="vs-preview-avatar">${esc(name.charAt(0))}</span>
@@ -193,7 +194,10 @@ async function updateVsSlotPreview(slotNum, rawId) {
         <span class="vs-preview-name">${esc(name)}</span>
         <span class="vs-preview-sub">${esc(badgeTxt)}</span>
       </div>
-      <span class="vs-preview-badge">${ot > 0 ? ot + 'h OT' : 'Active'}</span>
+      <div class="vs-preview-badges">
+        <span class="vs-preview-badge">${ot > 0 ? ot + 'h OT' : '0h OT'}</span>
+        <span class="vs-preview-badge is-hol">${hol}d Hol</span>
+      </div>
     `;
     el.style.display = 'flex';
   } else {
@@ -828,3 +832,33 @@ async function runComparison(customIdsList, customHeaderNote) {
     if (compareBtn) compareBtn.disabled = false;
   }
 }
+
+/* ===== Active Comparison Criterion (All, Holiday, OT, Duty, Night, Earned, Absent) ===== */
+window._vsActiveCriterion = window._vsActiveCriterion || 'all';
+window._vsLastArgs = window._vsLastArgs || null;
+
+function setVsCriterion(crit, rerender) {
+  const valid = ['all', 'holiday', 'ot', 'duty', 'night', 'earned', 'absent'];
+  const c = valid.includes(crit) ? crit : 'all';
+  window._vsActiveCriterion = c;
+  document.querySelectorAll('#vsCriteriaPills .vs-crit-pill, #vsResultCritPills .vs-crit-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-crit') === c);
+  });
+  if (rerender && window._vsLastArgs && typeof showComparison === 'function') {
+    const a = window._vsLastArgs;
+    showComparison(a.mine, a.other, a.otherId, a.third, a.allRecords);
+    const target = document.getElementById('vsExportTarget');
+    if (target && a.periodNote && !target.querySelector('.vs-period-note')) {
+      const note = document.createElement('div');
+      note.className = 'vs-period-note';
+      note.textContent = a.periodNote;
+      target.prepend(note);
+    }
+    if (target && a.subHeaderHtml && !target.querySelector('.vs-subsection-header-badge')) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = a.subHeaderHtml;
+      if (wrap.firstElementChild) target.prepend(wrap.firstElementChild);
+    }
+  }
+}
+window.setVsCriterion = setVsCriterion;

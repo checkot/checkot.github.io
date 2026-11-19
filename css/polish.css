@@ -2119,3 +2119,508 @@ html body #page-search #reportWorkerIdentityCard .idmeta {
   font-size: 11px !important;
   line-height: 1.25 !important;
 }
+
+/* ==========================================================================
+   HOME PAGE: Due Amount on TOP, Potential Grand Total BELOW (#missedPotentialCard)
+   ========================================================================== */
+.missed-pot-bot.is-stacked {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  background: var(--surface, #ffffff);
+}
+.missed-pot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+}
+.missed-pot-row.is-due {
+  background: color-mix(in srgb, var(--success, #16a34a) 6%, var(--surface, #ffffff));
+  border-bottom: 1px dashed var(--border, #e2e8f0);
+}
+.missed-pot-row.is-due .missed-pot-lbl {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text, #0f172a);
+}
+.missed-pot-val.is-due-val strong {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--success, #16a34a);
+  font-variant-numeric: tabular-nums;
+}
+.missed-pot-row.is-grand {
+  background: var(--surface, #ffffff);
+  padding: 10px 12px;
+}
+.missed-pot-val.is-grand-val strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand-text, #1d4ed8);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   COMPARISON PAGE (#page-vs): Modern User-Friendly Redesign + Holiday Criteria
+   Overrides legacy 1fr 1fr mobile grid bug and elevates spacing & hierarchy.
+   ========================================================================== */
+html body #page-vs #step4 {
+  padding: 12px !important;
+  border-radius: 16px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 18px -8px rgba(15, 23, 42, 0.10) !important;
+}
+
+html body #page-vs .vs-mode-switch {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 4px !important;
+  padding: 4px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+html body #page-vs .vs-mode-btn {
+  min-height: 36px !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  border-radius: 9px !important;
+  transition: all 0.18s ease !important;
+}
+
+html body #page-vs #vsMonthBarWrap {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  padding: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+html body #page-vs .vs-period-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr) !important;
+  gap: 8px !important;
+}
+
+html body #page-vs .vs-mini-label {
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  color: var(--muted) !important;
+  margin-bottom: 3px !important;
+}
+
+html body #page-vs .vs-select-wrapper select {
+  min-height: 38px !important;
+  border-radius: 9px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  padding: 6px 26px 6px 10px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html body #page-vs .vs-quick-picks {
+  border-top: 1px solid var(--border) !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  gap: 6px !important;
+}
+
+html body #page-vs .vs-quick-picks:empty {
+  display: none !important;
+}
+
+/* Fix mobile broken 1fr 1fr grid — clean stacked head-to-head cards with centered swap pill */
+html body #page-vs .vs-inputs-container {
+  margin-bottom: 12px !important;
+}
+
+html body #page-vs .vs-inputs-grid,
+html body #page-vs .vs-inputs-grid.mode-2,
+html body #page-vs .vs-inputs-grid.mode-3 {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+
+@media (min-width: 640px) {
+  html body #page-vs .vs-inputs-grid.mode-2 {
+    grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  html body #page-vs .vs-inputs-grid.mode-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+}
+
+html body #page-vs .vs-slot-card,
+html body #page-vs .vs-slot-box {
+  background: var(--surface) !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 14px !important;
+  padding: 10px 12px !important;
+  margin: 0 !important;
+  box-shadow: 0 2px 8px -4px rgba(15, 23, 42, 0.07) !important;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease !important;
+}
+
+html body #page-vs .vs-slot-card:focus-within {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px var(--brand-soft) !important;
+}
+
+html body #page-vs .vs-slot-head {
+  margin-bottom: 6px !important;
+}
+
+html body #page-vs .vs-slot-num-badge {
+  width: 20px !important;
+  height: 20px !important;
+  background: var(--brand-soft) !important;
+  color: var(--brand-text) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+html body #page-vs .vs-slot-card input.vs-emp-id-input {
+  min-height: 42px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html body #page-vs .vs-swap-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: -16px auto !important;
+  z-index: 4 !important;
+  position: relative !important;
+}
+
+@media (min-width: 640px) {
+  html body #page-vs .vs-swap-container {
+    margin: 0 !important;
+  }
+}
+
+html body #page-vs .vs-swap-btn {
+  width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  border-radius: 50% !important;
+  background: var(--surface) !important;
+  color: var(--brand-text) !important;
+  border: 1.5px solid var(--brand-soft-border) !important;
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.18) !important;
+}
+
+html body #page-vs .vs-emp-preview-box {
+  margin-top: 8px !important;
+  padding: 6px 8px !important;
+  border-radius: 10px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.vs-preview-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.vs-preview-badge.is-hol {
+  background: color-mix(in srgb, var(--warning, #d97706) 14%, transparent) !important;
+  color: var(--warning, #b45309) !important;
+  border: 1px solid color-mix(in srgb, var(--warning, #d97706) 28%, transparent) !important;
+}
+
+/* Comparison Criteria Pill Selector (Input + Result) */
+.vs-criteria-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 10px;
+  margin-bottom: 12px;
+}
+
+.vs-criteria-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+
+.vs-criteria-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vs-criteria-hint {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.vs-criteria-pills,
+.vs-result-crit-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.vs-criteria-pills::-webkit-scrollbar,
+.vs-result-crit-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.vs-result-crit-bar {
+  margin-bottom: 10px;
+  padding: 4px 2px;
+}
+
+.vs-crit-pill {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vs-crit-pill:hover {
+  border-color: var(--brand);
+  color: var(--brand-text);
+  background: var(--brand-soft);
+}
+
+.vs-crit-pill.active {
+  background: var(--brand);
+  color: #ffffff;
+  border-color: var(--brand);
+  box-shadow: 0 3px 10px -3px rgba(37, 99, 235, 0.45);
+}
+
+body.incharge-mode-active .vs-crit-money {
+  display: none !important;
+}
+
+/* Sleek Subsections Quick VS (no ugly visible scrollbars) */
+html body #page-vs #vsSolidShortcutSection,
+html body #page-vs #vsExecShortcutSection {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  padding: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+html body #page-vs .vs-solid-chips-scroll {
+  scrollbar-width: none !important;
+  padding: 2px 0 4px 0 !important;
+}
+
+html body #page-vs .vs-solid-chips-scroll::-webkit-scrollbar {
+  display: none !important;
+}
+
+html body #page-vs .vs-pair-row {
+  border-top: 1px solid var(--border) !important;
+  margin-top: 7px !important;
+  padding-top: 7px !important;
+}
+
+html body #page-vs #compareBtn {
+  min-height: 46px !important;
+  height: 46px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+  box-shadow: 0 8px 18px -8px rgba(29, 78, 216, 0.55) !important;
+  margin-top: 2px !important;
+}
+
+/* Comparison Result View: Winner Hero + Visual Metric Bars + Focused Table */
+.vs-winner-hero {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand) 10%, var(--surface)) 0%, var(--surface) 100%);
+  border: 1px solid var(--brand-soft-border);
+  border-radius: 14px;
+  padding: 12px 13px;
+  margin-bottom: 10px;
+}
+
+.vs-winner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.vs-winner-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.vs-winner-hol-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning, #d97706) 13%, var(--surface));
+  color: var(--warning, #b45309);
+  border: 1px solid color-mix(in srgb, var(--warning, #d97706) 28%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.vs-winner-hero .compare-diff {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  text-align: left !important;
+  font-size: 13.5px !important;
+  line-height: 1.35 !important;
+  color: var(--text) !important;
+}
+
+.vs-bars-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vs-hbar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.vs-hbar-group.is-focused {
+  background: color-mix(in srgb, var(--brand) 8%, var(--surface-2));
+  border: 1px solid var(--brand-soft-border);
+}
+
+.vs-hbar-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vs-hbar-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 68px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.vs-hbar-id {
+  font-weight: 800;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vs-hbar-row.is-win .vs-hbar-id,
+.vs-hbar-row.is-win .vs-hbar-val {
+  color: var(--brand-text);
+  font-weight: 900;
+}
+
+.vs-hbar-track {
+  height: 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border-strong) 45%, transparent);
+  overflow: hidden;
+}
+
+.vs-hbar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--brand);
+  transition: width 0.35s ease;
+}
+
+.vs-hbar-fill.is-hol { background: #F59E0B; }
+.vs-hbar-fill.is-ot { background: #2563EB; }
+.vs-hbar-fill.is-night { background: #7C3AED; }
+.vs-hbar-fill.is-duty { background: #0EA5E9; }
+.vs-hbar-fill.is-earned { background: #16A34A; }
+.vs-hbar-row:not(.is-win) .vs-hbar-fill { opacity: 0.48; }
+
+.vs-hbar-val {
+  text-align: right;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+#compareResult .compare-table-wrap {
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 2px 10px -4px rgba(15, 23, 42, 0.08) !important;
+}
+
+#compareResult .compare-table tr.vs-focus-row td {
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface)) !important;
+  font-weight: 800 !important;
+}
+
+#compareResult .compare-table tr.vs-focus-row td:first-child {
+  color: var(--brand-text) !important;
+}

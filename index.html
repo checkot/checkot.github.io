@@ -56,8 +56,8 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261119mp3">
   <link rel="stylesheet" href="css/id-guard.css?v=20261115ig1">
-  <link rel="stylesheet" href="css/polish.css?v=20261119mp3">
-  <link rel="stylesheet" href="css/report-diary.css?v=20261117d17">
+  <link rel="stylesheet" href="css/polish.css?v=20261119ux1">
+  <link rel="stylesheet" href="css/report-diary.css?v=20261119ux1">
 </head>
 <body data-page="search">
 <!-- Checkot Fullscreen Interactive Month & Search Loader -->
@@ -1223,9 +1223,24 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 </div>
 
+<div class="vs-criteria-card" id="vsCriteriaCard">
+<div class="vs-criteria-head">
+<span class="vs-criteria-title">Comparison Criteria</span>
+<span class="vs-criteria-hint">Focus &amp; rank by</span>
+</div>
+<div class="vs-criteria-pills" id="vsCriteriaPills" role="radiogroup" aria-label="Comparison Criteria">
+<button type="button" class="vs-crit-pill active" data-crit="all" onclick="setVsCriterion('all')">All Metrics</button>
+<button type="button" class="vs-crit-pill" data-crit="holiday" onclick="setVsCriterion('holiday')">Holidays (Days)</button>
+<button type="button" class="vs-crit-pill" data-crit="ot" onclick="setVsCriterion('ot')">OT Hours</button>
+<button type="button" class="vs-crit-pill" data-crit="duty" onclick="setVsCriterion('duty')">Total Duty</button>
+<button type="button" class="vs-crit-pill" data-crit="night" onclick="setVsCriterion('night')">Nights</button>
+<button type="button" class="vs-crit-pill vs-crit-money" data-crit="earned" onclick="setVsCriterion('earned')">Total Earned</button>
+<button type="button" class="vs-crit-pill" data-crit="absent" onclick="setVsCriterion('absent')">Absent</button>
+</div>
+</div>
 <button id="compareBtn" class="btn-primary vs-submit-btn" onclick="runComparison()">
 <span class="vs-btn-icon">⚖️</span>
-<span>Compare Overtime &amp; Allowances</span>
+<span>Compare Colleagues</span>
 </button>
 <div id="compareStatus" style="margin-top:10px;text-align:center;font-size:13px;color:var(--muted);"></div>
 </div>
@@ -2016,21 +2031,21 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/components/loader.js"></script>
   <script src="js/components/rank-loader.js?v=20261112rl1"></script>
   <script src="js/components/id-guard.js?v=20261115ig1"></script>
-  <script src="js/pages/search.js?v=20261119mp3"></script>
+  <script src="js/pages/search.js?v=20261119ux1"></script>
   <script src="js/pages/history.js"></script>
   <script src="js/pages/settings.js?v=20261115ig1"></script>
   <script src="js/pages/report.js?v=20261115p5"></script>
   <script src="js/pages/profile.js?v=20261119mp3"></script>
-  <script src="js/pages/vs.js?v=20261115ig1"></script>
+  <script src="js/pages/vs.js?v=20261119ux1"></script>
   <script src="js/pages/notices.js?v=20261110qa"></script>
   <script src="js/pages/more.js"></script>
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
   <script src="js/pages/leaderboard.js?v=20261115p6"></script>
-  <script src="js/app-main.js?v=20261115p7"></script>
+  <script src="js/app-main.js?v=20261119ux1"></script>
   <script src="js/components/rank-details.js?v=20261114h1"></script>
   <script src="js/patches/manager-ux.js?v=20261115p5"></script>
-  <script src="js/pages/report-diary.js?v=20261117d17"></script>
+  <script src="js/pages/report-diary.js?v=20261119ux1"></script>
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
