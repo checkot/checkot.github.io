@@ -934,7 +934,7 @@
                 <h3 class="prof-name">${esc(emp.name || emp.id)}</h3>
               </div>
               <div class="prof-subline">
-                ${esc(emp.grade || 'Employee')} • ${esc(areaName)}${subName ? ' (' + esc(subName) + ')' : ''}
+                ${esc((String(emp.id || '').toUpperCase().startsWith('CF') || /^(HELPER|CF)$/i.test(String(emp.grade || '').trim())) ? 'Contractual' : (emp.grade || 'Employee'))} • ${esc(areaName)}${subName ? ' (' + esc(subName) + ')' : ''}
               </div>
               <div class="prof-tags-row">
                 <span class="prof-tag brand">${esc(deptLabel)}</span>

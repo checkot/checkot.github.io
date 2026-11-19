@@ -2108,3 +2108,14 @@ body.incharge-mode-active:not(.has-result) #page-search > #workerIdentityCard{di
   font-weight: 800;
   color: var(--success, #16a34a);
 }
+
+
+/* Show full grade (e.g. Junior Officer C / Contractual) without ellipsis truncation */
+html body #page-search #workerIdentityCard .idmeta,
+html body #page-search #reportWorkerIdentityCard .idmeta {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}

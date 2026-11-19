@@ -293,7 +293,12 @@ function applyExtraction(parsed, detection) {
     const wAreaEl = document.getElementById('workerDeptArea');
     if (wAreaEl) wAreaEl.textContent = areaName;
     const wGradeEl = document.getElementById('workerDeptGrade');
-    if (wGradeEl) wGradeEl.textContent = detection.gradeText || (currentResult && currentResult.grade) || 'Helper';
+    if (wGradeEl) {
+      let gTxt = detection.gradeText || (currentResult && currentResult.grade) || '';
+      const isCf = String(currentSearchId || '').toUpperCase().startsWith('CF') || (detection && detection.category === 'CF') || /^HELPER$/i.test(gTxt.trim()) || /^CF$/i.test(gTxt.trim());
+      if (isCf || !gTxt) gTxt = isCf ? 'Contractual' : 'Employee';
+      wGradeEl.textContent = gTxt;
+    }
     const wMetaEl = document.getElementById('workerMetaTag');
     if (wMetaEl) {
       wMetaEl.style.display = 'none';
