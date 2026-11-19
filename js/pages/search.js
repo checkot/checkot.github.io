@@ -350,7 +350,9 @@ function applyExtraction(parsed, detection) {
     if (currentResult.holidayAmount != null) { const el = document.getElementById('lblHolidayAmount'); if (el) el.innerText = `৳ ${Number(currentResult.holidayAmount).toFixed(2)}`; }
     if (currentResult.nightAmount != null) { const el = document.getElementById('lblNightAmount'); if (el) el.innerText = `৳ ${Number(currentResult.nightAmount).toFixed(2)}`; }
     if (currentResult.totalEarned != null) { const el = document.getElementById('lblGrandTotal'); if (el) el.innerText = `৳ ${Number(currentResult.totalEarned).toFixed(2)}`; }
-  }  if (typeof showDaySummary === 'function') showDaySummary(parsed);
+  }
+  if (typeof showDaySummary === 'function') showDaySummary(parsed);
+  if (typeof renderMissedPotentialCard === 'function') renderMissedPotentialCard(parsed, detection);
   if (typeof showHolidayList === 'function') showHolidayList(parsed.holidayDays);
   if (typeof showNightList === 'function') showNightList(parsed.nightDays);
   if (typeof showRemarks === 'function') showRemarks(parsed.punchProblems, detection);
@@ -566,4 +568,107 @@ function closeShiftDates() {
 if (typeof window !== 'undefined') {
   window.toggleShiftDates = toggleShiftDates;
   window.closeShiftDates = closeShiftDates;
+}
+
+
+function renderMissedPotentialCard(parsed, detection) {
+  const dsGrid = document.getElementById('daySummaryGrid');
+  if (!dsGrid || !dsGrid.parentNode) return;
+  let card = document.getElementById('missedPotentialCard');
+  if (!card) {
+    card = document.createElement('div');
+    card.id = 'missedPotentialCard';
+    card.className = 'missed-pot-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.title = 'Tap to view unconfirmed dates below';
+    card.onclick = function () {
+      const rem = document.getElementById('remarksBox') || document.getElementById('step7');
+      if (rem) rem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    dsGrid.parentNode.insertBefore(card, dsGrid.nextSibling);
+  }
+  if (!parsed) {
+    card.style.display = 'none';
+    return;
+  }
+
+  let otItems = [];
+  let holItems = [];
+  let nightItems = [];
+  try {
+    const empObj = (typeof currentResult !== 'undefined' && currentResult && Array.isArray(currentResult.daily)) ? currentResult : parsed;
+    const allIssues = (typeof computeEmpRequisitionProblems === 'function')
+      ? computeEmpRequisitionProblems(empObj)
+      : (Array.isArray(empObj.requisitionProblems) ? empObj.requisitionProblems : []);
+    if (typeof splitRequisitionIssues === 'function') {
+      const sp = splitRequisitionIssues(allIssues);
+      otItems = sp.ot || [];
+      holItems = sp.holiday || [];
+      nightItems = sp.night || [];
+    } else {
+      otItems = allIssues.filter(p => p && !p.isNightIssue && !p.isHolidayReq);
+      holItems = allIssues.filter(p => p && !p.isNightIssue && p.isHolidayReq);
+      nightItems = allIssues.filter(p => p && p.isNightIssue);
+    }
+  } catch (e) {}
+
+  if (otItems.length === 0 && holItems.length === 0 && nightItems.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  let missedOtHrs = 0;
+  otItems.forEach(item => {
+    const m = String(item.expectedOt || '').match(/(\d+(?:\.\d+)?)\s*h/i);
+    if (m) {
+      missedOtHrs += parseFloat(m[1]) || 0;
+    } else {
+      const d = Number(item.duty || item.elapsed || 0);
+      if (d > 8.5) missedOtHrs += Math.max(0, Math.round((d - 8.5) * 2) / 2);
+    }
+  });
+  missedOtHrs = Math.round(missedOtHrs * 100) / 100;
+
+  const cat = (detection && detection.category)
+    || (document.getElementById('inpCategory') && document.getElementById('inpCategory').value)
+    || 'JO';
+  const rates = (typeof RATE_TABLE !== 'undefined' && RATE_TABLE && RATE_TABLE[cat])
+    ? RATE_TABLE[cat]
+    : { ot: 0, holiday: 0, night: 0 };
+
+  const otRate = Number(rates.otRate != null ? rates.otRate : rates.ot) || 0;
+  const holRate = Number(rates.holidayFlat != null ? rates.holidayFlat : rates.holiday) || 0;
+  const nightRate = Number(rates.nightRate != null ? rates.nightRate : rates.night) || 0;
+  const pendOtAmt = missedOtHrs * otRate;
+  const pendHolAmt = holItems.length * holRate;
+  const pendNightAmt = nightItems.length * nightRate;
+  const pendingAmt = pendOtAmt + pendHolAmt + pendNightAmt;
+
+  const confirmedAmt = Number(
+    (typeof currentResult !== 'undefined' && currentResult && currentResult.totalEarned != null)
+      ? currentResult.totalEarned
+      : (parsed.totalEarned != null ? parsed.totalEarned : 0)
+  );
+  const potentialAmt = confirmedAmt + pendingAmt;
+
+  const otHrsTxt = Number.isInteger(missedOtHrs) ? String(missedOtHrs) : String(missedOtHrs);
+  const otValTxt = otItems.length > 0
+    ? `${otItems.length}${missedOtHrs > 0 ? ' (' + otHrsTxt + 'h)' : ''}`
+    : '0';
+
+  const fmtAmt = (n) => `৳ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  card.innerHTML = `
+    <div class="missed-pot-top">
+      <span class="${otItems.length > 0 ? 'is-warn' : ''}">Missed OT: <b>${otValTxt}</b></span>
+      <span class="${holItems.length > 0 ? 'is-warn' : ''}">Missed Hol: <b>${holItems.length}</b></span>
+      <span class="${nightItems.length > 0 ? 'is-vio' : ''}">Missed Night: <b>${nightItems.length}</b></span>
+    </div>
+    <div class="missed-pot-bot">
+      <div class="missed-pot-lbl">Potential Grand Total<small>Confirmed + Unconfirmed</small></div>
+      <div class="missed-pot-val"><strong>${fmtAmt(potentialAmt)}</strong><small>+${fmtAmt(pendingAmt)} pending</small></div>
+    </div>
+  `;
+  card.style.display = 'block';
 }
