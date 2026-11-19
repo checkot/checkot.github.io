@@ -664,20 +664,20 @@ function renderMissedPotentialCard(parsed, detection) {
 
   const fmtAmt = (n) => `৳ ${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+  const reqParts = [];
+  if (otItems.length > 0) reqParts.push(missedOtHrs > 0 ? `OT (${otHrsTxt}h)` : `OT (${otItems.length}d)`);
+  if (holItems.length > 0) reqParts.push(`Holiday (${holItems.length}d)`);
+  if (nightItems.length > 0) reqParts.push(`Night (${nightItems.length}n)`);
+  const reqSummary = reqParts.join(' + ') || 'OT';
+
   card.innerHTML = `
-    <div class="missed-pot-top">
-      <span class="${otItems.length > 0 ? 'is-warn' : ''}">Missed OT: <b>${otValTxt}</b></span>
-      <span class="${holItems.length > 0 ? 'is-warn' : ''}">Missed Hol: <b>${holItems.length}</b></span>
-      <span class="${nightItems.length > 0 ? 'is-vio' : ''}">Missed Night: <b>${nightItems.length}</b></span>
-    </div>
-    <div class="missed-pot-bot is-stacked">
-      <div class="missed-pot-row is-due">
-        <div class="missed-pot-lbl">Due Amount<small>Unconfirmed pending</small></div>
-        <div class="missed-pot-val is-due-val"><strong>+${fmtAmt(pendingAmt)}</strong></div>
+    <div class="missed-red-a">
+      <div class="missed-red-l">
+        <b>ইমপ্রেসে ${reqSummary} রিকুইজিশন</b> ঠিক হলে আপনি আরও পাবেন:
       </div>
-      <div class="missed-pot-row is-grand">
-        <div class="missed-pot-lbl">Potential Grand Total<small>Confirmed + Due</small></div>
-        <div class="missed-pot-val is-grand-val"><strong>${fmtAmt(potentialAmt)}</strong></div>
+      <div class="missed-red-r">
+        <span class="missed-red-due">আরও +${fmtAmt(pendingAmt)}</span>
+        <span class="missed-red-gt">মোট ${fmtAmt(potentialAmt)}</span>
       </div>
     </div>
   `;
