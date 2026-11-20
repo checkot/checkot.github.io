@@ -1,16 +1,7 @@
 name: Empress daily fetch
 
 on:
-  schedule:
-    # বাংলাদেশ সময় সকাল ৯টা (UTC 3:00 AM)
-    - cron: "0 3 * * *"
-    # বাংলাদেশ সময় বিকেল সাড়ে ৫টা (UTC 11:30 AM)
-    - cron: "30 11 * * *"
-    # বাংলাদেশ সময় রাত ৮টা (UTC 2:00 PM)
-    - cron: "0 14 * * *"
-    # বাংলাদেশ সময় রাত ১১টা (UTC 5:00 PM)
-    - cron: "0 17 * * *"
-  workflow_dispatch: # ম্যানুয়ালি রান করার জন্য
+  workflow_dispatch: # এক্সটার্নাল ক্রন (cron-job.org) এবং ম্যানুয়াল রানের জন্য
 
 permissions:
   contents: write
@@ -67,11 +58,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/*.json
-          # data/emp শুধু শেষ রানে (রাত ১১টা) আর ম্যানুয়াল রানে কমিট হবে
-          SCHED="${{ github.event.schedule }}"
-          if [ -z "$SCHED" ] || [ "$SCHED" = "0 17 * * *" ]; then
-            git add -A data/emp 2>/dev/null || true
-          fi
+          git add -A data/emp 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "Daily automated data update [$(date +'%Y-%m-%d')]"
             git pull --rebase origin "${GITHUB_REF_NAME}"
