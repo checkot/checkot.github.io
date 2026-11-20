@@ -1,0 +1,66 @@
+name: Empress previous month fetch
+
+on:
+  schedule:
+    # প্রত্যেক মাসের ১ থেকে ১০ তারিখ পর্যন্ত প্রতিদিন ১ বার — বাংলাদেশ সময় সকাল ১০:০০টা (UTC 04:00)
+    # (আপনি চাইলে ১-৫ তারিখের জন্য "0 4 1-5 * *" করে নিতে পারেন)
+    - cron: "0 4 1-10 * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run even if today is after the 10th of the month?"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+# empress-daily-fetch-এর সাথে একসাথে রান হয়ে git push কনফ্লিক্ট এড়ানোর জন্য একই concurrency group
+concurrency:
+  group: empress-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch-prev-month:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install playwright openpyxl requests
+          playwright install --with-deps chromium
+
+      - name: Fetch & Convert Previous Month from Empress
+        run: python scripts/fetch_empress_prev_month.py
+        timeout-minutes: 15
+        env:
+          EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_ACCOUNTS }}
+          PREV_MONTH_MAX_DAY: "10"
+          FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true' && '1' || '0' }}
+
+      - name: Upload debug files on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-raw-prev
+          path: raw_prev/
+          retention-days: 3
+
+      - name: Commit Previous Month JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json data/qa/*.json 2>/dev/null || true
+          git add -A data/emp 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Previous month automated data sync [$(date +'%Y-%m-%d')]"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
