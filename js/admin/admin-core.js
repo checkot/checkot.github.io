@@ -4708,6 +4708,7 @@ function applyAdminScopeUI() {
       uploadBtn.innerHTML = `Upload &amp; save to <code>raw/${scope === 'QA' ? 'qa' : 'pr'}/</code>`;
     }
 
+    if (typeof syncAdminEmpressCardVisibility === 'function') syncAdminEmpressCardVisibility(scope);
     if (excelNote) {
       if (scope === 'QA') {
         excelNote.innerHTML = '📌 <strong>Active Target: Quality Assurance (QA)</strong><br>Uploaded files are saved to <code>raw/qa/</code> and auto-converted into <code>data/qa/{month}.json</code>.';
@@ -10132,6 +10133,7 @@ function onAdminExcelDeptChange(val) {
       note.innerHTML = '📌 <strong>Active Target: Production (PR)</strong><br>Uploaded files are saved to <code>raw/pr/</code> and auto-converted into <code>data/{month}.json</code>.';
     }
   }
+  if (typeof syncAdminEmpressCardVisibility === 'function') syncAdminEmpressCardVisibility(val);
   if (typeof adminCheckMonthData === 'function') adminCheckMonthData();
 }
 window.onAdminExcelDeptChange = onAdminExcelDeptChange;

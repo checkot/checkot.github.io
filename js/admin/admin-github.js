@@ -185,3 +185,159 @@ async function adminHandleZipUpload(files) {
 }
 
 window.adminHandleZipUpload = adminHandleZipUpload;
+
+
+/* ==========================================================================
+   EMPRESS AUTO-COLLECT WORKFLOW DISPATCH (PR DEPARTMENT ONLY)
+   Triggers empress-daily-fetch.yml (This Month) or empress-prev-month-fetch.yml (Previous Month)
+   ========================================================================== */
+let _admEmpressPollTimer = null;
+
+function syncAdminEmpressCardVisibility(dept) {
+  const card = document.getElementById('admEmpressFetchCard');
+  if (!card) return;
+  const d = String(dept || document.getElementById('adminExcelDeptSelect')?.value || 'PR').toUpperCase();
+  card.style.display = (d === 'QA') ? 'none' : '';
+}
+window.syncAdminEmpressCardVisibility = syncAdminEmpressCardVisibility;
+
+function _setEmpressStatusHtml(html, color) {
+  const el = document.getElementById('admEmpressFetchStatus');
+  if (!el) return;
+  el.style.color = color || 'var(--muted)';
+  el.innerHTML = html || '';
+}
+
+async function adminTriggerEmpressWorkflow(mode) {
+  const activeDept = String(document.getElementById('adminExcelDeptSelect')?.value || 'PR').toUpperCase();
+  if (activeDept === 'QA') {
+    if (typeof showToast === 'function') showToast('Empress auto-collect is only available for Production (PR) department.', 'warn');
+    return;
+  }
+
+  const token = getGhToken();
+  if (!token) {
+    if (typeof switchAdminTab === 'function') switchAdminTab('setup');
+    const msg = 'First go to "Server & Deploy" and save your Server Access Key (with workflow permission).';
+    _setEmpressStatusHtml(msg, 'var(--danger)');
+    if (typeof showToast === 'function') showToast(msg, 'warn');
+    return;
+  }
+
+  const isPrev = mode === 'previous';
+  const wfFile = isPrev ? 'empress-prev-month-fetch.yml' : 'empress-daily-fetch.yml';
+  const label = isPrev ? 'Previous Month (PR)' : 'This Month (PR)';
+  const btnCurr = document.getElementById('admTriggerCurrMonthBtn');
+  const btnPrev = document.getElementById('admTriggerPrevMonthBtn');
+  if (btnCurr) btnCurr.disabled = true;
+  if (btnPrev) btnPrev.disabled = true;
+
+  _setEmpressStatusHtml(`Triggering <strong>${label}</strong> workflow on GitHub Actions...`, 'var(--brand-text)');
+
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${wfFile}/dispatches`;
+    const bodyObj = isPrev
+      ? { ref: 'main', inputs: { force: 'true' } }
+      : { ref: 'main' };
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bodyObj)
+    });
+
+    if (!resp.ok) {
+      let errTxt = `HTTP ${resp.status}`;
+      try {
+        const j = await resp.json();
+        if (j && j.message) errTxt += ` — ${j.message}`;
+      } catch (e) {}
+      if (resp.status === 403 || resp.status === 401) {
+        errTxt += ' (Ensure your GitHub token has both "repo" and "workflow" permissions.)';
+      } else if (resp.status === 404) {
+        errTxt += ` (Check that .github/workflows/${wfFile} exists on main branch.)`;
+      }
+      throw new Error(errTxt);
+    }
+
+    if (typeof showToast === 'function') showToast(`${label} fetch triggered!`, 'success');
+    _setEmpressStatusHtml(`✓ <strong>${label}</strong> triggered! Waiting for GitHub Actions runner to start...`, 'var(--brand-text)');
+    adminPollEmpressRun(wfFile, label, 0);
+  } catch (err) {
+    _setEmpressStatusHtml(`✕ Failed: ${err.message}`, 'var(--danger)');
+    if (typeof showToast === 'function') showToast(err.message, 'error');
+  } finally {
+    if (btnCurr) btnCurr.disabled = false;
+    if (btnPrev) btnPrev.disabled = false;
+  }
+}
+window.adminTriggerEmpressWorkflow = adminTriggerEmpressWorkflow;
+
+async function adminPollEmpressRun(wfFile, label, attempt) {
+  if (_admEmpressPollTimer) { clearTimeout(_admEmpressPollTimer); _admEmpressPollTimer = null; }
+  const token = getGhToken();
+  if (!token) return;
+
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/${wfFile}/runs?per_page=1`;
+    const resp = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' },
+      cache: 'no-store'
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const run = Array.isArray(data?.workflow_runs) ? data.workflow_runs[0] : null;
+    if (run) {
+      const st = String(run.status || '').toLowerCase();
+      const concl = String(run.conclusion || '').toLowerCase();
+      const link = run.html_url ? ` <a href="${run.html_url}" target="_blank" rel="noopener" style="color:var(--brand-text);text-decoration:underline;">View run ↗</a>` : '';
+      if (st === 'completed') {
+        if (concl === 'success') {
+          _setEmpressStatusHtml(`✓ <strong>${label}</strong> completed successfully!${link}`, 'var(--success)');
+          if (typeof showToast === 'function') showToast(`${label} data updated!`, 'success');
+          if (typeof adminCheckMonthData === 'function') adminCheckMonthData();
+        } else {
+          _setEmpressStatusHtml(`✕ <strong>${label}</strong> finished with status: <strong>${concl || 'failed'}</strong>.${link}`, 'var(--danger)');
+        }
+        return;
+      }
+      _setEmpressStatusHtml(`⏳ <strong>${label}</strong> is <strong>${st.replace('_', ' ')}</strong>...${link}`, 'var(--brand-text)');
+    }
+  } catch (e) {}
+
+  if (attempt < 35) {
+    _admEmpressPollTimer = setTimeout(() => adminPollEmpressRun(wfFile, label, attempt + 1), 8000);
+  }
+}
+
+async function adminCheckEmpressStatus() {
+  const token = getGhToken();
+  if (!token) {
+    _setEmpressStatusHtml('Save your Server Access Key in "Server & Deploy" first to check status.', 'var(--muted)');
+    return;
+  }
+  _setEmpressStatusHtml('Checking latest PR workflow runs...', 'var(--brand-text)');
+  try {
+    const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' };
+    const [rCurr, rPrev] = await Promise.all([
+      fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/empress-daily-fetch.yml/runs?per_page=1`, { headers, cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/actions/workflows/empress-prev-month-fetch.yml/runs?per_page=1`, { headers, cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
+    const fmtRun = (title, d) => {
+      const run = Array.isArray(d?.workflow_runs) ? d.workflow_runs[0] : null;
+      if (!run) return `${title}: no runs yet`;
+      const st = run.status === 'completed' ? (run.conclusion || 'done') : run.status;
+      const dt = run.updated_at ? new Date(run.updated_at).toLocaleString() : '';
+      const link = run.html_url ? ` <a href="${run.html_url}" target="_blank" rel="noopener" style="color:var(--brand-text);text-decoration:underline;">View ↗</a>` : '';
+      return `<strong>${title}:</strong> ${st}${dt ? ' (' + dt + ')' : ''}${link}`;
+    };
+    _setEmpressStatusHtml(`${fmtRun('This Month', rCurr)} &nbsp;·&nbsp; ${fmtRun('Prev Month', rPrev)}`, 'var(--text)');
+  } catch (err) {
+    _setEmpressStatusHtml(`Could not check status: ${err.message}`, 'var(--danger)');
+  }
+}
+window.adminCheckEmpressStatus = adminCheckEmpressStatus;

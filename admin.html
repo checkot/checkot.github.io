@@ -648,6 +648,21 @@ document.documentElement.setAttribute('data-theme', t);
 
         <!-- Excel -->
         <div class="ax-sub active" id="admSubDataExcel">
+          <div class="ax-card" id="admEmpressFetchCard" style="border-left:4px solid var(--brand);margin-bottom:14px;">
+            <div class="ax-card-head" style="align-items:center;gap:8px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <h3 class="ax-card-title" style="margin:0;">Empress Auto-Collect</h3>
+                <span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;background:var(--brand-soft, #eff6ff);color:var(--brand-text, #1d4ed8);border:1px solid var(--brand-soft-border, #bfdbfe);">PR Department Only</span>
+              </div>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm" id="admEmpressStatusBtn" onclick="adminCheckEmpressStatus()">Refresh status</button>
+            </div>
+            <p class="ax-muted" style="margin-top:6px;">Directly trigger GitHub Actions to fetch and convert <strong>Production (PR)</strong> data from Empress without manual Excel upload. Previous month sync keeps current <code>latest.json</code> untouched.</p>
+            <div class="ax-actions ax-actions--start" style="margin-top:10px;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="ax-btn ax-btn--primary" id="admTriggerCurrMonthBtn" onclick="adminTriggerEmpressWorkflow('current')">⚡ Fetch This Month (PR)</button>
+              <button type="button" class="ax-btn ax-btn--ghost" id="admTriggerPrevMonthBtn" onclick="adminTriggerEmpressWorkflow('previous')" style="border:1.5px solid var(--brand);color:var(--brand-text, #1d4ed8);font-weight:700;">↺ Fetch Previous Month (PR)</button>
+            </div>
+            <div id="admEmpressFetchStatus" style="margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted);"></div>
+          </div>
           <div class="ax-card">
             <h3 class="ax-card-title">Upload monthly Excel</h3>
             <!-- Destination Department Selector -->
@@ -999,9 +1014,9 @@ document.documentElement.setAttribute('data-theme', t);
 <script src="js/calculations/early-exit.js?v=20261113ee3"></script>
 <script src="js/admin/admin-compat.js?v=20261110em"></script>
 
-<script src="js/admin/admin-github.js?v=20261115h1"></script>
+<script src="js/admin/admin-github.js?v=20261120ef1"></script>
 <script src="js/admin/admin-deploy.js?v=20261115d2"></script>
-<script src="js/admin/admin-core.js?v=20261115h1"></script>
+<script src="js/admin/admin-core.js?v=20261120ef1"></script>
 <script src="js/admin/admin-holiday-merge.js?v=20261115h1"></script>
 <script src="js/admin/admin-tools.js?v=20261115h1"></script>
 <script src="js/admin/admin-sync-bar.js?v=20261115h1"></script>
