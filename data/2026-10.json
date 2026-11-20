@@ -2,7 +2,7 @@
   "department": "PR",
   "departmentName": "Production",
   "month": "2026-10",
-  "updatedAt": "2026-11-15T06:14:58.832440Z",
+  "updatedAt": "2026-11-20T07:50:07.422538Z",
   "employees": [
     {
       "valid": true,
@@ -356,7 +356,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 5980.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -726,7 +726,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 6094.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -1023,7 +1023,7 @@
       "holidayAmount": 912,
       "nightAmount": 1500,
       "totalEarned": 4616.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -1378,7 +1378,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1500,
       "totalEarned": 5604.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -1789,7 +1789,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1500,
       "totalEarned": 6364.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -2129,7 +2129,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1200,
       "totalEarned": 4886.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -2500,7 +2500,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2100,
       "totalEarned": 6736.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -2849,7 +2849,7 @@
       "holidayAmount": 1216,
       "nightAmount": 1800,
       "totalEarned": 5486.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -3169,7 +3169,7 @@
       "holidayAmount": 1216,
       "nightAmount": 1500,
       "totalEarned": 5148.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -3550,7 +3550,7 @@
       "holidayAmount": 2128,
       "nightAmount": 900,
       "totalEarned": 5118.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -3564,10 +3564,10 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 254.85,
+      "totalDuty": 247.19,
       "otHours": 59.0,
       "holidayCount": 4,
-      "nightCount": 5,
+      "nightCount": 4,
       "regularDaysCount": 14,
       "plainDaysCount": 2,
       "holidayDays": [
@@ -3601,7 +3601,6 @@
         }
       ],
       "nightDays": [
-        "10-OCT-2026",
         "19-OCT-2026",
         "21-OCT-2026",
         "26-OCT-2026",
@@ -3609,7 +3608,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "11-OCT-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -3659,15 +3660,29 @@
           "10-OCT-2026",
           "Sat",
           "07:59",
-          "05:30",
-          16.5166666666667,
+          "21:50",
+          8.85,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          1,
-          "DN"
+          0,
+          "G"
+        ],
+        [
+          "11-OCT-2026",
+          "Sun",
+          "05:30",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ],
         [
           "12-OCT-2026",
@@ -3868,9 +3883,9 @@
       ],
       "otAmount": 2242.0,
       "holidayAmount": 1216,
-      "nightAmount": 1500,
-      "totalEarned": 4958.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "nightAmount": 1200,
+      "totalEarned": 4658.0,
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -4215,7 +4230,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6614.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -4644,7 +4659,7 @@
       "holidayAmount": 2432,
       "nightAmount": 600,
       "totalEarned": 5578.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -4987,7 +5002,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2100,
       "totalEarned": 6280.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -5365,7 +5380,7 @@
       "holidayAmount": 2432,
       "nightAmount": 2100,
       "totalEarned": 7002.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -5681,7 +5696,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6276.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -6046,7 +6061,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2400,
       "totalEarned": 6732.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -6377,7 +6392,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6500.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -6755,7 +6770,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 5900.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -7164,7 +7179,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1500,
       "totalEarned": 6136.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -7595,7 +7610,7 @@
       "holidayAmount": 2432,
       "nightAmount": 1200,
       "totalEarned": 6406.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -7932,7 +7947,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2400,
       "totalEarned": 6466.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -8267,7 +8282,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1800,
       "totalEarned": 6246.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -8728,7 +8743,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5168.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -9042,7 +9057,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 1064.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -9405,7 +9420,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2400,
       "totalEarned": 6884.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -9703,7 +9718,7 @@
       "holidayAmount": 1824,
       "nightAmount": 3300,
       "totalEarned": 7822.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -10104,7 +10119,7 @@
       "holidayAmount": 1824,
       "nightAmount": 600,
       "totalEarned": 4590.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -10600,7 +10615,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -11096,7 +11111,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -11364,7 +11379,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2700,
       "totalEarned": 6462.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -11783,7 +11798,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 4712.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -12127,7 +12142,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6428.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -12409,7 +12424,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2700,
       "totalEarned": 5968.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -12863,7 +12878,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4294.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -13261,7 +13276,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4522.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -13743,7 +13758,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -14099,7 +14114,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6284.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -14595,7 +14610,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -14965,7 +14980,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 5980.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -15370,7 +15385,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4294.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -15866,7 +15881,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -16301,7 +16316,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5016.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -16765,7 +16780,7 @@
       "holidayAmount": 2736,
       "nightAmount": 600,
       "totalEarned": 5920.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -17086,7 +17101,7 @@
       "holidayAmount": 912,
       "nightAmount": 0,
       "totalEarned": 2660.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -17493,7 +17508,7 @@
       "holidayAmount": 2128,
       "nightAmount": 300,
       "totalEarned": 4822.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -17839,7 +17854,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 6990.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -18377,7 +18392,7 @@
       "holidayAmount": 3648,
       "nightAmount": 0,
       "totalEarned": 6498.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -18761,7 +18776,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 4940.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -19070,7 +19085,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2400,
       "totalEarned": 6466.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -19388,7 +19403,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 7332.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -19852,7 +19867,7 @@
       "holidayAmount": 2736,
       "nightAmount": 600,
       "totalEarned": 5540.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -20216,7 +20231,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 6280.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -20540,7 +20555,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2700,
       "totalEarned": 6918.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -20794,7 +20809,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2700,
       "totalEarned": 5968.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -21311,7 +21326,7 @@
       "holidayAmount": 3344,
       "nightAmount": 0,
       "totalEarned": 6232.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -21726,7 +21741,7 @@
       "holidayAmount": 1824,
       "nightAmount": 600,
       "totalEarned": 4780.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -22112,7 +22127,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 7264.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -22652,7 +22667,7 @@
       "holidayAmount": 3648,
       "nightAmount": 0,
       "totalEarned": 6384.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -23179,7 +23194,7 @@
       "holidayAmount": 3648,
       "nightAmount": 600,
       "totalEarned": 8504.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -23642,7 +23657,7 @@
       "holidayAmount": 2736,
       "nightAmount": 300,
       "totalEarned": 5430.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -24138,7 +24153,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 7790.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -24676,7 +24691,7 @@
       "holidayAmount": 3648,
       "nightAmount": 0,
       "totalEarned": 6384.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -25120,7 +25135,7 @@
       "holidayAmount": 2432,
       "nightAmount": 900,
       "totalEarned": 6220.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -25525,7 +25540,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4560.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -25965,7 +25980,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5358.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -25979,10 +25994,10 @@
       "sub": "Dispensing",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 277.44,
+      "totalDuty": 269.79,
       "otHours": 47.0,
       "holidayCount": 6,
-      "nightCount": 4,
+      "nightCount": 3,
       "regularDaysCount": 17,
       "plainDaysCount": 10,
       "holidayDays": [
@@ -26031,13 +26046,14 @@
       ],
       "nightDays": [
         "07-OCT-2026",
-        "11-OCT-2026",
         "22-OCT-2026",
         "31-OCT-2026"
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "12-OCT-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -26129,15 +26145,29 @@
           "11-OCT-2026",
           "Sun",
           "08:01",
-          "05:34",
-          16.55,
+          "21:55",
+          8.9,
           5.0,
           0.0,
           0.0,
           0.0,
           0.0,
-          1,
-          "DN"
+          0,
+          "G"
+        ],
+        [
+          "12-OCT-2026",
+          "Mon",
+          "05:34",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ],
         [
           "13-OCT-2026",
@@ -26366,9 +26396,9 @@
       ],
       "otAmount": 1786.0,
       "holidayAmount": 1824,
-      "nightAmount": 1200,
-      "totalEarned": 4810.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "nightAmount": 900,
+      "totalEarned": 4510.0,
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -26713,7 +26743,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2700,
       "totalEarned": 7222.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -27132,7 +27162,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4446.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -27609,7 +27639,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5282.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -27965,7 +27995,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 5182.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -28267,7 +28297,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6048.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -28679,7 +28709,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4294.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -29140,7 +29170,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5472.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -29636,7 +29666,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -30118,7 +30148,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -30520,7 +30550,7 @@
       "holidayAmount": 1824,
       "nightAmount": 900,
       "totalEarned": 5536.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -31016,7 +31046,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -31277,7 +31307,7 @@
       "holidayAmount": 912,
       "nightAmount": 2700,
       "totalEarned": 5512.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -31752,7 +31782,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5244.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -32128,7 +32158,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1500,
       "totalEarned": 5224.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -32492,7 +32522,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 6470.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -32807,7 +32837,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1500,
       "totalEarned": 4882.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -33238,7 +33268,7 @@
       "holidayAmount": 2432,
       "nightAmount": 1200,
       "totalEarned": 5874.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -33616,7 +33646,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 6584.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -33946,7 +33976,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6504.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -34276,7 +34306,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6352.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -34672,7 +34702,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1200,
       "totalEarned": 5342.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -34918,7 +34948,7 @@
       "holidayAmount": 912,
       "nightAmount": 2400,
       "totalEarned": 5250.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -35414,7 +35444,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -35882,7 +35912,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5472.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -36378,7 +36408,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -36874,7 +36904,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -37356,7 +37386,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -37596,7 +37626,7 @@
       "holidayAmount": 608,
       "nightAmount": 2700,
       "totalEarned": 5398.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -37895,7 +37925,7 @@
       "holidayAmount": 912,
       "nightAmount": 1500,
       "totalEarned": 4274.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -38226,7 +38256,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6576.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -38545,7 +38575,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3300,
       "totalEarned": 7366.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -38929,7 +38959,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6436.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -38943,12 +38973,12 @@
       "sub": "Dispensing",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 231.96,
+      "totalDuty": 228.31,
       "otHours": 36.0,
       "holidayCount": 7,
       "nightCount": 0,
-      "regularDaysCount": 16,
-      "plainDaysCount": 11,
+      "regularDaysCount": 15,
+      "plainDaysCount": 10,
       "holidayDays": [
         {
           "date": "08-OCT-2026",
@@ -39190,20 +39220,6 @@
           "G"
         ],
         [
-          "18-OCT-2026",
-          "Sun",
-          "07:50",
-          "11:29",
-          3.65,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
           "20-OCT-2026",
           "Tue",
           "07:50",
@@ -39334,7 +39350,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 3496.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -39625,7 +39641,7 @@
       "holidayAmount": 912,
       "nightAmount": 3300,
       "totalEarned": 6644.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -40103,7 +40119,7 @@
       "holidayAmount": 3344,
       "nightAmount": 600,
       "totalEarned": 6756.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -40514,7 +40530,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1500,
       "totalEarned": 6060.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -40878,7 +40894,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 6508.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -41248,7 +41264,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 5714.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -41660,7 +41676,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4750.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -42086,7 +42102,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4864.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -42519,7 +42535,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4560.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -42938,7 +42954,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4104.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -43226,7 +43242,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 6800.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -43559,7 +43575,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1200,
       "totalEarned": 5304.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -43872,7 +43888,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1500,
       "totalEarned": 5300.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -44270,7 +44286,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6246.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -44678,7 +44694,7 @@
       "holidayAmount": 2128,
       "nightAmount": 600,
       "totalEarned": 4970.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -45034,7 +45050,7 @@
       "holidayAmount": 1216,
       "nightAmount": 0,
       "totalEarned": 1216.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -45439,7 +45455,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 4674.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -45640,7 +45656,7 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 722.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -45954,7 +45970,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 646.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -46408,7 +46424,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5358.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -46681,7 +46697,7 @@
       "holidayAmount": 912,
       "nightAmount": 2100,
       "totalEarned": 5064.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -47177,7 +47193,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -47603,7 +47619,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4636.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -48099,7 +48115,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5472.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -48337,7 +48353,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2100,
       "totalEarned": 5330.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -48763,7 +48779,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4826.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -49271,7 +49287,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5776.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -49566,7 +49582,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2400,
       "totalEarned": 5592.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -49905,7 +49921,7 @@
       "holidayAmount": 1520,
       "nightAmount": 900,
       "totalEarned": 3978.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -50225,7 +50241,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2100,
       "totalEarned": 6052.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -50574,7 +50590,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1800,
       "totalEarned": 5486.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -51010,7 +51026,7 @@
       "holidayAmount": 2736,
       "nightAmount": 600,
       "totalEarned": 6072.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -51377,7 +51393,7 @@
       "holidayAmount": 1520,
       "nightAmount": 900,
       "totalEarned": 4130.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -51740,7 +51756,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1800,
       "totalEarned": 5942.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -52138,7 +52154,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6588.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -52636,7 +52652,7 @@
       "holidayAmount": 3040,
       "nightAmount": 300,
       "totalEarned": 6114.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -53053,7 +53069,7 @@
       "holidayAmount": 1824,
       "nightAmount": 600,
       "totalEarned": 4096.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -53514,7 +53530,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5282.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -54010,7 +54026,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -54478,7 +54494,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5358.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -54890,7 +54906,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4408.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -55356,7 +55372,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4978.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -55817,7 +55833,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5054.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -56054,7 +56070,7 @@
       "holidayAmount": 912,
       "nightAmount": 0,
       "totalEarned": 1976.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -56550,7 +56566,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -56904,7 +56920,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1200,
       "totalEarned": 4886.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -57259,7 +57275,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1500,
       "totalEarned": 5262.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -57619,7 +57635,7 @@
       "holidayAmount": 1824,
       "nightAmount": 900,
       "totalEarned": 4928.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -57817,7 +57833,7 @@
       "holidayAmount": 912,
       "nightAmount": 600,
       "totalEarned": 2614.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -58165,7 +58181,7 @@
       "holidayAmount": 1216,
       "nightAmount": 1500,
       "totalEarned": 4920.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -58575,7 +58591,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1200,
       "totalEarned": 5608.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -58881,7 +58897,7 @@
       "holidayAmount": 1216,
       "nightAmount": 1500,
       "totalEarned": 4958.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -59279,7 +59295,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 1862.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -59691,7 +59707,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4826.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -60075,7 +60091,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 3914.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -60550,7 +60566,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5282.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -60990,7 +61006,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4180.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -61004,13 +61020,20 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 269.26,
+      "totalDuty": 278.04,
       "otHours": 67.0,
-      "holidayCount": 6,
+      "holidayCount": 7,
       "nightCount": 6,
       "regularDaysCount": 12,
-      "plainDaysCount": 1,
+      "plainDaysCount": 2,
       "holidayDays": [
+        {
+          "date": "06-OCT-2026",
+          "doDuty": 8.78,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
         {
           "date": "08-OCT-2026",
           "doDuty": 8.53,
@@ -61064,9 +61087,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "06-OCT-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -61087,11 +61108,11 @@
         [
           "06-OCT-2026",
           "Tue",
+          "07:47",
           "16:34",
-          "",
           0.0,
           0.0,
-          0.0,
+          8.78,
           0.0,
           0.0,
           0.0,
@@ -61338,10 +61359,10 @@
         ]
       ],
       "otAmount": 2546.0,
-      "holidayAmount": 1824,
+      "holidayAmount": 2128,
       "nightAmount": 1800,
-      "totalEarned": 6170.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "totalEarned": 6474.0,
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -61697,7 +61718,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 5828.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -61934,7 +61955,7 @@
       "holidayAmount": 608,
       "nightAmount": 1800,
       "totalEarned": 4042.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -62038,7 +62059,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 608.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -62432,7 +62453,7 @@
       "holidayAmount": 2432,
       "nightAmount": 2700,
       "totalEarned": 8970.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -62900,7 +62921,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5472.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -63396,7 +63417,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -63801,7 +63822,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4218.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -64276,7 +64297,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5396.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -64681,7 +64702,7 @@
       "holidayAmount": 2128,
       "nightAmount": 0,
       "totalEarned": 4332.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -65009,7 +65030,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 646.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -65361,7 +65382,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2700,
       "totalEarned": 6994.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -65720,7 +65741,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2700,
       "totalEarned": 7792.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -66023,7 +66044,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6576.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -66447,7 +66468,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1200,
       "totalEarned": 6140.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -66844,7 +66865,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1500,
       "totalEarned": 6174.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -67274,7 +67295,7 @@
       "holidayAmount": 2432,
       "nightAmount": 900,
       "totalEarned": 6144.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -67709,7 +67730,7 @@
       "holidayAmount": 2128,
       "nightAmount": 300,
       "totalEarned": 4822.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -68029,7 +68050,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1500,
       "totalEarned": 5528.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -68445,7 +68466,7 @@
       "holidayAmount": 2432,
       "nightAmount": 900,
       "totalEarned": 5650.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -68670,7 +68691,7 @@
       "holidayAmount": 608,
       "nightAmount": 2400,
       "totalEarned": 4946.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -69060,7 +69081,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1500,
       "totalEarned": 5680.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -69344,7 +69365,7 @@
       "holidayAmount": 1216,
       "nightAmount": 3300,
       "totalEarned": 7100.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -69641,7 +69662,7 @@
       "holidayAmount": 1216,
       "nightAmount": 3000,
       "totalEarned": 6914.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -69873,7 +69894,7 @@
       "holidayAmount": 912,
       "nightAmount": 2400,
       "totalEarned": 5250.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -70289,7 +70310,7 @@
       "holidayAmount": 2432,
       "nightAmount": 900,
       "totalEarned": 5498.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -70687,7 +70708,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 3914.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -70987,7 +71008,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 608.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -71385,7 +71406,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6170.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -71739,7 +71760,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1200,
       "totalEarned": 5494.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -72235,7 +72256,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -72677,7 +72698,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4294.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -73095,7 +73116,7 @@
       "holidayAmount": 2432,
       "nightAmount": 1500,
       "totalEarned": 6440.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -73480,7 +73501,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2100,
       "totalEarned": 6926.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -73962,7 +73983,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -74307,7 +74328,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6424.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -74730,7 +74751,7 @@
       "holidayAmount": 2128,
       "nightAmount": 900,
       "totalEarned": 5612.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -75049,7 +75070,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3300,
       "totalEarned": 7290.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -75407,7 +75428,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 6276.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -75901,7 +75922,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5548.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -76226,7 +76247,7 @@
       "holidayAmount": 1824,
       "nightAmount": 3000,
       "totalEarned": 7332.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -76586,7 +76607,7 @@
       "holidayAmount": 2128,
       "nightAmount": 3000,
       "totalEarned": 8130.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -76889,7 +76910,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6462.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -77221,7 +77242,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 7218.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -77572,7 +77593,7 @@
       "holidayAmount": 2432,
       "nightAmount": 2400,
       "totalEarned": 7302.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -77875,7 +77896,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6576.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -78371,7 +78392,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -78759,7 +78780,7 @@
       "holidayAmount": 1824,
       "nightAmount": 900,
       "totalEarned": 4472.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -79101,7 +79122,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 5752.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -79406,7 +79427,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3300,
       "totalEarned": 7480.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -79778,7 +79799,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 6884.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -80083,7 +80104,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1200,
       "totalEarned": 4848.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -80486,7 +80507,7 @@
       "holidayAmount": 2432,
       "nightAmount": 1200,
       "totalEarned": 6140.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -80954,7 +80975,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -81450,7 +81471,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -81775,7 +81796,7 @@
       "holidayAmount": 1824,
       "nightAmount": 3000,
       "totalEarned": 7446.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -82257,7 +82278,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -82644,7 +82665,7 @@
       "holidayAmount": 2432,
       "nightAmount": 600,
       "totalEarned": 5388.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -82919,7 +82940,7 @@
       "holidayAmount": 912,
       "nightAmount": 2700,
       "totalEarned": 6006.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -83251,7 +83272,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 7104.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -83684,7 +83705,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5054.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -83999,7 +84020,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2100,
       "totalEarned": 5444.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -84343,7 +84364,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6656.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -84729,7 +84750,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 3876.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -85047,7 +85068,7 @@
       "holidayAmount": 1520,
       "nightAmount": 3000,
       "totalEarned": 6762.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -85459,7 +85480,7 @@
       "holidayAmount": 2736,
       "nightAmount": 1800,
       "totalEarned": 7082.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -85927,7 +85948,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5358.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -86283,7 +86304,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 6246.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -86646,7 +86667,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1800,
       "totalEarned": 5828.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -87004,7 +87025,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2400,
       "totalEarned": 6808.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -87220,7 +87241,7 @@
       "holidayAmount": 304,
       "nightAmount": 1800,
       "totalEarned": 4080.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -87592,7 +87613,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 7226.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -87922,7 +87943,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 6884.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -88343,7 +88364,7 @@
       "holidayAmount": 2128,
       "nightAmount": 300,
       "totalEarned": 4746.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -88594,7 +88615,7 @@
       "holidayAmount": 1216,
       "nightAmount": 1800,
       "totalEarned": 4840.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -88848,7 +88869,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2700,
       "totalEarned": 6082.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -89135,7 +89156,7 @@
       "holidayAmount": 912,
       "nightAmount": 2100,
       "totalEarned": 5064.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -89479,7 +89500,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 6428.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -89869,7 +89890,7 @@
       "holidayAmount": 2432,
       "nightAmount": 1500,
       "totalEarned": 6364.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -90255,7 +90276,7 @@
       "holidayAmount": 2736,
       "nightAmount": 2400,
       "totalEarned": 7872.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -90615,7 +90636,7 @@
       "holidayAmount": 1824,
       "nightAmount": 900,
       "totalEarned": 5004.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -91041,7 +91062,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4750.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -91453,7 +91474,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4408.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -91696,7 +91717,7 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 38.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -92064,7 +92085,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2700,
       "totalEarned": 7374.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -92326,7 +92347,7 @@
       "holidayAmount": 912,
       "nightAmount": 3000,
       "totalEarned": 6344.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -92652,7 +92673,7 @@
       "holidayAmount": 1824,
       "nightAmount": 3300,
       "totalEarned": 7784.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -93130,7 +93151,7 @@
       "holidayAmount": 2736,
       "nightAmount": 600,
       "totalEarned": 6224.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -93514,7 +93535,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1800,
       "totalEarned": 5790.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -93937,7 +93958,7 @@
       "holidayAmount": 2128,
       "nightAmount": 900,
       "totalEarned": 5536.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -94408,7 +94429,7 @@
       "holidayAmount": 3040,
       "nightAmount": 600,
       "totalEarned": 5540.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -94455,7 +94476,7 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -94779,7 +94800,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2700,
       "totalEarned": 6994.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -95115,7 +95136,7 @@
       "holidayAmount": 1216,
       "nightAmount": 2100,
       "totalEarned": 5862.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -95452,7 +95473,7 @@
       "holidayAmount": 1824,
       "nightAmount": 2400,
       "totalEarned": 6770.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -95840,7 +95861,7 @@
       "holidayAmount": 1824,
       "nightAmount": 900,
       "totalEarned": 5270.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -96221,7 +96242,7 @@
       "holidayAmount": 2128,
       "nightAmount": 900,
       "totalEarned": 5118.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -96284,7 +96305,7 @@
       "holidayAmount": 0,
       "nightAmount": 0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -96721,7 +96742,7 @@
       "holidayAmount": 2736,
       "nightAmount": 900,
       "totalEarned": 6068.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -97110,7 +97131,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1200,
       "totalEarned": 5494.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -97494,7 +97515,7 @@
       "holidayAmount": 1824,
       "nightAmount": 0,
       "totalEarned": 3800.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -97948,7 +97969,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4978.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -98430,7 +98451,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -98870,7 +98891,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4864.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -99275,7 +99296,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 4712.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -99771,7 +99792,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5814.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -100239,7 +100260,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5548.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -100637,7 +100658,7 @@
       "holidayAmount": 2432,
       "nightAmount": 0,
       "totalEarned": 4408.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -100951,7 +100972,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 646.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -101265,7 +101286,7 @@
       "holidayAmount": 912,
       "nightAmount": 1800,
       "totalEarned": 4726.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -101555,7 +101576,7 @@
       "holidayAmount": 1216,
       "nightAmount": 900,
       "totalEarned": 3636.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -101875,7 +101896,7 @@
       "holidayAmount": 1824,
       "nightAmount": 1500,
       "totalEarned": 5034.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -102159,7 +102180,7 @@
       "holidayAmount": 912,
       "nightAmount": 1200,
       "totalEarned": 3518.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -102516,7 +102537,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2100,
       "totalEarned": 5862.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -102885,7 +102906,7 @@
       "holidayAmount": 2128,
       "nightAmount": 1500,
       "totalEarned": 5604.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -103118,7 +103139,7 @@
       "holidayAmount": 912,
       "nightAmount": 2700,
       "totalEarned": 5702.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -103600,7 +103621,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -104075,7 +104096,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5510.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -104550,7 +104571,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5396.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -104990,7 +105011,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5320.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -105451,7 +105472,7 @@
       "holidayAmount": 2736,
       "nightAmount": 0,
       "totalEarned": 5358.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -105947,7 +105968,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5586.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -106443,7 +106464,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -106939,7 +106960,7 @@
       "holidayAmount": 3040,
       "nightAmount": 0,
       "totalEarned": 5700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -107239,7 +107260,7 @@
       "holidayAmount": 608,
       "nightAmount": 0,
       "totalEarned": 608.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -107570,7 +107591,7 @@
       "holidayAmount": 1520,
       "nightAmount": 2700,
       "totalEarned": 6842.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -107905,7 +107926,7 @@
       "holidayAmount": 912,
       "nightAmount": 0,
       "totalEarned": 950.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -108219,7 +108240,7 @@
       "holidayAmount": 1520,
       "nightAmount": 1800,
       "totalEarned": 4802.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -108502,7 +108523,7 @@
       "holidayAmount": 1216,
       "nightAmount": 3000,
       "totalEarned": 6724.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -108846,7 +108867,7 @@
       "holidayAmount": 2128,
       "nightAmount": 2400,
       "totalEarned": 6998.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -109150,7 +109171,7 @@
       "holidayAmount": 1216,
       "nightAmount": 900,
       "totalEarned": 4130.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -109577,7 +109598,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -109591,10 +109612,10 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 314.65,
+      "totalDuty": 307.1,
       "otHours": 70.0,
       "holidayCount": 6,
-      "nightCount": 9,
+      "nightCount": 8,
       "regularDaysCount": 14,
       "plainDaysCount": 4,
       "holidayDays": [
@@ -109614,7 +109635,7 @@
         },
         {
           "date": "20-OCT-2026",
-          "doDuty": 16.6833333333333,
+          "doDuty": 9.13,
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -109647,14 +109668,15 @@
         "12-OCT-2026",
         "15-OCT-2026",
         "18-OCT-2026",
-        "20-OCT-2026",
         "25-OCT-2026",
         "28-OCT-2026",
         "31-OCT-2026"
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [],
+      "punchProblems": [
+        "21-OCT-2026"
+      ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -109816,15 +109838,29 @@
           "20-OCT-2026",
           "Tue",
           "07:56",
-          "05:37",
+          "22:04",
           0.0,
           0.0,
-          16.6833333333333,
+          9.13,
           5.0,
           0.0,
           0.0,
-          1,
-          "DN"
+          0,
+          "G"
+        ],
+        [
+          "21-OCT-2026",
+          "Wed",
+          "05:37",
+          "",
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ],
         [
           "22-OCT-2026",
@@ -109941,9 +109977,9 @@
       ],
       "otAmount": 3850.0,
       "holidayAmount": 3000,
-      "nightAmount": 5400,
-      "totalEarned": 12250.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "nightAmount": 4800,
+      "totalEarned": 11650.0,
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -110439,7 +110475,7 @@
       "holidayAmount": 3000,
       "nightAmount": 0,
       "totalEarned": 5560.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -110830,7 +110866,7 @@
       "holidayAmount": 2800,
       "nightAmount": 3000,
       "totalEarned": 8725.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -111194,7 +111230,7 @@
       "holidayAmount": 1800,
       "nightAmount": 2800,
       "totalEarned": 7000.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -111539,7 +111575,7 @@
       "holidayAmount": 1500,
       "nightAmount": 3600,
       "totalEarned": 8060.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -111863,7 +111899,7 @@
       "holidayAmount": 1800,
       "nightAmount": 3600,
       "totalEarned": 8000.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -112232,7 +112268,7 @@
       "holidayAmount": 2100,
       "nightAmount": 2000,
       "totalEarned": 6620.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -112609,7 +112645,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -112886,7 +112922,7 @@
       "holidayAmount": 1200,
       "nightAmount": 1600,
       "totalEarned": 4480.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -113265,7 +113301,7 @@
       "holidayAmount": 1500,
       "nightAmount": 400,
       "totalEarned": 3260.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -113630,7 +113666,7 @@
       "holidayAmount": 1800,
       "nightAmount": 3200,
       "totalEarned": 7680.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -114022,7 +114058,7 @@
       "holidayAmount": 1500,
       "nightAmount": 800,
       "totalEarned": 4700.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -114350,7 +114386,7 @@
       "holidayAmount": 2100,
       "nightAmount": 2400,
       "totalEarned": 6460.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -114749,7 +114785,7 @@
       "holidayAmount": 2100,
       "nightAmount": 2800,
       "totalEarned": 7780.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -115021,7 +115057,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -115146,7 +115182,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -115442,7 +115478,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -115820,7 +115856,7 @@
       "holidayAmount": 2400,
       "nightAmount": 2800,
       "totalEarned": 7880.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -116288,7 +116324,7 @@
       "holidayAmount": 3000,
       "nightAmount": 0,
       "totalEarned": 5600.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -116637,7 +116673,7 @@
       "holidayAmount": 1200,
       "nightAmount": 2400,
       "totalEarned": 6120.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -117023,7 +117059,7 @@
       "holidayAmount": 2700,
       "nightAmount": 3200,
       "totalEarned": 8060.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -117324,7 +117360,7 @@
       "holidayAmount": 1500,
       "nightAmount": 2800,
       "totalEarned": 6100.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -117799,7 +117835,7 @@
       "holidayAmount": 2700,
       "nightAmount": 0,
       "totalEarned": 4820.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -118158,7 +118194,7 @@
       "holidayAmount": 2100,
       "nightAmount": 3600,
       "totalEarned": 8260.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -118481,7 +118517,7 @@
       "holidayAmount": 900,
       "nightAmount": 0,
       "totalEarned": 1180.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -118833,7 +118869,7 @@
       "holidayAmount": 1800,
       "nightAmount": 3600,
       "totalEarned": 8000.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -119141,7 +119177,7 @@
       "holidayAmount": 1800,
       "nightAmount": 2800,
       "totalEarned": 7240.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -119429,7 +119465,7 @@
       "holidayAmount": 1500,
       "nightAmount": 3200,
       "totalEarned": 7220.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -119781,7 +119817,7 @@
       "holidayAmount": 1800,
       "nightAmount": 3600,
       "totalEarned": 8720.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -120152,7 +120188,7 @@
       "holidayAmount": 1500,
       "nightAmount": 2800,
       "totalEarned": 6300.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -120441,7 +120477,7 @@
       "holidayAmount": 1500,
       "nightAmount": 3600,
       "totalEarned": 7460.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -120804,7 +120840,7 @@
       "holidayAmount": 1800,
       "nightAmount": 2400,
       "totalEarned": 6000.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -121190,7 +121226,7 @@
       "holidayAmount": 2100,
       "nightAmount": 3200,
       "totalEarned": 8500.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -121574,7 +121610,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -121925,7 +121961,7 @@
       "holidayAmount": 1800,
       "nightAmount": 3200,
       "totalEarned": 8000.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -122301,7 +122337,7 @@
       "holidayAmount": 2400,
       "nightAmount": 2000,
       "totalEarned": 6840.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -122797,7 +122833,7 @@
       "holidayAmount": 3000,
       "nightAmount": 0,
       "totalEarned": 5080.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -123239,7 +123275,7 @@
       "holidayAmount": 2400,
       "nightAmount": 400,
       "totalEarned": 4840.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -123714,7 +123750,7 @@
       "holidayAmount": 2700,
       "nightAmount": 0,
       "totalEarned": 5500.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -123728,12 +123764,12 @@
       "sub": "ERP",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 270.56,
+      "totalDuty": 266.89,
       "otHours": 55.0,
       "holidayCount": 8,
       "nightCount": 5,
-      "regularDaysCount": 13,
-      "plainDaysCount": 7,
+      "regularDaysCount": 12,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "02-OCT-2026",
@@ -124030,20 +124066,6 @@
           "G"
         ],
         [
-          "26-OCT-2026",
-          "Mon",
-          "07:56",
-          "11:36",
-          3.67,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          "G"
-        ],
-        [
           "27-OCT-2026",
           "Tue",
           "07:59",
@@ -124104,7 +124126,7 @@
       "holidayAmount": 2400,
       "nightAmount": 2000,
       "totalEarned": 6600.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -124392,7 +124414,7 @@
       "holidayAmount": 900,
       "nightAmount": 3200,
       "totalEarned": 6260.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -124723,7 +124745,7 @@
       "holidayAmount": 1500,
       "nightAmount": 3600,
       "totalEarned": 7380.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -125052,7 +125074,7 @@
       "holidayAmount": 1500,
       "nightAmount": 2800,
       "totalEarned": 6780.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -125426,7 +125448,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -125815,7 +125837,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -126168,7 +126190,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -126611,7 +126633,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -127068,7 +127090,7 @@
       "holidayAmount": 3500,
       "nightAmount": 1000,
       "totalEarned": 6660.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -127422,7 +127444,7 @@
       "holidayAmount": 1800,
       "nightAmount": 4400,
       "totalEarned": 9040.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -127846,7 +127868,7 @@
       "holidayAmount": 3150,
       "nightAmount": 2000,
       "totalEarned": 7310.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -128216,7 +128238,7 @@
       "holidayAmount": 2450,
       "nightAmount": 3000,
       "totalEarned": 7205.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -128546,7 +128568,7 @@
       "holidayAmount": 2100,
       "nightAmount": 3200,
       "totalEarned": 7580.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": true,
@@ -128965,7 +128987,7 @@
       "holidayAmount": 2450,
       "nightAmount": 0,
       "totalEarned": 3575.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     },
     {
       "valid": false,
@@ -129258,7 +129280,7 @@
       "holidayAmount": 0.0,
       "nightAmount": 0.0,
       "totalEarned": 0.0,
-      "fileName": "Monthly_Work_Log_2026-10-01_2026-10-31__1_.xlsx"
+      "fileName": "rf20716_2026-10.xlsx"
     }
   ]
 }
