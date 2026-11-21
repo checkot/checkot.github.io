@@ -3129,3 +3129,39 @@ html body #page-leaderboard #inchargeQuickCard {
 #complianceModal .comp-list li strong {
   color: var(--text);
 }
+
+
+/* === ERP REPRESENTATIVE MODAL ALIGNMENT FIX (2026-11-21) === */
+#erpSupportModal #erpModalListBody .erp-select-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+#erpSupportModal #erpModalListBody .erp-select-item > div:first-child {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+#erpSupportModal #erpModalListBody .erp-select-item .admin-tag {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  margin-left: 4px !important;
+}
+#erpSupportModal #erpModalListBody .erp-select-item .team-wa {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  padding: 7px 14px !important;
+  min-height: 34px !important;
+  border-radius: 10px !important;
+  margin: 0 !important;
+}
