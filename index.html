@@ -56,7 +56,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261119mp3">
   <link rel="stylesheet" href="css/id-guard.css?v=20261115ig1">
-  <link rel="stylesheet" href="css/polish.css?v=20261121rq1">
+  <link rel="stylesheet" href="css/polish.css?v=20261121st1">
   <link rel="stylesheet" href="css/report-diary.css?v=20261121rc1">
 </head>
 <body data-page="search">
@@ -1825,7 +1825,7 @@ document.documentElement.setAttribute('data-theme', t);
 </div>
 </div>
 <div class="card">
-<div class="settings-row"><span class="label">App Version</span><span class="value">3.2.0 (Enterprise Edition)</span></div>
+<div class="settings-row"><span class="label">App Version</span><span class="value">3.3.0 (Enterprise PWA)</span></div>
 <div class="settings-row"><span class="label">Server Engine</span><span class="value">RPPF Cloud Server</span></div>
 <div class="settings-row"><span class="label">Developed by</span><span class="value" style="text-align:right;line-height:1.25;">Md. Ariful Islam<div style="font-size:11.5px;color:var(--muted);font-weight:600;">RPPF Production</div></span></div>
 <div class="settings-row"><span class="label">Facility Filter</span><span class="value" style="color:var(--success);">RPPF Only (Ranking)</span></div>
@@ -1868,10 +1868,14 @@ document.documentElement.setAttribute('data-theme', t);
 <button type="button" class="lb-modal-close" onclick="closeComplianceModal()" aria-label="Close">✕</button>
 </div>
 <div class="lb-modal-body" style="font-size:13px;line-height:1.65;color:var(--text-2);">
-<p style="margin-top:0;"><strong>1. 100% Client-Side Processing:</strong> This application is built as a fully static Progressive Web App (PWA). No employee data is sent to any third-party server, external database or tracking script.</p>
-<p><strong>2. Salary &amp; Personal Preferences Privacy:</strong> The monthly salary a user enters in the payslip calculator stays only in the local storage of the user device (<code>localStorage</code>) and is never sent to any server.</p>
-<p><strong>3. RPPF Cloud Server Access Control:</strong> Only an authorized admin can update the pre-indexed overtime summary (<code>data/YYYY-MM.json</code>) over an encrypted HTTPS connection.</p>
-<p style="margin-bottom:0;"><strong>4. Zero External Telemetry:</strong> The app contains no ads, analytics or external data-mining SDK.</p>
+<div class="comp-meta-strip">Last updated: Nov 2026 &bull; App v3.3.0 &bull; PR &amp; QA Departments</div>
+<ul class="comp-list">
+  <li><strong>1. Static Client-Side PWA Architecture:</strong> All overtime, attendance, ranking, comparison, and report calculations run directly inside the user’s browser with offline Service Worker caching. No ads or commercial analytics SDKs are used.</li>
+  <li><strong>2. On-Device Salary &amp; Personal Privacy:</strong> Monthly salary entered in the Payslip Calculator, saved Employee ID, theme preference, and Manager Assessment Job Knowledge marks stay strictly in device <code>localStorage</code> and are never uploaded. Payslip inputs stay hidden in In-Charge mode.</li>
+  <li><strong>3. Automated Data Sync &amp; Server Control:</strong> Monthly attendance summaries (<code>data/YYYY-MM.json</code>) and notices are synced over encrypted HTTPS via authorized Empress &amp; Telegram workflows or verified Admin Panel uploads. Live runtime data files are protected from code deployments.</li>
+  <li><strong>4. Role-Based Access &amp; PIN Hashing:</strong> In-Charge, ERP Admin, and Manager views (including restricted Assessment v2) require verified PBKDF2-hashed PIN sessions (<code>access.json</code>). Raw PINs are never stored or logged.</li>
+  <li><strong>5. Minimal Plant Telemetry &amp; Manual Sharing:</strong> Live Plant Telemetry records only active Employee ID &amp; section presence (never salary, punch logs, or personal contacts). WhatsApp ERP forwarding happens only when explicitly tapped by the user.</li>
+</ul>
 </div>
 </div>
 </div>

@@ -2965,3 +2965,167 @@ html body #page-vs #compareBtn {
 html body #page-leaderboard #inchargeQuickCard {
   display: none !important;
 }
+
+
+/* === COMPACT 1-SCREEN SETTINGS & UPDATED COMPLIANCE MODAL (2026-11-21) === */
+#page-settings .app-header {
+  padding: 6px 10px !important;
+  margin-bottom: 6px !important;
+}
+#page-settings .settings-desktop-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px !important;
+}
+@media (min-width: 900px) {
+  #page-settings .settings-desktop-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 14px !important;
+    align-items: start !important;
+  }
+}
+#page-settings .card {
+  padding: 9px 11px !important;
+  margin-bottom: 8px !important;
+  border-radius: 12px !important;
+}
+#page-settings .settings-desktop-grid > .card:last-child,
+#page-settings .settings-desktop-grid > div > .card:last-child {
+  margin-bottom: 0 !important;
+}
+#page-settings .card-title {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  margin-bottom: 4px !important;
+}
+#page-settings .card-sub {
+  display: none !important;
+}
+#page-settings #settingsProfileCard .settings-row {
+  padding: 3px 0 !important;
+  font-size: 12.5px !important;
+}
+#page-settings #settingsProfileCard > div[style*="border-top"] {
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+}
+#page-settings #settingsProfileCard label {
+  display: none !important;
+}
+#page-settings #settingsProfileCard .incharge-search-row {
+  gap: 6px !important;
+}
+#page-settings #settingsProfileCard input#settingsNewIdInput {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 4px 10px !important;
+  font-size: 12.5px !important;
+}
+#page-settings #settingsProfileCard .incharge-search-row .btn-primary {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+  font-size: 12.5px !important;
+}
+#page-settings #settingsProfileCard .btn-grid-2 {
+  margin-top: 6px !important;
+  gap: 6px !important;
+}
+#page-settings #settingsProfileCard .btn-grid-2 button {
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+}
+/* Compact 1-row Theme Card */
+#page-settings .theme-seg {
+  margin-top: 4px !important;
+}
+#page-settings .theme-seg button {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 2px 8px !important;
+  font-size: 12px !important;
+}
+/* Compact Telemetry Card */
+#page-settings #settingsTelemetryCard .telemetry-grid {
+  gap: 6px !important;
+  margin-bottom: 6px !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-box {
+  padding: 6px 8px !important;
+  border-radius: 9px !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-box-title {
+  font-size: 11px !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-val {
+  font-size: 17px !important;
+  line-height: 1.1 !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-unit {
+  font-size: 11px !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-sub {
+  display: none !important;
+}
+#page-settings #settingsTelemetryCard .btn-primary {
+  margin: 0 0 5px 0 !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+}
+#page-settings #settingsTelemetryCard .telemetry-footer-note {
+  font-size: 10.5px !important;
+  padding: 0 !important;
+}
+/* Compact App Info & Compliance Card */
+#page-settings .settings-row {
+  padding: 4px 0 !important;
+  font-size: 12px !important;
+  min-height: 26px !important;
+}
+#page-settings .settings-row .calc-mini-btn {
+  min-height: 26px !important;
+  padding: 3px 9px !important;
+  font-size: 11.5px !important;
+}
+#page-settings .settings-footer {
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+  font-size: 10.5px !important;
+}
+
+/* Updated Compliance Modal readability */
+#complianceModal .comp-meta-strip {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--brand-text);
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-soft-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+}
+#complianceModal .comp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#complianceModal .comp-list li {
+  font-size: 12.5px;
+  line-height: 1.48;
+  color: var(--text-2);
+  padding: 7px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+#complianceModal .comp-list li strong {
+  color: var(--text);
+}
