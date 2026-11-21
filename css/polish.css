@@ -3165,3 +3165,58 @@ html body #page-leaderboard #inchargeQuickCard {
   border-radius: 10px !important;
   margin: 0 !important;
 }
+
+
+/* === HEADER ACTIVE NOW PILL + SETTINGS-ONLY THEME TOGGLE (2026-11-21) === */
+html body #headerDeptBadge,
+html body #page-search #mainHeaderP,
+html body .app-header .theme-toggle,
+html body .topnav .theme-toggle {
+  display: none !important;
+}
+
+html body #headerLiveActivePill.header-live-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 0 11px !important;
+  margin-left: auto !important;
+  border-radius: 999px !important;
+  background: #ECFDF5 !important;
+  border: 1px solid rgba(22, 163, 74, 0.28) !important;
+  color: #15803D !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 4px rgba(22, 163, 74, 0.10) !important;
+}
+
+html body #headerLiveActivePill .live-pulse-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: #22C55E !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.24) !important;
+  flex-shrink: 0 !important;
+}
+
+:root[data-theme="dark"] #headerLiveActivePill.header-live-pill,
+body.dark-mode #headerLiveActivePill.header-live-pill {
+  background: rgba(34, 197, 94, 0.14) !important;
+  border-color: rgba(74, 222, 128, 0.34) !important;
+  color: #4ADE80 !important;
+}
+
+@media (min-width: 900px) {
+  html body .page.side-drawer-page {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

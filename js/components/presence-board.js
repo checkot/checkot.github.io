@@ -100,13 +100,52 @@
     } catch (e) { status = 'Not connected'; render(); }
   }
 
+  const DEV_PRESENCE_ID = 'RF20850';
+  function isDeveloperPresenceAllowed() {
+    try {
+      if (window.RppfAccess && typeof window.RppfAccess.getSession === 'function') {
+        const s = window.RppfAccess.getSession();
+        if (s && String(s.id || '').trim().toUpperCase() === DEV_PRESENCE_ID) return true;
+      }
+      if (typeof window.isAdminLoggedIn === 'function' && window.isAdminLoggedIn()) return true;
+      try {
+        const keys = ['rppf_saved_id', 'rppf_registered_id', 'rppf_emp_id', 'ot_saved_id'];
+        for (let i = 0; i < keys.length; i++) {
+          if (String(localStorage.getItem(keys[i]) || '').trim().toUpperCase() === DEV_PRESENCE_ID) return true;
+        }
+      } catch (_lsErr) {}
+      if (typeof window.getPreferredId === 'function' && String(window.getPreferredId() || '').trim().toUpperCase() === DEV_PRESENCE_ID) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  window.syncPresenceBoardVisibility = function () {
+    const allowed = isDeveloperPresenceAllowed();
+    const btn = $('settingsPresenceBoardBtn');
+    if (btn) btn.style.display = allowed ? '' : 'none';
+    const pill = $('headerLiveActivePill');
+    if (pill) {
+      pill.style.cursor = allowed ? 'pointer' : 'default';
+      pill.setAttribute('aria-disabled', allowed ? 'false' : 'true');
+    }
+  };
+
   window.openPresenceBoard = function () {
+    if (!isDeveloperPresenceAllowed()) return;
     ensureModal(); tab = 'online'; deptFilter = 'mine'; q = ''; status = 'Connecting\u2026';
     const s = $('pbSearch'); if (s) s.value = '';
     sync(); render();
     $('presenceBoardModal').classList.add('open');
     startListening();
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.syncPresenceBoardVisibility);
+  } else {
+    setTimeout(window.syncPresenceBoardVisibility, 0);
+  }
+  window.addEventListener('hashchange', window.syncPresenceBoardVisibility);
+  window.addEventListener('storage', window.syncPresenceBoardVisibility);
   window.closePresenceBoard = function () {
     const m = $('presenceBoardModal'); if (m) m.classList.remove('open');
     stopListening();

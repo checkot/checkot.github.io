@@ -111,6 +111,8 @@
     if (moreEl) moreEl.textContent = val;
     const homeEl = document.getElementById('homeLiveActiveCount');
     if (homeEl) homeEl.textContent = val;
+    const pillEl = document.getElementById('headerLiveActiveCount');
+    if (pillEl) pillEl.textContent = val;
   }
 
   function updateMauDisplay(count, monthStr) {

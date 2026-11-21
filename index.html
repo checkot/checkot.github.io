@@ -56,8 +56,8 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261119mp3">
   <link rel="stylesheet" href="css/id-guard.css?v=20261115ig1">
-  <link rel="stylesheet" href="css/polish.css?v=20261121al1">
-  <link rel="stylesheet" href="css/report-diary.css?v=20261121al1">
+  <link rel="stylesheet" href="css/polish.css?v=20261121hd1">
+  <link rel="stylesheet" href="css/report-diary.css?v=20261121hd1">
 </head>
 <body data-page="search">
 <!-- Checkot Fullscreen Interactive Month & Search Loader -->
@@ -254,7 +254,7 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="app-header">
 <img class="logo" src="https://checkot.github.io/icon.png" alt="RPPF" onerror="this.onerror=null;this.src=FALLBACK_LOGO_URI;">
 <div class="header" id="mainHeader">
-<h2 id="mainHeaderH2">RENATA PLC</h2>
+<h2 id="mainHeaderH2" onclick="openModeSetupModal()" title="Tap to switch department or mode" style="cursor:pointer;">RENATA PLC</h2>
 <p id="mainHeaderP">Overtime report and calculator • <span role="button" tabindex="0" onclick="openPresenceBoard()" title="Who's active" style="font-weight:700;color:var(--brand-text);cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;"><span class="live-dot" style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;margin-right:3px;"></span><span id="homeLiveActiveCount">–</span> active</span></p>
 </div>
 <div class="inc-global-month-bar" id="incGlobalMonthBar" style="display:none;" aria-label="In-Charge Global Month Selector">
@@ -268,7 +268,7 @@ document.documentElement.setAttribute('data-theme', t);
   </select>
   <span class="inc-gm-diff-note" id="incGlobalMonthNote" title="Why 334 vs 339: Nov 2026 is the current partial month (334 active); Oct 2026 is the last completed full month (339 active).">Nov (partial): 334 · Oct (full): 339</span>
 </div>
-<button type="button" id="headerDeptBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Current Department" style="margin-right:4px;background:var(--surface-2);color:var(--brand);font-weight:800;border:1px solid var(--border);">PR</button><button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Click to switch mode (Floor In-Charge / Employee) or change department">Mode</button>
+<button type="button" id="headerLiveActivePill" class="header-live-pill" onclick="openPresenceBoard()" title="Active staff online right now"><span class="live-pulse-dot" aria-hidden="true"></span><span id="headerLiveActiveCount">1</span> Active Now</button><button type="button" id="headerDeptBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Current Department" style="margin-right:4px;background:var(--surface-2);color:var(--brand);font-weight:800;border:1px solid var(--border);">PR</button><button type="button" id="headerModeBadge" class="mode-pill-btn" onclick="openModeSetupModal()" title="Click to switch mode (Floor In-Charge / Employee) or change department">Mode</button>
 <button id="backToLbBtn" class="icon-btn" onclick="backToLeaderboard()" style="display:none;" aria-label="Back to list">
 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
 </button>
@@ -1818,7 +1818,7 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="telemetry-sub" id="telemetryMauSub">Active this month</div>
 </div>
 </div>
-<button type="button" class="btn-primary" style="margin:4px 0 10px;" onclick="openPresenceBoard()">Who’s active &amp; today’s check-ins</button>
+<button type="button" id="settingsPresenceBoardBtn" class="btn-primary" style="margin:4px 0 10px;display:none;" onclick="openPresenceBoard()">Who’s active &amp; today’s check-ins</button>
 <div class="telemetry-footer-note">
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 <span>Shows employee ID &amp; section only • No salary or punch data</span>
@@ -2053,7 +2053,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/components/pwa-install.js?v=20261106a"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/components/telemetry.js?v=20261112o2"></script>
-  <script src="js/components/presence-board.js?v=20261112o2"></script>
+  <script src="js/components/telemetry.js?v=20261121hd1"></script>
+  <script src="js/components/presence-board.js?v=20261121hd1"></script>
 </body>
 </html>
