@@ -2777,3 +2777,185 @@ html body #page-vs #compareBtn {
     max-width: none !important;
   }
 }
+
+
+/* === OPTION 2: EXECUTIVE SINGLE-COLUMN DESKTOP + 1-LINE TOPNAV (2026-11-21) === */
+@media (min-width: 900px) {
+  /* 1) Keep Top Navigation strictly on ONE single crisp horizontal row (900px+) */
+  html body .topnav {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    padding: 8px 20px !important;
+  }
+  html body .topnav-brand {
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+  html body .topnav-menu {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 2px !important;
+    margin-left: auto !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+  html body .topnav-menu::-webkit-scrollbar {
+    display: none !important;
+  }
+  html body .topnav-item {
+    padding: 5px 8px !important;
+    min-height: 34px !important;
+    font-size: 12.5px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+  html body .topnav .mode-pill-btn,
+  html body .topnav .theme-toggle {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+  @media (min-width: 1120px) {
+    html body .topnav-item {
+      padding: 6px 11px !important;
+      font-size: 13px !important;
+    }
+    html body .topnav-menu {
+      gap: 4px !important;
+    }
+  }
+
+  /* 2) Employee Mode Single-Column Centered Executive Stack (leaves In-Charge 2-col untouched) */
+  html body:not(.incharge-mode-active) #page-search.active {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    max-width: 880px !important;
+    margin: 0 auto !important;
+  }
+  html body:not(.incharge-mode-active) #page-search.active > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3) Compact 1-Row Search Toolbar */
+  html body:not(.incharge-mode-active) #page-search #searchFormCard {
+    display: grid !important;
+    grid-template-columns: 240px minmax(0, 1fr) auto !important;
+    gap: 8px 10px !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > label {
+    display: none !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > .row {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > .input-clear-wrap {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    margin: 0 !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #searchBtn {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    min-width: 148px !important;
+    padding: 0 18px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #recentSearchChips,
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #spinner,
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #status,
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #progress {
+    grid-column: 1 / -1 !important;
+    margin-top: 0 !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #searchFormCard > #status {
+    text-align: left !important;
+    font-size: 12px !important;
+  }
+
+  /* 4) Option 2 Executive Horizontal Summary Card (#step3) */
+  html body:not(.incharge-mode-active) #page-search #step3 {
+    padding: 14px 16px !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 > .card-head {
+    display: none !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 #calcInputs {
+    display: grid !important;
+    grid-template-columns: minmax(250px, 0.88fr) minmax(0, 1.42fr) !important;
+    gap: 10px 14px !important;
+    align-items: stretch !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 .grand-total-block {
+    grid-column: 1 !important;
+    grid-row: 1 / span 3 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 142px !important;
+    border-radius: 14px !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 .bill-list {
+    grid-column: 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 0 !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 .bill-list .bill-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    padding: 10px 11px !important;
+    margin: 0 !important;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 11px !important;
+    min-height: 82px !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 .bill-list .breakdown-left {
+    width: 100% !important;
+    gap: 7px !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 .bill-list .breakdown-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+    margin-top: auto !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step3 #missedPotentialCard,
+  html body:not(.incharge-mode-active) #page-search #step3 #daySummaryGrid {
+    grid-column: 2 !important;
+    margin: 0 !important;
+  }
+
+  /* 5) Full-Width Work Log (#step7) aligned pixel-for-pixel with zero white ghost box */
+  html body:not(.incharge-mode-active) #page-search #step7 {
+    padding: 0 !important;
+  }
+  html body:not(.incharge-mode-active) #page-search #step7 .diary-shell,
+  html body:not(.incharge-mode-active) #page-search #step7 .diary-page-stage,
+  html body:not(.incharge-mode-active) #page-search #step7 .rpt-scroll-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
