@@ -134,10 +134,12 @@
 
   window.syncPresenceBoardVisibility = function () {
     const dev = isDeveloperPresenceAllowed();
+    const card = $('settingsTelemetryCard');
+    if (card) card.style.display = dev ? '' : 'none';
     const btn = $('settingsPresenceBoardBtn');
     if (btn) {
-      btn.style.display = '';
-      btn.textContent = dev ? 'Who\u2019s active & today\u2019s check-ins' : 'Who\u2019s active right now';
+      btn.style.display = dev ? '' : 'none';
+      btn.textContent = 'Who\u2019s active & today\u2019s check-ins';
     }
     const pill = $('headerLiveActivePill');
     if (pill) {
