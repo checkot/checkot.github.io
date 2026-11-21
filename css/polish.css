@@ -3220,3 +3220,90 @@ body.dark-mode #headerLiveActivePill.header-live-pill {
     max-width: 100% !important;
   }
 }
+
+
+/* === DESIGN 1: SHARP SWISS EDITORIAL HOME (0px-2px CORNERS, 2026-11-21) === */
+html body #page-search .app-header,
+html body #page-search .card,
+html body #page-search #searchFormCard,
+html body #page-search #workerIdentityCard,
+html body #page-search #workerIdentityCard.worker-identity-card,
+html body #page-search #workerIdentityCard > div,
+html body #page-search #payslipCard input,
+html body #page-search #payslipCard button,
+html body #page-search #workerIdentityCard .wic-top,
+html body #page-search #workerIdentityCard .wic-id-badge,
+html body #page-search #workerIdentityCard .wic-swap-btn,
+html body #page-search #step3,
+html body #page-search #step3 .grand-total-block,
+html body #page-search #step3 #calcInputs .grand-total-block,
+html body #page-search #workerIdentityCard .idblock,
+html body #page-search #workerIdentityCard .id-change-btn,
+html body #page-search #step3 .bill-list,
+html body #page-search #step3 .bill-row,
+html body #page-search #step3 .breakdown-icon,
+html body #page-search #step3 #missedPotentialCard,
+html body #page-search #payslipCard,
+html body #page-search #payslipCard .collapse-header,
+html body #page-search #step7 .rpt-zoom-bar,
+html body #page-search #step7 .rpt-zoom-btns,
+html body #page-search #step7 .rpt-zoom-btn,
+html body #page-search #step7 .rpt-scroll-box,
+html body #page-search #step7 .diary-review-card,
+html body #page-search #step7 .diary-review-card #step7LabelText,
+html body #page-search #step7 .diary-review-card .rc-wa-btn,
+html body #page-search #step7 .diary-review-card .rpt-actions button,
+html body #page-search #step7 .diary-review-card .rpt-act-compare,
+html body #page-search #headerLiveActivePill.header-live-pill,
+html body #page-search #searchFormCard input,
+html body #page-search #searchFormCard select,
+html body #page-search #searchFormCard button,
+html body #page-search .recent-chip,
+html body #page-search .rc-badge,
+html body #page-search .rc-chip {
+  border-radius: 2px !important;
+}
+
+/* Crisp Swiss architectural flat borders (no puffy drop shadows) */
+html body #page-search .app-header,
+html body #page-search .card,
+html body #page-search #workerIdentityCard,
+html body #page-search #workerIdentityCard.worker-identity-card,
+html body #page-search #workerIdentityCard > div,
+html body #page-search #payslipCard input,
+html body #page-search #payslipCard button,
+html body #page-search #payslipCard,
+html body #page-search #step7 .rpt-zoom-bar,
+html body #page-search #step7 .diary-review-card {
+  border-color: var(--border-strong, #CBD5E1) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+}
+
+html body #page-search #step3 .grand-total-block {
+  box-shadow: none !important;
+}
+
+html body #page-search #step3 .bill-list {
+  border: 1px solid var(--border-strong, #CBD5E1) !important;
+  overflow: hidden !important;
+}
+
+html body #page-search #step7 .diary-review-card #step7LabelText .mgr-info-btn {
+  border-radius: 2px !important;
+}
+
+:root[data-theme="dark"] #page-search .app-header,
+:root[data-theme="dark"] #page-search .card,
+:root[data-theme="dark"] #page-search #workerIdentityCard,
+:root[data-theme="dark"] #page-search #payslipCard,
+:root[data-theme="dark"] #page-search #step7 .rpt-zoom-bar,
+:root[data-theme="dark"] #page-search #step7 .diary-review-card,
+body.dark-mode #page-search .app-header,
+body.dark-mode #page-search .card,
+body.dark-mode #page-search #workerIdentityCard,
+body.dark-mode #page-search #payslipCard,
+body.dark-mode #page-search #step7 .rpt-zoom-bar,
+body.dark-mode #page-search #step7 .diary-review-card {
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
