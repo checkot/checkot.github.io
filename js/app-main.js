@@ -1828,56 +1828,127 @@ function showRemarks(punchProblems, detection) {
 const curEmp = typeof currentResult !== 'undefined' ? currentResult : {};
 const rawReqProbs = (Array.isArray(curEmp.requisitionProblems) ? curEmp.requisitionProblems : []).filter(p => !(p && p.isNightIssue));
 const box = document.getElementById('remarksBox');
+if (!box) return;
 const pList = Array.isArray(punchProblems) ? punchProblems : [];
 const pCount = Array.isArray(punchProblems) ? punchProblems.length : (Number(punchProblems) || 0);
 const hasP = pCount > 0;
 const dates = pList.length > 0 ? pList.map(p => (typeof p === 'string' ? p : p.date)).join(', ') : `${bn(pCount)} days`;
 const areaName = getAreaForId(currentSearchId, currentResult?.isRppf !== false);
-const waBtn = (msg) => `<button type="button" class="btn-secondary" style="margin-top:10px;" onclick="openErpSupportModal(${esc(JSON.stringify(msg))}, ${esc(JSON.stringify(areaName))})">Message the ERP team on WhatsApp (Select Representative)</button>`;
+const waBtn = (msg, label) => `<button type="button" class="btn-secondary rc-wa-btn" onclick="openErpSupportModal(${esc(JSON.stringify(msg))}, ${esc(JSON.stringify(areaName))})">${esc(label || 'Message ERP Team on WhatsApp')}</button>`;
 const ctx = getReportViewContext(currentSearchId);
 const isOwn = (ctx === 'own');
-const subj = isOwn ? 'Your report' : `Report of this employee (${esc(currentSearchId)})`;
+const subj = isOwn ? 'Your report' : `Report (${esc(currentSearchId)})`;
 const isRppf = currentResult?.isRppf !== false;
-const facilityWarn = isRppf ? '' : '<div style="margin-top:8px;padding:8px 10px;background:var(--warning-bg);border:1px solid var(--border);border-radius:6px;color:var(--warning);font-weight:700;">This employee is not from RPPF - other facility</div>';
-const reqWarnHtml = rawReqProbs.length > 0 ? `
-<div style="margin-top:8px;padding:10px 12px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;color:#92400e;font-size:12px;line-height:1.4;">
-  <div style="font-weight:800;display:flex;align-items:center;gap:5px;color:#b45309;font-size:12.5px;">
-    <span>⚠️</span> Overtime Requisition Alert (${rawReqProbs.length} day${rawReqProbs.length > 1 ? 's' : ''})
-  </div>
-  <div style="margin-top:3px;font-size:11.5px;">Worked overtime on floor, but Empress shows 0 OT (ERP Requisition Missing):</div>
-  <div style="margin-top:4px;font-weight:700;">${rawReqProbs.map(p => `• ${p.date}: ${p.in || '—'} ➔ ${p.out || '—'} (${p.duty || p.elapsed}h) | ${p.expectedOt || 'OT'}`).join('<br>')}</div>
-  <button type="button" class="btn-secondary" style="margin-top:8px;background:#d97706;color:#fff;border-color:#b45309;font-weight:700;padding:5px 10px;font-size:11.5px;" onclick="openErpSupportModal(${esc(JSON.stringify(buildSingleEmployeeReqErpMessage(currentSearchId, currentResult?.name, rawReqProbs)))}, ${esc(JSON.stringify(areaName))})">Forward Missing Requisitions to ERP Team (WhatsApp)</button>
-</div>` : '';
 
 const empObj = (window._rptCtx && window._rptCtx.emp) ? window._rptCtx.emp : curEmp;
 if (empObj && (!Array.isArray(empObj.generalAbsentDays) || empObj._computedMonth !== currentMonth) && typeof computeEmpGeneralAbsents === 'function') {
   computeEmpGeneralAbsents(empObj, currentMonth);
 }
 const absDatesList = Array.isArray(empObj?.generalAbsentDays) ? empObj.generalAbsentDays : [];
-const absWarnHtml = absDatesList.length > 0 ? `
-<div style="margin-top:8px;padding:9px 12px;background:#fef2f2;border:1.5px solid #f87171;border-radius:8px;color:#991b1b;font-size:12px;line-height:1.45;">
-  <div style="font-weight:800;display:flex;align-items:center;gap:5px;color:#dc2626;font-size:12.5px;">
-    <span>🔴</span> General Working Day Absent (${absDatesList.length} day${absDatesList.length > 1 ? 's' : ''})
-  </div>
-  <div style="margin-top:3px;font-weight:700;">Dates: ${esc(absDatesList.join(', '))}</div>
-</div>` : '';
 
-if (detection.valid && !hasP && rawReqProbs.length === 0) {
-box.className = absDatesList.length > 0 ? "remarks-box remarks-warn" : "remarks-box remarks-ok";
-box.innerHTML = `${subj}: all In/Out punches are correct.${facilityWarn}${absWarnHtml}`;
-} else if (detection.valid && !hasP && rawReqProbs.length > 0) {
-box.className = "remarks-box remarks-warn";
-box.innerHTML = `${subj}: all In/Out punches are correct, but <b>${rawReqProbs.length} Overtime Requisition(s)</b> are pending.${facilityWarn}${reqWarnHtml}${absWarnHtml}`;
+const sections = [];
+
+// 1) Primary Punch / Grade status row
+if (detection.valid && !hasP) {
+  sections.push(`
+    <div class="rc-row rc-row-ok">
+      <div class="rc-row-main">
+        <span class="rc-ico rc-ico-ok" aria-hidden="true">&#10003;</span>
+        <span class="rc-text">All In/Out punches are correct</span>
+      </div>
+      <span class="rc-badge rc-badge-ok">OK</span>
+    </div>`);
 } else if (detection.valid && hasP) {
-box.className = "remarks-box remarks-warn";
-box.innerHTML = `${subj}: punch missing on <b>${esc(dates)}</b> (${bn(pCount)} days).${facilityWarn}${reqWarnHtml}${absWarnHtml}` + waBtn(buildSingleEmployeeErpMessage(dates, 'punch'));
+  sections.push(`
+    <div class="rc-block">
+      <div class="rc-row rc-row-warn">
+        <div class="rc-row-main">
+          <span class="rc-dot rc-dot-warn" aria-hidden="true"></span>
+          <span class="rc-text rc-text-strong">Punch Missing</span>
+        </div>
+        <span class="rc-badge rc-badge-warn">${bn(pCount)} day${pCount > 1 ? 's' : ''}</span>
+      </div>
+      <div class="rc-sub-detail">${esc(dates)}</div>
+      ${waBtn(buildSingleEmployeeErpMessage(dates, 'punch'), 'Message ERP Team on WhatsApp (Select Representative)')}
+    </div>`);
 } else if (!detection.valid && !hasP) {
-box.className = "remarks-box remarks-error";
-box.innerHTML = `${subj}: the grade is outside this calculation, so the amount cannot be shown.${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage('—', 'grade'));
+  sections.push(`
+    <div class="rc-block">
+      <div class="rc-row rc-row-err">
+        <div class="rc-row-main">
+          <span class="rc-dot rc-dot-err" aria-hidden="true"></span>
+          <span class="rc-text rc-text-strong">${subj}: grade outside calculation scope</span>
+        </div>
+        <span class="rc-badge rc-badge-err">Check</span>
+      </div>
+      ${waBtn(buildSingleEmployeeErpMessage('—', 'grade'), 'Message ERP Team on WhatsApp (Select Representative)')}
+    </div>`);
 } else {
-box.className = "remarks-box remarks-error";
-box.innerHTML = `${subj} has two problems:<ul><li>Grade is outside the calculation scope</li><li>Punch missing on ${esc(dates)}</li></ul>${facilityWarn}` + waBtn(buildSingleEmployeeErpMessage(dates, 'both'));
+  sections.push(`
+    <div class="rc-block">
+      <div class="rc-row rc-row-err">
+        <div class="rc-row-main">
+          <span class="rc-dot rc-dot-err" aria-hidden="true"></span>
+          <span class="rc-text rc-text-strong">${subj}: Grade &amp; Punch Issues</span>
+        </div>
+        <span class="rc-badge rc-badge-err">2 Issues</span>
+      </div>
+      <div class="rc-sub-detail">• Grade is outside calculation scope<br>• Punch missing on ${esc(dates)}</div>
+      ${waBtn(buildSingleEmployeeErpMessage(dates, 'both'), 'Message ERP Team on WhatsApp (Select Representative)')}
+    </div>`);
 }
+
+// 2) Facility notice (if non-RPPF)
+if (!isRppf) {
+  sections.push(`
+    <div class="rc-row rc-row-facility">
+      <div class="rc-row-main">
+        <span class="rc-dot rc-dot-warn" aria-hidden="true"></span>
+        <span class="rc-text">Other facility employee (outside RPPF)</span>
+      </div>
+      <span class="rc-badge rc-badge-warn">Info</span>
+    </div>`);
+}
+
+// 3) Overtime Requisition Missing row
+if (detection.valid && rawReqProbs.length > 0) {
+  sections.push(`
+    <div class="rc-block">
+      <div class="rc-row rc-row-warn">
+        <div class="rc-row-main">
+          <span class="rc-dot rc-dot-warn" aria-hidden="true"></span>
+          <span class="rc-text rc-text-strong">Overtime Requisition Missing</span>
+        </div>
+        <span class="rc-badge rc-badge-warn">${rawReqProbs.length} day${rawReqProbs.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="rc-sub-detail">${rawReqProbs.map(p => `• ${esc(p.date)}: ${esc(p.in || '—')} → ${esc(p.out || '—')} (${esc(p.duty || p.elapsed)}h) | ${esc(p.expectedOt || 'OT')}`).join('<br>')}</div>
+      <button type="button" class="btn-secondary rc-wa-btn rc-wa-amber" onclick="openErpSupportModal(${esc(JSON.stringify(buildSingleEmployeeReqErpMessage(currentSearchId, currentResult?.name, rawReqProbs)))}, ${esc(JSON.stringify(areaName))})">Forward Missing Requisitions to ERP Team (WhatsApp)</button>
+    </div>`);
+}
+
+// 4) General Working Day Absent row with date pills
+if (detection.valid && absDatesList.length > 0) {
+  const chipsHtml = absDatesList.map(d => `<span class="rc-chip rc-chip-err">${esc(d)}</span>`).join('');
+  sections.push(`
+    <div class="rc-block">
+      <div class="rc-row rc-row-err">
+        <div class="rc-row-main">
+          <span class="rc-dot rc-dot-err" aria-hidden="true"></span>
+          <span class="rc-text rc-text-strong rc-text-err">General Working Day Absent</span>
+        </div>
+        <span class="rc-badge rc-badge-err">${absDatesList.length} day${absDatesList.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="rc-chips">${chipsHtml}</div>
+    </div>`);
+}
+
+box.className = (!detection.valid)
+  ? 'remarks-box remarks-error rc-statement-body'
+  : (hasP || rawReqProbs.length > 0 || absDatesList.length > 0)
+    ? 'remarks-box remarks-warn rc-statement-body'
+    : 'remarks-box remarks-ok rc-statement-body';
+
+box.innerHTML = sections.join('<div class="rc-divider"></div>');
 }
 /* function recalculate moved to js/ */
 let currentVsMode = 2;
