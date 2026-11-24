@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T12:58:57.251Z",
+  "updatedAt": "2026-11-24T05:20:11.727Z",
   "members": [
     {
       "id": "RF8941",
@@ -421,6 +421,24 @@
       "mustReset": true,
       "createdBy": "migration",
       "updatedAt": "2026-11-10T12:58:57.251Z"
+    },
+    {
+      "id": "RF20450",
+      "name": "RF20450",
+      "dept": "QA",
+      "role": "Floor In-Charge",
+      "areas": [
+        "all"
+      ],
+      "canViewExecutives": true,
+      "pinHash": "1ea581bda1fe1c45c7d9a724f58291374fd633c2e2770400e8a16aee0392f071",
+      "pinSalt": "de504087ffec06acfa52d729fec8da0c",
+      "pinAlgo": "pbkdf2-sha256-100000",
+      "active": true,
+      "allowNormalBypass": true,
+      "isAdmin": false,
+      "createdBy": "qaadmin",
+      "updatedAt": "2026-11-24T05:20:09.066Z"
     }
   ]
 }
