@@ -1339,6 +1339,14 @@ function clearDepartmentCaches(prevDept, newDept) {
   if (typeof _monthInflight !== 'undefined') {
     Object.keys(_monthInflight).forEach(k => delete _monthInflight[k]);
   }
+  if (typeof _lbPayloadMemoryCache !== 'undefined' && _lbPayloadMemoryCache) {
+    Object.keys(_lbPayloadMemoryCache).forEach(k => delete _lbPayloadMemoryCache[k]);
+  }
+  if (typeof _multiMonthAggCache !== 'undefined' && _multiMonthAggCache) {
+    Object.keys(_multiMonthAggCache).forEach(k => delete _multiMonthAggCache[k]);
+  }
+  if (typeof currentLeaderboardResult !== 'undefined') currentLeaderboardResult = null;
+  if (typeof availableServerMonths !== 'undefined') availableServerMonths = null;
   try {
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -1463,6 +1471,7 @@ function populateAreaDropdown() {
   const currentVal = sel.value || 'all';
   sel.innerHTML = html;
   if ([...sel.options].some(o => o.value === currentVal)) sel.value = currentVal; else sel.value = 'all';
+  if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar(sel.value);
 }
 /* function updateSettingsAreaCount moved to js/pages/ */
 
@@ -2353,17 +2362,31 @@ if (m < 1) { m = 12; y -= 1; }
 }
 return out;
 }
+function getLatestAnchorMonthForYear(baseMonthOrYear) {
+const [yy] = String(baseMonthOrYear || '').split('-').map(x => parseInt(x, 10));
+const now = new Date();
+const year = (yy >= 2020 && yy <= 2032) ? yy : now.getFullYear();
+const maxM = (typeof getMaxMonthForYear === 'function')
+  ? Math.max(1, getMaxMonthForYear(year))
+  : (year === now.getFullYear() ? (now.getMonth() + 1) : 12);
+return `${year}-${String(maxM).padStart(2, '0')}`;
+}
+if (typeof window !== 'undefined') window.getLatestAnchorMonthForYear = getLatestAnchorMonthForYear;
+
 function getAllTime2026Months(baseMonthStr) {
-const [yy, mm] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
-const year = (yy >= 2020 && yy <= 2032) ? yy : new Date().getFullYear();
-const maxM = mm ? Math.min(12, Math.max(1, mm)) : 12;
+const [yy] = String(baseMonthStr).split('-').map(x => parseInt(x, 10));
+const now = new Date();
+const year = (yy >= 2020 && yy <= 2032) ? yy : now.getFullYear();
+const maxM = (typeof getMaxMonthForYear === 'function')
+  ? Math.max(1, getMaxMonthForYear(year))
+  : (year === now.getFullYear() ? (now.getMonth() + 1) : 12);
 const out = [];
 for (let m = 1; m <= maxM; m++) {
 out.push(`${year}-${String(m).padStart(2, '0')}`);
 }
 if (Array.isArray(availableServerMonths)) {
 availableServerMonths.forEach(ym => {
-if (ym.startsWith(String(year) + '-') && !out.includes(ym)) out.push(ym);
+if (ym.startsWith(String(year) + '-') && !out.includes(ym) && !(typeof isFutureYm === 'function' && isFutureYm(ym))) out.push(ym);
 });
 }
 return out.sort();
@@ -2384,10 +2407,18 @@ if (sub3) sub3.classList.toggle('active', currentLbTimeMode === '3m');
 if (sub6) sub6.classList.toggle('active', currentLbTimeMode === '6m');
 startLeaderboardScan(false);
 }
-async function aggregateMultiMonthEmployees(monthList) {
+const _multiMonthAggCache = {};
+if (typeof window !== 'undefined') window._multiMonthAggCache = _multiMonthAggCache;
+
+async function aggregateMultiMonthEmployees(monthList, forceFresh = false) {
+const chronoMonths = Array.from(new Set((monthList || []).filter(m => m && !(typeof isFutureYm === 'function' && isFutureYm(m))))).sort();
+const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const aggKey = dept + '|' + chronoMonths.join(',');
+if (!forceFresh && _multiMonthAggCache[aggKey]) {
+  return _multiMonthAggCache[aggKey];
+}
 const map = new Map();
 let loadedMonths = 0;
-const chronoMonths = Array.from(new Set((monthList || []).filter(Boolean))).sort();
 const earliestPrevMonth = chronoMonths.length > 0 ? getPrevMonthStr(chronoMonths[0]) : '';
 const fetchTargets = earliestPrevMonth && !chronoMonths.includes(earliestPrevMonth)
   ? [earliestPrevMonth, ...chronoMonths]
@@ -2414,16 +2445,40 @@ const prevHas = prevNightSet.has(uid) || prevNightSet.has(empKey);
 e._prevMonthLastNight = prevHas;
 
 const pArr = Array.isArray(e.punchProblems) ? e.punchProblems : [];
-const absObj = typeof computeEmpGeneralAbsents === 'function'
-  ? computeEmpGeneralAbsents(e, mStr, prevHas)
-  : { dates: (e.generalAbsentDays || []), shortDates: (e.generalAbsentShortDates || []), count: (e.generalAbsentCount || 0) };
-const absArr = absObj.dates || [];
-const absShortArr = absObj.shortDates || [];
-const reqArr = typeof computeEmpRequisitionProblems === 'function'
-  ? computeEmpRequisitionProblems(e)
-  : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
-const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
-const eeArr = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(e) : [];
+let absArr, absShortArr, reqArr;
+if (e._metricsComputed && e._computedMonth === mStr && e._computedPrevNight === prevHas) {
+  absArr = Array.isArray(e.generalAbsentDays) ? e.generalAbsentDays : [];
+  absShortArr = Array.isArray(e.generalAbsentShortDates) ? e.generalAbsentShortDates : absArr;
+  reqArr = Array.isArray(e.requisitionProblems) ? e.requisitionProblems : [];
+} else {
+  const absObj = typeof computeEmpGeneralAbsents === 'function'
+    ? computeEmpGeneralAbsents(e, mStr, prevHas)
+    : { dates: (e.generalAbsentDays || []), shortDates: (e.generalAbsentShortDates || []), count: (e.generalAbsentCount || 0) };
+  absArr = absObj.dates || [];
+  absShortArr = absObj.shortDates || [];
+  reqArr = typeof computeEmpRequisitionProblems === 'function'
+    ? computeEmpRequisitionProblems(e)
+    : (Array.isArray(e.requisitionProblems) ? e.requisitionProblems : []);
+  e.requisitionProblems = reqArr;
+  e.requisitionProblemCount = reqArr.length;
+  e._metricsComputed = true;
+  e._computedMonth = mStr;
+  e._computedPrevNight = prevHas;
+}
+let st;
+if (e._avgComputed && e.presentDaysCount != null && e.nightRestDays != null && e.avgInMins != null) {
+  st = e;
+} else {
+  st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(e) : {};
+  Object.assign(e, st, { _avgComputed: true });
+}
+let eeArr;
+if (typeof getEarlyExitCount === 'function') {
+  getEarlyExitCount(e);
+  eeArr = Array.isArray(e.earlyExits) ? e.earlyExits : [];
+} else {
+  eeArr = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(e) : [];
+}
 
 if (!cur) {
 map.set(empKey, {
@@ -2513,7 +2568,9 @@ avgEarned: Number((e.totalEarned / mc).toFixed(0)),
 avgAbsent: Number((e.generalAbsentCount / mc).toFixed(1))
 };
 });
-return { merged, loadedMonths };
+const resObj = { merged, loadedMonths };
+if (loadedMonths > 0) _multiMonthAggCache[aggKey] = resObj;
+return resObj;
 }
 /* function initLeaderboardPage moved to js/pages/leaderboard.js */
 
@@ -3178,16 +3235,20 @@ setTimeout(startNoticePolling, 2000);
 
 async function probeAvailableMonths() {
 if (availableServerMonths) return availableServerMonths;
-// Build clean 12-month continuity list for selected year without flooding 18 full JSON downloads!
+// Build clean continuity list up to the latest started month (never include future months)
 const cur = getCurrentMonth();
-const [cy, cm] = cur.split('-').map(Number);
-const year = (cy >= 2020 && cy <= 2032) ? cy : new Date().getFullYear();
+const [cy] = cur.split('-').map(Number);
+const now = new Date();
+const year = (cy >= 2020 && cy <= 2032) ? cy : now.getFullYear();
+const maxM = (typeof getMaxMonthForYear === 'function')
+  ? Math.max(1, getMaxMonthForYear(year))
+  : (year === now.getFullYear() ? (now.getMonth() + 1) : 12);
 const found = new Set();
-for (let m = 1; m <= 12; m++) {
+for (let m = 1; m <= maxM; m++) {
 found.add(`${year}-${String(m).padStart(2, '0')}`);
 }
 Object.keys(monthIndexMemoryCache).forEach(k => {
-if (Array.isArray(monthIndexMemoryCache[k]) && monthIndexMemoryCache[k].length > 0) found.add(k);
+if (Array.isArray(monthIndexMemoryCache[k]) && monthIndexMemoryCache[k].length > 0 && !(typeof isFutureYm === 'function' && isFutureYm(k))) found.add(k);
 });
 availableServerMonths = Array.from(found).sort();
 return availableServerMonths;
@@ -3252,13 +3313,12 @@ if (mSel) mSel.value = target.month;
 if (lbMSel) lbMSel.value = target.month;
 currentLbTimeMode = 'monthly';
 renderIccPeriodStrip();
-await startLeaderboardScan(false);
-renderIccDrillList();
+await startLeaderboardScan(false, `${target.year}-${target.month}`, 'monthly');
 } else {
 currentLbTimeMode = target.mode;
 renderIccPeriodStrip();
-await startLeaderboardScan(false);
-renderIccDrillList();
+const anchorYm = (typeof getLatestAnchorMonthForYear === 'function') ? getLatestAnchorMonthForYear(getCurrentMonth()) : getCurrentMonth();
+await startLeaderboardScan(false, anchorYm, target.mode);
 }
 if (body && swipeDir !== 0) {
 body.classList.add('swiping');
@@ -3351,9 +3411,13 @@ if (crit === 'holidayReq') {
   return [...base].filter(e => getHolidayReqCount(e) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || (b.totalDuty - a.totalDuty));
 }
 if (crit === 'otDays' || crit === 'holiday' || crit === 'night') {
+  const cKey = '_crit_' + crit;
+  if (f._lazySortCache && f._lazySortCache[cKey]) return f._lazySortCache[cKey];
   const cntOf = crit === 'otDays' ? (e => getEmpOtDays(e)) : crit === 'holiday' ? (e => Number(e.holidayCount || 0)) : (e => Number(e.nightCount || 0));
-  const base = f._rawFiltered || f.allEmployees || f.sortedByDuty || [];
-  return [...base].filter(e => cntOf(e) > 0).sort((a,b) => (cntOf(b) - cntOf(a)) || (crit === 'otDays' ? ((b.otHours || 0) - (a.otHours || 0)) : 0) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+  const base = f._rawFiltered || f.allEmployees || [];
+  const res = [...base].filter(e => cntOf(e) > 0).sort((a,b) => (cntOf(b) - cntOf(a)) || (crit === 'otDays' ? ((b.otHours || 0) - (a.otHours || 0)) : 0) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+  if (f._lazySortCache) f._lazySortCache[cKey] = res;
+  return res;
 }
 return f.sortedByDuty || [];
 }

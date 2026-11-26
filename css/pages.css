@@ -2339,8 +2339,11 @@ body.norate-view #compareMyAmount {
     flex-direction: column;
   }
   body:not([data-page="search"]) .wa-float,
-  body.has-result .wa-float {
-    display: none;
+  body.has-result .wa-float,
+  body.drawer-open-left .wa-float,
+  body.drawer-open-right .wa-float,
+  body.drawer-fullscreen-active .wa-float {
+    display: none !important;
   }
 }
 
@@ -3486,16 +3489,25 @@ body.norate-view #compareMyAmount {
     background: #0D9488;
     color: #FFFFFF;
   }
+  body.drawer-fullscreen-active .wa-float {
+    display: none !important;
+  }
   .icc-search-row {
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px 8px;
     align-items: center;
   }
   .icc-search-row input {
     margin-top: 0;
     min-height: 38px;
+    min-width: 150px;
     font-size: 13.5px;
-    flex: 1;
+    flex: 1 1 160px;
+  }
+  .icc-search-row .calc-mini-btn[style*="display: none"],
+  .icc-search-row .calc-mini-btn[style*="display:none"] {
+    display: none !important;
   }
 
   /* ICC Table Header & Rows */
@@ -4630,12 +4642,25 @@ body.norate-view #compareMyAmount {
     background-position: right 6px center;
   }
   .icc-search-row {
-    gap: 4px;
+    gap: 5px;
+    flex-wrap: wrap;
   }
   .icc-search-row input {
-    min-height: 28px;
-    padding: 3px 8px;
+    min-height: 30px;
+    min-width: 140px;
+    flex: 1 1 150px;
+    padding: 4px 8px;
     font-size: 12px;
+  }
+  .icc-search-row .calc-mini-btn {
+    min-height: 30px !important;
+    height: auto !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    max-width: 100%;
+    flex-shrink: 0;
   }
   .icc-mypos-banner {
     padding: 3px 10px;

@@ -57,6 +57,74 @@ function isMappedAreaId(id, emp) {
   return true;
 }
 
+function attachLazyCriterionGetters(targetObj, getBaseList, monthStr, opts) {
+  const filterEarned = Boolean(opts && opts.filterNoRateEarned);
+  const cache = Object.create(null);
+  targetObj._lazySortCache = cache;
+  const defs = {
+    sortedByDuty: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
+    },
+    sortedByOT: () => [...getBaseList()].sort((a,b) => b.otHours - a.otHours),
+    sortedByEarned: () => {
+      const base = getBaseList();
+      const src = (filterEarned && typeof isNoRateCat === 'function') ? base.filter(e => !isNoRateCat(e.category)) : base;
+      return [...src].sort((a,b) => b.totalEarned - a.totalEarned);
+    },
+    sortedByPlain: () => [...getBaseList()].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty)),
+    sortedByLessDuty: () => [...getBaseList()].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours)),
+    sortedByLessOT: () => [...getBaseList()].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty)),
+    sortedByAvgDuty: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
+    },
+    sortedByAvgInOut: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    },
+    sortedByPunch: () => [...getBaseList()].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours)),
+    sortedByRequisition: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].filter(e => (typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    },
+    sortedByNightIssue: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].filter(e => (typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    },
+    sortedByHolidayReq: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].filter(e => (typeof getHolidayReqCount === 'function' ? getHolidayReqCount(e) : 0) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
+    },
+    sortedByAbsent: () => {
+      const base = getBaseList();
+      ensureEmpAvgStats(base, monthStr);
+      return [...base].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, monthStr) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, monthStr) - getGeneralAbsentCount(a, monthStr)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
+    }
+  };
+  Object.keys(defs).forEach(prop => {
+    Object.defineProperty(targetObj, prop, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        if (!cache[prop]) cache[prop] = defs[prop]();
+        return cache[prop];
+      },
+      set(val) {
+        cache[prop] = val;
+      }
+    });
+  });
+  return targetObj;
+}
+if (typeof window !== 'undefined') window.attachLazyCriterionGetters = attachLazyCriterionGetters;
+
 function buildLeaderboardPayloadFromList(month, allList) {
   // Business Rule: Ranking uses ONLY IDs listed in areas.json (no fallback)
   const rppfEmployees = (allList || []).filter(e => isRankableEmployee(e));
@@ -67,37 +135,9 @@ function buildLeaderboardPayloadFromList(month, allList) {
     area: getAreaForId(e.id, true),
     punchProblemsCount: getPunchProblemCount(e)
   }));
-  ensureEmpAvgStats(normalized, month);
-  const sortedByDuty = [...normalized].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
-  const sortedByOT = [...normalized].sort((a,b) => b.otHours - a.otHours);
-  const sortedByEarned = [...normalized].sort((a,b) => b.totalEarned - a.totalEarned);
-  const sortedByPlain = [...normalized].sort((a,b) => (b.plainDaysCount - a.plainDaysCount) || (b.totalDuty - a.totalDuty));
-  const sortedByLessDuty = [...normalized].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
-  const sortedByLessOT = [...normalized].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
-  const sortedByAvgDuty = [...normalized].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
-  const sortedByAvgInOut = [...normalized].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-  const sortedByPunch = [...normalized].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-  const sortedByRequisition = [...normalized].filter(e => (typeof getOtRequisitionCount === 'function' ? getOtRequisitionCount(e) : 0) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-  const sortedByNightIssue = [...normalized].filter(e => (typeof getNightIssueCount === 'function' ? getNightIssueCount(e) : 0) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-  const sortedByHolidayReq = [...normalized].filter(e => (typeof getHolidayReqCount === 'function' ? getHolidayReqCount(e) : 0) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-  const sortedByAbsent = [...normalized].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, month) - getGeneralAbsentCount(a, month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
-  return {
-    month,
-    allEmployees: normalized,
-    sortedByDuty,
-    sortedByOT,
-    sortedByEarned,
-    sortedByPlain,
-    sortedByLessDuty,
-    sortedByLessOT,
-    sortedByAvgDuty,
-    sortedByAvgInOut,
-    sortedByPunch,
-    sortedByRequisition,
-    sortedByNightIssue,
-    sortedByHolidayReq,
-    sortedByAbsent
-  };
+  const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const payload = { month, dept, allEmployees: normalized };
+  return attachLazyCriterionGetters(payload, () => payload.allEmployees || [], month, { filterNoRateEarned: false });
 }
 
 if (typeof getGeneralAbsentCount !== 'function') {

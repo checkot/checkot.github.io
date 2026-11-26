@@ -113,40 +113,70 @@ avgOutDetailStr: (nightOutCnt && dayOutCnt)
 };
 }
 
+let _lbScanSeq = 0;
+const _lbPayloadMemoryCache = {};
+if (typeof window !== 'undefined') window._lbPayloadMemoryCache = _lbPayloadMemoryCache;
+
+function _getLbEffectiveMonth(mode, rawMonth) {
+const m = rawMonth || getCurrentMonth();
+if (mode && mode !== 'monthly' && typeof getLatestAnchorMonthForYear === 'function') {
+  return getLatestAnchorMonthForYear(m);
+}
+return m;
+}
+
 async function initLeaderboardPage() {
 syncLbMonthSelectors(); updateModeUI();
-const month = getCurrentMonth();
+const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const effMonth = _getLbEffectiveMonth(currentLbTimeMode, getCurrentMonth());
 const subLbl = document.getElementById('lbSubtitle');
 if (subLbl) {
-subLbl.innerText = currentLbTimeMode === 'monthly' ? month
-: currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
-: currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
-: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
-: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
-: `All-Time Best (${month.split('-')[0]})`;
+subLbl.innerText = currentLbTimeMode === 'monthly' ? effMonth
+: currentLbTimeMode === '3m' ? `Last 3 Months (upto ${effMonth})`
+: currentLbTimeMode === '6m' ? `Last 6 Months (upto ${effMonth})`
+: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(effMonth).slice(-1)[0] : effMonth)})`
+: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${effMonth})`
+: `All-Time Best (${effMonth.split('-')[0]})`;
 }
-if (currentLeaderboardResult && currentLeaderboardResult.month === month && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
-updateRankHubCards(currentLeaderboardResult.filtered ? currentLeaderboardResult.filtered.sortedByDuty : currentLeaderboardResult.allEmployees);
+if (currentLeaderboardResult && (currentLeaderboardResult.dept || 'PR') === dept && currentLeaderboardResult.month === effMonth && (currentLeaderboardResult.timeMode || 'monthly') === currentLbTimeMode) {
+updateRankHubCards(currentLeaderboardResult.filtered ? (currentLeaderboardResult.filtered._rawFiltered || currentLeaderboardResult.filtered.sortedByDuty) : currentLeaderboardResult.allEmployees);
 if (iccDrillOpen) renderIccDrillList();
 return;
 }
 await startLeaderboardScan(false);
 }
 
-async function startLeaderboardScan(forceRescan = false) {
-if (isScanning) return;
+async function startLeaderboardScan(forceRescan = false, targetMonthOverride = null, targetModeOverride = null) {
+const mySeq = ++_lbScanSeq;
+const targetMode = targetModeOverride || currentLbTimeMode || 'monthly';
+const targetMonth = _getLbEffectiveMonth(targetMode, targetMonthOverride || getCurrentMonth());
+const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const memKey = `${dept}|${targetMode}|${targetMonth}`;
+
+// Fast path: instant hit from in-memory payload cache (no loader flash, <10ms)
+if (!forceRescan && _lbPayloadMemoryCache[memKey]) {
+  isScanning = false;
+  const cachedPayload = _lbPayloadMemoryCache[memKey];
+  currentLeaderboardResult = cachedPayload;
+  renderLeaderboardResult(cachedPayload);
+  return;
+}
+
 const _rl = window.RankLoader;
 if (_rl) _rl.show({ label: (document.getElementById('lbSubtitle') || {}).textContent });
 try {
-await _startLeaderboardScanCore(forceRescan);
+await _startLeaderboardScanCore(forceRescan, targetMonth, targetMode, mySeq, memKey);
 } finally {
-if (_rl) _rl.hide();
+if (mySeq === _lbScanSeq) {
+  isScanning = false;
+  if (_rl) _rl.hide();
+}
 }
 }
 
-async function _startLeaderboardScanCore(forceRescan = false) {
-const month = getCurrentMonth();
-if (isScanning) return;
+async function _startLeaderboardScanCore(forceRescan = false, targetMonth, targetMode, mySeq, memKey) {
+const month = targetMonth || _getLbEffectiveMonth(targetMode || currentLbTimeMode, getCurrentMonth());
+const timeMode = targetMode || currentLbTimeMode || 'monthly';
 isScanning = true;
 document.getElementById('lbInitialCard').style.display = "none";
 document.getElementById('lbScanCard').style.display = (typeof iccDrillOpen !== 'undefined' && iccDrillOpen) ? "none" : "block";
@@ -154,38 +184,40 @@ document.getElementById('lbResultCard').style.display = "none";
 const counter = document.getElementById('lbScanCounter');
 const fill = document.getElementById('lbScanFill');
 const hint = document.getElementById('lbScanHint');
-counter.innerText = "Verifying data, please wait...";
-fill.style.width = "35%";
-hint.innerText = "Verifying data, please wait...";
+if (counter) counter.innerText = "Verifying data, please wait...";
+if (fill) fill.style.width = "35%";
+if (hint) hint.innerText = "Verifying data, please wait...";
 try {
 await loadAreaMap();
+if (mySeq !== _lbScanSeq) return;
 populateAreaDropdown();
 const subLbl = document.getElementById('lbSubtitle');
 if (subLbl) {
-subLbl.innerText = currentLbTimeMode === 'monthly' ? month
-: currentLbTimeMode === '3m' ? `Last 3 Months (upto ${month})`
-: currentLbTimeMode === '6m' ? `Last 6 Months (upto ${month})`
-: currentLbTimeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
-: currentLbTimeMode === '1y' ? `Last 12 Months (upto ${month})`
+subLbl.innerText = timeMode === 'monthly' ? month
+: timeMode === '3m' ? `Last 3 Months (upto ${month})`
+: timeMode === '6m' ? `Last 6 Months (upto ${month})`
+: timeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
+: timeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
 }
-if (currentLbTimeMode !== 'monthly') {
-const monthsToLoad = currentLbTimeMode === '3m' ? getPreviousMonthStrings(month, 3)
-: currentLbTimeMode === '6m' ? getPreviousMonthStrings(month, 6)
-: currentLbTimeMode === 'ytd' ? getYearToDateMonths(month)
-: currentLbTimeMode === '1y' ? getPreviousMonthStrings(month, 12)
+if (timeMode !== 'monthly') {
+const monthsToLoad = timeMode === '3m' ? getPreviousMonthStrings(month, 3)
+: timeMode === '6m' ? getPreviousMonthStrings(month, 6)
+: timeMode === 'ytd' ? getYearToDateMonths(month)
+: timeMode === '1y' ? getPreviousMonthStrings(month, 12)
 : getAllTime2026Months(month);
-const { merged } = await aggregateMultiMonthEmployees(monthsToLoad);
+const { merged } = await aggregateMultiMonthEmployees(monthsToLoad, forceRescan);
+if (mySeq !== _lbScanSeq) return;
 if (merged && merged.length > 0) {
 const lbPayload = buildLeaderboardPayloadFromList(month, merged);
-lbPayload.timeMode = currentLbTimeMode;
+lbPayload.timeMode = timeMode;
 lbPayload.loadedMonths = monthsToLoad;
+if (memKey) _lbPayloadMemoryCache[memKey] = lbPayload;
 currentLeaderboardResult = lbPayload;
-fill.style.width = "100%";
+if (fill) fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
 document.getElementById('lbScanCard').style.display = "none";
 document.getElementById('lbResultCard').style.display = "none";
-isScanning = false;
 return;
 }
 }
@@ -194,16 +226,17 @@ const [fastList] = await Promise.all([
   fetchMonthPreIndexedData(month, forceRescan),
   prevM ? fetchMonthPreIndexedData(prevM, false, false).catch(() => null) : Promise.resolve(null)
 ]);
+if (mySeq !== _lbScanSeq) return;
 if (fastList && fastList.length > 0) {
 const lbPayload = buildLeaderboardPayloadFromList(month, fastList);
 lbPayload.timeMode = 'monthly';
+if (memKey) _lbPayloadMemoryCache[memKey] = lbPayload;
 setLeaderboardCache(month, lbPayload);
 currentLeaderboardResult = lbPayload;
-fill.style.width = "100%";
+if (fill) fill.style.width = "100%";
 renderLeaderboardResult(lbPayload);
 document.getElementById('lbScanCard').style.display = "none";
 document.getElementById('lbResultCard').style.display = "none";
-isScanning = false;
 return;
 }
 if (!forceRescan) {
@@ -280,11 +313,9 @@ try {
 currentLeaderboardResult = result;
 const allEmpsGlobal = (result.allEmployees || []).filter(e => isRankableEmployee(e));
 result.allEmployees = allEmpsGlobal;
-result.sortedByPunch = [...allEmpsGlobal].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-result.sortedByRequisition = [...allEmpsGlobal].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
-result.sortedByNightIssue = [...allEmpsGlobal].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
-result.sortedByHolidayReq = [...allEmpsGlobal].filter(e => getHolidayReqCount(e) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || (b.totalDuty - a.totalDuty));
-result.sortedByAbsent = [...allEmpsGlobal].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, result.month) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, result.month) - getGeneralAbsentCount(a, result.month)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
+if (typeof attachLazyCriterionGetters === 'function' && !result._lazySortCache) {
+  attachLazyCriterionGetters(result, () => result.allEmployees || [], result.month, { filterNoRateEarned: false });
+}
 const areaFilter = document.getElementById('areaFilter');
 if (areaFilter) {
 const currentArea = areaFilter.value;
@@ -293,13 +324,18 @@ populateAreaDropdown();
 const hasCurrentArea = currentArea && currentArea !== '' && [...areaFilter.options].some(o => o.value === currentArea);
 const hasPrefArea = [...areaFilter.options].some(o => o.value === preferredArea);
 areaFilter.value = hasCurrentArea ? currentArea : (hasPrefArea ? preferredArea : 'all');
-document.querySelectorAll('.icc-area-btn').forEach(btn => {
+if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar(areaFilter.value);
+else document.querySelectorAll('.icc-area-btn').forEach(btn => {
   btn.classList.toggle('active', btn.getAttribute('data-icc-area') === areaFilter.value);
 });
-['genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 'all'; });
 enrichLbEmployees(allEmpsGlobal);
 const gSel = document.getElementById('genderFilter');
 if (gSel) gSel.style.display = allEmpsGlobal.some(e => e.gender) ? '' : 'none';
+// Preserve valid gender/type/customCat selections across period switches
+['genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el && ![...el.options].some(o => o.value === el.value)) el.value = 'all';
+});
 refreshSubFilter();
 applyAreaFilter();
 updateModeUI();
@@ -316,14 +352,12 @@ updateMyRankNotes(); updateAreaFilterCount();
 function updateRankHubCards(filteredList) {
 const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
 const inc = getAppMode() === 'incharge' || isAdminLoggedIn();
-const execBtn = document.getElementById('iccAreaExecBtn');
-const segBar = document.getElementById('iccAreaSegBar');
-if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
-if (segBar) segBar.classList.toggle('has-exec', inc);
+if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar();
 ['inchargeHubUpcomingDivider', 'hubBtnAvgDuty', 'hubBtnAvgInOut', 'iccCritTabAvgDuty', 'iccCritTabAvgInOut'].forEach(id => {
 const el = document.getElementById(id);
 if (el) el.style.display = inc ? '' : 'none';
 });
+if (iccDrillOpen) { renderIccDrillList(); return; }
 // Keep Rank Hub cards clean by default (do not display #1 employee name on the hub)
 setTxt('hubSubDuty', 'Highest Duty Hours');
 setTxt('hubSubOt', 'Highest Overtime Hours');
@@ -375,6 +409,38 @@ refreshCustomCatFilterOptions();
 return list;
 }
 
+function renderIccAreaSegBar(activeAreaOverride) {
+const segBar = document.getElementById('iccAreaSegBar');
+if (!segBar || typeof getSectionsForDept !== 'function') return;
+const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const curArea = activeAreaOverride != null ? activeAreaOverride : (document.getElementById('areaFilter')?.value || 'all');
+const have = {};
+if (typeof AREA_MAP !== 'undefined' && AREA_MAP) {
+  Object.keys(AREA_MAP).forEach(id => { const a = AREA_MAP[id]; if (a) have[a] = (have[a] || 0) + 1; });
+}
+const mapReady = Object.keys(have).length > 1;
+const secs = getSectionsForDept(dept).filter(sec => (typeof isAreaVisibleToViewer !== 'function' || isAreaVisibleToViewer(sec.area, dept)) && (!mapReady || have[sec.area]));
+const shortMap = {
+  'Packing Hall': 'Packing',
+  'Solid Production': 'Solid',
+  'Softgel Production': 'SG',
+  'Overall': 'Exec',
+  'Documentation': 'Doc',
+  'Executives': 'Exec'
+};
+const btns = [{ area: 'all', label: 'All', idAttr: '' }];
+secs.forEach(sec => {
+  const lbl = shortMap[sec.area] || sec.short || sec.label || sec.area;
+  btns.push({ area: sec.area, label: lbl, idAttr: sec.exec ? ' id="iccAreaExecBtn"' : '' });
+});
+segBar.innerHTML = btns.map(b =>
+  `<button type="button" class="icc-area-btn${b.area === curArea ? ' active' : ''}"${b.idAttr} data-icc-area="${esc(b.area)}" onclick="selectIccArea('${String(b.area).replace(/'/g, "\\'")}')">${esc(b.label)}</button>`
+).join('');
+segBar.style.gridTemplateColumns = `repeat(${btns.length}, minmax(0, 1fr))`;
+segBar.classList.toggle('has-exec', btns.length >= 5);
+}
+if (typeof window !== 'undefined') window.renderIccAreaSegBar = renderIccAreaSegBar;
+
 function applyAreaFilter() {
 if (!currentLeaderboardResult) return;
 const st = getLbFilterState();
@@ -384,32 +450,28 @@ const allEmps = enrichLbEmployees((currentLeaderboardResult.allEmployees || []).
 const filtered = allEmps.filter(e =>
 !isExecHiddenFor(e) &&
 (area === 'all' || e.area === area) &&
-(area === 'all' || st.sub === 'all' || e.sub === st.sub) &&
+(st.sub === 'all' || e.sub === st.sub) &&
 (st.gender === 'all' || e.gender === st.gender) &&
 (st.type === 'all' || e.empType === st.type) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
 const curMonth = (currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
-ensureEmpAvgStats(filtered, curMonth);
-const sortedByDuty = [...filtered].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
-const sortedByOT = [...filtered].sort((a,b) => b.otHours - a.otHours);
-const sortedByEarned = [...filtered].filter(e => !isNoRateCat(e.category)).sort((a,b) => b.totalEarned - a.totalEarned);
-const sortedByPlain = [...filtered].sort((a,b) => ((b.plainDaysCount || 0) - (a.plainDaysCount || 0)) || (b.totalDuty - a.totalDuty));
-const sortedByLessDuty = [...filtered].sort((a,b) => (a.totalDuty - b.totalDuty) || (a.otHours - b.otHours));
-const sortedByLessOT = [...filtered].sort((a,b) => (a.otHours - b.otHours) || (a.totalDuty - b.totalDuty));
-const sortedByAvgDuty = [...filtered].sort((a,b) => ((b.adjustedAvgDuty ?? b.avgDutyPerDay ?? 0) - (a.adjustedAvgDuty ?? a.avgDutyPerDay ?? 0)) || (b.totalDuty - a.totalDuty));
-const sortedByAvgInOut = [...filtered].sort((a,b) => (((a.avgInMins && a.avgInMins > 0) ? a.avgInMins : 9999) - ((b.avgInMins && b.avgInMins > 0) ? b.avgInMins : 9999)) || ((b.totalDuty || 0) - (a.totalDuty || 0)));
-const sortedByPunch = [...filtered].filter(e => getPunchProblemCount(e) > 0).sort((a,b) => (getPunchProblemCount(b) - getPunchProblemCount(a)) || (b.otHours - a.otHours));
-const sortedByRequisition = [...filtered].filter(e => getOtRequisitionCount(e) > 0).sort((a,b) => (getOtRequisitionCount(b) - getOtRequisitionCount(a)) || (b.totalDuty - a.totalDuty));
-const sortedByNightIssue = [...filtered].filter(e => getNightIssueCount(e) > 0).sort((a,b) => (getNightIssueCount(b) - getNightIssueCount(a)) || (b.totalDuty - a.totalDuty));
-const sortedByHolidayReq = [...filtered].filter(e => getHolidayReqCount(e) > 0).sort((a,b) => (getHolidayReqCount(b) - getHolidayReqCount(a)) || (b.totalDuty - a.totalDuty));
-const sortedByAbsent = [...filtered].filter(e => (typeof getGeneralAbsentCount === 'function' ? getGeneralAbsentCount(e, curMonth) : 0) > 0).sort((a,b) => (getGeneralAbsentCount(b, curMonth) - getGeneralAbsentCount(a, curMonth)) || ((a.totalDuty || 0) - (b.totalDuty || 0)) || ((a.otHours || 0) - (b.otHours || 0)));
-currentLeaderboardResult.filtered = { _rawFiltered: filtered, sortedByDuty, sortedByOT, sortedByEarned, sortedByPlain, sortedByLessDuty, sortedByLessOT, sortedByAvgDuty, sortedByAvgInOut, sortedByPunch, sortedByRequisition, sortedByNightIssue, sortedByHolidayReq, sortedByAbsent, area };
+const filteredObj = { _rawFiltered: filtered, area };
+if (typeof attachLazyCriterionGetters === 'function') {
+  attachLazyCriterionGetters(filteredObj, () => filtered, curMonth, { filterNoRateEarned: true });
+} else {
+  ensureEmpAvgStats(filtered, curMonth);
+  filteredObj.sortedByDuty = [...filtered].sort((a,b) => ((b.adjustedDuty ?? b.totalDuty) - (a.adjustedDuty ?? a.totalDuty)) || (b.totalDuty - a.totalDuty));
+}
+currentLeaderboardResult.filtered = filteredObj;
 updateLbSummaryMetrics(filtered);
-renderTop3('lbTopDuty', sortedByDuty.slice(0, 5), 'duty');
-renderTop3('lbTopOT', sortedByOT.slice(0, 5), 'ot');
-renderTop3('lbTopEarned', sortedByEarned.slice(0, 5), 'earned');
-renderPunchIssueList(sortedByPunch);
-updateMyRankNotes(); updateAreaFilterCount(); updateAreaHint();
+if (!iccDrillOpen) {
+  renderTop3('lbTopDuty', filteredObj.sortedByDuty.slice(0, 5), 'duty');
+  renderTop3('lbTopOT', filteredObj.sortedByOT.slice(0, 5), 'ot');
+  renderTop3('lbTopEarned', filteredObj.sortedByEarned.slice(0, 5), 'earned');
+  renderPunchIssueList(filteredObj.sortedByPunch);
+  updateMyRankNotes();
+}
+updateAreaFilterCount(); updateAreaHint();
 }
 
 function openLbFullList(type) {
@@ -1155,11 +1217,7 @@ if (appHdr) appHdr.style.display = 'none';
 if (initCard) initCard.style.display = 'none';
 if (scanCard) scanCard.style.display = 'none';
 if (window.RankLoader) window.RankLoader.relocate();
-const inc = getAppMode() === 'incharge';
-const execBtn = document.getElementById('iccAreaExecBtn');
-const segBar = document.getElementById('iccAreaSegBar');
-if (execBtn) execBtn.style.display = inc ? 'inline-flex' : 'none';
-if (segBar) segBar.classList.toggle('has-exec', inc);
+if (typeof renderIccAreaSegBar === 'function') renderIccAreaSegBar();
 const titles = {
 duty: 'Best Duty RPPF',
 ot: 'Best OT RPPF',
@@ -1246,6 +1304,9 @@ if (hub) hub.style.display = 'flex';
 if (resCard) resCard.style.display = 'none';
 if (quickCard) quickCard.style.display = 'block';
 if (appHdr) appHdr.style.display = 'flex';
+if (currentLeaderboardResult) {
+  updateRankHubCards(currentLeaderboardResult.filtered ? currentLeaderboardResult.filtered._rawFiltered : currentLeaderboardResult.allEmployees);
+}
 const originPage = window._drillDirectFromPermPage;
 window._drillDirectFromPermPage = null;
 if (originPage && typeof closeSideDrawer === 'function') {
@@ -1328,7 +1389,11 @@ openRankDrillDown = function(criterion) {
   window._lastDrillOpenTs = Date.now();
   const res = _prevOpenRankDrillDown(criterion);
   if (typeof updateNavHighlights === 'function') updateNavHighlights();
-  if (typeof initTroubleshootPage === 'function' && (!currentLeaderboardResult || currentLeaderboardResult.month !== (typeof getCurrentMonth === 'function' ? getCurrentMonth() : ''))) {
+  const _curDept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+  const _needsInitialLoad = !currentLeaderboardResult
+    || (currentLeaderboardResult.dept || 'PR') !== _curDept
+    || (currentLbTimeMode === 'monthly' && currentLeaderboardResult.month !== (typeof getCurrentMonth === 'function' ? getCurrentMonth() : ''));
+  if (typeof initTroubleshootPage === 'function' && _needsInitialLoad) {
     initTroubleshootPage(false);
   }
   return res;
