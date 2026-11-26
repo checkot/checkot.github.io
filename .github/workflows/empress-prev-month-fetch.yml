@@ -42,6 +42,7 @@ jobs:
         timeout-minutes: 15
         env:
           EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_ACCOUNTS }}
+          EMPRESS_QA_ACCOUNTS: ${{ secrets.EMPRESS_QA_ACCOUNTS }}
           PREV_MONTH_MAX_DAY: "10"
           FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force == 'true' && '1' || '0' }}
 

@@ -1,0 +1,68 @@
+name: Empress QA daily fetch
+
+on:
+  workflow_dispatch: # এক্সটার্নাল ক্রন (cron-job.org) এবং ম্যানুয়াল রানের জন্য
+
+permissions:
+  contents: write
+
+# Production ফেচের সাথে একসাথে রান হয়ে git push কনফ্লিক্ট এড়ানোর জন্য একই concurrency group
+concurrency:
+  group: empress-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install playwright openpyxl requests
+          playwright install --with-deps chromium
+
+      - name: Fetch QA Excel from Empress
+        run: python scripts/fetch_empress.py
+        timeout-minutes: 12
+        env:
+          EMPRESS_ACCOUNTS: ${{ secrets.EMPRESS_QA_ACCOUNTS }}
+          EMPRESS_DEPT: QA
+
+      # ফেল হলে স্ক্রিনশট/HTML ডাউনলোড করে দেখা যাবে কোথায় আটকাল
+      - name: Upload debug files on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-raw-qa
+          path: raw/
+          retention-days: 3
+
+      - name: Convert QA Excel to JSON
+        run: python scripts/to_json.py
+
+      - name: Analyze QA Punch & Send WhatsApp Alerts
+        env:
+          TARGET_DEPT: QA
+          WA_QA_RECIPIENTS: ${{ secrets.WA_QA_RECIPIENTS }}
+          GREEN_ID_INSTANCE: ${{ secrets.GREEN_ID_INSTANCE }}
+          GREEN_API_TOKEN: ${{ secrets.GREEN_API_TOKEN }}
+        run: python scripts/analyze_punch.py --dept QA
+
+      - name: Commit QA JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/qa/*.json 2>/dev/null || true
+          git add -A data/emp 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Daily QA automated data update [$(date +'%Y-%m-%d')]"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
