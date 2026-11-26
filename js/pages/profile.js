@@ -1045,8 +1045,8 @@
       if (rp.id) {
         const myId = typeof getPreferredId === 'function' ? getPreferredId() : '';
         const cleanRpId = String(rp.id).trim().toUpperCase();
-        if (cleanRpId && cleanRpId !== myId) {
-          _profileViewingOtherId = cleanRpId;
+        if (cleanRpId) {
+          _profileViewingOtherId = (cleanRpId === myId) ? '' : cleanRpId;
         }
       }
       if (rp.scope) _profileActiveScope = rp.scope;

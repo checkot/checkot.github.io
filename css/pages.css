@@ -7598,3 +7598,39 @@ body.dark .icc-gender-cycle-btn[data-gender="F"] {
   border-radius: 4px !important;
   box-sizing: border-box;
 }
+
+/* Ranking Context Modal Dual Action Footer (View Profile + Work Log) */
+#iccCtxFooter {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+#iccCtxFooter .icc-ctx-profile-btn,
+#iccCtxFooter .icc-ctx-report-btn {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 0 10px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+#iccCtxFooter .icc-ctx-profile-btn {
+  background: var(--surface, #ffffff) !important;
+  color: #0f766e !important;
+  border: 1.5px solid #0d9488 !important;
+}
+body.dark #iccCtxFooter .icc-ctx-profile-btn {
+  background: rgba(13, 148, 136, 0.14) !important;
+  color: #5eead4 !important;
+  border-color: #14b8a6 !important;
+}

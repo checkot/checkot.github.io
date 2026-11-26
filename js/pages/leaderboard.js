@@ -721,6 +721,20 @@ async function openFullEmployeeReport(empId, targetMonth) {
   setTimeout(() => { if (typeof findReport === 'function') findReport(); }, 100);
 }
 
+function openEmployeeProfileFromLeaderboard(empId) {
+  const cleanId = String(empId || '').trim().toUpperCase();
+  if (!cleanId) return;
+  closeIccContextModal();
+  if (document.getElementById('lbFullListModal')?.classList.contains('open')) closeLbFullList();
+  window._profileRouteParams = { id: cleanId };
+  if (typeof switchPage === 'function') {
+    switchPage('profile');
+  } else if (typeof viewAnotherEmployeeProfile === 'function') {
+    viewAnotherEmployeeProfile(cleanId);
+  }
+}
+if (typeof window !== 'undefined') window.openEmployeeProfileFromLeaderboard = openEmployeeProfileFromLeaderboard;
+
 function openIccContextModal(empId, optCrit, optMonth) {
   if (!empId) return;
   const modal = document.getElementById('iccContextModal');
@@ -1180,16 +1194,16 @@ function openIccContextModal(empId, optCrit, optMonth) {
   bodyEl.innerHTML = bodyHtml;
 
   const targetReportMonth = isMultiTime && loadedMonthsList.length ? loadedMonthsList[loadedMonthsList.length - 1] : cleanM;
-  let reportBtnText = '📊 Open Full Monthly Report';
+  let reportBtnText = '📊 Full Monthly Report →';
   if (!incMode && (crit === 'duty' || crit === 'ot' || crit === 'earned' || crit === 'plain')) {
-    reportBtnText = '💰 View Overtime Calculation & Payslip →';
+    reportBtnText = '💰 Payslip & Work Log →';
   } else if (incMode) {
-    reportBtnText = '📋 View Monthly Work Log →';
+    reportBtnText = '📋 Monthly Work Log →';
   }
 
   footerEl.innerHTML = `
-    <button type="button" class="btn-secondary" onclick="closeIccContextModal()">✕ Close</button>
-    <button type="button" class="btn-primary" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(targetReportMonth)}')">${reportBtnText}</button>
+    <button type="button" class="btn-secondary icc-ctx-profile-btn" onclick="openEmployeeProfileFromLeaderboard('${esc(emp.id)}')">👤 View Profile</button>
+    <button type="button" class="btn-primary icc-ctx-report-btn" onclick="openFullEmployeeReport('${esc(emp.id)}', '${esc(targetReportMonth)}')">${reportBtnText}</button>
   `;
 
   modal.classList.add('open');
