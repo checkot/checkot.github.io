@@ -1260,3 +1260,27 @@ body.dark-mode .rc-chip-err {
 body.dark-mode .rc-ico-ok {
   color: #4ADE80;
 }
+
+/* ==========================================================================
+   Fix In-Charge & Desktop Report Right-Side White Bleed (.diary-shell::before)
+   Prevents calc(50% - 50vw) backdrop from overflowing onto the right sidebar
+   ========================================================================== */
+body.incharge-mode-active .diary-shell::before {
+  display: none !important;
+}
+body.incharge-mode-active #page-search #step7 {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+body.incharge-mode-active #page-search #step7 .diary-shell,
+body.incharge-mode-active #page-search #step7 .diary-page-stage,
+body.incharge-mode-active #page-search #step7 .rpt-scroll-box {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+@media (min-width: 900px) {
+  .diary-shell::before {
+    display: none !important;
+  }
+}
