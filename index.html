@@ -56,7 +56,7 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/rank-loader.css?v=20261113fm1">
   <link rel="stylesheet" href="css/profile.css?v=20261126dt1">
   <link rel="stylesheet" href="css/id-guard.css?v=20261115ig1">
-  <link rel="stylesheet" href="css/polish.css?v=20261126rk1">
+  <link rel="stylesheet" href="css/polish.css?v=20261126ui1">
   <link rel="stylesheet" href="css/report-diary.css?v=20261121hd1">
 </head>
 <body data-page="search">
@@ -1833,6 +1833,24 @@ document.documentElement.setAttribute('data-theme', t);
 <div class="settings-row"><span class="label">Security &amp; Compliance</span><span class="value"><button type="button" class="calc-mini-btn" onclick="openComplianceModal()">Compliance Notice</button></span></div>
 <div class="settings-footer">© 2026 RPPF • Zero External Data Sharing</div>
 </div>
+<div class="card settings-action-card" id="settingsShareCard">
+<div class="settings-action-row">
+<div class="settings-action-text">
+<div class="settings-action-title">Share this app with your friend</div>
+<div class="settings-action-sub">Send the app link to your colleagues on WhatsApp or any app</div>
+</div>
+<button type="button" class="settings-action-btn settings-share-btn" id="settingsShareAppBtn" onclick="shareAppWithFriend()">Share</button>
+</div>
+</div>
+<div class="card settings-action-card" id="settingsInstallCard">
+<div class="settings-action-row">
+<div class="settings-action-text">
+<div class="settings-action-title">Install this app</div>
+<div class="settings-action-sub">Add to your phone home screen for faster offline access</div>
+</div>
+<button type="button" class="settings-action-btn settings-install-btn" id="settingsInstallAppBtn" onclick="executePwaInstall()">Install</button>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2037,7 +2055,7 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/components/id-guard.js?v=20261115ig1"></script>
   <script src="js/pages/search.js?v=20261119ux2"></script>
   <script src="js/pages/history.js"></script>
-  <script src="js/pages/settings.js?v=20261121ver1"></script>
+  <script src="js/pages/settings.js?v=20261126ui1"></script>
   <script src="js/pages/report.js?v=20261115p5"></script>
   <script src="js/pages/profile.js?v=20261126dt1"></script>
   <script src="js/pages/vs.js?v=20261119ux1"></script>
@@ -2046,11 +2064,11 @@ document.documentElement.setAttribute('data-theme', t);
   <script src="js/pages/team.js?v=20261112q1"></script>
   <script src="js/pages/assessment.js?v=20261107a"></script>
   <script src="js/pages/leaderboard.js?v=20261126dt1"></script>
-  <script src="js/app-main.js?v=20261126dt1"></script>
+  <script src="js/app-main.js?v=20261126ui1"></script>
   <script src="js/components/rank-details.js?v=20261114h1"></script>
   <script src="js/patches/manager-ux.js?v=20261115p5"></script>
   <script src="js/pages/report-diary.js?v=20261119ux1"></script>
-  <script src="js/components/pwa-install.js?v=20261106a"></script>
+  <script src="js/components/pwa-install.js?v=20261126ui1"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="js/components/telemetry.js?v=20261121hd1"></script>

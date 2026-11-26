@@ -43,6 +43,22 @@
     if (banner) banner.style.display = 'none';
   }
 
+  function isAppInstalled() {
+    if (isStandalone()) return true;
+    try {
+      return localStorage.getItem('renata_pwa_installed') === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function syncSettingsInstallCard() {
+    const card = document.getElementById('settingsInstallCard');
+    if (!card) return;
+    card.style.display = isAppInstalled() ? 'none' : '';
+  }
+  window.syncSettingsInstallCard = syncSettingsInstallCard;
+
   window.dismissPwaInstall = function (recordCooldown = true) {
     hideBanner();
     if (recordCooldown) {
@@ -130,6 +146,7 @@
     }
     const moreBtn = document.getElementById('moreInstallAppBtn');
     if (moreBtn) moreBtn.style.display = 'none';
+    syncSettingsInstallCard();
   });
 
   // Initialization check
@@ -138,6 +155,7 @@
     if (moreBtn && isStandalone()) {
       moreBtn.style.display = 'none';
     }
+    syncSettingsInstallCard();
 
     // For iOS Safari users without beforeinstallprompt
     if (isIos() && !isStandalone() && !isDismissedRecently()) {
@@ -146,4 +164,5 @@
       }, 4000);
     }
   });
+  if (document.readyState !== 'loading') syncSettingsInstallCard();
 })();

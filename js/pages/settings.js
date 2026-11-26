@@ -110,3 +110,28 @@ if (typeof document !== 'undefined') {
     setTimeout(() => refreshAppVersionDisplay(false), 0);
   }
 }
+
+async function shareAppWithFriend() {
+  const shareUrl = 'https://checkot.github.io/';
+  const shareTitle = 'RPPF Overtime Report';
+  const shareText = 'আপনার ওভারটাইম, নাইট ও হলিডে হিসাব সহজে দেখতে RPPF Overtime অ্যাপটি ব্যবহার করুন:';
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+      return;
+    }
+  } catch (err) {
+    if (err && err.name === 'AbortError') return;
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(shareUrl);
+      if (typeof showToast === 'function') showToast('App link copied! Paste to share with your friend.', 'success');
+      return;
+    }
+  } catch (e) {}
+  try {
+    window.open('https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl), '_blank', 'noopener');
+  } catch (e) {}
+}
+if (typeof window !== 'undefined') window.shareAppWithFriend = shareAppWithFriend;

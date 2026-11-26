@@ -5935,9 +5935,55 @@ function wireAllAutocompleteSearchInputs() {
     if (typeof renderAdminAreaPreview === 'function') renderAdminAreaPreview();
   });
   attachEmployeeAutocompleteToInput(_el('admTeamId'));
+  attachEmployeeAutocompleteToInput(_el('inchargeIdInput'), () => {
+    if (typeof clearInchargePinError === 'function') clearInchargePinError();
+  });
+  attachEmployeeAutocompleteToInput(_el('qmAbsentBulkInput'));
+  attachEmployeeAutocompleteToInput(_el('profileEmptyIdInput'));
+  attachEmployeeAutocompleteToInput(_el('profileColleagueInput'), () => {
+    if (typeof viewAnotherEmployeeProfile === 'function') viewAnotherEmployeeProfile();
+  });
+  attachEmployeeAutocompleteToInput(_el('assessSearch'));
+  attachEmployeeAutocompleteToInput(_el('pbSearch'));
 
   document.querySelectorAll('#vsInputsGrid input.vs-emp-id-input').forEach(inp => {
     attachEmployeeAutocompleteToInput(inp);
+  });
+}
+
+if (typeof window !== 'undefined') {
+  window.attachEmployeeAutocompleteToInput = attachEmployeeAutocompleteToInput;
+  window.wireAllAutocompleteSearchInputs = wireAllAutocompleteSearchInputs;
+}
+
+// Universal focusin delegation so dynamically rendered ID inputs (Profile, VS extra slots, Assessment, Presence Board) ALWAYS get auto-suggestions
+if (typeof document !== 'undefined' && !window._empSuggestFocusDelegated) {
+  window._empSuggestFocusDelegated = true;
+  const _dynamicIdCallbackMap = {
+    employeeId: () => { if (typeof toggleClearIdBtn === 'function') toggleClearIdBtn(); if (typeof findReport === 'function') findReport(); },
+    lbQuickSearchInput: (id) => { if (typeof viewEmployeeFromLeaderboard === 'function') viewEmployeeFromLeaderboard(id); },
+    iccSearchInput: () => { if (typeof renderIccDrillList === 'function') renderIccDrillList(); },
+    lbModalSearchInput: () => { if (typeof filterLbModalList === 'function') filterLbModalList(); },
+    reportQuickIdInput: () => { if (typeof searchFromReportPage === 'function') searchFromReportPage(); },
+    regEmpIdInput: () => { if (typeof onRegEmpIdInputChange === 'function') onRegEmpIdInputChange(); },
+    inchargeIdInput: () => { if (typeof clearInchargePinError === 'function') clearInchargePinError(); },
+    profileColleagueInput: () => { if (typeof viewAnotherEmployeeProfile === 'function') viewAnotherEmployeeProfile(); },
+    profileEmptyIdInput: null,
+    settingsNewIdInput: null,
+    qmAbsentEmpInput: null,
+    qmAbsentBulkInput: null,
+    assessSearch: null,
+    pbSearch: null
+  };
+  document.addEventListener('focusin', (ev) => {
+    const el = ev && ev.target;
+    if (!el || el.tagName !== 'INPUT' || el._empSuggestWired) return;
+    const id = el.id || '';
+    if (Object.prototype.hasOwnProperty.call(_dynamicIdCallbackMap, id)) {
+      attachEmployeeAutocompleteToInput(el, _dynamicIdCallbackMap[id] || undefined);
+    } else if (el.classList && el.classList.contains('vs-emp-id-input')) {
+      attachEmployeeAutocompleteToInput(el);
+    }
   });
 }
 
