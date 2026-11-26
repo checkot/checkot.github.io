@@ -3622,7 +3622,11 @@ const otNum = Math.round((Number(e.otHours) || 0) * 10) / 10;
 const holNum = Number(e.holidayCount || 0);
 const ngtNum = Number(e.nightCount || 0);
 const plainNum = Number(e.plainDaysCount || 0);
-const subVal = `O:${otNum}|H:${holNum}|N:${ngtNum}|`;
+const _subParts = [];
+if (activeIccCriterion !== 'ot' && activeIccCriterion !== 'lessOt') _subParts.push(`O:${otNum}`);
+if (activeIccCriterion !== 'holiday') _subParts.push(`H:${holNum}`);
+if (activeIccCriterion !== 'night') _subParts.push(`N:${ngtNum}`);
+const subVal = _subParts.join('|');
 const isNightIssueCrit = activeIccCriterion === 'nightIssue';
 const isHolidayReqCrit = activeIccCriterion === 'holidayReq';
 const isReqCrit = activeIccCriterion === 'requisition' || isNightIssueCrit || isHolidayReqCrit;
@@ -3646,7 +3650,7 @@ if (isAbsCrit) {
       return String(d).split(' ')[0];
     });
     if (shortDates.length > 0) {
-      absMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#dc2626;margin-top:2px;">🔴 Absent (${shortDates.length}d): ${esc(shortDates.slice(0, 8).join(', '))}${shortDates.length > 8 ? ' +' + (shortDates.length - 8) + ' more' : ''}</div>`;
+      absMetaUnderName = `<div style="font-size:11px;font-weight:700;color:#dc2626;margin-top:2px;">🔴 Absent: ${esc(shortDates.slice(0, 8).join(', '))}${shortDates.length > 8 ? ' +' + (shortDates.length - 8) + ' more' : ''}</div>`;
     }
   } else {
     const byM = Array.isArray(e.absentByMonth) ? e.absentByMonth : [];
@@ -3713,16 +3717,16 @@ return `<div class="icc-row ${rkClass} ${isMine ? 'mine' : ''}" data-emp-id="${e
 ${showDetailsBtnHtml}${adminCatBtnHtml}
 </div>
 <div class="icc-desktop-mid">
-<span class="icc-mid-pill">Duty <b>${dutyNum}h</b></span>
-<span class="icc-mid-pill">OT <b>${otNum}h</b></span>
-<span class="icc-mid-pill">Hol <b>${holNum}d</b></span>
-<span class="icc-mid-pill">Night <b>${ngtNum}n</b></span>
-<span class="icc-mid-pill">4:30pm <b>${plainNum}d</b></span>
+${(activeIccCriterion !== 'duty' && activeIccCriterion !== 'lessDuty') ? `<span class="icc-mid-pill">Duty <b>${dutyNum}h</b></span>` : ''}
+${(activeIccCriterion !== 'ot' && activeIccCriterion !== 'lessOt') ? `<span class="icc-mid-pill">OT <b>${otNum}h</b></span>` : ''}
+${activeIccCriterion !== 'holiday' ? `<span class="icc-mid-pill">Hol <b>${holNum}d</b></span>` : ''}
+${activeIccCriterion !== 'night' ? `<span class="icc-mid-pill">Night <b>${ngtNum}n</b></span>` : ''}
+${activeIccCriterion !== 'plain' ? `<span class="icc-mid-pill">4:30pm <b>${plainNum}d</b></span>` : ''}
 </div>
 <div class="icc-val-col">
 <div class="icc-val-main">${mainVal}</div>
 ${activeIccCriterion === 'duty' && (e.nightRestDays || 0) > 0 ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">+${e.nightRestCredit || (e.nightRestDays * NIGHT_REST_CREDIT_HOURS)}h night-rest credit (${e.nightRestDays}d)</div>` : activeIccCriterion === 'avgDuty' ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">(raw ${Number(e.avgDutyPerDay || 0).toFixed(1)})</div>` : (activeIccCriterion === 'absent' && isMultiTime ? `<div class="icc-val-sub" style="font-size:9.5px;opacity:0.85;">Avg ${e.avgAbsent != null ? e.avgAbsent : Number(((e.generalAbsentCount || 0) / Math.max(1, e.monthsCount || 1)).toFixed(1))}d/m • ${e.monthsCount || 1}m</div>` : '')}
-<div class="icc-val-sub">${subVal}</div>
+<div class="icc-val-sub icc-val-ohn">${subVal}</div>
 </div>
 </div>`;
 }

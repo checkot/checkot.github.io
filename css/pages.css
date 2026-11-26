@@ -3994,6 +3994,9 @@ body.norate-view #compareMyAmount {
       font-size: 11.5px;
       margin-top: 2px;
     }
+    #iccRankDrillView .icc-val-ohn {
+      display: none !important;
+    }
     body.incharge-mode-active #iccRankDrillView .icc-row:hover .icc-show-details-btn {
       display: inline-flex;
     }
