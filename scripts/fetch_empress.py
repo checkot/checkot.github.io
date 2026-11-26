@@ -100,7 +100,10 @@ def validate_xlsx(path):
 
 def fetch_account(browser, acc):
     name = acc["name"]
+    dept = str(acc.get("dept") or os.environ.get("EMPRESS_DEPT") or "PR").strip().upper()
     facility = acc.get("facility", DEFAULT_FACILITY)
+    excel_out = (OUT / "qa") if dept == "QA" else OUT
+    excel_out.mkdir(parents=True, exist_ok=True)
     ctx = browser.new_context(accept_downloads=True, viewport={"width": 1366, "height": 900})
     page = ctx.new_page()
     page.set_default_timeout(STEP_TIMEOUT)
@@ -127,12 +130,12 @@ def fetch_account(browser, acc):
         t0 = time.time()
         d = export_excel(page)
         suffix = pathlib.Path(d.suggested_filename).suffix or ".xlsx"
-        tmp = OUT / f"{name}.tmp{suffix}"  # এক্সটেনশন আসল ফাইলেরই থাকবে, নইলে openpyxl খুলতে চায় না
+        tmp = excel_out / f"{name}.tmp{suffix}"  # এক্সটেনশন আসল ফাইলেরই থাকবে, নইলে openpyxl খুলতে চায় না
         d.save_as(tmp)
         rows = validate_xlsx(tmp)
-        final = OUT / f"{name}{suffix}"
+        final = excel_out / f"{name}{suffix}"
         tmp.replace(final)  # যাচাই পাস করলেই আসল ফাইল বদলায়, নইলে আগেরটা অক্ষত
-        print(f"   downloaded in {time.time() - t0:.0f}s, rows={rows}, file={final.name}")
+        print(f"   downloaded ({dept}) in {time.time() - t0:.0f}s, rows={rows}, file={final}")
     except Exception:
         shot(page, f"{name}_99_error")
         try:

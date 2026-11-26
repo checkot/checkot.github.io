@@ -133,6 +133,16 @@ def get_category_label(cat_type):
 ABSENT_GRACE_MIN = 9 * 60
 
 def main():
+    target_dept = "PR"
+    if "--dept" in sys.argv:
+        idx = sys.argv.index("--dept")
+        if idx + 1 < len(sys.argv):
+            target_dept = sys.argv[idx + 1].strip().upper()
+    else:
+        target_dept = os.environ.get("TARGET_DEPT", "PR").strip().upper() or "PR"
+    is_qa = target_dept == "QA"
+    data_dir = "data/qa" if is_qa else "data"
+
     now_bd = get_bd_now()
     today_iso = now_bd.strftime("%Y-%m-%d")
     today_emp_format = now_bd.strftime("%d-%b-%Y").upper()
@@ -144,7 +154,7 @@ def main():
     yesterday_emp_format = yesterday_bd.strftime("%d-%b-%Y").upper()
     yesterday_month_str = yesterday_bd.strftime("%Y-%m")
 
-    print("=== RPPF Attendance & OT Analysis ===")
+    print(f"=== RPPF {'QA ' if is_qa else ''}Attendance & OT Analysis ===")
     print(f"Current BD Time: {now_bd.strftime('%Y-%m-%d %I:%M %p')}")
     print(f"Target Date: {today_emp_format} ({today_iso})")
     print(f"Yesterday: {yesterday_emp_format} ({yesterday_iso})")
@@ -177,9 +187,9 @@ def main():
 
     print(f"Active approved leaves covering today: {len(active_leaves_map)}")
 
-    # 3. Load latest monthly data (data/latest.json or data/YYYY-MM.json)
-    latest_data = load_json_file("data/latest.json", {})
-    month_data = load_json_file(f"data/{current_month_str}.json", {})
+    # 3. Load latest monthly data (data/latest.json or data/qa/latest.json)
+    latest_data = load_json_file(f"{data_dir}/latest.json", {})
+    month_data = load_json_file(f"{data_dir}/{current_month_str}.json", {})
     
     employees_list = latest_data.get("employees", []) or month_data.get("employees", [])
     if isinstance(month_data, list) and not employees_list:
@@ -194,7 +204,7 @@ def main():
         'CL6525': 'Sagor Chandra Das'
     }
     import glob
-    for fpath in sorted(glob.glob('data/*.json'), reverse=True):
+    for fpath in sorted(glob.glob(f'{data_dir}/*.json'), reverse=True):
         try:
             with open(fpath, 'r', encoding='utf-8') as f:
                 d = json.load(f)
@@ -211,7 +221,7 @@ def main():
     # Day 1 of Month Crossover Check: Load previous month data
     prev_month_records = {}
     if now_bd.day == 1 and yesterday_month_str != current_month_str:
-        p_data = load_json_file(f"data/{yesterday_month_str}.json", {})
+        p_data = load_json_file(f"{data_dir}/{yesterday_month_str}.json", {})
         p_list = p_data.get("employees", []) if isinstance(p_data, dict) else (p_data if isinstance(p_data, list) else [])
         prev_month_records = {normalize_id(e.get("id")): e for e in p_list if e.get("id")}
         print(f"Loaded {len(prev_month_records)} records from previous month ({yesterday_month_str}) for month-end night rest check.")
@@ -244,7 +254,10 @@ def main():
     today_day_name = now_bd.strftime("%a")
     is_today_holiday = (today_emp_format in all_active_hols or t_short in all_active_hols) and (today_emp_format not in cancelled_hols and t_short not in cancelled_hols)
 
-    allowed_sections = ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]
+    if is_qa:
+        allowed_sections = ["IPQC PR", "IPQC Pack", "Documentation", "Executives"]
+    else:
+        allowed_sections = ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]
 
     stats = {
         "total_listed": 0,
@@ -267,12 +280,7 @@ def main():
         }
     }
 
-    absent_by_area_sub = {
-        "Solid Production": {},
-        "Softgel Production": {},
-        "Packing Hall": {},
-        "Overall": {}
-    }
+    absent_by_area_sub = {sec: {} for sec in allowed_sections}
 
     late_employees = []
     missing_ot_requisition_list = []
@@ -524,9 +532,11 @@ def main():
     formatted_date_bd = now_bd.strftime("%d-%b-%Y")
     formatted_time_bd = now_bd.strftime("%I:%M %p")
 
+    report_title = "📊 *RPPF QA DAILY ATTENDANCE & SHIFT REPORT*" if is_qa else "📊 *RPPF DAILY ATTENDANCE & SHIFT REPORT*"
+
     # Manager Overview Header
     overview_lines = [
-        "📊 *RPPF DAILY ATTENDANCE & SHIFT REPORT*",
+        report_title,
         f"📅 *তারিখ:* {formatted_date_bd} | *সময়:* {formatted_time_bd}",
         "━━━━━━━━━━━━━━━━━━━━",
         "👔 *MANAGER OVERVIEW (ম্যানেজার সামারি)*",
@@ -573,15 +583,23 @@ def main():
         late_lines.append("━━━━━━━━━━━━━━━━━━━━")
     late_block = ("\n".join(late_lines) + "\n") if late_lines else ""
 
-    area_headers = {
-        "Solid Production": "💊 *SOLID PRODUCTION*",
-        "Softgel Production": "💧 *SOFTGEL PRODUCTION*",
-        "Packing Hall": "📦 *PACKING HALL*",
-        "Overall": "👔 *EXECUTIVES & GENERAL*"
-    }
+    if is_qa:
+        area_headers = {
+            "IPQC PR": "🔬 *IPQC PR*",
+            "IPQC Pack": "📦 *IPQC PACK*",
+            "Documentation": "📄 *DOCUMENTATION*",
+            "Executives": "👔 *EXECUTIVES*"
+        }
+    else:
+        area_headers = {
+            "Solid Production": "💊 *SOLID PRODUCTION*",
+            "Softgel Production": "💧 *SOFTGEL PRODUCTION*",
+            "Packing Hall": "📦 *PACKING HALL*",
+            "Overall": "👔 *EXECUTIVES & GENERAL*"
+        }
 
     area_blocks = {}
-    for area_key in ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]:
+    for area_key in allowed_sections:
         subs_dict = absent_by_area_sub.get(area_key, {})
         total_area_absent = sum(len(emps) for emps in subs_dict.values())
         
@@ -599,10 +617,11 @@ def main():
             block += "\n"
         area_blocks[area_key] = block
 
+    engine_label = "QA" if is_qa else "Production"
     footer_text = (
         "━━━━━━━━━━━━━━━━━━━━\n"
         "💡 *ফিল্টারিং রুলস:* আগের দিন নাইট ডিউটি ও মেটারনিটি ছুটিতে থাকা কর্মীরা এই তালিকা থেকে সম্পূর্ণ মুক্ত।\n"
-        "🤖 _RPPF Automated Production & Shift Intelligence Engine_"
+        f"🤖 _RPPF Automated {engine_label} & Shift Intelligence Engine_"
     )
 
     full_message = (
@@ -621,7 +640,7 @@ def main():
         # Robust multi-part chunker ensuring no chunk exceeds WhatsApp limits
         current_chunk = overview_text + req_missing_block + late_block
         current_parts = []
-        for area_key in ["Solid Production", "Softgel Production", "Packing Hall", "Overall"]:
+        for area_key in allowed_sections:
             b = area_blocks.get(area_key, "")
             if len(current_chunk) + len(b) > 3400:
                 current_parts.append(current_chunk)
@@ -643,7 +662,11 @@ def main():
 
     green_id = os.environ.get("GREEN_ID_INSTANCE", "").strip()
     green_token = os.environ.get("GREEN_API_TOKEN", "").strip()
-    recipients_raw = os.environ.get("WA_RECIPIENTS", "").strip()
+    recipients_raw = (
+        os.environ.get("WA_QA_RECIPIENTS", "").strip()
+        if is_qa and os.environ.get("WA_QA_RECIPIENTS", "").strip()
+        else os.environ.get("WA_RECIPIENTS", "").strip()
+    )
 
     if not green_id or not green_token or not recipients_raw:
         print("[WARN] Green API secrets not found in environment.")

@@ -277,6 +277,12 @@ def main():
     print(f"Target Previous Month: {expected_ym} ({expected_mon_yr})")
 
     accounts = json.loads(os.environ["EMPRESS_ACCOUNTS"])
+    qa_raw = os.environ.get("EMPRESS_QA_ACCOUNTS", "").strip()
+    if qa_raw:
+        qa_accounts = json.loads(qa_raw)
+        for qacc in qa_accounts:
+            qacc.setdefault("dept", "QA")
+        accounts.extend(qa_accounts)
     all_ok = True
     downloaded = []
 
