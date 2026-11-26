@@ -710,13 +710,9 @@ button.prof-tag,
 }
 #lbYearSelect,
 #lbMonthSelect,
-#areaFilter,
-#subFilter,
-#genderFilter,
-#typeFilter,
-#customCatFilter {
-  min-height: 40px !important;
-  height: 40px !important;
+#areaFilter {
+  min-height: 36px !important;
+  height: 36px !important;
   font-size: 12.5px !important;
 }
 

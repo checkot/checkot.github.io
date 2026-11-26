@@ -441,13 +441,14 @@ else document.querySelectorAll('.icc-area-btn').forEach(btn => {
   btn.classList.toggle('active', btn.getAttribute('data-icc-area') === areaFilter.value);
 });
 enrichLbEmployees(allEmpsGlobal);
-const gSel = document.getElementById('genderFilter');
-if (gSel) gSel.style.display = allEmpsGlobal.some(e => e.gender) ? '' : 'none';
+const hasGenderData = allEmpsGlobal.some(e => e.gender);
+if (typeof refreshTypeFilterOptions === 'function') refreshTypeFilterOptions(allEmpsGlobal);
 // Preserve valid gender/type/customCat selections across period switches
 ['genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => {
   const el = document.getElementById(id);
   if (el && ![...el.options].some(o => o.value === el.value)) el.value = 'all';
 });
+if (typeof syncIccGenderBtn === 'function') syncIccGenderBtn(hasGenderData);
 refreshSubFilter();
 applyAreaFilter();
 updateModeUI();
@@ -553,6 +554,46 @@ segBar.classList.toggle('has-exec', btns.length >= 5);
 }
 if (typeof window !== 'undefined') window.renderIccAreaSegBar = renderIccAreaSegBar;
 
+const _ICC_GENDER_SVGS = {
+  all: '<svg viewBox="0 0 28 20" width="22" height="16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="4.2" r="2.3"/><path d="M5 7.4h6c.8 0 1.4.6 1.4 1.4v4.1c0 .5-.4.9-.9.9h-.5v4.3c0 .5-.4.9-.9.9h-4.2c-.5 0-.9-.4-.9-.9v-4.3h-.5c-.5 0-.9-.4-.9-.9V8.8c0-.8.6-1.4 1.4-1.4z"/><circle cx="20" cy="4.2" r="2.3"/><path d="M17.3 7.4h5.4c.7 0 1.3.5 1.5 1.1l1.2 4.3c.2.6-.3 1.2-.9 1.2h-1.4v4.1c0 .5-.4.9-.9.9h-4.4c-.5 0-.9-.4-.9-.9V14h-1.4c-.6 0-1.1-.6-.9-1.2l1.2-4.3c.2-.6.8-1.1 1.5-1.1z"/></svg>',
+  M: '<svg viewBox="0 0 18 20" width="15" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="4.2" r="2.5"/><path d="M5.6 7.5h6.8c.9 0 1.6.7 1.6 1.6v4.1c0 .6-.4 1-1 1h-.6v4c0 .5-.4.9-.9.9h-5c-.5 0-.9-.4-.9-.9v-4H5c-.6 0-1-.4-1-1V9.1c0-.9.7-1.6 1.6-1.6z"/></svg>',
+  F: '<svg viewBox="0 0 18 20" width="15" height="16" fill="currentColor" aria-hidden="true"><circle cx="9" cy="4.2" r="2.5"/><path d="M6.2 7.5h5.6c.7 0 1.4.5 1.6 1.2l1.3 4.4c.2.6-.3 1.3-1 1.3h-1.5v3.8c0 .5-.4.9-.9.9H6.7c-.5 0-.9-.4-.9-.9v-3.8H4.3c-.7 0-1.2-.7-1-1.3l1.3-4.4c.2-.7.9-1.2 1.6-1.2z"/></svg>'
+};
+
+function syncIccGenderBtn(hasGenderData) {
+  const btn = document.getElementById('genderCycleBtn');
+  const gSel = document.getElementById('genderFilter');
+  if (!btn) return;
+  if (typeof hasGenderData === 'boolean') {
+    btn.style.display = hasGenderData ? '' : 'none';
+  }
+  const val = (gSel && gSel.value) ? gSel.value : 'all';
+  const norm = (val === 'M' || val === 'F') ? val : 'all';
+  btn.setAttribute('data-gender', norm);
+  btn.innerHTML = _ICC_GENDER_SVGS[norm] || _ICC_GENDER_SVGS.all;
+  const labelMap = { all: 'Gender: Male & Female (tap for Male)', M: 'Gender: Male only (tap for Female)', F: 'Gender: Female only (tap for All)' };
+  btn.setAttribute('aria-label', labelMap[norm]);
+  btn.title = labelMap[norm];
+}
+
+function cycleIccGenderFilter() {
+  const gSel = document.getElementById('genderFilter');
+  if (!gSel) return;
+  const order = ['all', 'M', 'F'];
+  const cur = order.includes(gSel.value) ? gSel.value : 'all';
+  const next = order[(order.indexOf(cur) + 1) % order.length];
+  gSel.value = next;
+  syncIccGenderBtn();
+  applyAreaFilter();
+  if (typeof renderIccDrillList === 'function') renderIccDrillList();
+}
+
+if (typeof window !== 'undefined') {
+  window.syncIccGenderBtn = syncIccGenderBtn;
+  window.cycleIccGenderFilter = cycleIccGenderFilter;
+}
+
+
 function applyAreaFilter() {
 if (!currentLeaderboardResult) return;
 const st = getLbFilterState();
@@ -564,7 +605,7 @@ const filtered = allEmps.filter(e =>
 (area === 'all' || e.area === area) &&
 (st.sub === 'all' || e.sub === st.sub) &&
 (st.gender === 'all' || e.gender === st.gender) &&
-(st.type === 'all' || e.empType === st.type) &&
+(st.type === 'all' || String(e.grade || '').trim() === st.type || e.empType === st.type) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
 const curMonth = (currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
 const filteredObj = { _rawFiltered: filtered, area };

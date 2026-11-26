@@ -1433,6 +1433,7 @@ function switchClientDepartment(dept) {
   /* a switch must never leave a stale PR area / sub-section selected in QA (and vice-versa) */
   try {
     ['areaFilter', 'subFilter', 'genderFilter', 'typeFilter', 'customCatFilter'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 'all'; });
+    if (typeof syncIccGenderBtn === 'function') syncIccGenderBtn();
     if (typeof _incLeavesAreaFilter !== 'undefined') _incLeavesAreaFilter = 'all';
     if (typeof _incAbsentAreaFilter !== 'undefined') _incAbsentAreaFilter = 'all';
     try { localStorage.setItem(INCHARGE_AREA_KEY, 'all'); window._memInchargeArea = 'all'; } catch (e) {}
@@ -2835,12 +2836,23 @@ if (st.customCat && st.customCat !== 'all') parts.push(st.customCat);
 return parts.join(' • ');
 }
 let _lbTypeModeSeen = null;
-function refreshTypeFilterOptions() {
+function refreshTypeFilterOptions(empList) {
 const sel = document.getElementById('typeFilter');
 if (!sel) return;
 const inc = getAppMode() === 'incharge';
-const prev = sel.value;
-sel.innerHTML = '<option value="all">All types</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option><option value="CAS">Casual</option>' + (inc ? '<option value="EXEC">Executive/Above</option>' : '');
+const prev = sel.value || 'all';
+const src = Array.isArray(empList) && empList.length
+  ? empList
+  : ((typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.allEmployees))
+      ? currentLeaderboardResult.allEmployees
+      : (typeof allEmpsGlobal !== 'undefined' && Array.isArray(allEmpsGlobal) ? allEmpsGlobal : []));
+const grades = [...new Set(
+  src
+    .filter(e => e && (typeof isExecHiddenFor !== 'function' || !isExecHiddenFor(e)))
+    .map(e => String(e.grade || '').trim())
+    .filter(Boolean)
+)].sort((a, b) => a.localeCompare(b));
+sel.innerHTML = '<option value="all">Designation</option>' + grades.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
 sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
 if (_lbTypeModeSeen !== null && _lbTypeModeSeen !== inc) { populateAreaDropdown(); _lbTypeModeSeen = inc; if (currentLeaderboardResult) applyAreaFilter(); }
 _lbTypeModeSeen = inc;
@@ -4708,7 +4720,7 @@ refreshSubFilter = function() {
   const area = _el('areaFilter')?.value || 'all';
   const subs = getAllSubsectionsForArea(area);
   const prev = sel.value || 'all';
-  const defaultLbl = area === 'all' ? 'All sub-sections' : `${area === OVERALL_AREA ? 'Exec' : area.split(' ')[0]} sub-sections`;
+  const defaultLbl = area === 'all' ? 'Sub-section' : `${area === OVERALL_AREA ? 'Exec' : area.split(' ')[0]} sub-sec`;
   sel.innerHTML = `<option value="all">${esc(defaultLbl)}</option>` + subs.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
   sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
   sel.style.display = '';
