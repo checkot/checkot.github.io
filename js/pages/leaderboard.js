@@ -117,9 +117,93 @@ let _lbScanSeq = 0;
 const _lbPayloadMemoryCache = {};
 if (typeof window !== 'undefined') window._lbPayloadMemoryCache = _lbPayloadMemoryCache;
 
+let _iccCustomDateRange = { start: '', end: '' };
+if (typeof window !== 'undefined') window._iccCustomDateRange = _iccCustomDateRange;
+
+function _getTodayIsoLocal() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+function _ensureIccCustomDateBar() {
+  let bar = document.getElementById('iccCustomDateBar');
+  if (bar) return bar;
+  const strip = document.getElementById('iccPeriodStrip');
+  if (!strip || !strip.parentNode) return null;
+  bar = document.createElement('div');
+  bar.id = 'iccCustomDateBar';
+  bar.className = 'icc-custom-date-bar';
+  bar.style.display = 'none';
+  const todayIso = _getTodayIsoLocal();
+  const defStart = `${todayIso.slice(0, 7)}-01`;
+  bar.innerHTML = `
+    <label class="icc-date-field"><span>From</span><input type="date" id="iccDateFrom" value="${_iccCustomDateRange.start || defStart}" max="${todayIso}"></label>
+    <label class="icc-date-field"><span>To</span><input type="date" id="iccDateTo" value="${_iccCustomDateRange.end || todayIso}" max="${todayIso}"></label>
+    <button type="button" class="icc-date-apply-btn" onclick="applyIccCustomDateRange()">Apply</button>
+    <button type="button" class="icc-date-close-btn" onclick="closeIccCustomDateBar()" aria-label="Close">✕</button>
+  `;
+  strip.parentNode.insertBefore(bar, strip.nextSibling);
+  return bar;
+}
+
+function toggleIccCustomDateBar() {
+  const bar = _ensureIccCustomDateBar();
+  if (!bar) return;
+  const opening = bar.style.display === 'none';
+  bar.style.display = opening ? 'flex' : 'none';
+  if (opening) {
+    const todayIso = _getTodayIsoLocal();
+    const fInp = document.getElementById('iccDateFrom');
+    const tInp = document.getElementById('iccDateTo');
+    if (fInp) { fInp.max = todayIso; if (!fInp.value) fInp.value = _iccCustomDateRange.start || `${todayIso.slice(0, 7)}-01`; }
+    if (tInp) { tInp.max = todayIso; if (!tInp.value) tInp.value = _iccCustomDateRange.end || todayIso; }
+  }
+}
+
+function closeIccCustomDateBar() {
+  const bar = document.getElementById('iccCustomDateBar');
+  if (bar) bar.style.display = 'none';
+}
+
+async function applyIccCustomDateRange() {
+  const fInp = document.getElementById('iccDateFrom');
+  const tInp = document.getElementById('iccDateTo');
+  const startIso = (fInp?.value || '').trim();
+  const endIso = (tInp?.value || '').trim();
+  const todayIso = _getTodayIsoLocal();
+  if (!startIso || !endIso) {
+    if (typeof showToast === 'function') showToast('Please select both From and To dates', 'warn');
+    return;
+  }
+  if (startIso > endIso) {
+    if (typeof showToast === 'function') showToast('From date cannot be after To date', 'warn');
+    return;
+  }
+  if (endIso > todayIso) {
+    if (typeof showToast === 'function') showToast('Cannot select a future date', 'warn');
+    return;
+  }
+  _iccCustomDateRange = { start: startIso, end: endIso };
+  if (typeof window !== 'undefined') window._iccCustomDateRange = _iccCustomDateRange;
+  currentLbTimeMode = 'custom';
+  closeIccCustomDateBar();
+  renderIccPeriodStrip();
+  await startLeaderboardScan(false, `${startIso}..${endIso}`, 'custom');
+}
+
+if (typeof window !== 'undefined') {
+  window.toggleIccCustomDateBar = toggleIccCustomDateBar;
+  window.closeIccCustomDateBar = closeIccCustomDateBar;
+  window.applyIccCustomDateRange = applyIccCustomDateRange;
+}
+
 function _getLbEffectiveMonth(mode, rawMonth) {
+if (mode === 'custom') {
+  if (rawMonth && String(rawMonth).includes('..')) return rawMonth;
+  if (_iccCustomDateRange.start && _iccCustomDateRange.end) return `${_iccCustomDateRange.start}..${_iccCustomDateRange.end}`;
+}
 const m = rawMonth || getCurrentMonth();
-if (mode && mode !== 'monthly' && typeof getLatestAnchorMonthForYear === 'function') {
+if (mode && mode !== 'monthly' && mode !== 'custom' && typeof getLatestAnchorMonthForYear === 'function') {
   return getLatestAnchorMonthForYear(m);
 }
 return m;
@@ -199,6 +283,34 @@ subLbl.innerText = timeMode === 'monthly' ? month
 : timeMode === 'ytd' ? `This Year So Far (Jan – ${(typeof getYearToDateMonths === 'function' ? getYearToDateMonths(month).slice(-1)[0] : month)})`
 : timeMode === '1y' ? `Last 12 Months (upto ${month})`
 : `All-Time Best (${month.split('-')[0]})`;
+}
+if (timeMode === 'custom') {
+const parts = String(month || '').split('..');
+const startIso = parts[0] || _iccCustomDateRange.start;
+const endIso = parts[1] || _iccCustomDateRange.end;
+if (startIso && endIso && typeof aggregateCustomDateRangeEmployees === 'function') {
+  if (subLbl && typeof formatShortDateRangeLabel === 'function') {
+    subLbl.innerText = `Custom: ${formatShortDateRangeLabel(startIso, endIso)}`;
+  }
+  const { merged, months } = await aggregateCustomDateRangeEmployees(startIso, endIso, forceRescan);
+  if (mySeq !== _lbScanSeq) return;
+  if (merged && merged.length > 0) {
+    const lbPayload = buildLeaderboardPayloadFromList(month, merged);
+    lbPayload.timeMode = 'custom';
+    lbPayload.customRange = { start: startIso, end: endIso };
+    lbPayload.loadedMonths = months;
+    if (memKey) _lbPayloadMemoryCache[memKey] = lbPayload;
+    currentLeaderboardResult = lbPayload;
+    if (fill) fill.style.width = "100%";
+    renderLeaderboardResult(lbPayload);
+    document.getElementById('lbScanCard').style.display = "none";
+    document.getElementById('lbResultCard').style.display = "none";
+    return;
+  }
+  currentLeaderboardResult = null;
+  if (iccDrillOpen) renderIccDrillList();
+  return;
+}
 }
 if (timeMode !== 'monthly') {
 const monthsToLoad = timeMode === '3m' ? getPreviousMonthStrings(month, 3)
@@ -1137,6 +1249,10 @@ opts.push({ key: 'mode:6m', label: 'Last 6M', mode: '6m' });
 opts.push({ key: 'mode:ytd', label: 'This Year So Far', mode: 'ytd' });
 opts.push({ key: 'mode:1y', label: 'Last 1Y (12M)', mode: '1y' });
 opts.push({ key: 'mode:alltime', label: 'All-Time', mode: 'alltime' });
+const _customLbl = (_iccCustomDateRange.start && _iccCustomDateRange.end && typeof formatShortDateRangeLabel === 'function')
+  ? `📅 ${formatShortDateRangeLabel(_iccCustomDateRange.start, _iccCustomDateRange.end)}`
+  : '📅 Select Date';
+opts.push({ key: 'mode:custom', label: _customLbl, mode: 'custom' });
 return opts;
 }
 

@@ -2572,6 +2572,133 @@ const resObj = { merged, loadedMonths };
 if (loadedMonths > 0) _multiMonthAggCache[aggKey] = resObj;
 return resObj;
 }
+
+async function aggregateCustomDateRangeEmployees(startIso, endIso, forceFresh = false) {
+const chronoMonths = (typeof getMonthsBetweenISO === 'function') ? getMonthsBetweenISO(startIso, endIso) : [];
+if (!chronoMonths.length) return { merged: [], loadedMonths: 0, months: [] };
+const dept = (typeof getClientDepartment === 'function') ? getClientDepartment() : 'PR';
+const aggKey = `${dept}|custom|${startIso}|${endIso}`;
+if (!forceFresh && _multiMonthAggCache[aggKey]) {
+  return _multiMonthAggCache[aggKey];
+}
+const earliestPrevMonth = getPrevMonthStr(chronoMonths[0]);
+const fetchTargets = earliestPrevMonth && !chronoMonths.includes(earliestPrevMonth)
+  ? [earliestPrevMonth, ...chronoMonths]
+  : [...chronoMonths];
+
+await Promise.all(fetchTargets.map(m => fetchMonthPreIndexedData(m, false, false).catch(() => null)));
+
+const map = new Map();
+let loadedMonths = 0;
+const shortMonths = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+chronoMonths.forEach((mStr) => {
+  const list = monthIndexMemoryCache[mStr];
+  if (!list || !list.length) return;
+  loadedMonths++;
+  const prevNightSet = getPrevMonthNightSet(mStr);
+  const mNum = parseInt(String(mStr).split('-')[1], 10) || 1;
+  const mShortLbl = shortMonths[mNum - 1] || mStr;
+
+  list.forEach(e => {
+    if (!isRankableEmployee(e)) return;
+    const empKey = resolveEmpAliasId(e.id) || String(e.id || '').toUpperCase();
+    const uid = String(e.id || '').toUpperCase();
+    const prevHas = prevNightSet.has(uid) || prevNightSet.has(empKey);
+    const sliced = (typeof sliceEmpMonthForDateRange === 'function')
+      ? sliceEmpMonthForDateRange(e, mStr, startIso, endIso, prevHas)
+      : e;
+    if (!sliced) return;
+
+    const pArr = Array.isArray(sliced.punchProblems) ? sliced.punchProblems : [];
+    const absArr = Array.isArray(sliced.generalAbsentDays) ? sliced.generalAbsentDays : [];
+    const absShortArr = Array.isArray(sliced.generalAbsentShortDates) ? sliced.generalAbsentShortDates : [];
+    const reqArr = Array.isArray(sliced.requisitionProblems) ? sliced.requisitionProblems : [];
+    const eeArr = Array.isArray(sliced.earlyExits) ? sliced.earlyExits : [];
+    const st = (typeof window.computeEmpAvgDutyAndInOut === 'function') ? window.computeEmpAvgDutyAndInOut(sliced) : {};
+
+    const cur = map.get(empKey);
+    if (!cur) {
+      map.set(empKey, {
+        ...sliced,
+        id: sliced.id,
+        monthsCount: 1,
+        daily: [...(sliced.daily || [])],
+        punchProblems: [...pArr],
+        generalAbsentDays: [...absArr],
+        generalAbsentShortDates: [...absShortArr],
+        generalAbsentCount: absArr.length,
+        absentByMonth: absArr.length > 0 ? [{ month: mStr, label: mShortLbl, count: absArr.length, dates: [...absShortArr] }] : [],
+        requisitionProblems: [...reqArr],
+        requisitionProblemCount: reqArr.length,
+        earlyExits: [...eeArr],
+        _sumPresentDays: st.presentDaysCount || 0,
+        _sumNightRestDays: st.nightRestDays || 0,
+        _sumInMins: (st.avgInMins != null ? st.avgInMins : 480)
+      });
+    } else {
+      cur.monthsCount += 1;
+      cur.daily.push(...(sliced.daily || []));
+      cur.totalDuty = Number((cur.totalDuty + Number(sliced.totalDuty || 0)).toFixed(2));
+      cur.otHours = Number((cur.otHours + Number(sliced.otHours || 0)).toFixed(2));
+      cur.holidayCount += Number(sliced.holidayCount || 0);
+      cur.nightCount += Number(sliced.nightCount || 0);
+      cur.regularDaysCount = (cur.regularDaysCount || 0) + Number(sliced.regularDaysCount || 0);
+      cur.plainDaysCount = (cur.plainDaysCount || 0) + Number(sliced.plainDaysCount || 0);
+      cur.otDaysCount = (cur.otDaysCount || 0) + Number(sliced.otDaysCount || 0);
+      cur.totalEarned = Number((cur.totalEarned + Number(sliced.totalEarned || 0)).toFixed(2));
+      cur.punchProblems.push(...pArr);
+      cur.generalAbsentDays.push(...absArr);
+      cur.generalAbsentShortDates.push(...absShortArr);
+      cur.generalAbsentCount = cur.generalAbsentDays.length;
+      if (absArr.length > 0) {
+        cur.absentByMonth.push({ month: mStr, label: mShortLbl, count: absArr.length, dates: [...absShortArr] });
+      }
+      cur.requisitionProblems.push(...reqArr);
+      cur.requisitionProblemCount = cur.requisitionProblems.length;
+      cur.earlyExits.push(...eeArr);
+      cur._sumPresentDays = (cur._sumPresentDays || 0) + (st.presentDaysCount || 0);
+      cur._sumNightRestDays = (cur._sumNightRestDays || 0) + (st.nightRestDays || 0);
+      cur._sumInMins = (cur._sumInMins || 0) + (st.avgInMins != null ? st.avgInMins : 480);
+      if (sliced.name) cur.name = sliced.name;
+      if (sliced.grade) cur.grade = sliced.grade;
+    }
+  });
+});
+
+const merged = Array.from(map.values()).map(e => {
+  const mc = Math.max(1, e.monthsCount || 1);
+  e.isMultiMonth = true;
+  e.isCustomRange = true;
+  e.generalAbsentCount = (e.generalAbsentDays || []).length;
+  e.requisitionProblemCount = (e.requisitionProblems || []).length;
+  const presentDaysCount = Math.max(1, e._sumPresentDays || 1);
+  const nightRestDays = e._sumNightRestDays || 0;
+  const nightRestCredit = Number((nightRestDays * NIGHT_REST_CREDIT_HOURS).toFixed(2));
+  const adjustedDuty = Number((e.totalDuty + nightRestCredit).toFixed(2));
+  const avgDutyPerDay = Number((e.totalDuty / presentDaysCount).toFixed(2));
+  const adjustedAvgDuty = Number((adjustedDuty / Math.max(1, presentDaysCount + nightRestDays)).toFixed(2));
+  const avgInMins = (e._sumInMins || (480 * mc)) / mc;
+  const normIn = ((Math.round(avgInMins) % 1440) + 1440) % 1440;
+  const avgInTimeStr = `${String(Math.floor(normIn / 60)).padStart(2, '0')}:${String(normIn % 60).padStart(2, '0')}`;
+  return {
+    ...e,
+    presentDaysCount,
+    avgDutyPerDay,
+    nightRestDays,
+    nightRestCredit,
+    adjustedDuty,
+    adjustedAvgDuty,
+    avgInMins,
+    avgInTimeStr,
+    _avgComputed: true
+  };
+});
+const resObj = { merged, loadedMonths, months: chronoMonths };
+if (loadedMonths > 0) _multiMonthAggCache[aggKey] = resObj;
+return resObj;
+}
+if (typeof window !== 'undefined') window.aggregateCustomDateRangeEmployees = aggregateCustomDateRangeEmployees;
 /* function initLeaderboardPage moved to js/pages/leaderboard.js */
 
 function getCurrentMonth() { return `${document.getElementById('yearSelect').value}-${document.getElementById('monthSelect').value}`; }
@@ -3295,6 +3422,11 @@ body.classList.remove('swiping');
 body.style.transform = `translateX(${swipeDir > 0 ? '-36px' : '36px'})`;
 body.style.opacity = '0.35';
 }
+if (target.mode === 'custom') {
+if (typeof toggleIccCustomDateBar === 'function') toggleIccCustomDateBar();
+return;
+}
+if (typeof closeIccCustomDateBar === 'function') closeIccCustomDateBar();
 if (target.mode === 'monthly') {
 const ySel = document.getElementById('yearSelect');
 const mSel = document.getElementById('monthSelect');

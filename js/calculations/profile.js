@@ -740,6 +740,155 @@
       scopeMonths = yearMonthList;
       activeSingleYm = latestMonth;
       scopeLabel = `This Year (${targetYear})`;
+    } else if (rawScope === 'custom_range' && opts.customDateRange && opts.customDateRange.start && opts.customDateRange.end) {
+      scopeType = 'custom_range';
+      const _cStart = String(opts.customDateRange.start).trim();
+      const _cEnd = String(opts.customDateRange.end).trim();
+      const _monMap = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
+      const _toIso = (dStr, fbYm) => {
+        if (root && typeof root.parseEmpDailyDateToISO === 'function') return root.parseEmpDailyDateToISO(dStr, fbYm);
+        const s = String(dStr || '').trim().toUpperCase();
+        let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) return `${m[1]}-${String(+m[2]).padStart(2,'0')}-${String(+m[3]).padStart(2,'0')}`;
+        m = s.match(/^(\d{1,2})-([A-Z]{3})-(\d{4})/);
+        if (m && _monMap[m[2]]) return `${m[3]}-${String(_monMap[m[2]]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+        m = s.match(/^(\d{1,2})-([A-Z]{3})/);
+        if (m && _monMap[m[2]] && fbYm) return `${fbYm.slice(0,4)}-${String(_monMap[m[2]]).padStart(2,'0')}-${String(+m[1]).padStart(2,'0')}`;
+        return '';
+      };
+      const [sy, sm] = _cStart.split('-').map(Number);
+      const [ey, em] = _cEnd.split('-').map(Number);
+      const rangeYms = [];
+      let ry = sy, rm = sm;
+      while (ry < ey || (ry === ey && rm <= em)) {
+        rangeYms.push(`${ry}-${String(rm).padStart(2, '0')}`);
+        rm++;
+        if (rm > 12) { rm = 1; ry++; }
+        if (rangeYms.length > 60) break;
+      }
+      scopeMonths = rangeYms;
+      activeSingleYm = rangeYms[rangeYms.length - 1] || latestMonth;
+      scopeLabel = (root && typeof root.formatShortDateRangeLabel === 'function')
+        ? root.formatShortDateRangeLabel(_cStart, _cEnd)
+        : `${_cStart} – ${_cEnd}`;
+
+      // Build sliced per-month summaries inside summariesByYm for custom range without mutating full-year summaries
+      rangeYms.forEach(ym => {
+        const fullS = summariesByYm[ym];
+        if (!fullS || !fullS.exists || !fullS.emp) return;
+        const emp = fullS.emp;
+        const daily = Array.isArray(emp.daily) ? emp.daily : [];
+        const slicedDaily = daily.filter(r => {
+          const iso = _toIso(r && r[0], ym);
+          return iso && iso >= _cStart && iso <= _cEnd;
+        });
+        let totalDuty = 0, otHours = 0, otDaysCount = 0, holidayCount = 0, nightCount = 0, regularDaysCount = 0, plainDaysCount = 0;
+        const otDates = [], holidayDays = [], nightDays = [];
+        slicedDaily.forEach(r => {
+          const regDuty = Number(r[4]) || 0, regOt = Number(r[5]) || 0;
+          const doDuty = Number(r[6]) || 0, doOt = Number(r[7]) || 0;
+          const holDuty = Number(r[8]) || 0, holOt = Number(r[9]) || 0;
+          const isNight = Number(r[10]) === 1;
+          const dDuty = regDuty + regOt + doDuty + doOt + holDuty + holOt;
+          const dOt = Number((regOt + doOt + holOt).toFixed(2));
+          totalDuty += dDuty;
+          otHours += dOt;
+          if (regDuty > 0) regularDaysCount++;
+          if (doDuty > 0 || doOt > 0 || holDuty > 0 || holOt > 0) { holidayCount++; holidayDays.push(String(r[0])); }
+          if (isNight) { nightCount++; nightDays.push(String(r[0])); }
+          if (!isNight && dOt > 0) otDaysCount++;
+          if (dOt > 0) otDates.push({ date: String(r[0] || '').toUpperCase(), day: r[1] || '', in: r[2] || '', out: r[3] || '', otHours: dOt, isNight });
+          if (regDuty > 0 && dOt === 0 && doDuty === 0 && holDuty === 0 && !isNight) plainDaysCount++;
+        });
+        const slicedEmp = {
+          ...emp,
+          daily: slicedDaily,
+          totalDuty: Number(totalDuty.toFixed(2)),
+          otHours: Number(otHours.toFixed(2)),
+          otDaysCount, holidayCount, nightCount, regularDaysCount, plainDaysCount, holidayDays, nightDays
+        };
+        if (root && typeof root.applyTypeOverride === 'function') {
+          root.applyTypeOverride(slicedEmp);
+        } else {
+          // Proportional fallback if rates.js is not loaded
+          const otRate = fullS.otHours > 0 ? (fullS.otAmount / fullS.otHours) : 0;
+          const holRate = fullS.holidayCount > 0 ? (fullS.holidayAmount / fullS.holidayCount) : 0;
+          const nightRate = fullS.nightCount > 0 ? (fullS.nightAmount / fullS.nightCount) : 0;
+          slicedEmp.otAmount = Number((otHours * otRate).toFixed(2));
+          slicedEmp.holidayAmount = Number((holidayCount * holRate).toFixed(2));
+          slicedEmp.nightAmount = Number((nightCount * nightRate).toFixed(2));
+          slicedEmp.totalEarned = Number((slicedEmp.otAmount + slicedEmp.holidayAmount + slicedEmp.nightAmount).toFixed(2));
+        }
+
+        const slicedCal = (fullS.miniCalendarDays || []).filter(d => {
+          const iso = `${ym}-${String(d.dayNum).padStart(2, '0')}`;
+          return iso >= _cStart && iso <= _cEnd;
+        });
+        let schedDays = 0, presOnSched = 0, totPres = 0, offN = 0;
+        const absDays = [], absShort = [], lvDays = [];
+        const monUpper = (MONTH_SHORT[fullS.monthNum - 1] || 'JAN').toUpperCase();
+        const mmPad = String(fullS.monthNum).padStart(2, '0');
+        slicedCal.forEach(d => {
+          const dPad = String(d.dayNum).padStart(2, '0');
+          if (d.state === 'present' || d.state === 'night' || d.state === 'bad') {
+            totPres++; schedDays++; presOnSched++;
+          } else if (d.state === 'holiday') {
+            totPres++;
+          } else if (d.state === 'absent') {
+            schedDays++;
+            absDays.push(`${dPad}-${monUpper} (${d.dayName})`);
+            absShort.push(`${dPad}-${mmPad}`);
+          } else if (d.state === 'leave') {
+            lvDays.push(`${dPad}-${monUpper} (${d.dayName})`);
+          } else if (d.state === 'offn') {
+            offN++;
+          }
+        });
+        const slicedEarlyExits = (fullS.earlyExits || []).filter(ex => {
+          const iso = _toIso(ex && ex.date, ym);
+          return iso && iso >= _cStart && iso <= _cEnd;
+        });
+        const rawAllIss = (fullS.issues && Array.isArray(fullS.issues.allIssues)) ? fullS.issues.allIssues : [];
+        const slicedIss = rawAllIss.filter(it => {
+          const iso = _toIso(it && it.date, ym);
+          return iso && iso >= _cStart && iso <= _cEnd;
+        });
+        const cReq = slicedIss.filter(it => it.type === 'requisition').length;
+        const cNight = slicedIss.filter(it => it.type === 'nightSuspect').length;
+        const cPunch = slicedIss.filter(it => it.type === 'punch').length;
+        const slicedPunchStats = computeEmpMonthPunchStats(slicedEmp);
+
+        summariesByYm['__custom__' + ym] = {
+          ...fullS,
+          emp: slicedEmp,
+          totalDuty: Number(totalDuty.toFixed(2)),
+          otHours: Number(otHours.toFixed(2)),
+          otDaysCount, holidayCount, nightCount, regularDaysCount, plainDaysCount,
+          otAmount: Number(slicedEmp.otAmount || 0),
+          holidayAmount: Number(slicedEmp.holidayAmount || 0),
+          nightAmount: Number(slicedEmp.nightAmount || 0),
+          totalEarned: Number(slicedEmp.totalEarned || 0),
+          scheduledWorkingDays: schedDays,
+          presentOnScheduledDays: presOnSched,
+          totalPresentDays: totPres,
+          presentPct: schedDays > 0 ? Math.round((presOnSched / schedDays) * 1000) / 10 : null,
+          generalAbsentCount: absDays.length,
+          generalAbsentDays: absDays,
+          generalAbsentShortDates: absShort,
+          approvedLeaveCount: lvDays.length,
+          approvedLeaveDays: lvDays,
+          offAfterNightCount: offN,
+          earlyExits: slicedEarlyExits,
+          earlyExitCount: slicedEarlyExits.length,
+          holidayDays, nightDays, otDates,
+          punchStats: slicedPunchStats,
+          issues: {
+            allIssues: slicedIss,
+            counts: { requisition: cReq, nightSuspect: cNight, punch: cPunch, total: slicedIss.length }
+          },
+          miniCalendarDays: slicedCal
+        };
+      });
     } else if (/^\d{4}-\d{2}$/.test(rawScope)) {
       scopeType = 'custom_month';
       scopeMonths = [rawScope];
@@ -878,7 +1027,10 @@
     }
 
     const yearSummary = summarizeRange(yearMonthList);
-    const scopeSummary = summarizeRange(scopeMonths);
+    const _effectiveScopeKeys = (scopeType === 'custom_range')
+      ? scopeMonths.map(ym => summariesByYm['__custom__' + ym] ? ('__custom__' + ym) : ym)
+      : scopeMonths;
+    const scopeSummary = summarizeRange(_effectiveScopeKeys);
     const thisMonthSummary = summariesByYm[latestMonth] || computeEmpMonthSummary(null, latestMonth, opts);
     const lastMonthSummary = summariesByYm[lastMonthYm] || computeEmpMonthSummary(null, lastMonthYm, opts);
     const activeMonthSummary = summariesByYm[activeSingleYm] || thisMonthSummary;
@@ -972,7 +1124,11 @@
     });
 
     // Section G: Group issues by month, newest first
-    const issueSourceYms = (rawScope === 'year') ? [...yearMonthList].reverse() : [...scopeMonths].reverse();
+    const issueSourceYms = (rawScope === 'year')
+      ? [...yearMonthList].reverse()
+      : (scopeType === 'custom_range'
+          ? [...scopeMonths].reverse().map(ym => summariesByYm['__custom__' + ym] ? ('__custom__' + ym) : ym)
+          : [...scopeMonths].reverse());
     const issuesByMonth = [];
     let totalReqIssues = 0, totalNightSusIssues = 0, totalPunchIssues = 0;
     issueSourceYms.forEach(ym => {
@@ -1070,6 +1226,7 @@
       selectedScope: rawScope,
       scopeType,
       scopeLabel,
+      customDateRange: scopeType === 'custom_range' ? opts.customDateRange : null,
       activeSingleYm,
       identityEmp,
       yearSummary,

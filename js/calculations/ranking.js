@@ -412,7 +412,169 @@ function computeEmpGeneralAbsents(e, targetMonthStr, prevNightSetOrBool) {
   return { dates: absentDates, shortDates, count: absentDates.length };
 }
 
+
+/* ==========================================================================
+   CUSTOM DATE RANGE SLICING HELPERS (Shared by Ranking & My Profile)
+   ========================================================================== */
+const _DR_MON_MAP = { JAN:1, FEB:2, MAR:3, APR:4, MAY:5, JUN:6, JUL:7, AUG:8, SEP:9, OCT:10, NOV:11, DEC:12 };
+const _DR_MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function parseEmpDailyDateToISO(rawDate, fallbackYm) {
+  const s = String(rawDate || '').trim().toUpperCase();
+  if (!s) return '';
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return `${m[1]}-${String(+m[2]).padStart(2, '0')}-${String(+m[3]).padStart(2, '0')}`;
+  m = s.match(/^(\d{1,2})-([A-Z]{3})-(\d{4})/);
+  if (m && _DR_MON_MAP[m[2]]) {
+    return `${m[3]}-${String(_DR_MON_MAP[m[2]]).padStart(2, '0')}-${String(+m[1]).padStart(2, '0')}`;
+  }
+  m = s.match(/^(\d{1,2})-([A-Z]{3})/);
+  if (m && _DR_MON_MAP[m[2]] && fallbackYm) {
+    const yy = String(fallbackYm).split('-')[0];
+    if (/^\d{4}$/.test(yy)) return `${yy}-${String(_DR_MON_MAP[m[2]]).padStart(2, '0')}-${String(+m[1]).padStart(2, '0')}`;
+  }
+  m = s.match(/^(\d{1,2})-(\d{2})$/);
+  if (m && fallbackYm) {
+    const yy = String(fallbackYm).split('-')[0];
+    if (/^\d{4}$/.test(yy)) return `${yy}-${m[2]}-${String(+m[1]).padStart(2, '0')}`;
+  }
+  m = s.match(/^(\d{1,2})$/);
+  if (m && fallbackYm && /^\d{4}-\d{2}$/.test(fallbackYm)) {
+    return `${fallbackYm}-${String(+m[1]).padStart(2, '0')}`;
+  }
+  return '';
+}
+
+function getMonthsBetweenISO(startIso, endIso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startIso || '') || !/^\d{4}-\d{2}-\d{2}$/.test(endIso || '')) return [];
+  if (startIso > endIso) return [];
+  const [sy, sm] = startIso.split('-').map(Number);
+  const [ey, em] = endIso.split('-').map(Number);
+  const out = [];
+  let y = sy, m = sm;
+  while (y < ey || (y === ey && m <= em)) {
+    const ym = `${y}-${String(m).padStart(2, '0')}`;
+    if (!(typeof isFutureYm === 'function' && isFutureYm(ym))) out.push(ym);
+    m++;
+    if (m > 12) { m = 1; y++; }
+    if (out.length > 60) break;
+  }
+  return out;
+}
+
+function formatShortDateRangeLabel(startIso, endIso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(startIso || '') || !/^\d{4}-\d{2}-\d{2}$/.test(endIso || '')) return 'Select Date';
+  const [sy, sm, sd] = startIso.split('-').map(Number);
+  const [ey, em, ed] = endIso.split('-').map(Number);
+  const sMon = _DR_MON_SHORT[sm - 1] || String(sm);
+  const eMon = _DR_MON_SHORT[em - 1] || String(em);
+  if (sy !== ey) {
+    return `${sd} ${sMon} ${String(sy).slice(-2)} – ${ed} ${eMon} ${String(ey).slice(-2)}`;
+  }
+  return `${sd} ${sMon} – ${ed} ${eMon}`;
+}
+
+function sliceEmpMonthForDateRange(emp, mStr, startIso, endIso, prevHas) {
+  if (!emp) return null;
+  const daily = Array.isArray(emp.daily) ? emp.daily : [];
+  const slicedDaily = daily.filter(r => {
+    if (!r || !r[0]) return false;
+    const iso = parseEmpDailyDateToISO(r[0], mStr);
+    return iso && iso >= startIso && iso <= endIso;
+  });
+
+  let totalDuty = 0, otHours = 0, otDaysCount = 0, holidayCount = 0, nightCount = 0, regularDaysCount = 0, plainDaysCount = 0;
+  const holidayDays = [], nightDays = [];
+
+  slicedDaily.forEach(r => {
+    const regDuty = Number(r[4]) || 0;
+    const regOt = Number(r[5]) || 0;
+    const doDuty = Number(r[6]) || 0;
+    const doOt = Number(r[7]) || 0;
+    const holDuty = Number(r[8]) || 0;
+    const holOt = Number(r[9]) || 0;
+    const isNight = Number(r[10]) === 1;
+    const dayDuty = regDuty + regOt + doDuty + doOt + holDuty + holOt;
+    const dayOt = regOt + doOt + holOt;
+
+    totalDuty += dayDuty;
+    otHours += dayOt;
+    if (regDuty > 0) regularDaysCount++;
+    if (doDuty > 0 || doOt > 0 || holDuty > 0 || holOt > 0) {
+      holidayCount++;
+      holidayDays.push(String(r[0]));
+    }
+    if (isNight) {
+      nightCount++;
+      nightDays.push(String(r[0]));
+    }
+    if (!isNight && dayOt > 0) otDaysCount++;
+    if (regDuty > 0 && dayOt === 0 && doDuty === 0 && holDuty === 0 && !isNight) plainDaysCount++;
+  });
+
+  // Compute full-month absents first (preserves Day-1 & day-before night-rest exemption + holidays + leaves), then filter to [startIso, endIso]
+  const fullAbs = (typeof computeEmpGeneralAbsents === 'function')
+    ? computeEmpGeneralAbsents(emp, mStr, prevHas)
+    : { dates: (emp.generalAbsentDays || []), shortDates: (emp.generalAbsentShortDates || []), count: (emp.generalAbsentCount || 0) };
+  const absDates = [], absShortDates = [];
+  const rawAbs = fullAbs.dates || [];
+  const rawShort = fullAbs.shortDates || [];
+  for (let i = 0; i < rawAbs.length; i++) {
+    const iso = parseEmpDailyDateToISO(rawAbs[i], mStr) || parseEmpDailyDateToISO(rawShort[i], mStr);
+    if (iso && iso >= startIso && iso <= endIso) {
+      absDates.push(rawAbs[i]);
+      if (rawShort[i]) absShortDates.push(rawShort[i]);
+    }
+  }
+
+  // Filter punchProblems to [startIso, endIso]
+  const rawPunch = Array.isArray(emp.punchProblems) ? emp.punchProblems : [];
+  const slicedPunch = rawPunch.filter(p => {
+    const dStr = typeof p === 'string' ? p : (p && (p.date || p.d || p[0]));
+    const iso = parseEmpDailyDateToISO(dStr, mStr);
+    return iso && iso >= startIso && iso <= endIso;
+  });
+
+  const slicedEmp = {
+    ...emp,
+    daily: slicedDaily,
+    totalDuty: Number(totalDuty.toFixed(2)),
+    otHours: Number(otHours.toFixed(2)),
+    otDaysCount,
+    holidayCount,
+    nightCount,
+    regularDaysCount,
+    plainDaysCount,
+    holidayDays,
+    nightDays,
+    punchProblems: slicedPunch,
+    punchProblemsCount: slicedPunch.length,
+    generalAbsentDays: absDates,
+    generalAbsentShortDates: absShortDates,
+    generalAbsentCount: absDates.length,
+    requisitionProblems: null,
+    earlyExits: null,
+    _metricsComputed: false,
+    _avgComputed: false,
+    isMultiMonth: false
+  };
+
+  if (typeof applyTypeOverride === 'function') {
+    applyTypeOverride(slicedEmp);
+  }
+  const reqArr = (typeof computeEmpRequisitionProblems === 'function') ? computeEmpRequisitionProblems(slicedEmp) : [];
+  slicedEmp.requisitionProblems = reqArr;
+  slicedEmp.requisitionProblemCount = reqArr.length;
+  const eeArr = (typeof computeEmpEarlyExits === 'function') ? computeEmpEarlyExits(slicedEmp) : [];
+  slicedEmp.earlyExits = eeArr;
+  return slicedEmp;
+}
+
 if (typeof window !== "undefined") {
+  window.parseEmpDailyDateToISO = parseEmpDailyDateToISO;
+  window.getMonthsBetweenISO = getMonthsBetweenISO;
+  window.formatShortDateRangeLabel = formatShortDateRangeLabel;
+  window.sliceEmpMonthForDateRange = sliceEmpMonthForDateRange;
   window.computeEmpRequisitionProblems = computeEmpRequisitionProblems;
   window.computeEmpGeneralAbsents = computeEmpGeneralAbsents;
 }

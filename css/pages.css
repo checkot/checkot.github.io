@@ -7336,3 +7336,58 @@ html[data-theme="dark"] #ckLoader, html.dark #ckLoader{ --ck-bg:#0b1220; --ck-ca
 
 /* Ensure #step7 and #lbIssuesCard do not tuck under sticky #workerIdentityCard when scrolled into view */
 #page-search #step7, #page-search #lbIssuesCard, #page-troubleshoot #lbIssuesCard { scroll-margin-top: 92px; }
+
+/* Custom Date Range Bar (Ranking Select Date) */
+.icc-custom-date-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--surface-2, #f1f5f9);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.icc-custom-date-bar .icc-date-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #475569);
+  flex: 1 1 120px;
+  min-width: 112px;
+}
+.icc-custom-date-bar .icc-date-field input[type="date"] {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  padding: 3px 6px;
+  font-size: 11.5px;
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: 6px;
+  background: var(--surface, #ffffff);
+  color: var(--text, #0f172a);
+}
+.icc-date-apply-btn {
+  min-height: 30px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #0D9488;
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.icc-date-close-btn {
+  min-height: 30px;
+  min-width: 30px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #cbd5e1);
+  background: transparent;
+  color: var(--text-2, #64748b);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}

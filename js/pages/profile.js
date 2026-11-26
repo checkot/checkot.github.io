@@ -507,6 +507,7 @@
       targetYear: 2026,
       latestMonth: _profileLastHistPayload.latestMonth || '2026-11',
       selectedScope: _profileActiveScope,
+      customDateRange: _profileActiveScope === 'custom_range' ? _profileCustomRange : null,
       datasetMetaByMonth: _profileLastHistPayload.datasetMetaByMonth,
       sectionStatsByMonth: _profileLastHistPayload.sectionStatsByMonth,
       longTermLeaves: leaves,
@@ -523,7 +524,46 @@
     }
   }
 
+  let _profileCustomRange = { start: '', end: '' };
+  let _profileDateBarOpen = false;
+
+  function _profTodayIso() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  }
+
+  function toggleProfileDateRangeBar() {
+    _profileDateBarOpen = !_profileDateBarOpen;
+    if (_profileLastData) renderProfileContent(_profileLastData);
+  }
+
+  function applyProfileDateRange() {
+    const fInp = document.getElementById('profDateFrom');
+    const tInp = document.getElementById('profDateTo');
+    const startIso = (fInp?.value || '').trim();
+    const endIso = (tInp?.value || '').trim();
+    const todayIso = _profTodayIso();
+    if (!startIso || !endIso) {
+      if (typeof showToast === 'function') showToast('Please select both From and To dates', 'warn');
+      return;
+    }
+    if (startIso > endIso) {
+      if (typeof showToast === 'function') showToast('From date cannot be after To date', 'warn');
+      return;
+    }
+    if (endIso > todayIso) {
+      if (typeof showToast === 'function') showToast('Cannot select a future date', 'warn');
+      return;
+    }
+    _profileCustomRange = { start: startIso, end: endIso };
+    _profileActiveScope = 'custom_range';
+    _profileDateBarOpen = false;
+    root._profileSelectedCalDate = '';
+    recomputeAndRenderProfile();
+  }
+
   function switchProfileScope(newScope, fromGridToggle) {
+    _profileDateBarOpen = false;
     if (!newScope) return;
     const curAgg = _profileLastData;
     if (fromGridToggle && curAgg) {
@@ -971,6 +1011,18 @@
               <span class="prof-month-picker-chev">▾</span>
             </div>
           </div>
+          <div class="prof-custom-date-wrap">
+            <button type="button" class="prof-date-toggle-btn ${agg.selectedScope === 'custom_range' ? 'active' : ''}" onclick="toggleProfileDateRangeBar()">
+              📅 ${agg.selectedScope === 'custom_range' ? esc(agg.scopeLabel) : 'Select Date'}
+            </button>
+            ${_profileDateBarOpen ? `
+              <div class="prof-custom-date-bar">
+                <label class="prof-date-field"><span>From</span><input type="date" id="profDateFrom" value="${esc(_profileCustomRange.start || (_profTodayIso().slice(0,7) + '-01'))}" max="${esc(_profTodayIso())}"></label>
+                <label class="prof-date-field"><span>To</span><input type="date" id="profDateTo" value="${esc(_profileCustomRange.end || _profTodayIso())}" max="${esc(_profTodayIso())}"></label>
+                <button type="button" class="prof-date-apply-btn" onclick="applyProfileDateRange()">Apply</button>
+              </div>
+            ` : ''}
+          </div>
         </section>
 
         ${renderSectionA_Hero(agg, emp)}
@@ -1091,6 +1143,8 @@
 
   root.initProfilePage = initProfilePage;
   root.switchProfileScope = switchProfileScope;
+  root.toggleProfileDateRangeBar = toggleProfileDateRangeBar;
+  root.applyProfileDateRange = applyProfileDateRange;
   root.toggleProfileCalDay = toggleProfileCalDay;
   root.toggleProfileMonthDrawer = toggleProfileMonthDrawer;
   root._formatDecimalHoursHHMM = formatDecimalHoursHHMM;
