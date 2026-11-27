@@ -605,7 +605,7 @@ const filtered = allEmps.filter(e =>
 (area === 'all' || e.area === area) &&
 (st.sub === 'all' || e.sub === st.sub) &&
 (st.gender === 'all' || e.gender === st.gender) &&
-(st.type === 'all' || String(e.grade || '').trim() === st.type || e.empType === st.type) &&
+(st.type === 'all' || e.empType === st.type || (st.type === 'JO' && (/^(JUNIOR\s+OFFICER|OFFICER\s+[AB]\b)/i.test(String(e.grade || '').trim())))) &&
 (!st.customCat || st.customCat === 'all' || (Array.isArray(e.customCats) && e.customCats.includes(st.customCat))));
 const curMonth = (currentLeaderboardResult && currentLeaderboardResult.month) || (typeof getCurrentMonth === 'function' ? getCurrentMonth() : '');
 const filteredObj = { _rawFiltered: filtered, area };

@@ -2836,23 +2836,12 @@ if (st.customCat && st.customCat !== 'all') parts.push(st.customCat);
 return parts.join(' • ');
 }
 let _lbTypeModeSeen = null;
-function refreshTypeFilterOptions(empList) {
+function refreshTypeFilterOptions() {
 const sel = document.getElementById('typeFilter');
 if (!sel) return;
 const inc = getAppMode() === 'incharge';
 const prev = sel.value || 'all';
-const src = Array.isArray(empList) && empList.length
-  ? empList
-  : ((typeof currentLeaderboardResult !== 'undefined' && currentLeaderboardResult && Array.isArray(currentLeaderboardResult.allEmployees))
-      ? currentLeaderboardResult.allEmployees
-      : (typeof allEmpsGlobal !== 'undefined' && Array.isArray(allEmpsGlobal) ? allEmpsGlobal : []));
-const grades = [...new Set(
-  src
-    .filter(e => e && (typeof isExecHiddenFor !== 'function' || !isExecHiddenFor(e)))
-    .map(e => String(e.grade || '').trim())
-    .filter(Boolean)
-)].sort((a, b) => a.localeCompare(b));
-sel.innerHTML = '<option value="all">Designation</option>' + grades.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+sel.innerHTML = '<option value="all">Designation</option><option value="CON">Contractual</option><option value="JO">Junior Officer</option><option value="CAS">Casual</option>' + (inc ? '<option value="EXEC">Executive/Above</option>' : '');
 sel.value = [...sel.options].some(o => o.value === prev) ? prev : 'all';
 if (_lbTypeModeSeen !== null && _lbTypeModeSeen !== inc) { populateAreaDropdown(); _lbTypeModeSeen = inc; if (currentLeaderboardResult) applyAreaFilter(); }
 _lbTypeModeSeen = inc;
