@@ -2,7 +2,7 @@
   "department": "QA",
   "departmentName": "Quality Assurance",
   "month": "2026-11",
-  "updatedAt": "2026-11-27T03:26:01.500821Z",
+  "updatedAt": "2026-11-27T14:26:07.648457Z",
   "employees": [
     {
       "valid": true,
@@ -16,12 +16,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 291.38,
+      "totalDuty": 302.78,
       "otHours": 80.0,
       "holidayCount": 6,
       "nightCount": 8,
-      "regularDaysCount": 11,
-      "plainDaysCount": 1,
+      "regularDaysCount": 12,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "06-NOV-2026",
@@ -78,11 +78,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:03",
+          "out": "19:27",
+          "duty": 11.4,
+          "elapsed": 11.4,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -326,8 +336,8 @@
           "27-NOV-2026",
           "Fri",
           "08:03",
-          "",
-          0.0,
+          "19:27",
+          11.4,
           0.0,
           0.0,
           0.0,
@@ -355,12 +365,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 230.42,
+      "totalDuty": 230.27,
       "otHours": 41.0,
       "holidayCount": 4,
       "nightCount": 0,
       "regularDaysCount": 18,
-      "plainDaysCount": 7,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -385,7 +395,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.72,
+          "doDuty": 8.57,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -394,9 +404,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -698,10 +706,10 @@
           "27-NOV-2026",
           "Fri",
           "07:53",
-          "",
+          "16:27",
           0.0,
           0.0,
-          8.72,
+          8.57,
           0.0,
           0.0,
           0.0,
@@ -727,12 +735,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 311.02,
+      "totalDuty": 319.79,
       "otHours": 54.0,
       "holidayCount": 11,
       "nightCount": 4,
-      "regularDaysCount": 14,
-      "plainDaysCount": 11,
+      "regularDaysCount": 15,
+      "plainDaysCount": 12,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -820,11 +828,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:52",
+          "out": "16:38",
+          "duty": 8.77,
+          "elapsed": 8.77,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -1180,8 +1198,8 @@
           "27-NOV-2026",
           "Fri",
           "07:52",
-          "",
-          0.0,
+          "16:38",
+          8.77,
           0.0,
           0.0,
           0.0,
@@ -1209,11 +1227,11 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 269.23,
-      "otHours": 61.0,
-      "holidayCount": 5,
+      "totalDuty": 278.0,
+      "otHours": 64.0,
+      "holidayCount": 7,
       "nightCount": 3,
-      "regularDaysCount": 16,
+      "regularDaysCount": 15,
       "plainDaysCount": 5,
       "holidayDays": [
         {
@@ -1250,6 +1268,20 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.55,
+          "doExtra": 3.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.77,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -1259,23 +1291,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:53",
-          "out": "19:26",
-          "duty": 11.55,
-          "elapsed": 11.55,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "punchProblems": [],
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -1562,10 +1580,10 @@
           "Thu",
           "07:53",
           "19:26",
-          11.55,
           0.0,
           0.0,
-          0.0,
+          8.55,
+          3.0,
           0.0,
           0.0,
           0,
@@ -1575,10 +1593,10 @@
           "27-NOV-2026",
           "Fri",
           "07:48",
-          "",
+          "16:34",
           0.0,
           0.0,
-          0.0,
+          8.77,
           0.0,
           0.0,
           0.0,
@@ -1586,10 +1604,10 @@
           "G"
         ]
       ],
-      "otAmount": 2318.0,
-      "holidayAmount": 1520,
+      "otAmount": 2432.0,
+      "holidayAmount": 2128,
       "nightAmount": 900,
-      "totalEarned": 4738.0,
+      "totalEarned": 5460.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -1604,12 +1622,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 256.63,
+      "totalDuty": 265.38,
       "otHours": 51.0,
-      "holidayCount": 5,
+      "holidayCount": 6,
       "nightCount": 5,
       "regularDaysCount": 13,
-      "plainDaysCount": 7,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -1645,6 +1663,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.75,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -1657,8 +1682,7 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "20-NOV-2026",
-        "27-NOV-2026"
+        "20-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -1945,10 +1969,10 @@
           "27-NOV-2026",
           "Fri",
           "07:48",
-          "",
+          "16:33",
           0.0,
           0.0,
-          0.0,
+          8.75,
           0.0,
           0.0,
           0.0,
@@ -1957,9 +1981,9 @@
         ]
       ],
       "otAmount": 1938.0,
-      "holidayAmount": 1520,
+      "holidayAmount": 1824,
       "nightAmount": 1500,
-      "totalEarned": 4958.0,
+      "totalEarned": 5262.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -1976,9 +2000,9 @@
       "listed": false,
       "totalDuty": 256.25,
       "otHours": 66.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 6,
-      "regularDaysCount": 13,
+      "regularDaysCount": 12,
       "plainDaysCount": 2,
       "holidayDays": [
         {
@@ -2001,6 +2025,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.9,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -2014,20 +2045,8 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:55",
-          "out": "16:49",
-          "duty": 8.9,
-          "elapsed": 8.9,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -2244,9 +2263,9 @@
           "Thu",
           "07:55",
           "16:49",
+          0.0,
+          0.0,
           8.9,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -2255,9 +2274,9 @@
         ]
       ],
       "otAmount": 2508.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1800,
-      "totalEarned": 5220.0,
+      "totalEarned": 5524.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -2274,9 +2293,9 @@
       "listed": false,
       "totalDuty": 249.46,
       "otHours": 46.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 4,
-      "regularDaysCount": 16,
+      "regularDaysCount": 15,
       "plainDaysCount": 9,
       "holidayDays": [
         {
@@ -2297,6 +2316,13 @@
           "date": "19-NOV-2026",
           "doDuty": 16.2166666666667,
           "doExtra": 7.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 9.1,
+          "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
         }
@@ -2321,20 +2347,9 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
-        },
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:43",
-          "out": "16:49",
-          "duty": 9.1,
-          "elapsed": 9.1,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -2593,9 +2608,9 @@
           "Thu",
           "07:43",
           "16:49",
+          0.0,
+          0.0,
           9.1,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -2604,9 +2619,9 @@
         ]
       ],
       "otAmount": 1748.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1200,
-      "totalEarned": 3860.0,
+      "totalEarned": 4164.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -2621,12 +2636,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 258.16,
+      "totalDuty": 267.13,
       "otHours": 46.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 5,
       "regularDaysCount": 15,
-      "plainDaysCount": 8,
+      "plainDaysCount": 9,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -2645,6 +2660,13 @@
         {
           "date": "20-NOV-2026",
           "doDuty": 8.83,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 9.0,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -2944,8 +2966,8 @@
           "25-NOV-2026",
           "Wed",
           "07:49",
-          "07:34",
-          16.75,
+          "07:32",
+          16.7166666666667,
           7.0,
           0.0,
           0.0,
@@ -2953,12 +2975,26 @@
           0.0,
           1,
           "DN"
+        ],
+        [
+          "26-NOV-2026",
+          "Thu",
+          "07:34",
+          "16:34",
+          0.0,
+          0.0,
+          9.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 1748.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1500,
-      "totalEarned": 4160.0,
+      "totalEarned": 4464.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -2973,12 +3009,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 291.99,
+      "totalDuty": 300.54,
       "otHours": 76.0,
       "holidayCount": 6,
       "nightCount": 7,
-      "regularDaysCount": 12,
-      "plainDaysCount": 2,
+      "regularDaysCount": 13,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -3034,9 +3070,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -3048,9 +3082,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:00",
+          "out": "16:33",
+          "duty": 8.55,
+          "elapsed": 8.55,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -3308,8 +3353,8 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
-          0.0,
+          "16:33",
+          8.55,
           0.0,
           0.0,
           0.0,
@@ -3337,12 +3382,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 286.27,
+      "totalDuty": 294.69,
       "otHours": 68.0,
       "holidayCount": 4,
       "nightCount": 6,
-      "regularDaysCount": 15,
-      "plainDaysCount": 1,
+      "regularDaysCount": 16,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -3383,9 +3428,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -3397,9 +3440,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:02",
+          "out": "16:27",
+          "duty": 8.42,
+          "elapsed": 8.42,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -3671,8 +3725,8 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
-          0.0,
+          "16:27",
+          8.42,
           0.0,
           0.0,
           0.0,
@@ -3700,12 +3754,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 271.59,
+      "totalDuty": 280.14,
       "otHours": 74.0,
       "holidayCount": 2,
       "nightCount": 7,
-      "regularDaysCount": 14,
-      "plainDaysCount": 0,
+      "regularDaysCount": 15,
+      "plainDaysCount": 1,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -3733,11 +3787,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:00",
+          "out": "16:33",
+          "duty": 8.55,
+          "elapsed": 8.55,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "02-NOV-2026",
@@ -3967,8 +4031,8 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
-          0.0,
+          "16:33",
+          8.55,
           0.0,
           0.0,
           0.0,
@@ -3996,12 +4060,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 260.93,
+      "totalDuty": 272.35,
       "otHours": 66.0,
       "holidayCount": 5,
       "nightCount": 5,
-      "regularDaysCount": 13,
-      "plainDaysCount": 2,
+      "regularDaysCount": 14,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -4059,11 +4123,21 @@
         }
       ],
       "nightSuspectCount": 1,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:02",
+          "out": "19:27",
+          "duty": 11.42,
+          "elapsed": 11.42,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "02-NOV-2026",
@@ -4321,8 +4395,8 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
-          0.0,
+          "19:27",
+          11.42,
           0.0,
           0.0,
           0.0,
@@ -5392,12 +5466,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 279.73,
+      "totalDuty": 288.28,
       "otHours": 73.0,
       "holidayCount": 6,
       "nightCount": 2,
-      "regularDaysCount": 16,
-      "plainDaysCount": 3,
+      "regularDaysCount": 17,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -5449,8 +5523,7 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "23-NOV-2026",
-        "27-NOV-2026"
+        "23-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -5463,9 +5536,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:00",
+          "out": "16:33",
+          "duty": 8.55,
+          "elapsed": 8.55,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -5793,8 +5877,8 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
-          0.0,
+          "16:33",
+          8.55,
           0.0,
           0.0,
           0.0,
@@ -5822,12 +5906,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 278.63,
+      "totalDuty": 290.08,
       "otHours": 72.0,
       "holidayCount": 5,
       "nightCount": 7,
-      "regularDaysCount": 12,
-      "plainDaysCount": 1,
+      "regularDaysCount": 13,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -5876,9 +5960,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -5890,9 +5972,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:59",
+          "out": "19:26",
+          "duty": 11.45,
+          "elapsed": 11.45,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -6136,8 +6229,8 @@
           "27-NOV-2026",
           "Fri",
           "07:59",
-          "",
-          0.0,
+          "19:26",
+          11.45,
           0.0,
           0.0,
           0.0,
@@ -8027,12 +8120,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 241.15,
+      "totalDuty": 252.67,
       "otHours": 67.0,
       "holidayCount": 3,
       "nightCount": 7,
-      "regularDaysCount": 10,
-      "plainDaysCount": 0,
+      "regularDaysCount": 11,
+      "plainDaysCount": 1,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -8067,11 +8160,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:54",
+          "out": "19:25",
+          "duty": 11.52,
+          "elapsed": 11.52,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -8259,8 +8362,8 @@
           "27-NOV-2026",
           "Fri",
           "07:54",
-          "",
-          0.0,
+          "19:25",
+          11.52,
           0.0,
           0.0,
           0.0,
@@ -9820,12 +9923,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 299.04,
+      "totalDuty": 307.66,
       "otHours": 59.0,
       "holidayCount": 10,
       "nightCount": 5,
-      "regularDaysCount": 13,
-      "plainDaysCount": 10,
+      "regularDaysCount": 14,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "04-NOV-2026",
@@ -9907,11 +10010,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:01",
+          "out": "16:38",
+          "duty": 8.62,
+          "elapsed": 8.62,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -10239,8 +10352,8 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
-          0.0,
+          "16:38",
+          8.62,
           0.0,
           0.0,
           0.0,
@@ -10268,12 +10381,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 276.2,
+      "totalDuty": 284.63,
       "otHours": 66.0,
       "holidayCount": 7,
       "nightCount": 5,
-      "regularDaysCount": 13,
-      "plainDaysCount": 4,
+      "regularDaysCount": 14,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -10334,9 +10447,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -10348,9 +10459,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:03",
+          "out": "16:29",
+          "duty": 8.43,
+          "elapsed": 8.43,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -10636,8 +10758,8 @@
           "27-NOV-2026",
           "Fri",
           "08:03",
-          "",
-          0.0,
+          "16:29",
+          8.43,
           0.0,
           0.0,
           0.0,
@@ -10665,12 +10787,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 253.82,
+      "totalDuty": 262.22,
       "otHours": 57.0,
       "holidayCount": 5,
       "nightCount": 0,
-      "regularDaysCount": 18,
-      "plainDaysCount": 4,
+      "regularDaysCount": 19,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -10711,9 +10833,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -10725,9 +10845,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:01",
+          "out": "16:25",
+          "duty": 8.4,
+          "elapsed": 8.4,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -11055,8 +11186,8 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
-          0.0,
+          "16:25",
+          8.4,
           0.0,
           0.0,
           0.0,
@@ -11084,12 +11215,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 310.68,
+      "totalDuty": 319.33,
       "otHours": 83.0,
       "holidayCount": 7,
       "nightCount": 4,
-      "regularDaysCount": 15,
-      "plainDaysCount": 1,
+      "regularDaysCount": 16,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -11149,9 +11280,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -11163,9 +11292,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:54",
+          "out": "16:33",
+          "duty": 8.65,
+          "elapsed": 8.65,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -11479,8 +11619,8 @@
           "27-NOV-2026",
           "Fri",
           "07:54",
-          "",
-          0.0,
+          "16:33",
+          8.65,
           0.0,
           0.0,
           0.0,
@@ -11508,12 +11648,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 188.97,
+      "totalDuty": 200.74,
       "otHours": 40.0,
       "holidayCount": 5,
       "nightCount": 4,
-      "regularDaysCount": 8,
-      "plainDaysCount": 3,
+      "regularDaysCount": 9,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -11559,11 +11699,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:40",
+          "out": "19:26",
+          "duty": 11.77,
+          "elapsed": 11.77,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "07-NOV-2026",
@@ -11751,8 +11901,8 @@
           "27-NOV-2026",
           "Fri",
           "07:40",
-          "",
-          0.0,
+          "19:26",
+          11.77,
           0.0,
           0.0,
           0.0,
@@ -12132,12 +12282,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 265.91,
+      "totalDuty": 274.68,
       "otHours": 70.0,
       "holidayCount": 5,
       "nightCount": 4,
-      "regularDaysCount": 14,
-      "plainDaysCount": 1,
+      "regularDaysCount": 15,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -12183,11 +12333,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:02",
+          "out": "16:48",
+          "duty": 8.77,
+          "elapsed": 8.77,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "02-NOV-2026",
@@ -12459,8 +12619,8 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
-          0.0,
+          "16:48",
+          8.77,
           0.0,
           0.0,
           0.0,
@@ -12488,12 +12648,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 248.61,
+      "totalDuty": 257.23,
       "otHours": 55.0,
       "holidayCount": 5,
       "nightCount": 3,
-      "regularDaysCount": 15,
-      "plainDaysCount": 5,
+      "regularDaysCount": 16,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -12538,11 +12698,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:54",
+          "out": "16:31",
+          "duty": 8.62,
+          "elapsed": 8.62,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -12828,8 +12998,8 @@
           "27-NOV-2026",
           "Fri",
           "07:54",
-          "",
-          0.0,
+          "16:31",
+          8.62,
           0.0,
           0.0,
           0.0,
@@ -12857,12 +13027,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 287.24,
+      "totalDuty": 282.36,
       "otHours": 52.0,
       "holidayCount": 11,
       "nightCount": 4,
       "regularDaysCount": 11,
-      "plainDaysCount": 11,
+      "plainDaysCount": 12,
       "holidayDays": [
         {
           "date": "03-NOV-2026",
@@ -12936,7 +13106,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 13.68,
+          "doDuty": 8.8,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -12950,9 +13120,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -13277,10 +13445,10 @@
           "27-NOV-2026",
           "Fri",
           "07:42",
-          "",
+          "16:30",
           0.0,
           0.0,
-          13.68,
+          8.8,
           0.0,
           0.0,
           0.0,
@@ -15024,12 +15192,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 293.52,
+      "totalDuty": 302.07,
       "otHours": 65.0,
-      "holidayCount": 9,
+      "holidayCount": 11,
       "nightCount": 5,
-      "regularDaysCount": 13,
-      "plainDaysCount": 7,
+      "regularDaysCount": 12,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "06-NOV-2026",
@@ -15093,6 +15261,20 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 6.38,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.55,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -15104,23 +15286,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:05",
-          "out": "14:28",
-          "duty": 6.38,
-          "elapsed": 6.38,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "punchProblems": [],
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -15421,9 +15589,9 @@
           "Thu",
           "08:05",
           "14:28",
+          0.0,
+          0.0,
           6.38,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -15434,10 +15602,10 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
+          "16:34",
           0.0,
           0.0,
-          0.0,
+          8.55,
           0.0,
           0.0,
           0.0,
@@ -15446,9 +15614,9 @@
         ]
       ],
       "otAmount": 2470.0,
-      "holidayAmount": 2736,
+      "holidayAmount": 3344,
       "nightAmount": 1500,
-      "totalEarned": 6706.0,
+      "totalEarned": 7314.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -16281,12 +16449,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 283.25,
+      "totalDuty": 280.25,
       "otHours": 61.0,
       "holidayCount": 10,
       "nightCount": 2,
       "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -16353,7 +16521,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 11.67,
+          "doDuty": 8.67,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -16365,9 +16533,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "26-NOV-2026",
@@ -16695,10 +16861,10 @@
           "27-NOV-2026",
           "Fri",
           "07:49",
-          "",
+          "16:29",
           0.0,
           0.0,
-          11.67,
+          8.67,
           0.0,
           0.0,
           0.0,
@@ -16724,12 +16890,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 261.0,
+      "totalDuty": 269.57,
       "otHours": 62.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 5,
       "regularDaysCount": 15,
-      "plainDaysCount": 4,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -16751,6 +16917,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.57,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -16762,9 +16935,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -17024,10 +17195,10 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
+          "16:34",
           0.0,
           0.0,
-          0.0,
+          8.57,
           0.0,
           0.0,
           0.0,
@@ -17036,9 +17207,9 @@
         ]
       ],
       "otAmount": 2356.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1500,
-      "totalEarned": 4768.0,
+      "totalEarned": 5072.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -17469,7 +17640,7 @@
       "isRppf": true,
       "listed": true,
       "totalDuty": 264.25,
-      "otHours": 64.0,
+      "otHours": 68.0,
       "holidayCount": 4,
       "nightCount": 6,
       "regularDaysCount": 13,
@@ -17581,8 +17752,8 @@
           "Sun",
           "07:57",
           "08:08",
-          21.1833333333333,
-          3.0,
+          17.1833333333333,
+          7.0,
           0.0,
           0.0,
           0.0,
@@ -17773,10 +17944,10 @@
           "G"
         ]
       ],
-      "otAmount": 2432.0,
+      "otAmount": 2584.0,
       "holidayAmount": 1216,
       "nightAmount": 1800,
-      "totalEarned": 5448.0,
+      "totalEarned": 5600.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -18957,12 +19128,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 288.42,
+      "totalDuty": 297.05,
       "otHours": 67.0,
       "holidayCount": 6,
       "nightCount": 3,
-      "regularDaysCount": 16,
-      "plainDaysCount": 5,
+      "regularDaysCount": 17,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -19014,9 +19185,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -19028,9 +19197,20 @@
           "isNight": false,
           "expectedOt": "5.0h (04:30 - 09:30 PM)",
           "reason": "5h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:57",
+          "out": "16:35",
+          "duty": 8.63,
+          "elapsed": 8.63,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -19344,8 +19524,8 @@
           "27-NOV-2026",
           "Fri",
           "07:57",
-          "",
-          0.0,
+          "16:35",
+          8.63,
           0.0,
           0.0,
           0.0,
@@ -19373,12 +19553,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 221.79,
+      "totalDuty": 230.34,
       "otHours": 24.0,
-      "holidayCount": 8,
+      "holidayCount": 9,
       "nightCount": 3,
       "regularDaysCount": 12,
-      "plainDaysCount": 16,
+      "plainDaysCount": 17,
       "holidayDays": [
         {
           "date": "01-NOV-2026",
@@ -19435,6 +19615,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.55,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -19444,9 +19631,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -19734,10 +19919,10 @@
           "27-NOV-2026",
           "Fri",
           "07:57",
-          "",
+          "16:30",
           0.0,
           0.0,
-          0.0,
+          8.55,
           0.0,
           0.0,
           0.0,
@@ -19746,9 +19931,9 @@
         ]
       ],
       "otAmount": 912.0,
-      "holidayAmount": 2432,
+      "holidayAmount": 2736,
       "nightAmount": 900,
-      "totalEarned": 4244.0,
+      "totalEarned": 4548.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -19763,12 +19948,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 323.76,
+      "totalDuty": 332.33,
       "otHours": 72.0,
-      "holidayCount": 9,
+      "holidayCount": 10,
       "nightCount": 6,
       "regularDaysCount": 14,
-      "plainDaysCount": 7,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -19832,6 +20017,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.57,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -19844,9 +20036,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -20176,10 +20366,10 @@
           "27-NOV-2026",
           "Fri",
           "07:58",
-          "",
+          "16:32",
           0.0,
           0.0,
-          0.0,
+          8.57,
           0.0,
           0.0,
           0.0,
@@ -20188,9 +20378,9 @@
         ]
       ],
       "otAmount": 2736.0,
-      "holidayAmount": 2736,
+      "holidayAmount": 3040,
       "nightAmount": 1800,
-      "totalEarned": 7272.0,
+      "totalEarned": 7576.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -20993,9 +21183,9 @@
       "listed": false,
       "totalDuty": 240.99,
       "otHours": 50.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 6,
-      "regularDaysCount": 14,
+      "regularDaysCount": 13,
       "plainDaysCount": 6,
       "holidayDays": [
         {
@@ -21018,6 +21208,13 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.68,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -21033,20 +21230,8 @@
       "punchProblems": [
         "08-NOV-2026"
       ],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:00",
-          "out": "16:41",
-          "duty": 8.68,
-          "elapsed": 8.68,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -21291,9 +21476,9 @@
           "Thu",
           "08:00",
           "16:41",
+          0.0,
+          0.0,
           8.68,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -21302,9 +21487,9 @@
         ]
       ],
       "otAmount": 1900.0,
-      "holidayAmount": 912,
+      "holidayAmount": 1216,
       "nightAmount": 1800,
-      "totalEarned": 4612.0,
+      "totalEarned": 4916.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -21319,12 +21504,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 249.79,
+      "totalDuty": 249.58,
       "otHours": 33.0,
       "holidayCount": 5,
       "nightCount": 0,
       "regularDaysCount": 19,
-      "plainDaysCount": 12,
+      "plainDaysCount": 13,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -21356,7 +21541,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.78,
+          "doDuty": 8.57,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -21365,9 +21550,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -21742,10 +21925,10 @@
           "27-NOV-2026",
           "Fri",
           "07:55",
-          "",
+          "16:29",
           0.0,
           0.0,
-          8.78,
+          8.57,
           0.0,
           0.0,
           0.0,
@@ -22158,12 +22341,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 265.72,
+      "totalDuty": 265.36,
       "otHours": 53.0,
       "holidayCount": 5,
       "nightCount": 0,
       "regularDaysCount": 19,
-      "plainDaysCount": 6,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -22195,7 +22378,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.83,
+          "doDuty": 8.47,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -22204,9 +22387,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -22559,10 +22740,10 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
+          "16:29",
           0.0,
           0.0,
-          8.83,
+          8.47,
           0.0,
           0.0,
           0.0,
@@ -22955,12 +23136,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 282.79,
+      "totalDuty": 291.44,
       "otHours": 72.0,
       "holidayCount": 5,
       "nightCount": 7,
-      "regularDaysCount": 13,
-      "plainDaysCount": 2,
+      "regularDaysCount": 14,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -23009,11 +23190,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:48",
+          "out": "16:27",
+          "duty": 8.65,
+          "elapsed": 8.65,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -23271,8 +23462,8 @@
           "27-NOV-2026",
           "Fri",
           "07:48",
-          "",
-          0.0,
+          "16:27",
+          8.65,
           0.0,
           0.0,
           0.0,
@@ -23300,12 +23491,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 265.01,
+      "totalDuty": 273.63,
       "otHours": 48.0,
-      "holidayCount": 5,
+      "holidayCount": 7,
       "nightCount": 5,
-      "regularDaysCount": 16,
-      "plainDaysCount": 11,
+      "regularDaysCount": 15,
+      "plainDaysCount": 12,
       "holidayDays": [
         {
           "date": "06-NOV-2026",
@@ -23341,6 +23532,20 @@
           "doExtra": 7.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.83,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.62,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -23352,23 +23557,9 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:59",
-          "out": "16:49",
-          "duty": 8.83,
-          "elapsed": 8.83,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "punchProblems": [],
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -23655,9 +23846,9 @@
           "Thu",
           "07:59",
           "16:49",
+          0.0,
+          0.0,
           8.83,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -23668,10 +23859,10 @@
           "27-NOV-2026",
           "Fri",
           "07:58",
-          "",
+          "16:35",
           0.0,
           0.0,
-          0.0,
+          8.62,
           0.0,
           0.0,
           0.0,
@@ -23680,9 +23871,9 @@
         ]
       ],
       "otAmount": 1824.0,
-      "holidayAmount": 1520,
+      "holidayAmount": 2128,
       "nightAmount": 1500,
-      "totalEarned": 4844.0,
+      "totalEarned": 5452.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -23697,12 +23888,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 242.03,
+      "totalDuty": 241.9,
       "otHours": 32.0,
       "holidayCount": 7,
       "nightCount": 2,
       "regularDaysCount": 15,
-      "plainDaysCount": 13,
+      "plainDaysCount": 14,
       "holidayDays": [
         {
           "date": "03-NOV-2026",
@@ -23748,7 +23939,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.55,
+          "doDuty": 8.42,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -23760,9 +23951,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -24087,10 +24276,10 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
+          "16:25",
           0.0,
           0.0,
-          8.55,
+          8.42,
           0.0,
           0.0,
           0.0,
@@ -24570,9 +24759,9 @@
       "listed": false,
       "totalDuty": 225.25,
       "otHours": 42.0,
-      "holidayCount": 2,
+      "holidayCount": 3,
       "nightCount": 4,
-      "regularDaysCount": 15,
+      "regularDaysCount": 14,
       "plainDaysCount": 8,
       "holidayDays": [
         {
@@ -24588,6 +24777,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 9.1,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -24599,20 +24795,8 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:53",
-          "out": "16:59",
-          "duty": 9.1,
-          "elapsed": 9.1,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "02-NOV-2026",
@@ -24843,9 +25027,9 @@
           "Thu",
           "07:53",
           "16:59",
+          0.0,
+          0.0,
           9.1,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -24854,9 +25038,9 @@
         ]
       ],
       "otAmount": 1596.0,
-      "holidayAmount": 608,
+      "holidayAmount": 912,
       "nightAmount": 1200,
-      "totalEarned": 3404.0,
+      "totalEarned": 3708.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -26864,12 +27048,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 274.93,
+      "totalDuty": 286.73,
       "otHours": 65.0,
       "holidayCount": 4,
       "nightCount": 0,
-      "regularDaysCount": 18,
-      "plainDaysCount": 1,
+      "regularDaysCount": 19,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -26903,9 +27087,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -26917,9 +27099,20 @@
           "isNight": false,
           "expectedOt": "5.0h (04:30 - 09:30 PM)",
           "reason": "5h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:49",
+          "out": "19:37",
+          "duty": 11.8,
+          "elapsed": 11.8,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -27233,8 +27426,8 @@
           "27-NOV-2026",
           "Fri",
           "07:49",
-          "",
-          0.0,
+          "19:37",
+          11.8,
           0.0,
           0.0,
           0.0,
@@ -28757,12 +28950,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 216.52,
+      "totalDuty": 216.57,
       "otHours": 36.0,
       "holidayCount": 5,
       "nightCount": 0,
       "regularDaysCount": 17,
-      "plainDaysCount": 9,
+      "plainDaysCount": 10,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -28794,7 +28987,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.13,
+          "doDuty": 8.18,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -28803,9 +28996,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -29107,10 +29298,10 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
+          "16:12",
           0.0,
           0.0,
-          8.13,
+          8.18,
           0.0,
           0.0,
           0.0,
@@ -29136,12 +29327,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 161.26,
+      "totalDuty": 161.41,
       "otHours": 18.0,
       "holidayCount": 3,
       "nightCount": 0,
       "regularDaysCount": 14,
-      "plainDaysCount": 10,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -29159,7 +29350,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.17,
+          "doDuty": 8.32,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -29168,9 +29359,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -29402,10 +29591,10 @@
           "27-NOV-2026",
           "Fri",
           "07:57",
-          "",
+          "16:16",
           0.0,
           0.0,
-          8.17,
+          8.32,
           0.0,
           0.0,
           0.0,
@@ -30072,12 +30261,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 199.52,
+      "totalDuty": 199.59,
       "otHours": 18.0,
       "holidayCount": 4,
       "nightCount": 0,
       "regularDaysCount": 17,
-      "plainDaysCount": 14,
+      "plainDaysCount": 15,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -30102,7 +30291,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.15,
+          "doDuty": 8.22,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -30111,9 +30300,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -30424,10 +30611,10 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
+          "16:15",
           0.0,
           0.0,
-          8.15,
+          8.22,
           0.0,
           0.0,
           0.0,
@@ -30453,12 +30640,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 181.19,
+      "totalDuty": 189.87,
       "otHours": 12.0,
       "holidayCount": 2,
       "nightCount": 0,
-      "regularDaysCount": 17,
-      "plainDaysCount": 15,
+      "regularDaysCount": 18,
+      "plainDaysCount": 16,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -30478,9 +30665,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -30492,9 +30677,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:35",
+          "out": "16:16",
+          "duty": 8.68,
+          "elapsed": 8.68,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -30766,8 +30962,8 @@
           "27-NOV-2026",
           "Fri",
           "07:35",
-          "",
-          0.0,
+          "16:16",
+          8.68,
           0.0,
           0.0,
           0.0,
@@ -30795,12 +30991,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 313.55,
+      "totalDuty": 322.12,
       "otHours": 65.0,
-      "holidayCount": 11,
+      "holidayCount": 12,
       "nightCount": 7,
       "regularDaysCount": 11,
-      "plainDaysCount": 10,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "01-NOV-2026",
@@ -30878,6 +31074,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.57,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -30891,9 +31094,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -31209,10 +31410,10 @@
           "27-NOV-2026",
           "Fri",
           "08:00",
-          "",
+          "16:34",
           0.0,
           0.0,
-          0.0,
+          8.57,
           0.0,
           0.0,
           0.0,
@@ -31221,9 +31422,9 @@
         ]
       ],
       "otAmount": 2600.0,
-      "holidayAmount": 3300,
+      "holidayAmount": 3600,
       "nightAmount": 2800,
-      "totalEarned": 8700.0,
+      "totalEarned": 9000.0,
       "fileName": "qa_rppf.xlsx"
     },
     {
@@ -36129,12 +36330,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 226.46,
+      "totalDuty": 226.09,
       "otHours": 33.0,
       "holidayCount": 5,
       "nightCount": 0,
       "regularDaysCount": 18,
-      "plainDaysCount": 11,
+      "plainDaysCount": 12,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -36166,7 +36367,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.55,
+          "doDuty": 8.18,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -36175,9 +36376,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -36493,10 +36692,10 @@
           "27-NOV-2026",
           "Fri",
           "07:54",
-          "",
+          "16:05",
           0.0,
           0.0,
-          8.55,
+          8.18,
           0.0,
           0.0,
           0.0,
@@ -37584,12 +37783,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 175.36,
+      "totalDuty": 183.84,
       "otHours": 9.0,
       "holidayCount": 2,
       "nightCount": 0,
-      "regularDaysCount": 17,
-      "plainDaysCount": 16,
+      "regularDaysCount": 18,
+      "plainDaysCount": 17,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -37609,9 +37808,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -37623,9 +37820,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:57",
+          "out": "16:26",
+          "duty": 8.48,
+          "elapsed": 8.48,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -37897,8 +38105,8 @@
           "27-NOV-2026",
           "Fri",
           "07:57",
-          "",
-          0.0,
+          "16:26",
+          8.48,
           0.0,
           0.0,
           0.0,
@@ -37928,9 +38136,9 @@
       "listed": false,
       "totalDuty": 214.24,
       "otHours": 37.0,
-      "holidayCount": 2,
+      "holidayCount": 3,
       "nightCount": 2,
-      "regularDaysCount": 16,
+      "regularDaysCount": 15,
       "plainDaysCount": 9,
       "holidayDays": [
         {
@@ -37943,6 +38151,13 @@
         {
           "date": "19-NOV-2026",
           "doDuty": 8.73,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.53,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -37966,20 +38181,9 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
-        },
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:01",
-          "out": "16:33",
-          "duty": 8.53,
-          "elapsed": 8.53,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -38224,9 +38428,9 @@
           "Thu",
           "08:01",
           "16:33",
+          0.0,
+          0.0,
           8.53,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -39352,19 +39556,17 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 152.72,
+      "totalDuty": 161.12,
       "otHours": 6.0,
       "holidayCount": 0,
       "nightCount": 0,
-      "regularDaysCount": 17,
-      "plainDaysCount": 15,
+      "regularDaysCount": 18,
+      "plainDaysCount": 16,
       "holidayDays": [],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -39376,9 +39578,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:02",
+          "out": "16:26",
+          "duty": 8.4,
+          "elapsed": 8.4,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -39622,8 +39835,8 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
-          0.0,
+          "16:26",
+          8.4,
           0.0,
           0.0,
           0.0,
@@ -39651,12 +39864,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 257.89,
+      "totalDuty": 264.09,
       "otHours": 57.0,
       "holidayCount": 5,
       "nightCount": 0,
-      "regularDaysCount": 18,
-      "plainDaysCount": 4,
+      "regularDaysCount": 19,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -39697,9 +39910,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "06-NOV-2026",
@@ -39733,9 +39944,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:01",
+          "out": "14:13",
+          "duty": 6.2,
+          "elapsed": 6.2,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 3,
+      "requisitionProblemCount": 4,
       "daily": [
         [
           "01-NOV-2026",
@@ -40063,8 +40285,8 @@
           "27-NOV-2026",
           "Fri",
           "08:01",
-          "",
-          0.0,
+          "14:13",
+          6.2,
           0.0,
           0.0,
           0.0,
@@ -40386,12 +40608,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 263.38,
+      "totalDuty": 271.91,
       "otHours": 66.0,
       "holidayCount": 7,
       "nightCount": 0,
-      "regularDaysCount": 16,
-      "plainDaysCount": 1,
+      "regularDaysCount": 17,
+      "plainDaysCount": 2,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -40446,11 +40668,21 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:04",
+          "out": "16:36",
+          "duty": 8.53,
+          "elapsed": 8.53,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "02-NOV-2026",
@@ -40778,8 +41010,8 @@
           "27-NOV-2026",
           "Fri",
           "08:04",
-          "",
-          0.0,
+          "16:36",
+          8.53,
           0.0,
           0.0,
           0.0,
@@ -40807,12 +41039,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 260.34,
+      "totalDuty": 269.32,
       "otHours": 64.0,
       "holidayCount": 5,
       "nightCount": 5,
-      "regularDaysCount": 12,
-      "plainDaysCount": 3,
+      "regularDaysCount": 13,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -40860,8 +41092,7 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "18-NOV-2026",
-        "27-NOV-2026"
+        "18-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -40874,9 +41105,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:32",
+          "out": "16:31",
+          "duty": 8.98,
+          "elapsed": 8.98,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 1,
+      "requisitionProblemCount": 2,
       "daily": [
         [
           "01-NOV-2026",
@@ -41134,8 +41376,8 @@
           "27-NOV-2026",
           "Fri",
           "07:32",
-          "",
-          0.0,
+          "16:31",
+          8.98,
           0.0,
           0.0,
           0.0,
@@ -41875,12 +42117,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 189.45,
+      "totalDuty": 195.02,
       "otHours": 10.0,
       "holidayCount": 2,
       "nightCount": 0,
-      "regularDaysCount": 19,
-      "plainDaysCount": 16,
+      "regularDaysCount": 20,
+      "plainDaysCount": 17,
       "holidayDays": [
         {
           "date": "07-NOV-2026",
@@ -41945,9 +42187,20 @@
           "isNight": false,
           "expectedOt": "1.2h Extended OT",
           "reason": "Day OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "10:39",
+          "out": "16:13",
+          "duty": 5.57,
+          "elapsed": 5.57,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 4,
+      "requisitionProblemCount": 5,
       "daily": [
         [
           "01-NOV-2026",
@@ -42242,6 +42495,20 @@
           0.0,
           0,
           "G"
+        ],
+        [
+          "27-NOV-2026",
+          "Fri",
+          "10:39",
+          "16:13",
+          5.57,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0,
+          "G"
         ]
       ],
       "otAmount": 0.0,
@@ -42262,12 +42529,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 206.91,
+      "totalDuty": 206.83,
       "otHours": 29.0,
       "holidayCount": 4,
       "nightCount": 0,
       "regularDaysCount": 17,
-      "plainDaysCount": 10,
+      "plainDaysCount": 11,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -42292,7 +42559,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.3,
+          "doDuty": 8.22,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -42302,8 +42569,7 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "24-NOV-2026",
-        "27-NOV-2026"
+        "24-NOV-2026"
       ],
       "requisitionProblems": [
         {
@@ -42629,10 +42895,10 @@
           "27-NOV-2026",
           "Fri",
           "08:03",
-          "",
+          "16:16",
           0.0,
           0.0,
-          8.3,
+          8.22,
           0.0,
           0.0,
           0.0,
@@ -44748,9 +45014,9 @@
       "listed": false,
       "totalDuty": 214.58,
       "otHours": 28.0,
-      "holidayCount": 2,
+      "holidayCount": 3,
       "nightCount": 0,
-      "regularDaysCount": 19,
+      "regularDaysCount": 18,
       "plainDaysCount": 11,
       "holidayDays": [
         {
@@ -44763,6 +45029,13 @@
         {
           "date": "20-NOV-2026",
           "doDuty": 8.47,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.82,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -44783,20 +45056,9 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
-        },
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:52",
-          "out": "16:41",
-          "duty": 8.82,
-          "elapsed": 8.82,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -45083,9 +45345,9 @@
           "Thu",
           "07:52",
           "16:41",
+          0.0,
+          0.0,
           8.82,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -45113,9 +45375,9 @@
       "listed": false,
       "totalDuty": 182.95,
       "otHours": 26.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 0,
-      "regularDaysCount": 15,
+      "regularDaysCount": 14,
       "plainDaysCount": 10,
       "holidayDays": [
         {
@@ -45145,26 +45407,21 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.9,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:58",
-          "out": "16:52",
-          "duty": 8.9,
-          "elapsed": 8.9,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -45423,9 +45680,9 @@
           "Thu",
           "07:58",
           "16:52",
+          0.0,
+          0.0,
           8.9,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -48456,12 +48713,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 276.59,
+      "totalDuty": 285.12,
       "otHours": 63.0,
       "holidayCount": 7,
       "nightCount": 0,
-      "regularDaysCount": 18,
-      "plainDaysCount": 4,
+      "regularDaysCount": 19,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -48516,11 +48773,21 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:56",
+          "out": "16:28",
+          "duty": 8.53,
+          "elapsed": 8.53,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -48876,8 +49143,8 @@
           "27-NOV-2026",
           "Fri",
           "07:56",
-          "",
-          0.0,
+          "16:28",
+          8.53,
           0.0,
           0.0,
           0.0,
@@ -50278,12 +50545,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 215.73,
+      "totalDuty": 214.95,
       "otHours": 37.0,
       "holidayCount": 5,
       "nightCount": 0,
       "regularDaysCount": 16,
-      "plainDaysCount": 7,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -50315,7 +50582,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.78,
+          "doDuty": 8.0,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -50326,8 +50593,7 @@
       "nightSuspectCount": 0,
       "punchProblems": [
         "11-NOV-2026",
-        "17-NOV-2026",
-        "27-NOV-2026"
+        "17-NOV-2026"
       ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
@@ -50644,10 +50910,10 @@
           "27-NOV-2026",
           "Fri",
           "08:05",
-          "",
+          "16:05",
           0.0,
           0.0,
-          8.78,
+          8.0,
           0.0,
           0.0,
           0.0,
@@ -50673,12 +50939,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 216.33,
+      "totalDuty": 224.78,
       "otHours": 46.0,
-      "holidayCount": 4,
+      "holidayCount": 5,
       "nightCount": 3,
       "regularDaysCount": 13,
-      "plainDaysCount": 5,
+      "plainDaysCount": 6,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -50707,6 +50973,13 @@
           "doExtra": 5.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.45,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -50717,8 +50990,7 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "06-NOV-2026",
-        "27-NOV-2026"
+        "06-NOV-2026"
       ],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
@@ -50979,10 +51251,10 @@
           "27-NOV-2026",
           "Fri",
           "08:02",
-          "",
+          "16:29",
           0.0,
           0.0,
-          0.0,
+          8.45,
           0.0,
           0.0,
           0.0,
@@ -51008,12 +51280,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 269.52,
+      "totalDuty": 277.95,
       "otHours": 65.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 2,
       "regularDaysCount": 18,
-      "plainDaysCount": 3,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -51035,6 +51307,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.43,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [
@@ -51043,9 +51322,7 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "25-NOV-2026",
@@ -51359,10 +51636,10 @@
           "27-NOV-2026",
           "Fri",
           "08:05",
-          "",
+          "16:31",
           0.0,
           0.0,
-          0.0,
+          8.43,
           0.0,
           0.0,
           0.0,
@@ -51735,12 +52012,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 247.69,
+      "totalDuty": 256.57,
       "otHours": 66.0,
       "holidayCount": 3,
       "nightCount": 6,
-      "regularDaysCount": 12,
-      "plainDaysCount": 2,
+      "regularDaysCount": 13,
+      "plainDaysCount": 3,
       "holidayDays": [
         {
           "date": "02-NOV-2026",
@@ -51775,11 +52052,22 @@
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [
-        "19-NOV-2026",
-        "27-NOV-2026"
+        "19-NOV-2026"
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:35",
+          "out": "16:28",
+          "duty": 8.88,
+          "elapsed": 8.88,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
+      ],
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -52009,8 +52297,8 @@
           "27-NOV-2026",
           "Fri",
           "07:35",
-          "",
-          0.0,
+          "16:28",
+          8.88,
           0.0,
           0.0,
           0.0,
@@ -52038,12 +52326,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 190.24,
+      "totalDuty": 198.64,
       "otHours": 24.0,
-      "holidayCount": 3,
+      "holidayCount": 4,
       "nightCount": 0,
       "regularDaysCount": 17,
-      "plainDaysCount": 12,
+      "plainDaysCount": 13,
       "holidayDays": [
         {
           "date": "06-NOV-2026",
@@ -52065,14 +52353,19 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.4,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -52372,10 +52665,10 @@
           "27-NOV-2026",
           "Fri",
           "07:57",
-          "",
+          "16:21",
           0.0,
           0.0,
-          0.0,
+          8.4,
           0.0,
           0.0,
           0.0,
@@ -54878,11 +55171,11 @@
       "isRppf": true,
       "listed": false,
       "totalDuty": 239.14,
-      "otHours": 46.0,
-      "holidayCount": 3,
+      "otHours": 47.0,
+      "holidayCount": 4,
       "nightCount": 0,
-      "regularDaysCount": 19,
-      "plainDaysCount": 6,
+      "regularDaysCount": 18,
+      "plainDaysCount": 5,
       "holidayDays": [
         {
           "date": "06-NOV-2026",
@@ -54904,26 +55197,21 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.4,
+          "doExtra": 1.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:00",
-          "out": "17:24",
-          "duty": 9.4,
-          "elapsed": 9.4,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -55224,10 +55512,10 @@
           "Thu",
           "08:00",
           "17:24",
-          9.4,
           0.0,
           0.0,
-          0.0,
+          8.4,
+          1.0,
           0.0,
           0.0,
           0,
@@ -56638,12 +56926,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 183.92,
+      "totalDuty": 190.04,
       "otHours": 7.0,
       "holidayCount": 4,
       "nightCount": 0,
-      "regularDaysCount": 17,
-      "plainDaysCount": 18,
+      "regularDaysCount": 18,
+      "plainDaysCount": 19,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -56677,9 +56965,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -56702,9 +56988,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "08:05",
+          "out": "14:12",
+          "duty": 6.12,
+          "elapsed": 6.12,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 3,
       "daily": [
         [
           "01-NOV-2026",
@@ -57004,8 +57301,8 @@
           "27-NOV-2026",
           "Fri",
           "08:05",
-          "",
-          0.0,
+          "14:12",
+          6.12,
           0.0,
           0.0,
           0.0,
@@ -57034,11 +57331,11 @@
       "isRppf": true,
       "listed": false,
       "totalDuty": 260.3,
-      "otHours": 62.0,
-      "holidayCount": 3,
+      "otHours": 63.0,
+      "holidayCount": 4,
       "nightCount": 0,
-      "regularDaysCount": 19,
-      "plainDaysCount": 5,
+      "regularDaysCount": 18,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -57060,6 +57357,13 @@
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
+        },
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 9.6,
+          "doExtra": 1.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
         }
       ],
       "nightDays": [],
@@ -57077,20 +57381,8 @@
       ],
       "nightSuspectCount": 1,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:09",
-          "out": "18:45",
-          "duty": 10.6,
-          "elapsed": 10.6,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -57391,10 +57683,10 @@
           "Thu",
           "08:09",
           "18:45",
-          10.6,
           0.0,
           0.0,
-          0.0,
+          9.6,
+          1.0,
           0.0,
           0.0,
           0,
@@ -58046,12 +58338,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 259.41,
+      "totalDuty": 270.74,
       "otHours": 65.0,
       "holidayCount": 4,
       "nightCount": 5,
-      "regularDaysCount": 14,
-      "plainDaysCount": 3,
+      "regularDaysCount": 15,
+      "plainDaysCount": 4,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -58091,11 +58383,21 @@
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
+      "punchProblems": [],
+      "requisitionProblems": [
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:56",
+          "out": "19:16",
+          "duty": 11.33,
+          "elapsed": 11.33,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
+        }
       ],
-      "requisitionProblems": [],
-      "requisitionProblemCount": 0,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "03-NOV-2026",
@@ -58353,8 +58655,8 @@
           "27-NOV-2026",
           "Fri",
           "07:56",
-          "",
-          0.0,
+          "19:16",
+          11.33,
           0.0,
           0.0,
           0.0,
@@ -58599,11 +58901,19 @@
       "listed": false,
       "totalDuty": 180.5,
       "otHours": 12.0,
-      "holidayCount": 0,
+      "holidayCount": 1,
       "nightCount": 0,
-      "regularDaysCount": 20,
+      "regularDaysCount": 19,
       "plainDaysCount": 16,
-      "holidayDays": [],
+      "holidayDays": [
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.9,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        }
+      ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
@@ -58619,20 +58929,9 @@
           "isNight": false,
           "expectedOt": "Weekend (Thu) DO Req Missing",
           "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        },
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "07:58",
-          "out": "16:52",
-          "duty": 8.9,
-          "elapsed": 8.9,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 1,
       "daily": [
         [
           "01-NOV-2026",
@@ -58905,9 +59204,9 @@
           "Thu",
           "07:58",
           "16:52",
+          0.0,
+          0.0,
           8.9,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -60761,29 +61060,25 @@
       "listed": false,
       "totalDuty": 145.53,
       "otHours": 3.0,
-      "holidayCount": 0,
+      "holidayCount": 1,
       "nightCount": 0,
-      "regularDaysCount": 17,
+      "regularDaysCount": 16,
       "plainDaysCount": 16,
-      "holidayDays": [],
+      "holidayDays": [
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.42,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        }
+      ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:04",
-          "out": "16:29",
-          "duty": 8.42,
-          "elapsed": 8.42,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -61014,9 +61309,9 @@
           "Thu",
           "08:04",
           "16:29",
+          0.0,
+          0.0,
           8.42,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -61044,29 +61339,25 @@
       "listed": false,
       "totalDuty": 148.76,
       "otHours": 3.0,
-      "holidayCount": 0,
+      "holidayCount": 1,
       "nightCount": 0,
-      "regularDaysCount": 17,
+      "regularDaysCount": 16,
       "plainDaysCount": 16,
-      "holidayDays": [],
+      "holidayDays": [
+        {
+          "date": "26-NOV-2026",
+          "doDuty": 8.67,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        }
+      ],
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
       "punchProblems": [],
-      "requisitionProblems": [
-        {
-          "date": "26-NOV-2026",
-          "day": "Thu",
-          "in": "08:00",
-          "out": "16:40",
-          "duty": 8.67,
-          "elapsed": 8.67,
-          "isNight": false,
-          "expectedOt": "Weekend (Thu) DO Req Missing",
-          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
-        }
-      ],
-      "requisitionProblemCount": 1,
+      "requisitionProblems": [],
+      "requisitionProblemCount": 0,
       "daily": [
         [
           "01-NOV-2026",
@@ -61297,9 +61588,9 @@
           "Thu",
           "08:00",
           "16:40",
+          0.0,
+          0.0,
           8.67,
-          0.0,
-          0.0,
           0.0,
           0.0,
           0.0,
@@ -61325,21 +61616,27 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 193.36,
+      "totalDuty": 201.94,
       "otHours": 29.0,
-      "holidayCount": 0,
+      "holidayCount": 1,
       "nightCount": 1,
       "regularDaysCount": 18,
-      "plainDaysCount": 9,
-      "holidayDays": [],
+      "plainDaysCount": 10,
+      "holidayDays": [
+        {
+          "date": "27-NOV-2026",
+          "doDuty": 8.58,
+          "doExtra": 0.0,
+          "holDuty": 0.0,
+          "holExtra": 0.0
+        }
+      ],
       "nightDays": [
         "18-NOV-2026"
       ],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -61599,10 +61896,10 @@
           "27-NOV-2026",
           "Fri",
           "07:56",
-          "",
+          "16:31",
           0.0,
           0.0,
-          0.0,
+          8.58,
           0.0,
           0.0,
           0.0,
@@ -62546,12 +62843,12 @@
       "sub": "",
       "isRppf": true,
       "listed": true,
-      "totalDuty": 286.13,
+      "totalDuty": 295.3,
       "otHours": 57.0,
       "holidayCount": 7,
       "nightCount": 0,
-      "regularDaysCount": 18,
-      "plainDaysCount": 6,
+      "regularDaysCount": 19,
+      "plainDaysCount": 7,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -62606,9 +62903,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [
         {
           "date": "01-NOV-2026",
@@ -62631,9 +62926,20 @@
           "isNight": false,
           "expectedOt": "3.0h (04:30 - 07:30 PM)",
           "reason": "3h Evening OT Missing"
+        },
+        {
+          "date": "27-NOV-2026",
+          "day": "Fri",
+          "in": "07:30",
+          "out": "16:40",
+          "duty": 9.17,
+          "elapsed": 9.17,
+          "isNight": false,
+          "expectedOt": "Weekend (Fri) DO Req Missing",
+          "reason": "Worked on Weekend (Thu/Fri), but recorded as Regular Duty"
         }
       ],
-      "requisitionProblemCount": 2,
+      "requisitionProblemCount": 3,
       "daily": [
         [
           "01-NOV-2026",
@@ -62989,8 +63295,8 @@
           "27-NOV-2026",
           "Fri",
           "07:30",
-          "",
-          0.0,
+          "16:40",
+          9.17,
           0.0,
           0.0,
           0.0,
@@ -65169,12 +65475,12 @@
       "sub": "",
       "isRppf": true,
       "listed": false,
-      "totalDuty": 253.49,
+      "totalDuty": 253.38,
       "otHours": 42.0,
       "holidayCount": 6,
       "nightCount": 0,
       "regularDaysCount": 18,
-      "plainDaysCount": 7,
+      "plainDaysCount": 8,
       "holidayDays": [
         {
           "date": "05-NOV-2026",
@@ -65213,7 +65519,7 @@
         },
         {
           "date": "27-NOV-2026",
-          "doDuty": 8.68,
+          "doDuty": 8.57,
           "doExtra": 0.0,
           "holDuty": 0.0,
           "holExtra": 0.0
@@ -65222,9 +65528,7 @@
       "nightDays": [],
       "nightSuspects": [],
       "nightSuspectCount": 0,
-      "punchProblems": [
-        "27-NOV-2026"
-      ],
+      "punchProblems": [],
       "requisitionProblems": [],
       "requisitionProblemCount": 0,
       "daily": [
@@ -65554,10 +65858,10 @@
           "27-NOV-2026",
           "Fri",
           "07:38",
-          "",
+          "16:12",
           0.0,
           0.0,
-          8.68,
+          8.57,
           0.0,
           0.0,
           0.0,
