@@ -6,10 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RPPF - Overtime Report</title>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0F172A">
+<meta name="theme-color" content="#0F766E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" type="image/png" href="https://checkot.github.io/icon.png">
+<link rel="icon" type="image/png" href="icon-v2-192.png">
+<link rel="apple-touch-icon" href="icon-v2-192.png">
 <meta property="og:title" content="RPPF - Overtime Report">
 <meta property="og:description" content="Overtime Report Search & Calculator">
 <meta property="og:image" content="https://checkot.github.io/og-image.png">
@@ -60,6 +61,227 @@ document.documentElement.setAttribute('data-theme', t);
   <link rel="stylesheet" href="css/report-diary.css?v=20261127inc1">
 </head>
 <body data-page="search">
+<!-- Option 1a-B Live Dynamic Executive Splash Screen (Auto-updates Month & Dates) -->
+<style id="ckAppSplashStyle">
+#ckAppSplash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 16px) 20px calc(env(safe-area-inset-bottom, 16px) + 18px);
+  background: linear-gradient(180deg, #0F766E 0%, #0F766E 15%, #F4F8F8 15%, #F4F8F8 100%);
+  font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  transition: opacity 0.34s ease, transform 0.34s ease;
+}
+#ckAppSplash.ck-sp-hide {
+  opacity: 0;
+  transform: scale(1.015);
+  pointer-events: none;
+}
+.ck-sp-stage {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
+.ck-sp-cal {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.11), 0 1px 3px rgba(15, 23, 42, 0.06);
+  border: 1px solid #d7e4e4;
+}
+.ck-sp-cal-head {
+  background: #0F766E;
+  color: #ffffff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 12px 10px;
+  text-transform: uppercase;
+}
+.ck-sp-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f8fbfb;
+  border-bottom: 1px solid #e2ecec;
+  padding: 6px 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #334155;
+}
+.ck-sp-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 2px 6px 8px;
+}
+.ck-sp-cell {
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  position: relative;
+}
+.ck-sp-cell:nth-child(7n) { border-right: none; }
+.ck-sp-cell.is-today {
+  color: #0F766E;
+  font-weight: 900;
+  background: rgba(13, 148, 136, 0.1);
+  border-radius: 6px;
+}
+.ck-sp-dot {
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.ck-sp-dot.teal { background: #0d9488; }
+.ck-sp-dot.blue { background: #1d4ed8; }
+.ck-sp-clock-wrap {
+  width: 214px;
+  height: 214px;
+  margin-top: -136px;
+  border-radius: 50%;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.20), 0 3px 10px rgba(15, 23, 42, 0.10);
+  background: transparent;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ck-sp-clock-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ck-sp-brand {
+  text-align: center;
+  margin-top: 16px;
+}
+.ck-sp-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.ck-sp-sub {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #475569;
+  margin-top: 4px;
+}
+.ck-sp-pill {
+  background: #0F766E;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 7px 18px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.24);
+}
+</style>
+<div id="ckAppSplash" aria-label="Renata Overtime loading">
+  <div class="ck-sp-stage">
+    <div class="ck-sp-cal" aria-hidden="true">
+      <div class="ck-sp-cal-head" id="ckSpCalMonth">RENATA</div>
+      <div class="ck-sp-cal-days"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+      <div class="ck-sp-cal-grid" id="ckSpCalGrid"></div>
+    </div>
+    <div class="ck-sp-clock-wrap"><svg viewBox="0 0 300 300" class="ck-sp-clock-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Renata Overtime Clock">
+  <defs>
+    <linearGradient id="ckBezelMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="28%" stop-color="#94a3b8"/>
+      <stop offset="52%" stop-color="#ffffff"/>
+      <stop offset="76%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <radialGradient id="ckDialFace" cx="42%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="82%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="150" cy="150" r="144" fill="url(#ckBezelMetal)" stroke="#64748b" stroke-width="1.5"/>
+  <circle cx="150" cy="150" r="133" fill="url(#ckDialFace)" stroke="#94a3b8" stroke-width="1.2"/>
+  <circle cx="150" cy="150" r="126.5" fill="none" stroke="#1e293b" stroke-width="1.2"/>
+  <line x1="150.0" y1="24.0" x2="150.0" y2="31.0" stroke="#0f172a" stroke-width="2.4"/><line x1="163.2" y1="24.7" x2="162.5" y2="30.7" stroke="#475569" stroke-width="1.0"/><line x1="176.2" y1="26.8" x2="174.9" y2="32.6" stroke="#475569" stroke-width="1.0"/><line x1="188.9" y1="30.2" x2="187.1" y2="35.9" stroke="#475569" stroke-width="1.0"/><line x1="201.2" y1="34.9" x2="198.8" y2="40.4" stroke="#475569" stroke-width="1.0"/><line x1="206.0" y1="53.0" x2="198.5" y2="66.0" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="213.0" y1="40.9" x2="207.0" y2="51.3" stroke="#0f172a" stroke-width="2.4"/><line x1="224.1" y1="48.1" x2="220.5" y2="52.9" stroke="#475569" stroke-width="1.0"/><line x1="234.3" y1="56.4" x2="230.3" y2="60.8" stroke="#475569" stroke-width="1.0"/><line x1="243.6" y1="65.7" x2="239.2" y2="69.7" stroke="#475569" stroke-width="1.0"/><line x1="251.9" y1="75.9" x2="247.1" y2="79.5" stroke="#475569" stroke-width="1.0"/><line x1="247.0" y1="94.0" x2="234.0" y2="101.5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="259.1" y1="87.0" x2="248.7" y2="93.0" stroke="#0f172a" stroke-width="2.4"/><line x1="265.1" y1="98.8" x2="259.6" y2="101.2" stroke="#475569" stroke-width="1.0"/><line x1="269.8" y1="111.1" x2="264.1" y2="112.9" stroke="#475569" stroke-width="1.0"/><line x1="273.2" y1="123.8" x2="267.4" y2="125.1" stroke="#475569" stroke-width="1.0"/><line x1="275.3" y1="136.8" x2="269.3" y2="137.5" stroke="#475569" stroke-width="1.0"/><line x1="276.0" y1="150.0" x2="269.0" y2="150.0" stroke="#0f172a" stroke-width="2.4"/><line x1="275.3" y1="163.2" x2="269.3" y2="162.5" stroke="#475569" stroke-width="1.0"/><line x1="273.2" y1="176.2" x2="267.4" y2="174.9" stroke="#475569" stroke-width="1.0"/><line x1="269.8" y1="188.9" x2="264.1" y2="187.1" stroke="#475569" stroke-width="1.0"/><line x1="265.1" y1="201.2" x2="259.6" y2="198.8" stroke="#475569" stroke-width="1.0"/><line x1="247.0" y1="206.0" x2="234.0" y2="198.5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="259.1" y1="213.0" x2="248.7" y2="207.0" stroke="#0f172a" stroke-width="2.4"/><line x1="251.9" y1="224.1" x2="247.1" y2="220.5" stroke="#475569" stroke-width="1.0"/><line x1="243.6" y1="234.3" x2="239.2" y2="230.3" stroke="#475569" stroke-width="1.0"/><line x1="234.3" y1="243.6" x2="230.3" y2="239.2" stroke="#475569" stroke-width="1.0"/><line x1="224.1" y1="251.9" x2="220.5" y2="247.1" stroke="#475569" stroke-width="1.0"/><line x1="206.0" y1="247.0" x2="198.5" y2="234.0" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="213.0" y1="259.1" x2="207.0" y2="248.7" stroke="#0f172a" stroke-width="2.4"/><line x1="201.2" y1="265.1" x2="198.8" y2="259.6" stroke="#475569" stroke-width="1.0"/><line x1="188.9" y1="269.8" x2="187.1" y2="264.1" stroke="#475569" stroke-width="1.0"/><line x1="176.2" y1="273.2" x2="174.9" y2="267.4" stroke="#475569" stroke-width="1.0"/><line x1="163.2" y1="275.3" x2="162.5" y2="269.3" stroke="#475569" stroke-width="1.0"/><line x1="150.0" y1="276.0" x2="150.0" y2="269.0" stroke="#0f172a" stroke-width="2.4"/><line x1="136.8" y1="275.3" x2="137.5" y2="269.3" stroke="#475569" stroke-width="1.0"/><line x1="123.8" y1="273.2" x2="125.1" y2="267.4" stroke="#475569" stroke-width="1.0"/><line x1="111.1" y1="269.8" x2="112.9" y2="264.1" stroke="#475569" stroke-width="1.0"/><line x1="98.8" y1="265.1" x2="101.2" y2="259.6" stroke="#475569" stroke-width="1.0"/><line x1="94.0" y1="247.0" x2="101.5" y2="234.0" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="87.0" y1="259.1" x2="93.0" y2="248.7" stroke="#0f172a" stroke-width="2.4"/><line x1="75.9" y1="251.9" x2="79.5" y2="247.1" stroke="#475569" stroke-width="1.0"/><line x1="65.7" y1="243.6" x2="69.7" y2="239.2" stroke="#475569" stroke-width="1.0"/><line x1="56.4" y1="234.3" x2="60.8" y2="230.3" stroke="#475569" stroke-width="1.0"/><line x1="48.1" y1="224.1" x2="52.9" y2="220.5" stroke="#475569" stroke-width="1.0"/><line x1="53.0" y1="206.0" x2="66.0" y2="198.5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="40.9" y1="213.0" x2="51.3" y2="207.0" stroke="#0f172a" stroke-width="2.4"/><line x1="34.9" y1="201.2" x2="40.4" y2="198.8" stroke="#475569" stroke-width="1.0"/><line x1="30.2" y1="188.9" x2="35.9" y2="187.1" stroke="#475569" stroke-width="1.0"/><line x1="26.8" y1="176.2" x2="32.6" y2="174.9" stroke="#475569" stroke-width="1.0"/><line x1="24.7" y1="163.2" x2="30.7" y2="162.5" stroke="#475569" stroke-width="1.0"/><line x1="24.0" y1="150.0" x2="31.0" y2="150.0" stroke="#0f172a" stroke-width="2.4"/><line x1="24.7" y1="136.8" x2="30.7" y2="137.5" stroke="#475569" stroke-width="1.0"/><line x1="26.8" y1="123.8" x2="32.6" y2="125.1" stroke="#475569" stroke-width="1.0"/><line x1="30.2" y1="111.1" x2="35.9" y2="112.9" stroke="#475569" stroke-width="1.0"/><line x1="34.9" y1="98.8" x2="40.4" y2="101.2" stroke="#475569" stroke-width="1.0"/><line x1="53.0" y1="94.0" x2="66.0" y2="101.5" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="40.9" y1="87.0" x2="51.3" y2="93.0" stroke="#0f172a" stroke-width="2.4"/><line x1="48.1" y1="75.9" x2="52.9" y2="79.5" stroke="#475569" stroke-width="1.0"/><line x1="56.4" y1="65.7" x2="60.8" y2="69.7" stroke="#475569" stroke-width="1.0"/><line x1="65.7" y1="56.4" x2="69.7" y2="60.8" stroke="#475569" stroke-width="1.0"/><line x1="75.9" y1="48.1" x2="79.5" y2="52.9" stroke="#475569" stroke-width="1.0"/><line x1="94.0" y1="53.0" x2="101.5" y2="66.0" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><line x1="87.0" y1="40.9" x2="93.0" y2="51.3" stroke="#0f172a" stroke-width="2.4"/><line x1="98.8" y1="34.9" x2="101.2" y2="40.4" stroke="#475569" stroke-width="1.0"/><line x1="111.1" y1="30.2" x2="112.9" y2="35.9" stroke="#475569" stroke-width="1.0"/><line x1="123.8" y1="26.8" x2="125.1" y2="32.6" stroke="#475569" stroke-width="1.0"/><line x1="136.8" y1="24.7" x2="137.5" y2="30.7" stroke="#475569" stroke-width="1.0"/>
+  <path d="M 164.9 44.0 A 107 107 0 0 1 249.2 190.1" fill="none" stroke="#0d9488" stroke-width="3.6" stroke-linecap="round"/>
+  <text x="150" y="60" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f172a">12</text>
+  <text x="242" y="158" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f172a">3</text>
+  <text x="150" y="256" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f172a">6</text>
+  <text x="58" y="158" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="25" font-weight="700" fill="#0f172a">9</text>
+  <image href="renata-mark.png" x="86" y="88" width="128" height="122" preserveAspectRatio="xMidYMid meet"/>
+</svg></div>
+    <div class="ck-sp-brand">
+      <div class="ck-sp-title">Renata Overtime</div>
+      <div class="ck-sp-sub">Production &amp; QA</div>
+    </div>
+  </div>
+  <div class="ck-sp-pill">RPPF Overtime Report</div>
+</div>
+<script>
+(function () {
+  function buildLiveSplashCalendar(refDate) {
+    var d = refDate instanceof Date ? refDate : new Date();
+    var months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    var y = d.getFullYear(), m = d.getMonth(), today = d.getDate();
+    var head = document.getElementById('ckSpCalMonth');
+    var grid = document.getElementById('ckSpCalGrid');
+    if (head) head.textContent = months[m] + ' ' + y;
+    if (!grid) return;
+    var firstDow = new Date(y, m, 1).getDay();
+    var totalDays = new Date(y, m + 1, 0).getDate();
+    var cells = [];
+    for (var i = 0; i < firstDow; i++) cells.push('<div class="ck-sp-cell"></div>');
+    for (var day = 1; day <= totalDays; day++) {
+      var dow = (firstDow + day - 1) % 7;
+      var isToday = (day === today);
+      var dot = (dow === 4 || dow === 5) ? '<span class="ck-sp-dot blue"></span>' : ((day % 4 === 1) ? '<span class="ck-sp-dot teal"></span>' : '');
+      cells.push('<div class="ck-sp-cell' + (isToday ? ' is-today' : '') + '"><span>' + day + '</span>' + dot + '</div>');
+    }
+    while (cells.length % 7 !== 0) cells.push('<div class="ck-sp-cell"></div>');
+    grid.innerHTML = cells.join('');
+  }
+  window._buildLiveSplashCalendar = buildLiveSplashCalendar;
+  try { buildLiveSplashCalendar(new Date()); } catch (e) {}
+  var startTs = Date.now();
+  var dismissed = false;
+  function dismissSplash() {
+    if (dismissed) return;
+    dismissed = true;
+    var el = document.getElementById('ckAppSplash');
+    if (!el) return;
+    el.classList.add('ck-sp-hide');
+    setTimeout(function () { if (el && el.parentNode) el.style.display = 'none'; }, 360);
+  }
+  window.addEventListener('load', function () {
+    var elapsed = Date.now() - startTs;
+    setTimeout(dismissSplash, Math.max(0, 750 - elapsed));
+  });
+  setTimeout(dismissSplash, 2200);
+})();
+</script>
+
 <!-- Checkot Fullscreen Interactive Month & Search Loader -->
 <div id="ckLoader" class="ck-hide" style="display:none;" role="status" aria-live="polite">
   <div class="ck-card">
