@@ -414,6 +414,7 @@ if (myId && cleanSearch && myId !== cleanSearch) return 'other';
 return 'own';
 }
 function updateModeUI() {
+  if (typeof window.syncPresenceBoardVisibility === 'function') window.syncPresenceBoardVisibility();
 try { refreshTypeFilterOptions(); } catch (e) {}
 const mode = getAppMode() || 'employee';
 document.body.classList.toggle('incharge-mode-active', mode === 'incharge');

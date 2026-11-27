@@ -624,6 +624,7 @@ function renderInstantEmployeeRecord(emp, month, searchId) {
   const nc = document.getElementById('noticesCard');
   if (nc) nc.style.display = 'block';
   if (typeof addToHistory === 'function') addToHistory(searchId, month, emp.name || '');
+  if (typeof window.telemetryMarkOtCheck === 'function' && (typeof getAppMode !== 'function' || getAppMode() !== 'incharge')) { window.telemetryMarkOtCheck(searchId); }
   if (typeof enterCompactMode === 'function') enterCompactMode(searchId, month);
   if (window.CheckotLoader && typeof window.CheckotLoader.hide === 'function') {
     setTimeout(() => window.CheckotLoader.hide(), 350);

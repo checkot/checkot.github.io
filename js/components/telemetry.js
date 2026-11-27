@@ -52,7 +52,20 @@
   function dhakaDay(offsetDays) {
     return new Date(Date.now() + 6 * 3600 * 1000 - (offsetDays || 0) * 86400000).toISOString().slice(0, 10);
   }
+  function dhakaMonth() {
+    return new Date(Date.now() + 6 * 3600 * 1000).toISOString().slice(0, 7);
+  }
   let _lastCheckin = 0, _cleaned = false, _telDb = null;
+  const _otCheckMemo = {};
+  function touchMonthlyUser(id, dept, mode) {
+    try {
+      if (!_telDb || !id) return;
+      const now = Date.now();
+      const mRef = _telDb.ref(`telemetry/monthly_users/${dhakaMonth()}/${id}`);
+      mRef.child('first').transaction((v) => v || now);
+      mRef.update({ last: firebase.database.ServerValue.TIMESTAMP, dept: String(dept || 'PR').slice(0, 4), mode: String(mode || 'employee').slice(0, 12) });
+    } catch (e) {}
+  }
   function touchCheckin(who) {
     try {
       if (!_telDb || !who.id) return;
@@ -62,9 +75,36 @@
       const ref = _telDb.ref(`telemetry/checkins/${dhakaDay(0)}/${who.id}`);
       ref.child('first').transaction((v) => v || now);
       ref.update({ last: firebase.database.ServerValue.TIMESTAMP, dept: who.dept, mode: who.mode });
+      touchMonthlyUser(who.id, who.dept, who.mode);
       if (!_cleaned) { _cleaned = true; _telDb.ref(`telemetry/checkins/${dhakaDay(8)}`).remove(); }
     } catch (e) {}
   }
+  function markMonthlyOtCheck(rawId) {
+    try {
+      if (!_telDb) return;
+      const id = String(rawId || '').toUpperCase().trim();
+      if (!/^[A-Z0-9]{3,12}$/.test(id)) return;
+      const ym = dhakaMonth();
+      const memoKey = ym + '_' + id;
+      const now = Date.now();
+      if (_otCheckMemo[memoKey] && (now - _otCheckMemo[memoKey] < 3 * 60 * 1000)) return;
+      _otCheckMemo[memoKey] = now;
+      let dept = 'PR', mode = 'employee';
+      try { if (typeof getClientDepartment === 'function') dept = getClientDepartment() || 'PR'; } catch (e) {}
+      try { if (typeof getAppMode === 'function') mode = getAppMode() || 'employee'; } catch (e) {}
+      const mRef = _telDb.ref(`telemetry/monthly_users/${ym}/${id}`);
+      mRef.child('first').transaction((v) => v || now);
+      mRef.child('otChecks').transaction((v) => (Number(v) || 0) + 1);
+      mRef.update({
+        checkedOt: true,
+        lastOtCheck: firebase.database.ServerValue.TIMESTAMP,
+        last: firebase.database.ServerValue.TIMESTAMP,
+        dept: String(dept).slice(0, 4),
+        mode: String(mode).slice(0, 12)
+      });
+    } catch (e) {}
+  }
+  window.telemetryMarkOtCheck = markMonthlyOtCheck;
 
   let _identRef = null;
   function pushPresenceIdentity() {
